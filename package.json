@@ -1,0 +1,12 @@
+{
+  "name": "portal-react-apps",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "ci": "yarn install --frozen-lockfile",
+    "ci:prod": "yarn install --frozen-lockfile --production"
+  }
+}

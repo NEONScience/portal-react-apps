@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
+import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataHeader from '../DataHeader/DataHeader';
@@ -18,7 +19,7 @@ import PresentationSort from '../PresentationSort/PresentationSort';
 import PresentationFilter from '../PresentationFilter/PresentationFilter';
 import DataVisualizationDialog from '../DataVisualizationDialog/DataVisualizationDialog';
 
-import { FetchStateType } from '../../actions/actions';
+import { BuildStateType } from '../../actions/actions';
 
 const useStyles = makeStyles(theme => ({
   lazyLoader: {
@@ -39,30 +40,56 @@ const PresentationTop = (props) => {
 
   const {
     products,
-    appFetchState,
     onFetchAppState,
     productOrder,
     scrollCutoff,
     onIncrementScrollCutoff,
     activeDataVisualization,
     onChangeActiveDataVisualization,
+    neonContextState: storedNeonContextState,
+    onChangeNeonContextState,
+    appBuildState,
   } = props;
 
+  // Effect - Trigger the initial app fetch
   useEffect(onFetchAppState, [onFetchAppState]);
+
+  // Neon Context State
+  const [latestNeonContextState] = NeonContext.useNeonContextState();
+
+  // Effect - look for any changes to the NeonContext's initialization; stream them into local state
+  useEffect(() => {
+    if (
+      !storedNeonContextState || !latestNeonContextState
+        || ['isActive', 'isFinal', 'hasError'].every(k => (
+          storedNeonContextState[k] === latestNeonContextState[k]
+        ))
+    ) { return; }
+    onChangeNeonContextState(latestNeonContextState);
+  }, [
+    storedNeonContextState,
+    latestNeonContextState,
+    onChangeNeonContextState,
+    storedNeonContextState.isActive,
+    storedNeonContextState.isFinal,
+    storedNeonContextState.hasError,
+    latestNeonContextState.isActive,
+    latestNeonContextState.isFinal,
+    latestNeonContextState.hasError,
+  ]);
 
   const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
 
   let loading = null;
   let error = null;
-  let title = 'Explore Data Products';
-  switch (appFetchState) {
-    case FetchStateType.FULLFILLED:
+  switch (appBuildState) {
+    case BuildStateType.COMPLETE:
       // Set above as default values
       break;
-    case FetchStateType.WORKING:
-      loading = 'Analyzing data products...';
+    case BuildStateType.AWAITING_DATA:
+      loading = 'Loading data products...';
       break;
-    case FetchStateType.FAILED:
+    case BuildStateType.FAILED:
     default:
       error = 'An error was encountered communicating with the API. Please try again.';
       break;
@@ -108,7 +135,7 @@ const PresentationTop = (props) => {
     <NeonPage
       loading={loading}
       error={error}
-      title={title}
+      title="Explore Data Products"
       breadcrumbs={breadcrumbs}
     >
       <DataVisualizationDialog

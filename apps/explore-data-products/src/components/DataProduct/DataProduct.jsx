@@ -18,7 +18,6 @@ import DataProductAvailability from 'portal-core-components/lib/components/DataP
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -94,6 +93,7 @@ const DataProduct = React.memo((props) => {
     onExpandProductDescription,
     onChangeActiveDataVisualization,
     highestOrderDownloadSubject,
+    neonContextState,
   } = props;
 
   const {
@@ -104,8 +104,9 @@ const DataProduct = React.memo((props) => {
     productDescription,
   } = productData;
 
-  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  const { timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] } } = neonContextData;
+  const {
+    timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
+  } = neonContextState.data;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
 
   const isBundleChild = bundle.isChild && bundleParentProductData;

@@ -16,7 +16,6 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import DateIcon from '@material-ui/icons/DateRange';
 import ListIcon from '@material-ui/icons/List';
-import CatalogIcon from '@material-ui/icons/DescriptionOutlined';
 import NoneIcon from '@material-ui/icons/NotInterested';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -53,18 +52,10 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     marginTop: theme.spacing(1),
   },
-  downloadIcon: {
-    color: theme.palette.grey[300],
-    marginRight: theme.spacing(0.5),
-    fontSize: '1rem',
-  },
   downloadLabel: {
-    color: theme.palette.grey[300],
+    color: theme.palette.grey[400],
     whiteSpace: 'nowrap',
-    marginRight: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'help',
+    margin: theme.spacing(0, 0.5, 0.5, 0),
   },
   popper: {
     '& > div': {
@@ -173,10 +164,11 @@ const DataHeader = (props) => {
 
   const selenium = 'browse-data-products-page.data-header';
 
-  const baseTooltip = 'Download a CSV, JSON, or PDF file containing catalog data (product name, description, url, etc.--no science data)';
-  const tooltips = {
-    all: `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`,
-    filtered: `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`,
+  const getTooltip = (format, filtered) => {
+    const baseTooltip = `Download a ${format} file containing catalog data (product name, description, url, etc.--no science data)`;
+    return filtered
+      ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`
+      : `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
   };
 
   let catalogSummaryContents = (
@@ -188,7 +180,7 @@ const DataHeader = (props) => {
             <div className={classes.stat}>
               <ListIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.total-stats.products-and-sites`}
               >
@@ -201,7 +193,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
             <div className={classes.stat}>
               <DateIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.total-stats.dates-available`}
               >
@@ -210,23 +202,42 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
             </div>
           </div>
           <div className={classes.downloadContainer}>
-            <Tooltip title={tooltips.all} PopperProps={{ className: classes.popper }}>
-              <div className={classes.downloadLabel} aria-label={tooltips.all}>
-                <CatalogIcon className={classes.downloadIcon} />
-                <Typography variant="button">
-                  Download Full Catalog
-                </Typography>
-              </div>
-            </Tooltip>
+            <Typography variant="caption" className={classes.downloadLabel}>
+              Download Full Catalog:
+            </Typography>
             <ButtonGroup
               size="small"
               color="primary"
               variant="text"
               aria-label="download full catalog (all products)"
-              >
-              <Button {...gtmProps('csv', false)} onClick={() => { handleDownload('csv', false); }}>CSV</Button>
-              <Button {...gtmProps('json', false)} onClick={() => { handleDownload('json', false); }}>JSON</Button>
-              <Button {...gtmProps('pdf', false)} onClick={() => { handleDownload('pdf', false); }}>PDF</Button>
+            >
+              <Tooltip title={getTooltip('CSV', false)} PopperProps={{ className: classes.popper }}>
+                <Button
+                  {...gtmProps('csv', false)}
+                  onClick={() => { handleDownload('csv', false); }}
+                  aria-label="Download Full Catalog CSV"
+                >
+                  CSV
+                </Button>
+              </Tooltip>
+              <Tooltip title={getTooltip('JSON', false)} PopperProps={{ className: classes.popper }}>
+                <Button
+                  {...gtmProps('json', false)}
+                  onClick={() => { handleDownload('json', false); }}
+                  aria-label="Download Full Catalog JSON"
+                >
+                  JSON
+                </Button>
+              </Tooltip>
+              <Tooltip title={getTooltip('PDF', false)} PopperProps={{ className: classes.popper }}>
+                <Button
+                  {...gtmProps('pdf', false)}
+                  onClick={() => { handleDownload('pdf', false); }}
+                  aria-label="Download Full Catalog PDF"
+                >
+                  PDF
+                </Button>
+              </Tooltip>
             </ButtonGroup>
           </div>
         </div>
@@ -240,7 +251,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                 <div className={classes.stat}>
                   <ListIcon className={classes.statIcon} />
                   <Typography
-                    variant="subtitle2"
+                    variant="subtitle1"
                     className={classes.statLabel}
                     data-selenium={`${selenium}.filtered-stats.products-and-sites`}
                   >
@@ -257,7 +268,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                     <NoneIcon className={classes.statIcon} />
                   )}
                   <Typography
-                    variant="subtitle2"
+                    variant="subtitle1"
                     className={classes.statLabel}
                     data-selenium={`${selenium}.filtered-stats.dates-available`}
                   >
@@ -266,14 +277,9 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                 </div>
               </div>
               <div className={classes.downloadContainer}>
-                <Tooltip title={tooltips.filtered} PopperProps={{ className: classes.popper }}>
-                  <div className={classes.downloadLabel} aria-label={tooltips.filtered}>
-                    <CatalogIcon className={classes.downloadIcon} />
-                    <Typography variant="button">
-                      Download Filtered Catalog
-                    </Typography>
-                  </div>
-                </Tooltip>
+                <Typography variant="caption" className={classes.downloadLabel}>
+                  Download Filtered Catalog:
+                </Typography>
                 <ButtonGroup
                   size="small"
                   color="primary"
@@ -281,9 +287,33 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                   aria-label="download catalog containing only filtered products"
                   disabled={!filtersApplied.length}
                 >
-                  <Button {...gtmProps('csv', true)} onClick={() => { handleDownload('csv', true); }}>CSV</Button>
-                  <Button {...gtmProps('json', true)} onClick={() => { handleDownload('json', true); }}>JSON</Button>
-                  <Button {...gtmProps('pdf', true)} onClick={() => { handleDownload('pdf', true); }}>PDF</Button>
+                  <Tooltip title={getTooltip('CSV', true)} PopperProps={{ className: classes.popper }}>
+                    <Button
+                      {...gtmProps('csv', true)}
+                      onClick={() => { handleDownload('csv', true); }}
+                      aria-label="Download Filtered Catalog CSV"
+                    >
+                      CSV
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={getTooltip('JSON', true)} PopperProps={{ className: classes.popper }}>
+                    <Button
+                      {...gtmProps('json', true)}
+                      onClick={() => { handleDownload('json', true); }}
+                      aria-label="Download Filtered Catalog JSON"
+                    >
+                      JSON
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={getTooltip('PDF', true)} PopperProps={{ className: classes.popper }}>
+                    <Button
+                      {...gtmProps('pdf', true)}
+                      onClick={() => { handleDownload('pdf', true); }}
+                      aria-label="Download Filtered Catalog PDF"
+                    >
+                      PDF
+                    </Button>
+                  </Tooltip>
                 </ButtonGroup>
               </div>
             </React.Fragment>
@@ -291,7 +321,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             <div className={classes.statContainer}>
               <NoneIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.filterfiltered-stats.products-and-sites`}
               >

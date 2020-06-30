@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
 
@@ -78,8 +76,6 @@ const PresentationTop = (props) => {
     latestNeonContextState.hasError,
   ]);
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
-
   let loading = null;
   let error = null;
   switch (appBuildState) {
@@ -145,9 +141,6 @@ const PresentationTop = (props) => {
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
       <DataHeader {...drillProps} />
-      {belowMd ? null : (
-        <Divider style={{ marginBottom: Theme.spacing(3) }} />
-      )}
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <PresentationFilter {...drillProps} />

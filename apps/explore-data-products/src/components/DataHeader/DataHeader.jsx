@@ -19,7 +19,6 @@ import ListIcon from '@material-ui/icons/List';
 import CatalogIcon from '@material-ui/icons/DescriptionOutlined';
 import NoneIcon from '@material-ui/icons/NotInterested';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
@@ -115,13 +114,13 @@ const DataHeader = (props) => {
     localStorageSearch,
     catalogSummaryVisible,
     onToggleCatalogSummaryVisibility,
+    neonContextState,
   } = props;
 
   const visibleBreakpoint = useMediaQuery('(min-width:960px)');
   const visible = catalogSummaryVisible || visibleBreakpoint;
 
-  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  const { states: statesJSON = {} } = neonContextData;
+  const { states: statesJSON = {} } = neonContextState.data;
 
   const handleDownload = (ext, filtered) => {
     if (!filtered) {

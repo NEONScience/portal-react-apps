@@ -1,32 +1,28 @@
 import {
-	createStore,
-	applyMiddleware
+  createStore,
+  applyMiddleware
 } from "redux";
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
-import { getState } from "../store/state";
 import reducer from "../reducers/reducer";
+import { getState } from "../store/state";
 import { getEpicMiddleware, getCombinedEpics } from "../epics/root";
 
-export const configureInitialStore = (neonContextData = null) => {
-  return configureStore(getState(neonContextData));
-}
-
-export const configureStore = (state) => {
+export const configureStore = () => {
   let epicMiddleware = getEpicMiddleware();
-	let middlewares = [
+  let middlewares = [
     epicMiddleware
   ];
-	if (NeonEnvironment.isDevEnv) {
-		const { logger } = require("redux-logger");
-		middlewares.push(logger);
-	}
+  if (NeonEnvironment.isDevEnv) {
+    const { logger } = require("redux-logger");
+    middlewares.push(logger);
+  }
 
-	let store = createStore(
-		reducer,
-		state,
-		applyMiddleware(...middlewares)
+  let store = createStore(
+    reducer,
+    getState(),
+    applyMiddleware(...middlewares)
   );
 
   epicMiddleware.run(getCombinedEpics());

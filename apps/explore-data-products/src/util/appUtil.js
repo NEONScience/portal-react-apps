@@ -27,14 +27,11 @@ const EXCISE_BUNDLE_BLURBS = [
   ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
 ];
 
-export const buildAppState = (state, action) => {
+export const buildAppState = (state) => {
   const dataStore = {
     ...state,
-    appFetchState: FetchStateType.FULLFILLED
+    appFetchState: FetchStateType.COMPLETE
   }
-
-  // Load aop viewer product codes from response
-  dataStore.aopViewerProducts = action.aopViewerProducts || [];
 
   const {
     sites: sitesJSON,
@@ -42,7 +39,7 @@ export const buildAppState = (state, action) => {
     domains: domainsJSON,
     bundles: bundlesJSON,
     timeSeriesDataProducts: timeSeriesDataProductsJSON,
-  } = state.neonContextData;
+  } = state.neonContextState.data;
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -74,7 +71,7 @@ export const buildAppState = (state, action) => {
 
   // MAIN PRODUCTS LOOP
   // Build the products dictionary that we'll ultimately freeze
-  (action.products || []).forEach((rawProduct) => {
+  (state.fetchedProducts || []).forEach((rawProduct) => {
     const product = {...rawProduct};
     const productCode = product.productCode;
 
@@ -154,7 +151,7 @@ export const buildAppState = (state, action) => {
     product.filterableValues[FILTER_KEYS.DATE_RANGE].sort();
 
     // Filterable value for SEARCH - done last as it pulls from all other generated filterable values.
-    product.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(product, state.neonContextData);
+    product.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(product, state.neonContextState.data);
 
     // Add product to the global filter counts only if it's not a bundle child.
     // After the main products loop we apply some filter values to bundle children

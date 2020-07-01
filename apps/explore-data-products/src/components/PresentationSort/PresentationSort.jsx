@@ -27,8 +27,8 @@ import { SORT_METHODS, SORT_DIRECTIONS } from "../../util/filterUtil";
 
 const useStyles = makeStyles(theme => ({
   paper: {
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    padding: theme.spacing(3),
+    marginBottom: theme.spacing(3),
     justifyContent: 'space-between',
     alignItems: 'top',
   },
@@ -51,11 +51,13 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[300],
     marginTop: theme.spacing(1.5),
   },
-  summarizeH5: {
-    color: '#000000',
-    display: 'inline',
-    fontStyle: 'normal',
+  summarizeTitle: {
     marginRight: theme.spacing(1.5),
+    [theme.breakpoints.down('sm')]: {
+      color: theme.palette.text.primary,
+      fontStyle: 'normal',
+      fontSize: '1.4rem',
+    },
   },
   summarize: {
     color: theme.palette.grey[300],
@@ -194,7 +196,7 @@ const PresentationSort = (props) => {
         <Grid container>
           <Grid item xs={9} sm={9}>
             <div className={classes.summarize}>
-              <Typography variant="h5" className={classes.summarizeH5}>
+              <Typography variant="h4" className={classes.summarizeTitle}>
                 Sort
               </Typography>
               {SORT_METHODS[sortMethod].label} {sortDirection === 'ASC' ? '(ascending)' : '(descending)'}
@@ -202,7 +204,7 @@ const PresentationSort = (props) => {
           </Grid>
           <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
             <Tooltip title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}>
-              <IconButton size="small" onClick={onToggleSortVisibility}>
+              <IconButton onClick={onToggleSortVisibility}>
                 <SortIcon />
               </IconButton>
             </Tooltip>
@@ -220,7 +222,7 @@ const PresentationSort = (props) => {
       ) : (
         <div className={classes.sortContainer}>
           <div>
-            <Typography variant="h5" gutterBottom>Sort</Typography>
+            <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }}>Sort</Typography>
             {sortBlurb}
           </div>
           <div>

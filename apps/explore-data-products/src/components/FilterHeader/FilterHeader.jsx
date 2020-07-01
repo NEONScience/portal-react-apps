@@ -13,11 +13,13 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import { FILTER_LABELS } from "../../util/filterUtil";
 
 const useStyles = makeStyles(theme => ({
-  summarizeH5: {
-    color: '#000000',
-    display: 'inline',
-    fontStyle: 'normal',
+  summarizeTitle: {
     marginRight: theme.spacing(1.5),
+    [theme.breakpoints.down('sm')]: {
+      color: theme.palette.text.primary,
+      fontStyle: 'normal',
+      fontSize: '1.4rem',
+    },
   },
   summarize: {
     color: theme.palette.grey[300],
@@ -49,13 +51,13 @@ const FilterHeader = (props) => {
   return (
     <React.Fragment>
       <Hidden smDown>
-        <Typography variant="h5" gutterBottom>Filter</Typography>
+        <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }}>Filter</Typography>
       </Hidden>
       <Hidden mdUp>
         <Grid container>
           <Grid item xs={9} sm={9}>
             <div className={classes.summarize}>
-              <Typography variant="h5" className={classes.summarizeH5}>
+              <Typography variant="h4" className={classes.summarizeTitle}>
                 Filter
               </Typography>
               {filterSummary}
@@ -63,7 +65,7 @@ const FilterHeader = (props) => {
           </Grid>
           <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
             <Tooltip title={`${filtersVisible ? 'Collapse' : 'Expand'} filters`}>
-              <IconButton size="small" onClick={onToggleFilterVisibility}>
+              <IconButton onClick={onToggleFilterVisibility}>
                 <FilterIcon />
               </IconButton>
             </Tooltip>

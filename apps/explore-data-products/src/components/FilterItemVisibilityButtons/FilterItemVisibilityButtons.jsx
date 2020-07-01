@@ -13,10 +13,15 @@ import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUti
 
 const useStyles = makeStyles(theme => ({
   button: {
-    padding: theme.spacing(0.25, 1),
     margin: theme.spacing(1, 1, 0, 0),
-    whiteSpace: 'nowrap',
-    fontSize: '0.75rem',
+  },
+  container: {
+    marginTop: Theme.spacing(0.5),
+    marginBottom: Theme.spacing(5),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
   },
 }));
 
@@ -90,16 +95,8 @@ const FilterItemVisibilityButtons = (props) => {
       break;
   }
 
-  const divStyle = {
-    marginTop: Theme.spacing(0.5),
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    flexWrap: 'wrap',
-  };
-
   return (
-    <div style={divStyle}>
+    <div className={classes.container}>
       {buttons}
     </div>
   );

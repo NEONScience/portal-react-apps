@@ -40,7 +40,7 @@ const FilterTheme = (props) => {
             <FilterCheckBox
               name={(
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ marginRight: Theme.spacing(1) }}>
+                  <div style={{ margin: Theme.spacing(0.5, 1, 0, 0) }}>
                     <DataThemeIcon theme={filterItem.value} size={3} />
                   </div>
                   <span>

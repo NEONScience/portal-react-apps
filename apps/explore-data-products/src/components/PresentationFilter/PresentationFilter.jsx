@@ -2,7 +2,6 @@ import React, { useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
 import Paper from "@material-ui/core/Paper";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -21,8 +20,10 @@ import FilterTheme from '../FilterTheme/FilterTheme';
 import FilterVisualization from '../FilterVisualization/FilterVisualization';
 
 const useStyles = makeStyles(theme => ({
-  divider: {
-    margin: theme.spacing(2, 0),
+  filterContent: {
+    '& > div': {
+      marginBottom: theme.spacing(3.5),
+    },
   },
 }));
 
@@ -73,14 +74,12 @@ const PresentationFilter = (props) => {
   const searchRef = useRef(null);
   
   const filterContent = (
-    <React.Fragment>
-      <Divider className={classes.divider} />
+    <div className={classes.filterContent}>
       <FilterResetAll
         searchRef={searchRef}
         filtersApplied={filtersApplied}
         onResetAllFilters={onResetAllFilters}
       />
-      <Divider className={classes.divider} />
       <FilterSearch
         searchRef={searchRef}
         urlParams={urlParams}
@@ -91,30 +90,22 @@ const PresentationFilter = (props) => {
         totalKeywords={totalKeywords}
         {...filterProps}
       />
-      <Divider className={classes.divider} />
       <FilterDateRange {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterDataStatus {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterVisualization {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterScienceTeam {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterState {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterSite {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterDomain {...filterProps} />
-      <Divider className={classes.divider} />
       <FilterTheme {...filterProps} />
-    </React.Fragment>
+    </div>
   );
 
   return (
     <Paper
       id="filter-presentation"
       data-selenium="browse-data-products-page.filters"
-      style={{ padding: Theme.spacing(2) }}
+      style={{ padding: Theme.spacing(3) }}
     >
       <FilterHeader
         filtersVisible={filtersVisible}

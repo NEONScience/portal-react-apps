@@ -27,6 +27,9 @@ const useStyles = makeStyles(theme => ({
   divider: {
     margin: theme.spacing(2, 0),
   },
+  catalogContainer: {
+    marginBottom: theme.spacing(1.5),
+  },
   statContainer: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -69,16 +72,18 @@ const useStyles = makeStyles(theme => ({
     },
   },
   paper: {
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+    padding: theme.spacing(3),
+    marginBottom: theme.spacing(3),
     justifyContent: 'space-between',
     alignItems: 'top',
   },
-  summarizeH5: {
-    color: '#000000',
-    display: 'inline',
-    fontStyle: 'normal',
+  summarizeTitle: {
     marginRight: theme.spacing(1.5),
+    [theme.breakpoints.down('sm')]: {
+      color: theme.palette.text.primary,
+      fontStyle: 'normal',
+      fontSize: '1.4rem',
+    },
   },
   summarize: {
     color: theme.palette.grey[300],
@@ -174,7 +179,7 @@ const DataHeader = (props) => {
   let catalogSummaryContents = (
     <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
       <Grid item xs={12} sm={6}>
-        <div>
+        <div className={classes.catalogContainer}>
           <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>All Products</Typography>
           <div className={classes.statContainer}>
             <div className={classes.stat}>
@@ -243,7 +248,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <div style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
+        <div className={classes.catalogContainer} style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
           <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>Filtered Products</Typography>
           {filtersApplied.length ? (
             <React.Fragment>
@@ -363,7 +368,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
         <Grid container>
           <Grid item xs={9} sm={9}>
             <div className={classes.summarize}>
-              <Typography variant="h5" className={classes.summarizeH5}>
+              <Typography variant="h4" className={classes.summarizeTitle}>
                 Summary
               </Typography>
               {summarize}
@@ -371,7 +376,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
           </Grid>
           <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
             <Tooltip title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}>
-              <IconButton size="small" onClick={onToggleCatalogSummaryVisibility}>
+              <IconButton onClick={onToggleCatalogSummaryVisibility}>
                 <ListIcon />
               </IconButton>
             </Tooltip>

@@ -141,7 +141,7 @@ const PresentationTop = (props) => {
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
       <DataHeader {...drillProps} />
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         <Grid item xs={12} md={4}>
           <PresentationFilter {...drillProps} />
         </Grid>

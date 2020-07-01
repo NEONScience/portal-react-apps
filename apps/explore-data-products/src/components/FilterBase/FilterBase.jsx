@@ -21,20 +21,12 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(1),
+    minHeight: '30px',
   },
   subtitle: {
     color: theme.palette.grey[300],
-    fontSize: '0.8em',
-    fontWeight: 600,
-    marginLeft: theme.spacing(1),
-  },
-  resetButton: {
-    fontSize: '0.7rem',
-    padding: theme.spacing(0.125, 0.75),
-  },
-  resetButtonIcon: {
-    marginRight: theme.spacing(-0.5),
-    fontSize: '0.7rem',
+    fontSize: '0.85rem',
+    marginLeft: theme.spacing(1.5),
   },
 }));
 
@@ -59,7 +51,7 @@ const FilterBase = (props) => {
           key={`skeleton-${i}`}
           width="100%"
           height={12}
-          style={{ marginBottom: Theme.spacing(3) }}
+          style={{ marginTop: Theme.spacing(2.5), marginBottom: Theme.spacing(2.5) }}
         />
       );
     }
@@ -68,7 +60,7 @@ const FilterBase = (props) => {
   return (
     <div className={classes.filter} data-selenium={dataSeleniumTag}>
       <div className={classes.title}>
-        <Typography variant="h6">
+        <Typography variant="h5">
           {title}
           {subtitle ? (
             <span className={classes.subtitle}>{subtitle}</span>
@@ -81,11 +73,8 @@ const FilterBase = (props) => {
             variant="outlined"
             color="primary"
             size="small"
-            startIcon={(
-              <ClearIcon className={classes.resetButtonIcon} />
-            )}
+            startIcon={<ClearIcon />}
             onClick={handleResetFilter}
-            className={classes.resetButton}
           >
             Reset
           </Button>

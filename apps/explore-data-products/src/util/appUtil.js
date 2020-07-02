@@ -340,6 +340,14 @@ export const buildAppState = (state) => {
     newState = applyFilter(newState, FILTER_KEYS.SITES, newState.urlParams.sites);
     newState.filterItemVisibility[FILTER_KEYS.SITES] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
   }
+  if (dataStore.urlParams.states !== null && dataStore.urlParams.states.length) {
+    newState = applyFilter(newState, FILTER_KEYS.STATES, newState.urlParams.states);
+    newState.filterItemVisibility[FILTER_KEYS.STATES] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
+  }
+  if (dataStore.urlParams.domains !== null && dataStore.urlParams.domains.length) {
+    newState = applyFilter(newState, FILTER_KEYS.DOMAINS, newState.urlParams.domains);
+    newState.filterItemVisibility[FILTER_KEYS.DOMAINS] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
+  }
 
   // Applying filters also sorts, so only apply sort here if no filters were applied.
   return filterApplied ? newState : applySort(newState);

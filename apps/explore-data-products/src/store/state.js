@@ -19,7 +19,23 @@ const getSearchURLParam = () => {
 
 const getSitesURLParams = () => {
   const matches = window.location.search.matchAll(/[?&]site=([A-Z]{4})/g);
-  return [...matches].map(match => match[1]);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
+};
+
+const getStatesURLParams = () => {
+  const matches = window.location.search.matchAll(/[?&]state=([A-Z]{2})/g);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
+};
+
+const getDomainsURLParams = () => {
+  const matches = window.location.search.matchAll(/[?&]domain=(D[\d]{2})/g);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
 };
 
 const DEFAULT_STATE = {
@@ -35,6 +51,8 @@ const DEFAULT_STATE = {
   urlParams: {
     search: getSearchURLParam(),
     sites: getSitesURLParams(),
+    states: getStatesURLParams(),
+    domains: getDomainsURLParams(),
   },
 
   // Unparsed search input value sniffed from local storage

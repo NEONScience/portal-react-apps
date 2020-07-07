@@ -24,7 +24,6 @@ const viz = {};
 
 const VisualizationsSection = (props) => {
   const { state } = useContext(StoreContext);
-  const { setVisible } = props;
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
@@ -47,9 +46,8 @@ const VisualizationsSection = (props) => {
         node: <TimeSeriesViewer key="timeSeriesViewer" productCode={state.product.productCode} />,
       };
       setHasViz(true);
-      setVisible(true);
     }
-  }, [state, timeSeriesProductCodes, setHasViz, setVisible]);
+  }, [state, timeSeriesProductCodes, setHasViz]);
 
   /**
      Effect: conditionally fetch streamable AOP products to add AOP Data Viewer
@@ -66,11 +64,10 @@ const VisualizationsSection = (props) => {
             node: <AopDataViewer key="aopDataViewer" productCode={state.product.productCode} />,
           };
           setHasViz(true);
-          setVisible(true);
         }
       }),
       catchError(() => of('Unable to query for streamable products')),
-    ).subscribe(), [state, setVisible]);
+    ).subscribe(), [state]);
   useEffect(() => {
     if (isAOP && NeonEnvironment.showAopViewer && !fetchAopCalled) {
       handleFetchAop();

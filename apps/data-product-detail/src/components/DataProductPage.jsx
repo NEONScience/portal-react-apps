@@ -26,7 +26,7 @@ const DataProductPage = (props) => {
     { name: 'Data Products', href: '/data-products/explore' },
   ];
   if (state.product) {
-    breadcrumbs.push({ name: state.product.productCode });
+    breadcrumbs.push({ name: state.product ? state.product.productCode : '--' });
   }
 
   const title = state.product ? state.product.productName : null;
@@ -74,6 +74,7 @@ const DataProductPage = (props) => {
       title={title}
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
+      sidebarSubtitle={state.product ? state.product.productCode : '--'}
     >
       {skeleton ? renderPageContents() : (
         <DownloadDataContext.Provider

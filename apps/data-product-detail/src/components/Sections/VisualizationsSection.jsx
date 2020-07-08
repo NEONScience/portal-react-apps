@@ -12,10 +12,13 @@ import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 
+import Typography from '@material-ui/core/Typography';
+
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
+import Theme from 'portal-core-components/lib/components/Theme';
 
 import { StoreContext } from '../../Store';
 import Section from './Section';
@@ -75,11 +78,15 @@ const VisualizationsSection = (props) => {
     }
   }, [state, isAOP, fetchAopCalled, handleFetchAop]);
 
-  if (!hasViz) { return null; }
-
   return (
     <Section {...props}>
-      {Object.keys(viz).map(k => viz[k].node)}
+      {hasViz ? (
+        Object.keys(viz).map(k => viz[k].node)
+      ) : (
+        <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
+          This product does not currently have any visualizations.
+        </Typography>
+      )}
     </Section>
   );
 };

@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
 
 import debounce from 'lodash/debounce';
@@ -133,6 +132,8 @@ const PresentationTop = (props) => {
       error={error}
       title="Explore Data Products"
       breadcrumbs={breadcrumbs}
+      sidebarContent={<PresentationFilter {...drillProps} />}
+      sidebarWidth={340}
     >
       <DataVisualizationDialog
         products={products}
@@ -141,26 +142,19 @@ const PresentationTop = (props) => {
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
       <DataHeader {...drillProps} />
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <PresentationFilter {...drillProps} />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <PresentationSort {...drillProps} />
-          <PresentationData {...drillProps} />
-          <div
-            id="lazy-loader"
-            ref={lazyLoaderRef}
-            className={classes.lazyLoader}
-            style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block')  }}
-          >
-            <Typography variant="h6" className={classes.lazyLoaderTitle}>
-              Loading more data products...
-            </Typography>
-            <CircularProgress disableShrink />
-          </div>
-        </Grid>
-      </Grid>
+      <PresentationSort {...drillProps} />
+      <PresentationData {...drillProps} />
+      <div
+        id="lazy-loader"
+        ref={lazyLoaderRef}
+        className={classes.lazyLoader}
+        style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block')  }}
+      >
+        <Typography variant="h6" className={classes.lazyLoaderTitle}>
+          Loading more data products...
+        </Typography>
+        <CircularProgress disableShrink />
+      </div>
     </NeonPage>
   );
 };

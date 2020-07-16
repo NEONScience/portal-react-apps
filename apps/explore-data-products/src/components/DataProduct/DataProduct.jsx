@@ -6,7 +6,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import BundleIcon from '@material-ui/icons/Archive';
@@ -26,8 +25,7 @@ import { FILTER_KEYS, VISUALIZATIONS } from '../../util/filterUtil';
 import { DataVisualizationComponents } from '../../actions/actions';
 
 const useStyles = makeStyles(theme => ({
-  productPaper: {
-    padding: theme.spacing(3),
+  productCard: {
     marginBottom: theme.spacing(3),
   },
   productName: {
@@ -251,54 +249,55 @@ const DataProduct = React.memo((props) => {
   ));
   
   return (
-    <Paper className={classes.productPaper}>
+    <Card className={classes.productCard}>
+      <CardContent data-selenium={`browse-data-products-page.product-card.${productCode}`}>
+        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+          <Grid item xs={12} sm={7} md={8} lg={9}>
+            {name}
+            {code}
+            {description}
+          </Grid>
+          <Grid item xs={12} sm={5} md={4} lg={3}>
+            {downloadDataButton}
+            {productDetailsButton}
+          </Grid>
+        </Grid>
 
-      <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-        <Grid item xs={12} sm={7} md={8} lg={9}>
-          {name}
-          {code}
-          {description}
-        </Grid>
-        <Grid item xs={12} sm={5} md={4} lg={3}>
-          {downloadDataButton}
-          {productDetailsButton}
-        </Grid>
-      </Grid>
+        {bundleInfo}
 
-      {bundleInfo}
-
-      <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-        <Grid item xs={12} sm={4}>
-          <Typography variant="subtitle2" className={classes.detailSubtitle}>
-            Available Dates
-          </Typography>
-          <Typography variant="body2">
-            {timeRange}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Typography variant="subtitle2" className={classes.detailSubtitle}>
-            Data Themes
-          </Typography>
-          <div style={{ display: 'flex' }}>
-            {themeIcons}
-          </div>
-        </Grid>
-        {!hasVisualization ? null : (
+        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
           <Grid item xs={12} sm={4}>
             <Typography variant="subtitle2" className={classes.detailSubtitle}>
-              Visualize Data
+              Available Dates
             </Typography>
-            {viewTimeSeriesDataButton}
-            {aopViewerButton}
+            <Typography variant="body2">
+              {timeRange}
+            </Typography>
           </Grid>
-        )}
-      </Grid>
-
-      {hasData ? (
-        <DataProductAvailability siteCodes={siteCodes} />
-      ) : null}
-    </Paper>
+          <Grid item xs={12} sm={4}>
+            <Typography variant="subtitle2" className={classes.detailSubtitle}>
+              Data Themes
+            </Typography>
+            <div style={{ display: 'flex' }}>
+              {themeIcons}
+            </div>
+          </Grid>
+          {!hasVisualization ? null : (
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" className={classes.detailSubtitle}>
+                Visualize Data
+              </Typography>
+              {viewTimeSeriesDataButton}
+              {aopViewerButton}
+            </Grid>
+          )}
+        </Grid>
+      
+        {hasData ? (
+          <DataProductAvailability siteCodes={siteCodes} />
+        ) : null}
+      </CardContent>
+    </Card>
   );
 });
 

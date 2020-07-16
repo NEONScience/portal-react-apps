@@ -134,6 +134,7 @@ const PresentationTop = (props) => {
       breadcrumbs={breadcrumbs}
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarWidth={340}
+      sidebarUnsticky
     >
       <DataVisualizationDialog
         products={products}

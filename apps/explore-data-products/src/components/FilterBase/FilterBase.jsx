@@ -16,17 +16,21 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(1),
     },
   },
-  title: {
+  titleContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(1),
     minHeight: '30px',
   },
+  title: {
+    fontWeight: 500,
+  },
   subtitle: {
-    color: theme.palette.grey[300],
-    fontSize: '0.85rem',
-    marginLeft: theme.spacing(1.5),
+    fontSize: '0.725rem',
+    color: theme.palette.grey[400],
+    marginTop: Theme.spacing(1),
+    marginBottom: Theme.spacing(2),
   },
 }));
 
@@ -59,12 +63,9 @@ const FilterBase = (props) => {
 
   return (
     <div className={classes.filter} data-selenium={dataSeleniumTag}>
-      <div className={classes.title}>
-        <Typography variant="h5">
+      <div className={classes.titleContainer}>
+        <Typography variant="h5" component="h3" className={classes.title}>
           {title}
-          {subtitle ? (
-            <span className={classes.subtitle}>{subtitle}</span>
-          ) : null}
         </Typography>
         {typeof handleResetFilter === 'function' && showResetButton ? (
           <Button
@@ -80,6 +81,9 @@ const FilterBase = (props) => {
           </Button>
         ) : null}
       </div>
+      {subtitle ? (
+        <Typography variant="body2" className={classes.subtitle}>{subtitle}</Typography>
+      ) : null}
       {contents}
     </div>
   );

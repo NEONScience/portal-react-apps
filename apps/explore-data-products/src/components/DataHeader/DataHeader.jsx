@@ -5,11 +5,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -17,6 +18,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import DateIcon from '@material-ui/icons/DateRange';
 import ListIcon from '@material-ui/icons/List';
 import NoneIcon from '@material-ui/icons/NotInterested';
+import ClearIcon from '@material-ui/icons/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -24,10 +26,19 @@ import { FILTER_KEYS } from '../../util/filterUtil';
 import { downloadCatalog } from '../../util/catalogUtil';
 
 const useStyles = makeStyles(theme => ({
+  card: {
+    marginBottom: theme.spacing(3),
+    backgroundColor: theme.palette.grey[50],
+    boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.25), 0px 1px 1px rgba(0, 0, 0, 0.25)',
+  },
   divider: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(2, 0, 2.5, 0),
   },
   catalogContainer: {
+    marginBottom: theme.spacing(1.5),
+  },
+  sectionTitle: {
+    fontWeight: 500,
     marginBottom: theme.spacing(1.5),
   },
   statContainer: {
@@ -46,7 +57,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '1rem',
   },
   statLabel: {
-    fontSize: '0.95rem',
+    fontSize: '0.875rem',
   },
   downloadContainer: {
     display: 'flex',
@@ -60,39 +71,25 @@ const useStyles = makeStyles(theme => ({
     whiteSpace: 'nowrap',
     margin: theme.spacing(0, 0.5, 0.5, 0),
   },
-  popper: {
-    '& > div': {
-      padding: theme.spacing(1, 1.5),
-      fontSize: '0.85rem',
-      fontWeight: 300,
-      backgroundColor: theme.palette.grey[800],
+  title: {
+    fontWeight: 600,
+    [theme.breakpoints.up('md')]: {
+      marginBottom: theme.spacing(2),
+      fontSize: '1.5rem',
     },
-    '& a': {
-      color: theme.palette.grey[100],
-    },
-  },
-  paper: {
-    padding: theme.spacing(3),
-    marginBottom: theme.spacing(3),
-    justifyContent: 'space-between',
-    alignItems: 'top',
-  },
-  summarizeTitle: {
-    marginRight: theme.spacing(1.5),
     [theme.breakpoints.down('sm')]: {
-      color: theme.palette.text.primary,
-      fontStyle: 'normal',
-      fontSize: '1.4rem',
+      marginRight: theme.spacing(1.5),
+      fontSize: '1.3rem',
     },
   },
-  summarize: {
-    color: theme.palette.grey[300],
-    fontStyle: 'italic',
+  summary: {
+    color: theme.palette.grey[400],
     fontWeight: 400,
     fontSize: '0.85rem',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -113,8 +110,8 @@ const DataHeader = (props) => {
     neonContextState,
   } = props;
 
-  const visibleBreakpoint = useMediaQuery('(min-width:960px)');
-  const visible = catalogSummaryVisible || visibleBreakpoint;
+  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const visible = catalogSummaryVisible || !belowMd;
 
   const { states: statesJSON = {} } = neonContextState.data;
 
@@ -177,10 +174,12 @@ const DataHeader = (props) => {
   };
 
   let catalogSummaryContents = (
-    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
+    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
       <Grid item xs={12} sm={6}>
         <div className={classes.catalogContainer}>
-          <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>All Products</Typography>
+          <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+            All Products
+          </Typography>
           <div className={classes.statContainer}>
             <div className={classes.stat}>
               <ListIcon className={classes.statIcon} />
@@ -216,7 +215,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
               variant="text"
               aria-label="download full catalog (all products)"
             >
-              <Tooltip title={getTooltip('CSV', false)} PopperProps={{ className: classes.popper }}>
+              <Tooltip title={getTooltip('CSV', false)}>
                 <Button
                   {...gtmProps('csv', false)}
                   onClick={() => { handleDownload('csv', false); }}
@@ -225,7 +224,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                   CSV
                 </Button>
               </Tooltip>
-              <Tooltip title={getTooltip('JSON', false)} PopperProps={{ className: classes.popper }}>
+              <Tooltip title={getTooltip('JSON', false)}>
                 <Button
                   {...gtmProps('json', false)}
                   onClick={() => { handleDownload('json', false); }}
@@ -234,7 +233,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                   JSON
                 </Button>
               </Tooltip>
-              <Tooltip title={getTooltip('PDF', false)} PopperProps={{ className: classes.popper }}>
+              <Tooltip title={getTooltip('PDF', false)}>
                 <Button
                   {...gtmProps('pdf', false)}
                   onClick={() => { handleDownload('pdf', false); }}
@@ -249,7 +248,9 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
       </Grid>
       <Grid item xs={12} sm={6}>
         <div className={classes.catalogContainer} style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
-          <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>Filtered Products</Typography>
+          <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+            Filtered Products
+          </Typography>
           {filtersApplied.length ? (
             <React.Fragment>
               <div className={classes.statContainer}>
@@ -292,7 +293,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                   aria-label="download catalog containing only filtered products"
                   disabled={!filtersApplied.length}
                 >
-                  <Tooltip title={getTooltip('CSV', true)} PopperProps={{ className: classes.popper }}>
+                  <Tooltip title={getTooltip('CSV', true)}>
                     <Button
                       {...gtmProps('csv', true)}
                       onClick={() => { handleDownload('csv', true); }}
@@ -301,7 +302,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                       CSV
                     </Button>
                   </Tooltip>
-                  <Tooltip title={getTooltip('JSON', true)} PopperProps={{ className: classes.popper }}>
+                  <Tooltip title={getTooltip('JSON', true)}>
                     <Button
                       {...gtmProps('json', true)}
                       onClick={() => { handleDownload('json', true); }}
@@ -310,7 +311,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                       JSON
                     </Button>
                   </Tooltip>
-                  <Tooltip title={getTooltip('PDF', true)} PopperProps={{ className: classes.popper }}>
+                  <Tooltip title={getTooltip('PDF', true)}>
                     <Button
                       {...gtmProps('pdf', true)}
                       onClick={() => { handleDownload('pdf', true); }}
@@ -343,50 +344,55 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
     catalogSummaryContents = (
       <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h5" gutterBottom>All Products</Typography>
-          <Skeleton width="80%" height={12} style={{ margin: Theme.spacing(2, 0, 2, 0) }} />
-          <Skeleton width="60%" height={12} style={{ margin: Theme.spacing(3, 0, 2, 0) }} />
+          <div className={classes.catalogContainer}>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>All Products</Typography>
+            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+          </div>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h5" style={{ opacity: 0.5 }} gutterBottom>Filtered Products</Typography>
-          <Skeleton width="60%" height={12} style={{ margin: Theme.spacing(2, 0, 2, 0) }} />
+          <div className={classes.catalogContainer}>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>Filtered Products</Typography>
+            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+          </div>
         </Grid>
       </Grid>
     );
   }
 
-  if (!visibleBreakpoint) {
-    let summarize = `${stats.products.total} total products`;
+  if (belowMd) {
+    let summary = `${stats.products.total} total products`;
     if (filtersApplied.length) {
-      summarize = `${summarize}, ${stats.products.filtered} filtered`;
+      summary = `${summary}, ${stats.products.filtered} filtered`;
     }
     return (
-      <Paper
-        className={classes.paper}
-        data-selenium="browse-data-products-page.catalog-summary"
-      >
-        <Grid container>
-          <Grid item xs={9} sm={9}>
-            <div className={classes.summarize}>
-              <Typography variant="h4" className={classes.summarizeTitle}>
-                Summary
-              </Typography>
-              {summarize}
+      <Card className={classes.card}>
+        <CardContent data-selenium="browse-data-products-page.catalog-summary">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <Typography variant="h4" component="h2" className={classes.title}>Summary</Typography>
+              <div className={classes.summary}>
+                {summary}
+              </div>
             </div>
-          </Grid>
-          <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
-            <Tooltip title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}>
+            <Tooltip
+              placement="left"
+              title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
+            >
               <IconButton onClick={onToggleCatalogSummaryVisibility}>
-                <ListIcon />
+                {catalogSummaryVisible ? <ClearIcon /> : <ListIcon />}
               </IconButton>
             </Tooltip>
-          </Grid>
-        </Grid>
-        <Collapse in={visible}>
-          <Divider className={classes.divider} />
-          {catalogSummaryContents}
-        </Collapse>
-      </Paper>
+          </div>
+          <Collapse in={visible}>
+            <Divider className={classes.divider} />
+            {catalogSummaryContents}
+          </Collapse>
+        </CardContent>
+      </Card>
     );
   }
 

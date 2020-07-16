@@ -66,6 +66,11 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(-1),
     opacity: 0.4,
   },
+  subtitle: {
+    fontSize: '0.725rem',
+    color: Theme.palette.grey[400],
+    marginTop: Theme.spacing(1),
+  },
 }));
 
 const FilterSearch = (props) => {
@@ -109,12 +114,6 @@ const FilterSearch = (props) => {
     });
     return onApplyFilter(filterKey, terms);
   }, DEBOUNCE_MILLISECONDS);
-
-  const subtitleStyle = {
-    fontSize: '0.725rem',
-    color: Theme.palette.grey[300],
-    marginTop: Theme.spacing(1),
-  };
 
   const lastYear = (new Date()).getFullYear() - 1;
   const placeholder = `Utah, "snow depth", ${lastYear}, etc…`;
@@ -176,7 +175,7 @@ const FilterSearch = (props) => {
             <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }} id="keywords-dialog-title">
               Browse Keywords
             </Typography>
-            <Typography variant="body2" style={subtitleStyle}>
+            <Typography variant="body2" className={classes.subtitle}>
               {/* eslint-disable react/jsx-one-expression-per-line */}
               Click keywords below to add them to your search. Separate search
               terms will match products with <i>either</i> term.
@@ -198,7 +197,7 @@ const FilterSearch = (props) => {
                 type: 'search',
               }}
             />
-            <Typography variant="body2" style={subtitleStyle}>
+            <Typography variant="body2" className={classes.subtitle}>
               {`With all filters combined: ${productOrder.length} product${productOrder.length === 1 ? '' : 's'}`}
             </Typography>
           </div>
@@ -255,7 +254,7 @@ const FilterSearch = (props) => {
           type: 'search',
         }}
       />
-      <Typography variant="body2" style={subtitleStyle}>
+      <Typography variant="body2" className={classes.subtitle}>
         {/* eslint-enable react/jsx-one-expression-per-line */}
         Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
         Quote terms to match phrases (e.g. &quot;wind speed&quot;).&nbsp;

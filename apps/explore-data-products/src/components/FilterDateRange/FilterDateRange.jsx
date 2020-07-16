@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import Button from "@material-ui/core/Button";
 import Slider from '@material-ui/core/Slider';
-import Typography from '@material-ui/core/Typography';
 
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
@@ -61,19 +60,12 @@ const FilterDateRange = (props) => {
     currentRange,
   ]);
 
-  const renderSubtitle = () => {
-    const subtitleStyle = {
-      fontSize: '0.725rem',
-      color: Theme.palette.grey[300],
-      marginBottom: Theme.spacing(2),
-    };
-    return (
-      <Typography variant="body2" style={subtitleStyle}>
-        Show products that have any data available between two dates.
-      </Typography>
-    );
+  const filterBaseProps = {
+    title: 'Available Dates',
+    subtitle: 'Show products that have any data available between two dates.',
+    'data-selenium': 'browse-data-products-page.filters.date-range',
   };
-
+  
   // Render initial state (no inputs; enable button only) if not applied
   if (!selectableRange.length || !filtersApplied.includes(filterKey)) {
     const initialFilterValue = [
@@ -81,11 +73,7 @@ const FilterDateRange = (props) => {
       selectableRange[sliderMax],
     ];
     return (
-      <FilterBase
-        title="Available Dates"
-        data-selenium="browse-data-products-page.filters.date-range"
-      >
-        {renderSubtitle()}
+      <FilterBase {...filterBaseProps}>
         <Button 
           title="Filter on available dates…"
           aria-label="Filter on available dates…"
@@ -137,12 +125,10 @@ const FilterDateRange = (props) => {
   // Render active date range filter with slider and date picker inputs
   return (
     <FilterBase
-      title="Available Dates"
+      {...filterBaseProps}
       handleResetFilter={() => onResetFilter(filterKey)}
-      data-selenium="browse-data-products-page.filters.date-range"
       showResetButton
     >
-      {renderSubtitle()}
       <Slider
         className={classes.slider}
         data-selenium="browse-data-products-page.filters.date-range.slider"

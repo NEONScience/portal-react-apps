@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import Button from "@material-ui/core/Button";
 import Slider from '@material-ui/core/Slider';
-import Typography from '@material-ui/core/Typography';
 
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
@@ -16,68 +15,13 @@ import FilterBase from '../FilterBase/FilterBase';
 
 const getYearMonthMoment = yearMonth => moment(`${yearMonth}-01`);
 
-const boxShadow = alpha => `0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,${alpha}),0 0 0 1px rgba(0,0,0,0.02)`;
-const DateRangeSlider = withStyles({
-  root: {
-    width: `calc(100% - ${Theme.spacing(6)}px)`,
+const useStyles = makeStyles(theme => ({
+  slider: {
+    width: `calc(100% - ${theme.spacing(6)}px)`,
     marginLeft: Theme.spacing(3),
-    marginBottom: Theme.spacing(4),
+    marginBottom: Theme.spacing(5.5),
   },
-  rail: {
-    height: 3,
-  },
-  track: {
-    height: 7,
-    marginTop: -2
-  },
-  mark: {
-    height: 12,
-    marginTop: -5,
-  },
-  markActive: {
-    height: 12,
-    marginTop: -5,
-    backgroundColor: Theme.palette.primary.main,
-  },
-  markLabel: {
-    marginTop: Theme.spacing(1),
-  },
-  thumb: {
-    height: Theme.spacing(3.5),
-    width: Theme.spacing(1.5),
-    backgroundColor: Theme.palette.grey[50],
-    boxShadow: boxShadow(0.13),
-    border: `2px solid ${Theme.palette.primary.main}`,
-    borderRadius: Theme.spacing(0.5),
-    marginTop: Theme.spacing(-1.75),
-    marginLeft: Theme.spacing(-0.75),
-    '&:focus,&:hover,&active': {
-      boxShadow: boxShadow(0.3),
-      // Reset on touch devices, it doesn't add specificity
-      '@media (hover: none)': {
-        boxShadow: boxShadow(0.13),
-      },
-    },
-  },
-  valueLabel: {
-    left: 'initial',
-    fontWeight: 600,
-    top: -20,
-    whiteSpace: 'nowrap',
-    '& span': {
-      width: 'auto',
-      height: 'auto',
-      padding: Theme.spacing(0.5, 1),
-      borderRadius: Theme.spacing(0.5),
-      transform: 'none',
-      '& span': {
-        transform: 'none',
-        padding: 0,
-        borderRadius: 0,
-      },
-    },
-  },
-})(Slider);
+}));
 
 const FilterDateRange = (props) => {
   const {
@@ -87,6 +31,7 @@ const FilterDateRange = (props) => {
     onApplyFilter,
     onResetFilter,
   } = props;
+  const classes = useStyles(Theme);
 
   const filterKey = FILTER_KEYS.DATE_RANGE;
   const currentRange = filterValues[filterKey];
@@ -115,19 +60,12 @@ const FilterDateRange = (props) => {
     currentRange,
   ]);
 
-  const renderSubtitle = () => {
-    const subtitleStyle = {
-      fontSize: '0.725rem',
-      color: Theme.palette.grey[300],
-      marginBottom: Theme.spacing(2),
-    };
-    return (
-      <Typography variant="body2" style={subtitleStyle}>
-        Show products that have any data available between two dates.
-      </Typography>
-    );
+  const filterBaseProps = {
+    title: 'Available Dates',
+    subtitle: 'Show products that have any data available between two dates.',
+    'data-selenium': 'browse-data-products-page.filters.date-range',
   };
-
+  
   // Render initial state (no inputs; enable button only) if not applied
   if (!selectableRange.length || !filtersApplied.includes(filterKey)) {
     const initialFilterValue = [
@@ -135,11 +73,7 @@ const FilterDateRange = (props) => {
       selectableRange[sliderMax],
     ];
     return (
-      <FilterBase
-        title="Available Dates"
-        data-selenium="browse-data-products-page.filters.date-range"
-      >
-        {renderSubtitle()}
+      <FilterBase {...filterBaseProps}>
         <Button 
           title="Filter on available dates…"
           aria-label="Filter on available dates…"
@@ -191,13 +125,12 @@ const FilterDateRange = (props) => {
   // Render active date range filter with slider and date picker inputs
   return (
     <FilterBase
-      title="Available Dates"
+      {...filterBaseProps}
       handleResetFilter={() => onResetFilter(filterKey)}
-      data-selenium="browse-data-products-page.filters.date-range"
       showResetButton
     >
-      {renderSubtitle()}
-      <DateRangeSlider
+      <Slider
+        className={classes.slider}
         data-selenium="browse-data-products-page.filters.date-range.slider"
         defaultValue={[sliderMin, sliderMax]}
         valueLabelDisplay="auto"

@@ -3,13 +3,13 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import FormControl from '@material-ui/core/FormControl';
-import Grid from "@material-ui/core/Grid";
 import Hidden from "@material-ui/core/Hidden";
 import IconButton from "@material-ui/core/IconButton";
 import MenuItem from '@material-ui/core/MenuItem';
-import Paper from "@material-ui/core/Paper";
 import Select from '@material-ui/core/Select';
 import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -20,17 +20,24 @@ import Typography from "@material-ui/core/Typography";
 import SortIcon from '@material-ui/icons/SwapVert';
 import AscIcon from '@material-ui/icons/ArrowDownward';
 import DescIcon from '@material-ui/icons/ArrowUpward';
+import ClearIcon from "@material-ui/icons/Clear";
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import { SORT_METHODS, SORT_DIRECTIONS } from "../../util/filterUtil";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    justifyContent: 'space-between',
-    alignItems: 'top',
+  card: {
+    marginBottom: theme.spacing(3),
+    backgroundColor: theme.palette.grey[50],
+    boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.25), 0px 1px 1px rgba(0, 0, 0, 0.25)',
+    /*
+    [theme.breakpoints.up('md')]: {
+      position: 'sticky',
+      top: '-4px',
+      zIndex: 1,
+    },
+    */
   },
   select: {
     height: theme.spacing(6),
@@ -48,28 +55,33 @@ const useStyles = makeStyles(theme => ({
   },
   subtitle: {
     fontSize: '0.725rem',
-    color: theme.palette.grey[300],
+    color: theme.palette.grey[400],
     marginTop: theme.spacing(1.5),
-  },
-  summarizeH5: {
-    color: '#000000',
-    display: 'inline',
-    fontStyle: 'normal',
-    marginRight: theme.spacing(1.5),
-  },
-  summarize: {
-    color: theme.palette.grey[300],
-    fontStyle: 'italic',
-    fontWeight: 400,
-    fontSize: '0.85rem',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
   },
   sortContainer: {
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
+  },
+  title: {
+    fontWeight: 600,
+    [theme.breakpoints.up('md')]: {
+      marginBottom: theme.spacing(2),
+      fontSize: '1.5rem',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginRight: theme.spacing(1.5),
+      fontSize: '1.3rem',
+    },
+  },
+  summary: {
+    color: theme.palette.grey[400],
+    fontWeight: 400,
+    fontSize: '0.85rem',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -88,15 +100,14 @@ const PresentationSort = (props) => {
     onToggleSortVisibility,
   } = props;
 
-  const visibleBreakpoint = useMediaQuery('(min-width:960px)');
-  const visible = sortVisible || visibleBreakpoint;
-
+  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
   const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
+  const visible = sortVisible || !belowMd;
 
   const collapsedContentDivStyle = {
     display: 'flex',
-    marginTop: Theme.spacing(1),
     flexDirection: belowSm ? 'column' : 'row',
+    marginTop: Theme.spacing(2),
   };
 
   const filtered = filtersApplied.length ? 'filtered' : 'total';
@@ -109,6 +120,12 @@ const PresentationSort = (props) => {
   // (i.e. does anyone want to sort by _least_ relevant to the search input?)
   const sortDirectionDisabled = (sortMethod === 'searchRelevance');
 
+  const title = (
+    <Typography variant="h4" component="h2" className={classes.title}>Sort</Typography>
+  );
+
+  const summary = `${SORT_METHODS[sortMethod].label} ${sortDirection === 'ASC' ? '(ascending)' : '(descending)'}`;
+  
   const sortBlurb = (
     <Typography
       variant="body2"
@@ -186,50 +203,48 @@ const PresentationSort = (props) => {
   );
 
   return (
-    <Paper
-      className={classes.paper}
-      data-selenium="browse-data-products-page.sort"
-    >
-      <Hidden mdUp>
-        <Grid container>
-          <Grid item xs={9} sm={9}>
-            <div className={classes.summarize}>
-              <Typography variant="h5" className={classes.summarizeH5}>
-                Sort
-              </Typography>
-              {SORT_METHODS[sortMethod].label} {sortDirection === 'ASC' ? '(ascending)' : '(descending)'}
+    <Card className={classes.card}>
+      <CardContent data-selenium="browse-data-products-page.sort">
+        <Hidden mdUp>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              {title}
+              <div className={classes.summary}>
+                {summary}
+              </div>
             </div>
-          </Grid>
-          <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
-            <Tooltip title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}>
-              <IconButton size="small" onClick={onToggleSortVisibility}>
-                <SortIcon />
+            <Tooltip
+              placement="left"
+              title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}
+            >
+              <IconButton onClick={onToggleSortVisibility}>
+                {sortVisible ? <ClearIcon /> : <SortIcon />}
               </IconButton>
             </Tooltip>
-          </Grid>
-        </Grid>
-      </Hidden>
-      {!visibleBreakpoint ? (
-        <Collapse in={visible}>
-          <div style={collapsedContentDivStyle}>
-            {sortBlurb}
-            {sortContent}
           </div>
-          {sortShowing}
-        </Collapse>
-      ) : (
-        <div className={classes.sortContainer}>
-          <div>
-            <Typography variant="h5" gutterBottom>Sort</Typography>
-            {sortBlurb}
-          </div>
-          <div>
-            {sortContent}
+        </Hidden>
+        {belowMd ? (
+          <Collapse in={visible}>
+            <div style={collapsedContentDivStyle}>
+              {sortBlurb}
+              {sortContent}
+            </div>
             {sortShowing}
+          </Collapse>
+        ) : (
+          <div className={classes.sortContainer}>
+            <div>
+              {title}
+              {sortBlurb}
+            </div>
+            <div>
+              {sortContent}
+              {sortShowing}
+            </div>
           </div>
-        </div>
-      )}
-    </Paper>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 

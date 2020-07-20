@@ -16,25 +16,21 @@ const useStyles = makeStyles(theme => ({
       paddingLeft: theme.spacing(1),
     },
   },
-  title: {
+  titleContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: theme.spacing(1),
+    minHeight: '30px',
+  },
+  title: {
+    fontWeight: 500,
   },
   subtitle: {
-    color: theme.palette.grey[300],
-    fontSize: '0.8em',
-    fontWeight: 600,
-    marginLeft: theme.spacing(1),
-  },
-  resetButton: {
-    fontSize: '0.7rem',
-    padding: theme.spacing(0.125, 0.75),
-  },
-  resetButtonIcon: {
-    marginRight: theme.spacing(-0.5),
-    fontSize: '0.7rem',
+    fontSize: '0.725rem',
+    color: theme.palette.grey[400],
+    marginTop: Theme.spacing(1),
+    marginBottom: Theme.spacing(2),
   },
 }));
 
@@ -59,7 +55,7 @@ const FilterBase = (props) => {
           key={`skeleton-${i}`}
           width="100%"
           height={12}
-          style={{ marginBottom: Theme.spacing(3) }}
+          style={{ marginTop: Theme.spacing(2.5), marginBottom: Theme.spacing(2.5) }}
         />
       );
     }
@@ -67,12 +63,9 @@ const FilterBase = (props) => {
 
   return (
     <div className={classes.filter} data-selenium={dataSeleniumTag}>
-      <div className={classes.title}>
-        <Typography variant="h6">
+      <div className={classes.titleContainer}>
+        <Typography variant="h5" component="h3" className={classes.title}>
           {title}
-          {subtitle ? (
-            <span className={classes.subtitle}>{subtitle}</span>
-          ) : null}
         </Typography>
         {typeof handleResetFilter === 'function' && showResetButton ? (
           <Button
@@ -81,16 +74,16 @@ const FilterBase = (props) => {
             variant="outlined"
             color="primary"
             size="small"
-            startIcon={(
-              <ClearIcon className={classes.resetButtonIcon} />
-            )}
+            startIcon={<ClearIcon />}
             onClick={handleResetFilter}
-            className={classes.resetButton}
           >
             Reset
           </Button>
         ) : null}
       </div>
+      {subtitle ? (
+        <Typography variant="body2" className={classes.subtitle}>{subtitle}</Typography>
+      ) : null}
       {contents}
     </div>
   );

@@ -10,11 +10,13 @@ import {
 import { buildAppState } from "../util/appUtil";
 
 import {
+  BuildStateType,
   FetchStateType,
   FETCH_APP_STATE,
   FETCH_APP_STATE_WORKING,
-  FETCH_APP_STATE_FULLFILLED,
+  FETCH_APP_STATE_COMPLETE,
   FETCH_APP_STATE_FAILED,
+  CHANGE_NEON_CONTEXT_STATE,
   APPLY_SORT,
   APPLY_FILTER,
   RESET_FILTER,
@@ -31,26 +33,55 @@ import {
   CHANGE_ACTIVE_DATA_VISUALIZATION,
 } from "../actions/actions";
 
-const reducer = (state = {}, action) => {
+const buildAppStateIfReady = (state) => {
+  // We only want to build once when we know that the following is all true:
+  // 1. The build state is AWAITING_DATA
+  // 2. The app fetches are no longer in progress (not WORKING)
+  // 3. The NeonContext is both active and final
+  // This all means that all the data is either present or failed (but NOT still working) and we
+  // haven't yet built the app state.
+  if (
+    ! (
+      state.appBuildState === BuildStateType.AWAITING_DATA
+        && state.appFetchState !== FetchStateType.WORKING
+        && state.neonContextState.isActive && state.neonContextState.isFinal
+    )
+  ) { return state; }
+  if (state.appFetchState !== FetchStateType.COMPLETE || state.neonContextState.hasError) {
+    return { ...state, appBuildState: BuildStateType.FAILED };
+  }
   let update;
+  try {
+    update = buildAppState(state);
+    update.appBuildState = BuildStateType.COMPLETE;
+  } catch (error) {
+    console.error("Failed to build app state", error);
+    update = { ...state, appBuildState: BuildStateType.FAILED };
+  }
+  return update;
+};
+
+const reducer = (state = {}, action) => {
   switch (action.type) {
     case FETCH_APP_STATE:
       return state;
     case FETCH_APP_STATE_WORKING:
       return { ...state, appFetchState: FetchStateType.WORKING };
-    case FETCH_APP_STATE_FULLFILLED:
-      try {
-        update = buildAppState(state, action);
-      } catch (error) {
-        console.error("Failed to build app state", error);
-        update = {
-          ...state,
-          appFetchState: FetchStateType.FAILED
-        };
-      }
-      return update;
+    case FETCH_APP_STATE_COMPLETE:
+      return buildAppStateIfReady({
+        ...state,
+        appFetchState: FetchStateType.COMPLETE,
+        aopViewerProducts: action.aopViewerProducts || [],
+        fetchedProducts: action.products || [],
+      });
     case FETCH_APP_STATE_FAILED:
-      return { ...state, appFetchState: FetchStateType.FAILED };
+      return { ...state, appFetchState: BuildStateType.FAILED };
+
+    case CHANGE_NEON_CONTEXT_STATE:
+      return buildAppStateIfReady({
+        ...state,
+        neonContextState: action.neonContextState,
+      });
 
     case APPLY_SORT:
       return applySort(state, action.sortMethod, action.sortDirection);

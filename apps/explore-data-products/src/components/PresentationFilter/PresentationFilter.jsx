@@ -2,8 +2,6 @@ import React, { useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Paper from "@material-ui/core/Paper";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -21,8 +19,37 @@ import FilterTheme from '../FilterTheme/FilterTheme';
 import FilterVisualization from '../FilterVisualization/FilterVisualization';
 
 const useStyles = makeStyles(theme => ({
-  divider: {
-    margin: theme.spacing(2, 0),
+  filterContent: {
+    [theme.breakpoints.up('md')]: {
+      width: '276px',
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginRight: theme.spacing(3),
+    },
+    '& > div:not(:last-child)': {
+      marginBottom: theme.spacing(3.5),
+    },
+  },
+  collapse: {
+    maxHeight: 'calc(100vh - 216px)',
+    flex: '1 1 auto',
+    overflowY: 'auto',
+  },
+  twoColumns: {
+    display: 'flex',
+    marginBottom: 'unset',
+    '& > :first-child': {
+      marginRight: theme.spacing(3),
+    },
+    '& > :last-child': {
+      marginLeft: theme.spacing(3),
+    },
+  },
+  column: {
+    flex: '50%',
+    '& > div:not(:last-child)': {
+      marginBottom: theme.spacing(3.5),
+    },
   },
 }));
 
@@ -50,8 +77,9 @@ const PresentationFilter = (props) => {
     skeleton,
   } = props;
   
-  const visibleBreakpoint = useMediaQuery('(min-width:960px)');
-  const visible = filtersVisible || visibleBreakpoint;
+  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
+  const visible = filtersVisible || !belowMd;
 
   // TODO: Use a context here to get around all this prop-drilling
   const filterProps = {
@@ -71,62 +99,80 @@ const PresentationFilter = (props) => {
   // but on which we want to set values in certain cases
   // Used to set search input value when provided from URL (controlling kills typing performance)
   const searchRef = useRef(null);
+
+  const filterSearch = (
+    <FilterSearch
+      searchRef={searchRef}
+      urlParams={urlParams}
+      localStorageSearch={localStorageSearch}
+      filtersApplied={filtersApplied}
+      productOrder={productOrder}
+      allKeywordsByLetter={allKeywordsByLetter}
+      totalKeywords={totalKeywords}
+      {...filterProps}
+    />
+  );
   
   const filterContent = (
-    <React.Fragment>
-      <Divider className={classes.divider} />
+    <div className={classes.filterContent}>
       <FilterResetAll
         searchRef={searchRef}
         filtersApplied={filtersApplied}
         onResetAllFilters={onResetAllFilters}
       />
-      <Divider className={classes.divider} />
-      <FilterSearch
-        searchRef={searchRef}
-        urlParams={urlParams}
-        localStorageSearch={localStorageSearch}
-        filtersApplied={filtersApplied}
-        productOrder={productOrder}
-        allKeywordsByLetter={allKeywordsByLetter}
-        totalKeywords={totalKeywords}
-        {...filterProps}
-      />
-      <Divider className={classes.divider} />
-      <FilterDateRange {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterDataStatus {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterVisualization {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterScienceTeam {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterState {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterSite {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterDomain {...filterProps} />
-      <Divider className={classes.divider} />
-      <FilterTheme {...filterProps} />
-    </React.Fragment>
+      {atSm ? (
+        <div className={classes.twoColumns}>
+          <div className={classes.column}>
+            {filterSearch}
+            <FilterDataStatus {...filterProps} />
+            <FilterScienceTeam {...filterProps} />
+            <FilterState {...filterProps} />
+            <FilterDomain {...filterProps} />
+          </div>
+          <div className={classes.column}>
+            <FilterDateRange {...filterProps} />
+            <FilterVisualization {...filterProps} />
+            <FilterTheme {...filterProps} />
+            <FilterSite {...filterProps} />
+          </div>
+        </div>
+      ) : (
+        <React.Fragment>
+          {filterSearch}
+          <FilterDateRange {...filterProps} />
+          <FilterDataStatus {...filterProps} />
+          <FilterVisualization {...filterProps} />
+          <FilterScienceTeam {...filterProps} />
+          <FilterState {...filterProps} />
+          <FilterSite {...filterProps} />
+          <FilterDomain {...filterProps} />
+          <FilterTheme {...filterProps} />
+        </React.Fragment>
+      )}
+    </div>
   );
 
   return (
-    <Paper
+    <div
       id="filter-presentation"
       data-selenium="browse-data-products-page.filters"
-      style={{ padding: Theme.spacing(2) }}
+      style={{ position: 'relative' }}
     >
       <FilterHeader
         filtersVisible={filtersVisible}
         filtersApplied={filtersApplied}
         onToggleFilterVisibility={onToggleFilterVisibility}
       />
-      {!visibleBreakpoint ? (
-        <Collapse in={visible}>
+      {belowMd ? (
+        <Collapse
+          in={visible}
+          className={classes.collapse}
+          style={{ marginTop: Theme.spacing(visible ? 3 : 0) }}
+        >
           {filterContent}
         </Collapse>
       ) : filterContent}
-    </Paper>
+    </div>
   );
 };
 

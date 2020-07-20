@@ -1,15 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import Typography from "@material-ui/core/Typography";
 
 import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
+import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataHeader from '../DataHeader/DataHeader';
@@ -18,7 +16,7 @@ import PresentationSort from '../PresentationSort/PresentationSort';
 import PresentationFilter from '../PresentationFilter/PresentationFilter';
 import DataVisualizationDialog from '../DataVisualizationDialog/DataVisualizationDialog';
 
-import { FetchStateType } from '../../actions/actions';
+import { BuildStateType } from '../../actions/actions';
 
 const useStyles = makeStyles(theme => ({
   lazyLoader: {
@@ -39,30 +37,54 @@ const PresentationTop = (props) => {
 
   const {
     products,
-    appFetchState,
     onFetchAppState,
     productOrder,
     scrollCutoff,
     onIncrementScrollCutoff,
     activeDataVisualization,
     onChangeActiveDataVisualization,
+    neonContextState: storedNeonContextState,
+    onChangeNeonContextState,
+    appBuildState,
   } = props;
 
+  // Effect - Trigger the initial app fetch
   useEffect(onFetchAppState, [onFetchAppState]);
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  // Neon Context State
+  const [latestNeonContextState] = NeonContext.useNeonContextState();
+
+  // Effect - look for any changes to the NeonContext's initialization; stream them into local state
+  useEffect(() => {
+    if (
+      !storedNeonContextState || !latestNeonContextState
+        || ['isActive', 'isFinal', 'hasError'].every(k => (
+          storedNeonContextState[k] === latestNeonContextState[k]
+        ))
+    ) { return; }
+    onChangeNeonContextState(latestNeonContextState);
+  }, [
+    storedNeonContextState,
+    latestNeonContextState,
+    onChangeNeonContextState,
+    storedNeonContextState.isActive,
+    storedNeonContextState.isFinal,
+    storedNeonContextState.hasError,
+    latestNeonContextState.isActive,
+    latestNeonContextState.isFinal,
+    latestNeonContextState.hasError,
+  ]);
 
   let loading = null;
   let error = null;
-  let title = 'Explore Data Products';
-  switch (appFetchState) {
-    case FetchStateType.FULLFILLED:
+  switch (appBuildState) {
+    case BuildStateType.COMPLETE:
       // Set above as default values
       break;
-    case FetchStateType.WORKING:
-      loading = 'Analyzing data products...';
+    case BuildStateType.AWAITING_DATA:
+      loading = 'Loading data products...';
       break;
-    case FetchStateType.FAILED:
+    case BuildStateType.FAILED:
     default:
       error = 'An error was encountered communicating with the API. Please try again.';
       break;
@@ -108,8 +130,11 @@ const PresentationTop = (props) => {
     <NeonPage
       loading={loading}
       error={error}
-      title={title}
+      title="Explore Data Products"
       breadcrumbs={breadcrumbs}
+      sidebarContent={<PresentationFilter {...drillProps} />}
+      sidebarWidth={340}
+      sidebarUnsticky
     >
       <DataVisualizationDialog
         products={products}
@@ -118,29 +143,19 @@ const PresentationTop = (props) => {
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
       <DataHeader {...drillProps} />
-      {belowMd ? null : (
-        <Divider style={{ marginBottom: Theme.spacing(3) }} />
-      )}
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <PresentationFilter {...drillProps} />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <PresentationSort {...drillProps} />
-          <PresentationData {...drillProps} />
-          <div
-            id="lazy-loader"
-            ref={lazyLoaderRef}
-            className={classes.lazyLoader}
-            style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block')  }}
-          >
-            <Typography variant="h6" className={classes.lazyLoaderTitle}>
-              Loading more data products...
-            </Typography>
-            <CircularProgress disableShrink />
-          </div>
-        </Grid>
-      </Grid>
+      <PresentationSort {...drillProps} />
+      <PresentationData {...drillProps} />
+      <div
+        id="lazy-loader"
+        ref={lazyLoaderRef}
+        className={classes.lazyLoader}
+        style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block')  }}
+      >
+        <Typography variant="h6" className={classes.lazyLoaderTitle}>
+          Loading more data products...
+        </Typography>
+        <CircularProgress disableShrink />
+      </div>
     </NeonPage>
   );
 };

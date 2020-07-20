@@ -5,29 +5,41 @@ import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
 
 import DateIcon from '@material-ui/icons/DateRange';
 import ListIcon from '@material-ui/icons/List';
-import CatalogIcon from '@material-ui/icons/DescriptionOutlined';
 import NoneIcon from '@material-ui/icons/NotInterested';
+import ClearIcon from '@material-ui/icons/Clear';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 import { downloadCatalog } from '../../util/catalogUtil';
 
 const useStyles = makeStyles(theme => ({
+  card: {
+    marginBottom: theme.spacing(3),
+    backgroundColor: theme.palette.grey[50],
+    boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.25), 0px 1px 1px rgba(0, 0, 0, 0.25)',
+  },
   divider: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(2, 0, 2.5, 0),
+  },
+  catalogContainer: {
+    marginBottom: theme.spacing(1.5),
+  },
+  sectionTitle: {
+    fontWeight: 500,
+    marginBottom: theme.spacing(1.5),
   },
   statContainer: {
     display: 'flex',
@@ -45,7 +57,7 @@ const useStyles = makeStyles(theme => ({
     fontSize: '1rem',
   },
   statLabel: {
-    fontSize: '0.95rem',
+    fontSize: '0.875rem',
   },
   downloadContainer: {
     display: 'flex',
@@ -54,50 +66,30 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     marginTop: theme.spacing(1),
   },
-  downloadIcon: {
-    color: theme.palette.grey[300],
-    marginRight: theme.spacing(0.5),
-    fontSize: '1rem',
-  },
   downloadLabel: {
-    color: theme.palette.grey[300],
+    color: theme.palette.grey[400],
     whiteSpace: 'nowrap',
-    marginRight: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'help',
+    margin: theme.spacing(0, 0.5, 0.5, 0),
   },
-  popper: {
-    '& > div': {
-      padding: theme.spacing(1, 1.5),
-      fontSize: '0.85rem',
-      fontWeight: 300,
-      backgroundColor: theme.palette.grey[800],
+  title: {
+    fontWeight: 600,
+    [theme.breakpoints.up('md')]: {
+      marginBottom: theme.spacing(2),
+      fontSize: '1.5rem',
     },
-    '& a': {
-      color: theme.palette.grey[100],
+    [theme.breakpoints.down('sm')]: {
+      marginRight: theme.spacing(1.5),
+      fontSize: '1.3rem',
     },
   },
-  paper: {
-    padding: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-    justifyContent: 'space-between',
-    alignItems: 'top',
-  },
-  summarizeH5: {
-    color: '#000000',
-    display: 'inline',
-    fontStyle: 'normal',
-    marginRight: theme.spacing(1.5),
-  },
-  summarize: {
-    color: theme.palette.grey[300],
-    fontStyle: 'italic',
+  summary: {
+    color: theme.palette.grey[400],
     fontWeight: 400,
     fontSize: '0.85rem',
     whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    marginTop: theme.spacing(1),
   },
 }));
 
@@ -115,13 +107,13 @@ const DataHeader = (props) => {
     localStorageSearch,
     catalogSummaryVisible,
     onToggleCatalogSummaryVisibility,
+    neonContextState,
   } = props;
 
-  const visibleBreakpoint = useMediaQuery('(min-width:960px)');
-  const visible = catalogSummaryVisible || visibleBreakpoint;
+  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const visible = catalogSummaryVisible || !belowMd;
 
-  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  const { states: statesJSON = {} } = neonContextData;
+  const { states: statesJSON = {} } = neonContextState.data;
 
   const handleDownload = (ext, filtered) => {
     if (!filtered) {
@@ -174,22 +166,25 @@ const DataHeader = (props) => {
 
   const selenium = 'browse-data-products-page.data-header';
 
-  const baseTooltip = 'Download a CSV, JSON, or PDF file containing catalog data (product name, description, url, etc.--no science data)';
-  const tooltips = {
-    all: `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`,
-    filtered: `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`,
+  const getTooltip = (format, filtered) => {
+    const baseTooltip = `Download a ${format} file containing catalog data (product name, description, url, etc.--no science data)`;
+    return filtered
+      ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`
+      : `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
   };
 
   let catalogSummaryContents = (
-    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
+    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
       <Grid item xs={12} sm={6}>
-        <div>
-          <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>All Products</Typography>
+        <div className={classes.catalogContainer}>
+          <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+            All Products
+          </Typography>
           <div className={classes.statContainer}>
             <div className={classes.stat}>
               <ListIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.total-stats.products-and-sites`}
               >
@@ -202,7 +197,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
             <div className={classes.stat}>
               <DateIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.total-stats.dates-available`}
               >
@@ -211,37 +206,58 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
             </div>
           </div>
           <div className={classes.downloadContainer}>
-            <Tooltip title={tooltips.all} PopperProps={{ className: classes.popper }}>
-              <div className={classes.downloadLabel} aria-label={tooltips.all}>
-                <CatalogIcon className={classes.downloadIcon} />
-                <Typography variant="button">
-                  Download Full Catalog
-                </Typography>
-              </div>
-            </Tooltip>
+            <Typography variant="caption" className={classes.downloadLabel}>
+              Download Full Catalog:
+            </Typography>
             <ButtonGroup
               size="small"
               color="primary"
               variant="text"
               aria-label="download full catalog (all products)"
-              >
-              <Button {...gtmProps('csv', false)} onClick={() => { handleDownload('csv', false); }}>CSV</Button>
-              <Button {...gtmProps('json', false)} onClick={() => { handleDownload('json', false); }}>JSON</Button>
-              <Button {...gtmProps('pdf', false)} onClick={() => { handleDownload('pdf', false); }}>PDF</Button>
+            >
+              <Tooltip title={getTooltip('CSV', false)}>
+                <Button
+                  {...gtmProps('csv', false)}
+                  onClick={() => { handleDownload('csv', false); }}
+                  aria-label="Download Full Catalog CSV"
+                >
+                  CSV
+                </Button>
+              </Tooltip>
+              <Tooltip title={getTooltip('JSON', false)}>
+                <Button
+                  {...gtmProps('json', false)}
+                  onClick={() => { handleDownload('json', false); }}
+                  aria-label="Download Full Catalog JSON"
+                >
+                  JSON
+                </Button>
+              </Tooltip>
+              <Tooltip title={getTooltip('PDF', false)}>
+                <Button
+                  {...gtmProps('pdf', false)}
+                  onClick={() => { handleDownload('pdf', false); }}
+                  aria-label="Download Full Catalog PDF"
+                >
+                  PDF
+                </Button>
+              </Tooltip>
             </ButtonGroup>
           </div>
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <div style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
-          <Typography variant={visibleBreakpoint ? 'h5' : 'h6'} gutterBottom>Filtered Products</Typography>
+        <div className={classes.catalogContainer} style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
+          <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+            Filtered Products
+          </Typography>
           {filtersApplied.length ? (
             <React.Fragment>
               <div className={classes.statContainer}>
                 <div className={classes.stat}>
                   <ListIcon className={classes.statIcon} />
                   <Typography
-                    variant="subtitle2"
+                    variant="subtitle1"
                     className={classes.statLabel}
                     data-selenium={`${selenium}.filtered-stats.products-and-sites`}
                   >
@@ -258,7 +274,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                     <NoneIcon className={classes.statIcon} />
                   )}
                   <Typography
-                    variant="subtitle2"
+                    variant="subtitle1"
                     className={classes.statLabel}
                     data-selenium={`${selenium}.filtered-stats.dates-available`}
                   >
@@ -267,14 +283,9 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                 </div>
               </div>
               <div className={classes.downloadContainer}>
-                <Tooltip title={tooltips.filtered} PopperProps={{ className: classes.popper }}>
-                  <div className={classes.downloadLabel} aria-label={tooltips.filtered}>
-                    <CatalogIcon className={classes.downloadIcon} />
-                    <Typography variant="button">
-                      Download Filtered Catalog
-                    </Typography>
-                  </div>
-                </Tooltip>
+                <Typography variant="caption" className={classes.downloadLabel}>
+                  Download Filtered Catalog:
+                </Typography>
                 <ButtonGroup
                   size="small"
                   color="primary"
@@ -282,9 +293,33 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                   aria-label="download catalog containing only filtered products"
                   disabled={!filtersApplied.length}
                 >
-                  <Button {...gtmProps('csv', true)} onClick={() => { handleDownload('csv', true); }}>CSV</Button>
-                  <Button {...gtmProps('json', true)} onClick={() => { handleDownload('json', true); }}>JSON</Button>
-                  <Button {...gtmProps('pdf', true)} onClick={() => { handleDownload('pdf', true); }}>PDF</Button>
+                  <Tooltip title={getTooltip('CSV', true)}>
+                    <Button
+                      {...gtmProps('csv', true)}
+                      onClick={() => { handleDownload('csv', true); }}
+                      aria-label="Download Filtered Catalog CSV"
+                    >
+                      CSV
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={getTooltip('JSON', true)}>
+                    <Button
+                      {...gtmProps('json', true)}
+                      onClick={() => { handleDownload('json', true); }}
+                      aria-label="Download Filtered Catalog JSON"
+                    >
+                      JSON
+                    </Button>
+                  </Tooltip>
+                  <Tooltip title={getTooltip('PDF', true)}>
+                    <Button
+                      {...gtmProps('pdf', true)}
+                      onClick={() => { handleDownload('pdf', true); }}
+                      aria-label="Download Filtered Catalog PDF"
+                    >
+                      PDF
+                    </Button>
+                  </Tooltip>
                 </ButtonGroup>
               </div>
             </React.Fragment>
@@ -292,7 +327,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             <div className={classes.statContainer}>
               <NoneIcon className={classes.statIcon} />
               <Typography
-                variant="subtitle2"
+                variant="subtitle1"
                 className={classes.statLabel}
                 data-selenium={`${selenium}.filterfiltered-stats.products-and-sites`}
               >
@@ -309,50 +344,55 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
     catalogSummaryContents = (
       <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h5" gutterBottom>All Products</Typography>
-          <Skeleton width="80%" height={12} style={{ margin: Theme.spacing(2, 0, 2, 0) }} />
-          <Skeleton width="60%" height={12} style={{ margin: Theme.spacing(3, 0, 2, 0) }} />
+          <div className={classes.catalogContainer}>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>All Products</Typography>
+            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+          </div>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography variant="h5" style={{ opacity: 0.5 }} gutterBottom>Filtered Products</Typography>
-          <Skeleton width="60%" height={12} style={{ margin: Theme.spacing(2, 0, 2, 0) }} />
+          <div className={classes.catalogContainer}>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>Filtered Products</Typography>
+            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+          </div>
         </Grid>
       </Grid>
     );
   }
 
-  if (!visibleBreakpoint) {
-    let summarize = `${stats.products.total} total products`;
+  if (belowMd) {
+    let summary = `${stats.products.total} total products`;
     if (filtersApplied.length) {
-      summarize = `${summarize}, ${stats.products.filtered} filtered`;
+      summary = `${summary}, ${stats.products.filtered} filtered`;
     }
     return (
-      <Paper
-        className={classes.paper}
-        data-selenium="browse-data-products-page.catalog-summary"
-      >
-        <Grid container>
-          <Grid item xs={9} sm={9}>
-            <div className={classes.summarize}>
-              <Typography variant="h5" className={classes.summarizeH5}>
-                Summary
-              </Typography>
-              {summarize}
+      <Card className={classes.card}>
+        <CardContent data-selenium="browse-data-products-page.catalog-summary">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ flex: 1 }}>
+              <Typography variant="h4" component="h2" className={classes.title}>Summary</Typography>
+              <div className={classes.summary}>
+                {summary}
+              </div>
             </div>
-          </Grid>
-          <Grid item xs={3} sm={3} style={{ textAlign: "right" }}>
-            <Tooltip title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}>
-              <IconButton size="small" onClick={onToggleCatalogSummaryVisibility}>
-                <ListIcon />
+            <Tooltip
+              placement="left"
+              title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
+            >
+              <IconButton onClick={onToggleCatalogSummaryVisibility}>
+                {catalogSummaryVisible ? <ClearIcon /> : <ListIcon />}
               </IconButton>
             </Tooltip>
-          </Grid>
-        </Grid>
-        <Collapse in={visible}>
-          <Divider className={classes.divider} />
-          {catalogSummaryContents}
-        </Collapse>
-      </Paper>
+          </div>
+          <Collapse in={visible}>
+            <Divider className={classes.divider} />
+            {catalogSummaryContents}
+          </Collapse>
+        </CardContent>
+      </Card>
     );
   }
 

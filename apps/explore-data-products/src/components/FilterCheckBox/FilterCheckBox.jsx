@@ -1,14 +1,46 @@
 import React from 'react';
 
+import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+const useStyles = makeStyles(theme => ({
+  formControl: {
+    width: `calc(100% + ${theme.spacing(2)}px)`,
+    marginLeft: theme.spacing(-2),
+    marginRight: 'unset',
+    marginBottom: theme.spacing(1),
+    '& > span.MuiFormControlLabel-label': {
+      width: '100%',
+    }
+  },
+  countLabel: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',    
+  },
+  chip: {
+    cursor: 'pointer',
+    color: theme.palette.grey[700],
+    fontSize: '0.7rem',
+  },
+  title: {
+    fontSize: '0.85rem',
+  },
+  subtitle: {
+    fontSize: '0.725rem',
+    color: theme.palette.grey[300],
+  },
+}));
+
+
 const FilterCheckBox = (props) => {
+  const classes = useStyles(Theme);
   const {
     name,
     value,
@@ -34,24 +66,11 @@ const FilterCheckBox = (props) => {
     return onApplyFilter(filterKey, uniqueFilterValue);
   };
 
-  const chipContainerStyle = {
-    height: '100%',
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  };
-
-  const subtitleStyle = {
-    fontSize: '0.725rem',
-    color: Theme.palette.grey[300],
-  };
-
   const label = (
     <React.Fragment>
-      {name}
+      <span className={classes.title}>{name}</span>
       {showSubtitle ? (
-        <Typography variant="body2" style={subtitleStyle}>
+        <Typography variant="body2" className={classes.subtitle}>
           {subtitle}
         </Typography>
       ) : null}
@@ -59,36 +78,30 @@ const FilterCheckBox = (props) => {
   );
 
   return (
-    <Grid container style={{ marginBottom: Theme.spacing(showSubtitle ? 1 : 0) }}>
-      <Grid item xs={showCount ? 10 : 12}>
-        <FormControlLabel
-          label={label}
-          control={
-            <Checkbox
-              style={{ padding: Theme.spacing(0.5) }}
-              color="primary"
-              checked={checked}
-              onChange={() => onChange(value, !checked)}
-            />
-          }
-        />
-      </Grid>
-      {showCount ? (
-        <Grid item xs={2}>
-          <div
-            style={chipContainerStyle}
-            title={countTitle ? countTitle.replace('{n}', count) : null}
-          >
+    <FormControlLabel
+      className={classes.formControl}
+      label={(
+        showCount ? (
+          <div className={classes.countLabel}>
+            <div>{label}</div>
             <Chip
-              style={{ color: Theme.palette.grey[900] }}
+              className={classes.chip}
               variant="outlined"
               size="small"
               label={count}
-              />
+              title={countTitle ? countTitle.replace('{n}', count) : null}
+            />
           </div>
-        </Grid>
-      ) : null}
-    </Grid>
+        ) : label
+      )}
+      control={
+        <Checkbox
+          color="primary"
+          checked={checked}
+          onChange={() => onChange(value, !checked)}
+        />
+      }
+    />
   );
 };
 

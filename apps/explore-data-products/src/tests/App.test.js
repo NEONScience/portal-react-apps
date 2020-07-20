@@ -7,7 +7,7 @@ import { getState } from "../store/state";
 
 // Modify app fetch state to render main UI from default state
 let state = getState();
-state.appFetchState = FetchStateType.FULLFILLED;
+state.appFetchState = FetchStateType.COMPLETE;
 
 global.it('renders without crashing', () => {
   const div = document.createElement('div');

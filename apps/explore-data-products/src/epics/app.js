@@ -7,8 +7,8 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 
 import {
-	FETCH_APP_STATE,
-  fetchAppStateFullfilled,
+  FETCH_APP_STATE,
+  fetchAppStateComplete,
   fetchAppStateFailed,
   fetchAppStateWorking
 } from "../actions/actions";
@@ -77,7 +77,7 @@ const buildObservable = (ajax) => {
       if (NeonEnvironment.showAopViewer && response[requestMap.aopProducts] && response[requestMap.aopProducts].response) {
         aopProductsData = response[requestMap.aopProducts].response.data || [];
       }
-      return of(fetchAppStateFullfilled(productsData, aopProductsData));
+      return of(fetchAppStateComplete(productsData, aopProductsData));
     }),
     catchError(error => {
       let message = error.xhr ? error.xhr.response : null;

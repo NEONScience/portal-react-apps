@@ -15,12 +15,14 @@ import {
   expandProductDescription,
   incrementScrollCutoff,
   changeActiveDataVisualization,
+  changeNeonContextState,
 } from "../../actions/actions";
 
 // Bind state to properties
 const mapStateToProps = (state, ownProps) => ({
   // State props
   appFetchState: state.appFetchState,
+  appBuildState: state.appBuildState,
   products: state.products,
   productOrder: state.productOrder,
   productVisibility: state.productVisibility,
@@ -41,7 +43,7 @@ const mapStateToProps = (state, ownProps) => ({
   allKeywordsByLetter: state.allKeywordsByLetter,
   totalKeywords: state.totalKeywords,
   aopViewerProducts: state.aopViewerProducts,
-  neonContextData: state.neonContextData,
+  neonContextState: state.neonContextState,
   activeDataVisualization: state.activeDataVisualization,
   // Own props
   highestOrderDownloadSubject: ownProps.highestOrderDownloadSubject,
@@ -90,6 +92,9 @@ const mapDispatchToProps = dispatch => ({
   },
   onChangeActiveDataVisualization: (component = null, productCode = null) => {
     dispatch(changeActiveDataVisualization(component, productCode));
+  },
+  onChangeNeonContextState: (neonContextState) => {
+    dispatch(changeNeonContextState(neonContextState));
   },
 });
 

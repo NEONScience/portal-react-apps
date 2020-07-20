@@ -1,7 +1,9 @@
 export const FETCH_APP_STATE = 'FETCH_APP_STATE';
 export const FETCH_APP_STATE_WORKING = 'FETCH_APP_STATE_WORKING';
-export const FETCH_APP_STATE_FULLFILLED = 'FETCH_APP_STATE_FULLFILLED';
+export const FETCH_APP_STATE_COMPLETE = 'FETCH_APP_STATE_COMPLETE';
 export const FETCH_APP_STATE_FAILED = 'FETCH_APP_STATE_FAILED';
+
+export const CHANGE_NEON_CONTEXT_STATE = 'CHANGE_NEON_CONTEXT_STATE';
 
 export const APPLY_SORT = 'APPLY_SORT';
 export const APPLY_FILTER = 'APPLY_FILTER';
@@ -23,11 +25,19 @@ export const CHANGE_ACTIVE_DATA_VISUALIZATION = 'CHANGE_ACTIVE_DATA_VISUALIZATIO
 export const INCREMENT_SCROLL_CUTOFF = 'INCREMENT_SCROLL_CUTOFF';
 
 /**
- * Fetch state type definitions
+ * Initial Setup Definitions
+ * FetchStateType - progress types for fetching app data
+ * BuildStateType - progress types for building app data from fetch and neonContext
  */
 export const FetchStateType = {
   WORKING: 'WORKING',
-  FULLFILLED: 'FULLFILLED',
+  COMPLETE: 'COMPLETE',
+  FAILED: 'FAILED',
+};
+export const BuildStateType = {
+  AWAITING_DATA: 'AWAITING_DATA',
+  WORKING: 'WORKING',
+  COMPLETE: 'COMPLETE',
   FAILED: 'FAILED',
 };
 
@@ -42,8 +52,8 @@ export const fetchAppStateWorking = () => ({
   type: FETCH_APP_STATE_WORKING,
 });
 
-export const fetchAppStateFullfilled = (products, aopViewerProducts) => ({
-  type: FETCH_APP_STATE_FULLFILLED,
+export const fetchAppStateComplete = (products, aopViewerProducts) => ({
+  type: FETCH_APP_STATE_COMPLETE,
   products,
   aopViewerProducts,
 });
@@ -132,4 +142,12 @@ export const changeActiveDataVisualization = (component = null, productCode = nu
   type: CHANGE_ACTIVE_DATA_VISUALIZATION,
   component,
   productCode,
+});
+
+/**
+   Neon Context Actions
+*/
+export const changeNeonContextState = (neonContextState) => ({
+  type: CHANGE_NEON_CONTEXT_STATE,
+  neonContextState,
 });

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import NeonAuthRoot from 'portal-core-components/lib/components/NeonAuthRoot';
 
 import { AppStatuses } from './actions';
@@ -8,34 +8,30 @@ import DataProductPage from './components/DataProductPage';
 
 export default function App() {
   const { state, actions } = React.useContext(StoreContext);
-
-  let loading = 'Loading data product...';
-  let error = null;
+  const { appStatus, productCodeToFetch, bundleParentCodeToFetch } = state;
 
   // Trigger actions from particular app statuses
-  switch (state.appStatus) {
-    case null:
+  useEffect(() => {
+    if (appStatus === null) {
       actions.initialize();
-      break;
+    } else if (appStatus === AppStatuses.READY_TO_FETCH) {
+      actions.fetchProductData(productCodeToFetch, bundleParentCodeToFetch);
+    }
+  }, [
+    appStatus,
+    productCodeToFetch,
+    bundleParentCodeToFetch,
+    actions,
+  ]);
 
-    case AppStatuses.READY_TO_FETCH:
-      actions.fetchProductData(state.productCodeToFetch, state.bundleParentCodeToFetch);
-      break;
+  let loading = null;
+  let error = null;
 
-    case AppStatuses.FETCH_SUCCESS:
-      loading = null;
-      break;
-
-    case AppStatuses.FETCH_ERROR:
-      if (state.error) {
-        error = `Error loading data product: ${state.error}`;
-      } else {
-        error = 'Data product not found';
-      }
-      break;
-
-    default:
-      break;
+  if (appStatus !== AppStatuses.FETCH_SUCCESS) {
+    loading = 'Loading data product...';
+  }
+  if (appStatus === AppStatuses.FETCH_ERROR) {
+    error = state.error ? `Error loading data product: ${state.error}` : 'Data product not found';
   }
 
   return (

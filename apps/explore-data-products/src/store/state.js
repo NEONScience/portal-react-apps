@@ -2,7 +2,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 
-import { FetchStateType } from "../actions/actions";
+import { FetchStateType, BuildStateType } from "../actions/actions";
 import {
   INITIAL_FILTER_VALUES,
   INITIAL_FILTER_ITEMS,
@@ -19,12 +19,29 @@ const getSearchURLParam = () => {
 
 const getSitesURLParams = () => {
   const matches = window.location.search.matchAll(/[?&]site=([A-Z]{4})/g);
-  return [...matches].map(match => match[1]);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
 };
 
-const state = {
+const getStatesURLParams = () => {
+  const matches = window.location.search.matchAll(/[?&]state=([A-Z]{2})/g);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
+};
+
+const getDomainsURLParams = () => {
+  const matches = window.location.search.matchAll(/[?&]domain=(D[\d]{2})/g);
+  return Array.from(
+    new Set([...matches].map(match => match[1])),
+  );
+};
+
+const DEFAULT_STATE = {
   appFetchState: FetchStateType.WORKING,
-  neonContextState: NeonContext.DEFAULT_STATE,
+  appBuildState: BuildStateType.AWAITING_DATA,
+  neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 
   // Unparsed values sniffed from URL params to seed initial filter values
   // This is here primarily for backward-compatibility with legacy portal pages.
@@ -34,6 +51,8 @@ const state = {
   urlParams: {
     search: getSearchURLParam(),
     sites: getSitesURLParams(),
+    states: getStatesURLParams(),
+    domains: getDomainsURLParams(),
   },
 
   // Unparsed search input value sniffed from local storage
@@ -81,9 +100,7 @@ const state = {
 /**
  * Gets a clone of the initial state definition
  */
-export const getState = (neonContextData = null) => {
-  const newState = cloneDeep(state);
-  if (neonContextData) { newState.neonContextData = neonContextData; }
-  return newState;
-}
+export const getState = () => cloneDeep(DEFAULT_STATE);
+
+
 

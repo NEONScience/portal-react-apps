@@ -23,6 +23,7 @@ const PresentationData = (props) => {
     onExpandProductDescription,
     onChangeActiveDataVisualization,
     highestOrderDownloadSubject,
+    neonContextState,
   } = props;
 
   const skeleton = [FetchStateType.WORKING, FetchStateType.FAILED].includes(appFetchState);
@@ -110,6 +111,7 @@ const PresentationData = (props) => {
           onExpandProductDescription={onExpandProductDescription}
           onChangeActiveDataVisualization={onChangeActiveDataVisualization}
           highestOrderDownloadSubject={highestOrderDownloadSubject}
+          neonContextState={neonContextState}
         />
       ))}
     </div>

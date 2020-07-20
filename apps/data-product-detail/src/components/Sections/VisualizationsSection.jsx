@@ -12,10 +12,13 @@ import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 
+import Typography from '@material-ui/core/Typography';
+
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
+import Theme from 'portal-core-components/lib/components/Theme';
 
 import { StoreContext } from '../../Store';
 import Section from './Section';
@@ -24,7 +27,6 @@ const viz = {};
 
 const VisualizationsSection = (props) => {
   const { state } = useContext(StoreContext);
-  const { setVisible } = props;
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
@@ -47,9 +49,8 @@ const VisualizationsSection = (props) => {
         node: <TimeSeriesViewer key="timeSeriesViewer" productCode={state.product.productCode} />,
       };
       setHasViz(true);
-      setVisible(true);
     }
-  }, [state, timeSeriesProductCodes, setHasViz, setVisible]);
+  }, [state, timeSeriesProductCodes, setHasViz]);
 
   /**
      Effect: conditionally fetch streamable AOP products to add AOP Data Viewer
@@ -66,11 +67,10 @@ const VisualizationsSection = (props) => {
             node: <AopDataViewer key="aopDataViewer" productCode={state.product.productCode} />,
           };
           setHasViz(true);
-          setVisible(true);
         }
       }),
       catchError(() => of('Unable to query for streamable products')),
-    ).subscribe(), [state, setVisible]);
+    ).subscribe(), [state]);
   useEffect(() => {
     if (isAOP && NeonEnvironment.showAopViewer && !fetchAopCalled) {
       handleFetchAop();
@@ -78,11 +78,15 @@ const VisualizationsSection = (props) => {
     }
   }, [state, isAOP, fetchAopCalled, handleFetchAop]);
 
-  if (!hasViz) { return null; }
-
   return (
     <Section {...props}>
-      {Object.keys(viz).map(k => viz[k].node)}
+      {hasViz ? (
+        Object.keys(viz).map(k => viz[k].node)
+      ) : (
+        <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
+          This product does not currently have any visualizations.
+        </Typography>
+      )}
     </Section>
   );
 };

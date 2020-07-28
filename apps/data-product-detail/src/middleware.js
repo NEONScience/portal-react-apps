@@ -10,7 +10,10 @@ import {
   fetchProductDataFailed,
 } from './actions';
 
-export const getProductCode = () => window.location.pathname.split('/').pop() || '';
+export const getProductCode = () => {
+  const parse = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})/g.exec(window.location.pathname);
+  return parse === null ? null : parse[1];
+};
 
 const buildFetchObservable = (productCode, bundleParentCode = null) => {
   const getAJAX = code => NeonApi.getProductObservable(code);

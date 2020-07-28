@@ -76,6 +76,7 @@ const AvailabilitySection = (props) => {
   }, [null, null]);
 
   const availableSites = (productData.siteCodes || []).length;
+  const availableSiteCodes = (productData.siteCodes || []).map(site => site.siteCode);
   const availableDates = useMemo(computeAvailableDateRange, [productData.siteCodes]);
   const availableDatesFormatted = availableDates
     .map(month => moment(`${month}-02`).format('MMMM YYYY'));
@@ -114,7 +115,14 @@ const AvailabilitySection = (props) => {
   return (
     <Section {...props}>
       {!fromManifest && !fromAOPManifest && fromExternalHost ? (
-        <DownloadStepForm stepKey={requiredSteps[0].key} />
+        <React.Fragment>
+          {!dataAvailable ? null : (
+            <div style={{ marginBottom: Theme.spacing(4) }}>
+              <DataProductAvailability view="ungrouped" disableSelection />
+            </div>
+          )}
+          <DownloadStepForm stepKey={requiredSteps[0].key} />
+        </React.Fragment>
       ) : (
         <React.Fragment>
           {dataAvailable ? (
@@ -145,6 +153,7 @@ const AvailabilitySection = (props) => {
           {!productData.productCode ? null : (
             <ExternalHostInfo
               productCode={productData.productCode}
+              siteCodes={availableSiteCodes}
               style={{ marginTop: Theme.spacing(4) }}
               data-selenium="data-product-page.section.availability.external-host-info"
             />

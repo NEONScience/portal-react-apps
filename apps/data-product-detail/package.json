@@ -1,6 +1,6 @@
 {
   "name": "portal-data-products",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "homepage": "http://localhost/data-products/",
   "dependencies": {
@@ -14,7 +14,7 @@
     "markdown-to-jsx": "^6.10.3",
     "material-table": "^1.40.0",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.4.1",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.4.3",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-copy-to-clipboard": "^5.0.1",

@@ -17,7 +17,7 @@
     "jspdf": "^1.5.3",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.4.3",
+    "portal-core-components": "github:NEONScience/portal-core-components#sso-auth",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",

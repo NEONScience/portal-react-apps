@@ -11,18 +11,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 const useStyles = makeStyles(theme => ({
   tooltip: {
-    marginLeft: theme.spacing(0.25),
-  },
-  popper: {
-    '& > div': {
-      padding: theme.spacing(1, 1.5),
-      fontSize: '0.85rem',
-      fontWeight: 300,
-      backgroundColor: theme.palette.grey[800],
-    },
-    '& a': {
-      color: theme.palette.grey[100],
-    },
+    marginLeft: theme.spacing(0.5),
   },
   iconButton: {
     marginTop: theme.spacing(-0.25),
@@ -37,11 +26,10 @@ const DetailTooltip = (props) => {
       placement="right"
       title={tooltip}
       className={classes.tooltip}
-      PopperProps={{ className: classes.popper }}
       interactive
     >
       <IconButton size="small" className={classes.iconButton} aria-label={tooltip}>
-        <InfoIcon fontSize="inherit" />
+        <InfoIcon fontSize="small" />
       </IconButton>
     </Tooltip>
   );

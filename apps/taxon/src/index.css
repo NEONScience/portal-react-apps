@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 14px !important;
+}
+
+.neon-menu__header-container .rc-menu .rc-menu-item svg.MuiSvgIcon-root,
+.neon-menu__container .MuiButtonBase-root.MuiIconButton-root svg.MuiSvgIcon-root,
+div.MuiDrawer-root nav.MuiList-root .MuiListItemIcon-root svg.MuiSvgIcon-root {
+  font-size: 24px !important;
+}
+div.MuiDrawer-root nav.MuiList-root .MuiListItemText-root span.MuiTypography-root {
+  font-size: 16px !important;
+}
+
+.neon-menu__container .neon-menu__auth {
+  font-size: 10px !important;
+}
+
+.App nav ol li svg {
+  font-size: 18px;
+}

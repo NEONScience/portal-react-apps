@@ -1,0 +1,18 @@
+.App .hidden-element {
+  display: none;
+}
+
+.MuiButton-root {
+  font-size: inherit !important;
+}
+.MuiTypography-root {
+  font-size: inherit !important;
+}
+header.MuiAppBar-root .MuiTabs-root a.MuiButtonBase-root.MuiTab-root span.MuiTab-wrapper {
+  font-size: 1.8rem;
+}
+@media (max-width: 959.95px) {
+  header.MuiAppBar-root .MuiTabs-root a.MuiButtonBase-root.MuiTab-root span.MuiTab-wrapper{
+    font-size: 1.3rem;
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "taxon",
+  "version": "1.0.0",
+  "private": true,
+  "homepage": "http://localhost/taxon/",
+  "dependencies": {
+    "@material-ui/core": "4.8.3",
+    "@material-ui/icons": "4.5.1",
+    "bootstrap": "3.3.7",
+    "core-js": "^3.6.5",
+    "datatables.net": "^1.10.21",
+    "datatables.net-bs": "^1.10.21",
+    "datatables.net-responsive": "^2.2.5",
+    "datatables.net-responsive-bs": "^2.2.5",
+    "jquery": "^3.5.1",
+    "lodash": "^4.17.19",
+    "portal-core-components": "github:NEONScience/portal-core-components#sso-auth",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-dom-factories": "^1.0.2",
+    "react-fontawesome": "^1.7.1",
+    "react-redux": "^7.2.1",
+    "react-scripts": "^3.4.3",
+    "react-select": "^3.1.0",
+    "redux": "^4.0.5",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "whatwg-fetch": "^3.4.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "eslint-plugin-react": "^7.12.4"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 10",
+    "not op_mini all"
+  ]
+}

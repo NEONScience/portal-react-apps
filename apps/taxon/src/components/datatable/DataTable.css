@@ -1,0 +1,158 @@
+@media (max-width: 768px) {
+    .App div.taxon-data-table .col-sm-5 {
+        width: 41.66666667%;
+        float: left;
+    }
+    .App div.taxon-data-table .col-sm-6 {
+        width: 50%;
+        float: left;
+    }
+
+    .App div.taxon-data-table .col-sm-7 {
+        width: 58.33333333%;
+        float: left;
+    }
+}
+
+@media (max-width: 767px) {
+    .App div.taxon-data-table div.dataTables_wrapper div.dataTables_paginate {
+        text-align: right;
+    }
+    .App div.taxon-data-table div.dataTables_wrapper div.dataTables_length,
+    .App div.taxon-data-table div.dataTables_wrapper div.dataTables_info {
+        text-align: left;
+    }
+}
+
+.App div.dataTables_wrapper div.datatable-row-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    max-width: 100%;
+}
+
+.App div.taxon-data-table .col-sm-6.page-length-container {
+    width: 30%;
+    float: left;
+}
+
+/*
+.App div.dataTables_wrapper table tbody td {
+    word-break: break-word;
+}
+*/
+
+.App div.dataTables_wrapper label.label-no-data {
+    color: #aaaaaa;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.App div.dataTables_wrapper div.dataTables_processing {
+    position: absolute;
+    top: 65px;
+    left: 50%;
+    width: 200px;
+    margin-left: -100px;
+    margin-top: -26px;
+    text-align: center;
+    padding: 1.5em;
+}
+
+.App div.dataTables_wrapper div.page-length-container {
+    float: left;
+}
+
+.App div.dataTables_wrapper .pagination > li > a, .pagination > li > span {
+    color: #0073cf;
+    /*color: rgb(0, 61, 121);*/
+}
+.App div.dataTables_wrapper .pagination > .active > a, .pagination > .active > span,
+    .pagination > .active > a:hover, .pagination > .active > span:hover,
+    .pagination > .active > a:focus, .pagination > .active > span:focus {
+    color: #fff;
+    border-color: #ddd;
+    background-color: #0073cf;
+    /*background-color: rgb(0, 61, 121);*/
+}
+.App div.dataTables_wrapper .pagination > .active > a, .pagination > .active > span,
+    .pagination > .active > a:hover, .pagination > .active > span:hover,
+    .pagination > .active > a:focus, .pagination > .active > span:focus {
+    color: #fff;
+    border-color: #ddd;
+    background-color: #0073cf;
+    /*background-color: rgb(0, 61, 121);*/
+}
+
+.App div.dataTables_wrapper div.dataTables_filter {
+    float: left;
+    width: 100%;
+}
+
+.App div.dataTables_wrapper div.dataTables_filter label {
+    font-weight: normal;
+    white-space: nowrap;
+    text-align: left;
+    width: 100%;
+}
+
+.App div.dataTables_wrapper div.dataTables_filter input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: 315px;
+}
+
+.App div.dataTables_wrapper div.col-sm-6.toggle-columns {
+    float: right;
+    width: 458px;
+}
+
+.App div.dataTables_wrapper i.show-toggle-columns {
+    margin-left: 10px;
+    color: #0073cf;
+    /*color: rgb(0, 61, 121);*/
+    vertical-align: middle;
+}
+.App div.dataTables_wrapper label.show-toggle-columns-label {
+    float: right;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    margin-right: 20px;
+    font-weight: normal;
+}
+.App div.dataTables_wrapper i.show-toggle-columns:hover {
+    cursor: pointer;
+}
+.App div.dataTables_wrapper button.btn-reset-filters {
+    float: right;
+    color: #0073cf;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.App div.dataTables_wrapper button.btn-reset-filters:hover {
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+.App table.table-display-columns td label.display-columns-label {
+    font-weight: normal;
+    margin-left: 5px;
+    word-break: break-word;
+    font-size: 14px;
+    width: 170px;
+}
+
+.App table.dataTable input[type="filter"] {
+    width: 100%;
+    height: 26px;
+    padding: 2px 2px;
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 1.5;
+    border-radius: 3px;
+    margin-top: 6px;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+}

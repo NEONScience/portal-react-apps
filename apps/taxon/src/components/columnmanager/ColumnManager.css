@@ -1,0 +1,70 @@
+.App div.well {
+    /*background-color: #f9f9f9;*/
+  background-color: #ffffff;
+}
+
+.App div.display-columns-container h4 {
+  font-weight: bold;
+  display: inline-block;
+}
+.App div.display-columns-container i.display-columns-close:hover {
+  cursor: pointer;
+}
+
+.App div.display-columns-container button.display-columns-reset-btn {
+  color: #0073cf;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-bottom: 2px;
+}
+.App div.display-columns-container button.display-columns-reset-btn:hover {
+  background-color: #eee;
+  border-color: #ddd;
+}
+
+.App div.display-columns-container div.display-columns-close-container {
+  float: right;
+  margin-top: 10px;
+}
+
+.App div.display-columns-container div.table-display-columns-container {
+  display: inline-block;
+  width: 25%;
+  vertical-align: top;
+}
+
+.App div.display-columns-container div.table-display-columns-container label.table-header-label {
+  display: block;
+  height: 20px;
+}
+
+.App div.display-columns-container div.table-display-columns-container table.table-display-columns {
+  display: inline-block;
+  border: none;
+  margin-bottom: 0;
+}
+
+.App div.display-columns-container table.table-display-columns td {
+  border: none;
+  width: 20%;
+  padding: 0px;
+}
+.App div.display-columns-container table.table-display-columns td label.display-columns-label {
+  font-weight: normal;
+  margin-left: 5px;
+  word-break: break-word;
+  font-size: 14px;
+  width: 170px;
+}
+
+.App div.display-columns-container .column-checkbox-container input[type="checkbox"] {
+  vertical-align: top;
+  cursor: pointer;
+}
+.App div.display-columns-container .column-checkbox-container label {
+  font-weight: normal;
+  cursor: pointer;
+  margin-left: 5px;
+}

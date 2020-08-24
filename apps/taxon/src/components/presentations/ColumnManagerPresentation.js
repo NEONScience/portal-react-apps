@@ -3,14 +3,14 @@ import ColumnManager from "../columnmanager/ColumnManager";
 
 class ColumnManagerPresentation extends Component {
   render() {
-    let containerClassName = "";
+    const containerStyle = {};
 
     if (!this.props.columnManagerVisible) {
-      containerClassName += " hidden-element";
+      containerStyle.display = 'none';
     }
 
     return (
-      <div className={containerClassName}>
+      <div style={containerStyle}>
         <ColumnManager
           columnManagerVisible={this.props.columnManagerVisible}
           columns={this.props.columns}

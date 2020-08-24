@@ -4,8 +4,9 @@ import {
 } from "redux";
 //import thunk from "redux-thunk";
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+
 import dataApp from "../reducers/reducer";
-import { isDevEnv } from "../api/environment";
 import { getTaxonApiPath } from "../api/taxon";
 import { DEFAULT_TAXON_TYPE } from "../api/taxonTypes";
 import { getColumns } from "../api/dataTableColumns";
@@ -24,7 +25,7 @@ let dataStore = {
 
 //let middlewares = [ thunk ];
 let middlewares = [];
-if (isDevEnv()) {
+if (NeonEnvironment.isDevEnv) {
   const { logger } = require("redux-logger");
   middlewares.push(logger);
 }

@@ -87,13 +87,14 @@ class ColumnManager extends Component {
   }
 
   render() {
-    let containerClassName = "well display-columns-container";
+    const containerClassName = "well display-columns-container";
+    const containerStyle = {};
     if (!this.props.columnManagerVisible) {
-      containerClassName += " hidden-element";
+      containerStyle.display = 'none';
     }
 
     return (
-      <div className={containerClassName}>
+        <div className={containerClassName} style={containerStyle}>
         <h4>Display Columns</h4>
         <button className="btn display-columns-reset-btn"
           onClick={() => {this.handleSetColumns()}}

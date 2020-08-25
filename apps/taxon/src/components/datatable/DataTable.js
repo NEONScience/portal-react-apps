@@ -146,22 +146,30 @@ class DataTable extends Component {
 
     this.debounceSearch();
 
+    /*
     $("div.toggle-columns").prepend(
       "<label class=\"show-toggle-columns-label\">Display Columns:" +
           "<i id=\"showDisplayColumns\" class=\"fa fa-2x fa-columns show-toggle-columns\" ></i>" +
       "</label>"
     );
+    */
 
-    //$("div.toggle-columns").prepend(
-    //  "<button id=\"showDisplayColumns\" class=\"btn btn-show-display-columns\">Columns</label>"
-    //);
+    $("div.toggle-columns").prepend(
+      "<button id=\"showDisplayColumns\" class=\"btn btn-show-display-columns\">" +
+        "<span>Table Columns</span>" +
+        "<i class=\"fa fa-columns\"></i>" +
+      "</button>"
+    );
 
     $("#showDisplayColumns").on("click", function () {
       that.handleToggleColumnManagerVisibility();
     });
 
     $("div.toggle-columns").prepend(
-      "<button id=\"btnResetFilters\" class=\"btn btn-reset-filters\">Reset Filters</label>"
+      "<button id=\"btnResetFilters\" class=\"btn btn-reset-filters\">" +
+        "<span>Reset Filters</span>" +
+        "<i class=\"fa fa-times\"></i>" +
+      "</button>"
     );
 
     $("#btnResetFilters").on("click", function () {

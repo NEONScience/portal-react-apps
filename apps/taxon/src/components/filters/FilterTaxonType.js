@@ -1,5 +1,8 @@
 import React, { Component } from "react";
+
 import Select from "react-select";
+import Typography from '@material-ui/core/Typography';
+
 import { taxonTypes } from "../../api/taxonTypes";
 
 class FilterTaxonType extends Component {
@@ -22,10 +25,6 @@ class FilterTaxonType extends Component {
   render() {
     const FILTER_PROP = "taxonTypeCode";
 
-    const filterStyle = {
-      display: "inline-block",
-    }
-
     const inputStyle = {
       width: 250,
       paddingTop: 5,
@@ -39,8 +38,8 @@ class FilterTaxonType extends Component {
     }
 
     return (
-      <div style={filterStyle}>
-        <label>Taxon Type</label>
+      <div>
+        <Typography variant="h5" style={{ marginBottom: '8px' }}>Taxon Type</Typography>
         <div style={inputStyle}>
           <Select
             isSearchable

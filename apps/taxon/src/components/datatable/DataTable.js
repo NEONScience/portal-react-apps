@@ -87,7 +87,7 @@ class DataTable extends Component {
   initDataTable() {
     let that = this;
     $(this.dataTable).DataTable({
-      dom: "<'row'<'col-sm-12 toggle-columns'>>" +
+      dom: "<'row'<'col-md-12 col-lg-5 pull-right toggle-columns'>>" +
            "<'row'<'col-sm-6 page-length-container'l><'col-sm-6 keyword-search'f>>" +
            "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
            "<'row'<'col-sm-12 datatable-row-container'tr>>" +

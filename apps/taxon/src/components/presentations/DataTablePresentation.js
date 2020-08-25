@@ -110,8 +110,7 @@ const useStyles = makeStyles(theme => ({
       borderSpacing: 0,
       borderCollapse: 'collapse !important',
       border: 'none',
-      marginTop: '16px !important',
-      marginBottom: '24px !important',
+      margin: '0px !important',
     },
     '& thead': {
       '& th.sorting:after': {

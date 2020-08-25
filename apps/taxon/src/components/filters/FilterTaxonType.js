@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 
-import Select from "react-select";
-import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import { taxonTypes } from "../../api/taxonTypes";
 
 class FilterTaxonType extends Component {
   constructor(props) {
     super(props);
-
     this.setTaxonTypes = this.setTaxonTypes.bind(this);
   }
 
@@ -24,40 +23,23 @@ class FilterTaxonType extends Component {
 
   render() {
     const FILTER_PROP = "taxonTypeCode";
-
-    const inputStyle = {
-      width: 250,
-      paddingTop: 5,
-      paddingBottom: 10,
-      textAlign: "left",
-    }
-
-    const selectedOption = {
-      label: this.props.selectedValue,
-      value: this.props.selectedValue,
-    }
-
     return (
-      <div>
-        <Typography variant="h5" style={{ marginBottom: '8px' }}>Taxon Type</Typography>
-        <div style={inputStyle}>
-          <Select
-            isSearchable
-            clearable={false}
-            name="form-field-name"
-            options={this.props.taxonTypes}
-            value={selectedOption}
-            onChange={(selectedOption) => {
-              let value = null
-              if ((typeof selectedOption !== "undefined")
-                  && (selectedOption !== null)) {
-                value = selectedOption.value
-              }
-              return this.props.onFilterValueChanged(FILTER_PROP, value)
-            }}
-          />
-        </div>
-      </div>
+      <Select
+        variant="outlined"
+        value={this.props.selectedValue}
+        onChange={event => this.props.onFilterValueChanged(FILTER_PROP, event.target.value)}
+        style={{ minWidth: '180px' }}
+        SelectDisplayProps={{ style: { padding: '10.5px 16px' }}}
+        aria-labelledby="taxon-type-title"
+      >
+        {this.props.taxonTypes.map((taxonType) => {
+          return (
+            <MenuItem key={taxonType.value} value={taxonType.value}>
+              {taxonType.label}
+            </MenuItem>
+          );
+        })}
+      </Select>
     );
   }
 }

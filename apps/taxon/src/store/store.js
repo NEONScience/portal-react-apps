@@ -2,7 +2,6 @@ import {
   createStore,
   applyMiddleware
 } from "redux";
-//import thunk from "redux-thunk";
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
@@ -23,7 +22,6 @@ let dataStore = {
   }
 };
 
-//let middlewares = [ thunk ];
 let middlewares = [];
 if (NeonEnvironment.isDevEnv) {
   const { logger } = require("redux-logger");

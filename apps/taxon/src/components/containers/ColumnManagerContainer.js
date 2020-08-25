@@ -13,12 +13,15 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onSetColumns: (columns) =>
-      { dispatch(setTaxonColumns(columns)) },
-    onColumnVisibilityChanged: (name, value, checked) => {
-      dispatch(taxonColumnVisibilityChanged(value, checked)) },
-    onToggleColumnManagerVisibility: () =>
-      { dispatch(toggleColumnManagerVisibility()); }
+    onSetColumns: (columns) => {
+      dispatch(setTaxonColumns(columns));
+    },
+    onColumnVisibilityChanged: (event) => {
+      dispatch(taxonColumnVisibilityChanged(event.target.name, event.target.checked));
+    },
+    onToggleColumnManagerVisibility: () => {
+      dispatch(toggleColumnManagerVisibility());
+    },
   }
 };
 

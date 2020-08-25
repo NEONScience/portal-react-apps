@@ -1,6 +1,7 @@
 import React from "react";
 
 import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -8,32 +9,36 @@ import FilterContainer from "../containers/FilterContainer";
 import DownloadContainer from "../containers/DownloadContainer";
 
 const useStyles = makeStyles(theme => ({
-  container: {
+  outerContainer: {
     marginBottom: "20px",
     '@media (min-width:968px)': {
-      marginBottom: "-48px",      
+      marginBottom: "-38px",      
     },
   },
-  filterContainer: {
-    display: "inline-block",
+  innerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   downloadContainer: {
-    display: "inline-block",
-    verticalAlign: "bottom",
     marginLeft: theme.spacing(2),
-    marginBottom: '11px',
   },
 }));
 
 const ControlPresentation = () => {
   const classes = useStyles(Theme);
   return (
-    <div className={classes.container} >
-      <div className={classes.filterContainer}>
-        <FilterContainer />
-      </div>
-      <div className={classes.downloadContainer}>
-        <DownloadContainer />
+    <div className={classes.outerContainer} >
+      <Typography variant="h5" id="taxon-type-title" style={{ marginBottom: '16px' }}>
+        Taxon Type
+      </Typography>
+      <div className={classes.innerContainer}>
+        <div>
+          <FilterContainer />
+        </div>
+        <div className={classes.downloadContainer}>
+          <DownloadContainer />
+        </div>
       </div>
     </div>
   );

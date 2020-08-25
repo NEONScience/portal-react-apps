@@ -1,6 +1,11 @@
 import React, { Component } from "react";
+
 import Button from "@material-ui/core/Button";
+import DownloadIcon from '@material-ui/icons/SaveAlt';
+
 import NeonApi from "portal-core-components/lib/components/NeonApi";
+import Theme from 'portal-core-components/lib/components/Theme';
+
 import { getTaxonDownloadApiPath } from "../../api/taxon";
 import { fetch as fetchPolyfill } from "whatwg-fetch";
 
@@ -108,6 +113,7 @@ class Download extends Component {
             onClick={() => this.handleDownload()}
           >
             {buttonLabel}
+            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
           </Button>
           <span ref={message => this.message = message} style={messageStyle}></span>
         </div>

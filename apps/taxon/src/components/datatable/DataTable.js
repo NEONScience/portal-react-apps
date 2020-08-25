@@ -87,10 +87,11 @@ class DataTable extends Component {
   initDataTable() {
     let that = this;
     $(this.dataTable).DataTable({
-      dom: "<'row'<'col-sm-6 page-length-container'l><'col-sm-6 toggle-columns'f>>" +
-          "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
-          "<'row'<'col-sm-12 datatable-row-container'tr>>" +
-          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      dom: "<'row'<'col-sm-12 toggle-columns'>>" +
+           "<'row'<'col-sm-6 page-length-container'l><'col-sm-6 keyword-search'f>>" +
+           "<'row'<'col-sm-5'i><'col-sm-7'p>>" +
+           "<'row'<'col-sm-12 datatable-row-container'tr>>" +
+           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
       columns: this.props.columns,
       order: [[ 0, "asc" ]],
       pageLength: 100,
@@ -145,14 +146,6 @@ class DataTable extends Component {
     });
 
     this.debounceSearch();
-
-    /*
-    $("div.toggle-columns").prepend(
-      "<label class=\"show-toggle-columns-label\">Display Columns:" +
-          "<i id=\"showDisplayColumns\" class=\"fa fa-2x fa-columns show-toggle-columns\" ></i>" +
-      "</label>"
-    );
-    */
 
     $("div.toggle-columns").prepend(
       "<button id=\"showDisplayColumns\" class=\"btn btn-show-display-columns\">" +

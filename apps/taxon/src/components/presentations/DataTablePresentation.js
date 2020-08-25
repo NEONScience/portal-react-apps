@@ -60,12 +60,22 @@ const useStyles = makeStyles(theme => ({
         textDecoration: 'underline',
       },
     },
-    '& .toggle-columns': {
-      textAlign: 'right',
+    '& .dataTables_wrapper div.row > div': {
+      marginBottom: theme.spacing(3),
     },
-    '& .dataTables_filter': {
-      marginTop: theme.spacing(3),
-      marginBottom: theme.spacing(2),
+    '& .dataTables_filter > label': {
+      margin: 0,
+    },
+    '& .dataTables_length > label': {
+      margin: 0,
+    },
+    '& .toggle-columns': {
+      '@media (max-width:767.95px)': {
+        textAlign: 'center',
+      },
+      '@media (min-width:768px)': {
+        textAlign: 'right',
+      },
     },
     '& .dataTables_info': {
       fontWeight: 600,
@@ -121,6 +131,10 @@ const useStyles = makeStyles(theme => ({
           lineHeight: '1.5rem',
           borderBottom: `1.5px solid ${theme.palette.secondary.main}`,
           backgroundColor: theme.palette.primary.main,
+          '& input': {
+            padding: theme.spacing(0.25, 1),
+            marginTop: theme.spacing(1),
+          },
         },
       },
     },
@@ -130,6 +144,9 @@ const useStyles = makeStyles(theme => ({
           borderRightWidth: '0px !important',
         },
       },
+    },
+    '& ul.pagination': {
+      margin: 0,
     },
   },
 }));

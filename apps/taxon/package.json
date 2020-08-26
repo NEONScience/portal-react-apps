@@ -2,7 +2,7 @@
   "name": "taxon",
   "version": "1.0.0",
   "private": true,
-  "homepage": "http://localhost/taxon/",
+  "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {
     "@material-ui/core": "4.8.3",
     "@material-ui/icons": "4.5.1",

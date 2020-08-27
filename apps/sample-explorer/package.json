@@ -1,0 +1,50 @@
+{
+  "name": "portal-samples",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "http://localhost/sample-explorer/",
+  "dependencies": {
+    "@material-ui/core": "4.8.3",
+    "@material-ui/icons": "4.5.1",
+    "ag-grid-community": "^21.1.1",
+    "ag-grid-react": "^21.1.0",
+    "core-js": "^3.6.5",
+    "d3": "^5.9.7",
+    "js-file-download": "^0.4.7",
+    "json2csv": "^4.5.2",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.5.0",
+    "react": "^16.13.1",
+    "react-d3-graph": "^2.1.0",
+    "react-dom": "^16.13.1",
+    "react-dom-factories": "^1.0.2",
+    "react-redux": "^7.2.1",
+    "react-scripts": "^3.4.3",
+    "react-select": "^3.0.4",
+    "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "url-search-params-polyfill": "^7.0.0",
+    "whatwg-fetch": "^3.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint": "esw webpack.config.* src tools --color",
+    "lint:watch": "npm run lint -- --watch"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-utils": "^1.4.2",
+    "eslint-watch": "^6.0.0",
+    "typescript": "^3.5.3"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 10",
+    "not op_mini all"
+  ]
+}

@@ -1,0 +1,15 @@
+.event-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.event-desc {
+    padding-right: 25px;
+}
+
+.event-download {
+    padding-top: 25px;
+
+
+}

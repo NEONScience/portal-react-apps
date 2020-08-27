@@ -14,6 +14,6 @@ the `apps` directory and dependencies are managed using Yarn Workspaces.
   Explore Data Products page  
   ([data.neonscience.org/data-products/explore](https://data.neonscience.org/data-products/explore))  
 
-* **`taxon`**  
+* **`taxonomic-lists`**  
   Taxonomic Lists page  
-  ([data.neonscience.org/apps/taxon](https://data.neonscience.org/apps/taxon))  
+  ([data.neonscience.org/taxonomic-lists](https://data.neonscience.org/taxonomic-lists))  

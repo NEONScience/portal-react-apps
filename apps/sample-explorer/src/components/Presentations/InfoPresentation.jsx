@@ -1,21 +1,20 @@
-import React from "react";
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const useStyles = makeStyles((theme) => ({
   infoIcon: {
@@ -45,8 +44,8 @@ const InfoPresentation = (props) => {
   );
 
   return (
-    <div style={{ marginBottom: '16px' }}>
-      <Typography variant="subtitle1" gutterBottom>
+    <div style={{ marginTop: Theme.spacing(2), marginBottom: Theme.spacing(4) }}>
+      <Typography variant="subtitle1" style={{ marginBottom: Theme.spacing(3) }}>
         Find current or past physical locations of a sample and explore its place in the hierarchy
         with other samples.
       </Typography>

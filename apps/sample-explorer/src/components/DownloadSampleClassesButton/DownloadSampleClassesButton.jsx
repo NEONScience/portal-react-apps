@@ -24,10 +24,10 @@ const DownloadSampleClassesButton = (props) => {
 
   return (
     <Button
-      variant="contained"
+      variant="outlined"
       color="primary"
       onClick={downloadSupportedSampleClasses}
-      style={{ marginBottom: '16px' }}
+      data-selenium="download-sample-classes-button"
     >
       Download current list of supported sample classes
       <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />

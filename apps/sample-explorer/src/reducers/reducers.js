@@ -27,7 +27,7 @@ import {
   createEventTable,
 } from "../util/appUtil";
 import { parseParams, applyParams, hasParams } from "../util/paramUtil";
-import { validateParamQuery } from "../util/queryUtil";
+import { detectIdTypeParam, validateParamQuery } from "../util/queryUtil";
 
 const fileDownload = require("js-file-download");
 const { Parser } = require("json2csv");
@@ -57,7 +57,7 @@ const reducer = (state = {}, action) => {
         ...state.urlParams,
         parsed: true,
       };
-      urlParamsUpdate = applyParams(urlParamsUpdate, parseParams(params));
+      urlParamsUpdate = detectIdTypeParam(applyParams(urlParamsUpdate, parseParams(params)));
       urlParamsUpdate.fetch = validateParamQuery(urlParamsUpdate);
       update = {
         ...state,

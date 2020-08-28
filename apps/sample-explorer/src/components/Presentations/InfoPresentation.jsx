@@ -49,7 +49,7 @@ const InfoPresentation = (props) => {
         Find current or past physical locations of a sample and explore its place in the hierarchy
         with other samples.
       </Typography>
-      <Accordion style={{ marginBottom: '32px' }}>
+      <Accordion style={{ marginBottom: '32px' }} data-selenium="general-info">
         <AccordionSummary
           style={{ width: '100%', padding: '16px 24px' }}
           expandIcon={<ExpandMoreIcon />}

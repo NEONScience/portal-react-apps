@@ -35,6 +35,23 @@ export const getQueryTypeNameOptions = () => {
   ];
 }
 
+// Automatically detect and apply idType to a urlParams object.
+// Do not change idType if already set and only set it if only one of the ids is present.
+export const detectIdTypeParam = (params) => {
+  if (params.idType) { return params; }
+  const { sampleTag, archiveGuid, barcode } = params;
+  if (sampleTag && !archiveGuid && !barcode) {
+    return { ...params, idType: QUERY_TYPE.SAMPLE_TAG };
+  }
+  if (!sampleTag && archiveGuid && !barcode) {
+    return { ...params, idType: QUERY_TYPE.ARCHIVE_GUID };
+  }
+  if (!sampleTag && !archiveGuid && barcode) {
+    return { ...params, idType: QUERY_TYPE.BARCODE };
+  }
+  return params;
+};
+
 export const validateParamQuery = (params) => {
   if (!exists(params)) {
     return false;

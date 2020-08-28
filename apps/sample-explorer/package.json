@@ -6,6 +6,7 @@
   "dependencies": {
     "@material-ui/core": "4.8.3",
     "@material-ui/icons": "4.5.1",
+    "@material-ui/lab": "^4.0.0-alpha.28",
     "ag-grid-community": "^21.1.1",
     "ag-grid-react": "^21.1.0",
     "core-js": "^3.6.5",
@@ -19,7 +20,6 @@
     "react-dom-factories": "^1.0.2",
     "react-redux": "^7.2.1",
     "react-scripts": "^3.4.3",
-    "react-select": "^3.0.4",
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",

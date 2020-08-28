@@ -21,7 +21,7 @@ import DownloadSampleClassesButton from '../DownloadSampleClassesButton/Download
 import { QUERY_TYPE } from "../../util/queryUtil";
 import { getFullSamplesApiPath } from "../../util/envUtil";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   row: {
     display: 'flex',
     flexDirection: 'row',
@@ -104,8 +104,8 @@ const SampleQueryPresentation = (props) => {
   };
 
   return (
-    <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-search-form">
-      <Typography variant="h5" gutterBottom>
+    <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="search-samples-section">
+      <Typography variant="h4" gutterBottom>
         Search Samples
       </Typography>
       <div data-selenium="sample-query-form">

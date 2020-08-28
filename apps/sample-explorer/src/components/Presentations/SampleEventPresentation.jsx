@@ -1,46 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
+
 import Grid from "@material-ui/core/Grid";
 import Modal from "@material-ui/core/Modal";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { makeStyles, createStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+
+import DownloadIcon from '@material-ui/icons/SaveAlt';
+
+import Theme from 'portal-core-components/lib/components/Theme';
+
 import SampleInfoPresentation from "./SampleInfoPresentation";
-import DataGrid from "../DataGrid/DataGrid";
 import DownloadSamplesPresentation from "./DownloadSamplesPresentation";
-import smsFields from "./smsFieldNames";
+import DataGrid from "../DataGrid/DataGrid";
+
+import { smsFields } from "../../util/appUtil";
 
 import "font-awesome/css/font-awesome.min.css";
-import "./SampleEventPresentation.css";
 
 const fileDownload = require("js-file-download");
 const { Parser } = require("json2csv");
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    paper: {
-      position: "absolute",
-      width: 400,
-      backgroundColor: theme.palette.background.paper,
-      borderRadius: "4px",
-      boxShadow: theme.shadows[5],
-      padding: theme.spacing(2, 4, 4),
-    },
-  })
-);
+const useStyles = makeStyles(theme => ({
+  paper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: "4px",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 4),
+  },
+}));
 
 const SampleEventPresentation = (props) => {
-  const classes = useStyles();
-  const [displayPopup, setDisplayPopup] = React.useState(false);
+  const { onPopupResetClick } = props;
+  const classes = useStyles(Theme);
+  const [displayPopup, setDisplayPopup] = useState(false);
 
   const launchDownloadPopup = () => {
     setDisplayPopup(true);
   };
   const closeDownloadPopup = () => {
     setDisplayPopup(false);
-    return props.onPopupResetClick();
+    return onPopupResetClick();
   };
   const downloadPossibleSMSFields = () => {
-    let headers = ["SMS Field Name", "Description"]
+    let headers = ["SMS Field Name", "Description"];
     let csvData = [];
     for (let [key, value] of smsFields) {
       let row = [];
@@ -54,57 +59,46 @@ const SampleEventPresentation = (props) => {
     fileDownload(csvResult, "smsFieldNames.csv");
   };
 
-  let downloadButtonStyle = {
-    paddingTop: 30,
-    paddingLeft: 0,
-  };
   let modalDownloadStyle = {
     width: 495,
     margin: "0px auto",
     position: "relative",
     marginTop: "40px"
   };
+
   return (
-    <div key={props.sampleUuid}>
-      <div className="event-container">
-        <div className="event-desc">
-          <Typography variant="h5">
-            Sample Events
-          </Typography>
-          <Typography variant="subtitle1">
-            History of Sample Custody Events along with all Sample Management
-            System (SMS) fields (taxon excepted) available for the focal sample tag.
-          </Typography>
-        </div>
-      </div>
-      <div>
-        <div style={{ marginTop: "20px", marginBottom: "20px" }}>
+    <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="sample-events-section">
+      <Typography variant="h4" gutterBottom>
+        Sample Events
+      </Typography>
+      <Typography variant="subtitle1">
+        History of Sample Custody Events along with all Sample Management
+        System (SMS) fields (taxon excepted) available for the focal sample tag.
+      </Typography>
+      <div style={{ marginTop: Theme.spacing(3) }}>
+        <div style={{ marginBottom: Theme.spacing(3) }}>
           <SampleInfoPresentation  {...props} />
         </div>
-        <div id="events">
+        <div style={{ marginBottom: Theme.spacing(3) }}>
           <DataGrid {...props} />
         </div>
-        <div className="event-download" style={downloadButtonStyle}>
+        <div className="event-download" style={{ marginBottom: Theme.spacing(3) }}>
           <Grid container spacing={1}>
             <Grid item xs={12} sm={5} style={{ maxWidth: "320px" }}>
               <Button
-                style={{ marginRight: "20px"}}
+                style={{ marginRight: Theme.spacing(3), whiteSpace: 'nowrap' }}
                 variant="outlined"
                 color="primary"
-                onClick={() => {
-                  downloadPossibleSMSFields();
-                }}
+                onClick={downloadPossibleSMSFields}
               >
-                Download list of possible SMS Fields
+                Download Possible SMS Fields List
+                <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
               </Button>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <Button variant="contained" color="primary"
-                onClick={() => {
-                  launchDownloadPopup();
-                }}
-              >
+              <Button variant="contained" color="primary" onClick={launchDownloadPopup}>
                 Download Sample(s)
+                <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
               </Button>
             </Grid>
           </Grid>
@@ -120,6 +114,6 @@ const SampleEventPresentation = (props) => {
       </div>
     </div>
   );
-}
+};
 
 export default SampleEventPresentation;

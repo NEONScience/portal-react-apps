@@ -44,7 +44,10 @@ const InfoPresentation = (props) => {
   );
 
   return (
-    <div style={{ marginTop: Theme.spacing(2), marginBottom: Theme.spacing(4) }}>
+    <div
+      style={{ marginTop: Theme.spacing(2), marginBottom: Theme.spacing(5) }}
+      data-selenium="info-section"
+    >
       <Typography variant="subtitle1" style={{ marginBottom: Theme.spacing(3) }}>
         Find current or past physical locations of a sample and explore its place in the hierarchy
         with other samples.

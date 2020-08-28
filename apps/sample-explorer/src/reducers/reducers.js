@@ -64,6 +64,7 @@ const reducer = (state = {}, action) => {
         urlParams: urlParamsUpdate
       };
       return update;
+
     case QUERY_SAMPLE_FROM_URL:
       return {
         ...state,
@@ -80,6 +81,7 @@ const reducer = (state = {}, action) => {
           barcode: state.urlParams.barcode,
         }
       };
+
     case SET_QUERY_TYPE:
       update = {
         ...state,
@@ -89,6 +91,7 @@ const reducer = (state = {}, action) => {
         }
       };
       return update;
+
     case SET_QUERY_SAMPLE_TAG:
       update = {
         ...state,
@@ -98,6 +101,7 @@ const reducer = (state = {}, action) => {
         }
       };
       return update;
+
     case SET_QUERY_SAMPLE_CLASS:
       update = {
         ...state,
@@ -107,6 +111,7 @@ const reducer = (state = {}, action) => {
         }
       };
       return update;
+
     case SET_QUERY_ARCHIVE_GUID:
       update = {
         ...state,
@@ -116,6 +121,7 @@ const reducer = (state = {}, action) => {
         }
       };
       return update;
+
     case SET_QUERY_BARCODE:
       update = {
         ...state,
@@ -125,6 +131,7 @@ const reducer = (state = {}, action) => {
         }
       };
       return update;
+
     case QUERY_FAILED:
       var errorString = action.error
       var errorDisplay
@@ -163,6 +170,7 @@ const reducer = (state = {}, action) => {
         cacheControl: ""
       }
       return update;
+
     case QUERY_RUNNING:
       update = {
         ...state,
@@ -172,6 +180,7 @@ const reducer = (state = {}, action) => {
         }
       }
       return update;
+
     case DOWNLOAD_VISITED_SAMPLES:
       var visitedSamplesJson = JSON.stringify(action.samples);
       var file = "neon-samples";
@@ -191,9 +200,9 @@ const reducer = (state = {}, action) => {
           break;
       }
       return state;
-    case QUERY_SUPPORTED_CLASSES_SUCCESSFUL:
 
-      let sampleClasses
+    case QUERY_SUPPORTED_CLASSES_SUCCESSFUL:
+      let sampleClasses;
       //if action.payload is null then we didn't have to fetch, the classes are already in state.
       if (action.payload === null) {
         sampleClasses = state.sampleClassDesc;
@@ -225,6 +234,7 @@ const reducer = (state = {}, action) => {
         sampleClassDesc: sampleClasses
       }
       return update;
+
     case QUERY_SAMPLE_CLASS_SUCCESSFUL:
       var classes = action.payload.data.sampleClasses;
       update = {
@@ -235,6 +245,7 @@ const reducer = (state = {}, action) => {
         }
       }
       return update;
+
     case DOWNLOAD_SUCCESSFUL:
       var downloadJson = JSON.stringify(action.json.data);
       var fileName = "neon-samples";
@@ -255,18 +266,21 @@ const reducer = (state = {}, action) => {
         cacheControl: ""
       }
       return update;
+
     case DOWNLOAD_RUNNING:
       update = {
         ...state,
         downloadIsLoading: action.isLoading
       }
       return update;
+
     case RESET_DOWNLOAD_STATE:
       update = {
         ...state,
         downloadErrorStr: ""
       }
       return update;
+
     case DOWNLOAD_FAILED:
       errorString = action.error
       if (errorString.includes("400")) {
@@ -294,6 +308,7 @@ const reducer = (state = {}, action) => {
         cacheControl: ""
       }
       return update;
+
     case QUERY_SUCCESSFUL:
       let data = action.payload.data;
       //TODO: more than one match to sample query...
@@ -343,7 +358,6 @@ const reducer = (state = {}, action) => {
           let graphStuff = createSampleGraph(data.sampleViews[i], uuidBreadcrumbs)
           let newNodes = graphStuff.nodes;
           let newLinks = graphStuff.links;
-
 
           //create DataTable definition
           let tableStuff = createEventTable(data.sampleViews[i], state.initialColumns);

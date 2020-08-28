@@ -1,3 +1,5 @@
+import Theme from 'portal-core-components/lib/components/Theme';
+
 import { QUERY_TYPE } from "./queryUtil";
 import { getFullSamplesApiPath } from "./envUtil";
 
@@ -35,7 +37,6 @@ export const addBreadcrumb = (uuid, uuidBreadcrumbs) => {
 }
 
 export const checkFields = (sampleView) => {
-
   let sampleUuid
   let sampleClass
   let sampleTag
@@ -154,8 +155,17 @@ export const createEventTable = (sampleView, tableDefinition) => {
 
 }
 
-export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
+export const GRAPH_COLORS = {
+  NODES: {
+    FOCUS: Theme.colors.NEON_BLUE[700],
+    PARENT: Theme.colors.GREEN[600],
+    CHILD: Theme.colors.LIGHT_BLUE[300],
+    PREVIOUS: Theme.colors.GOLD[500],
+  },
+  LINKS: Theme.colors.GREY[200],
+};
 
+export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
   let xF = 400
   let yF = 350
   let xIncrement = 250;
@@ -196,8 +206,13 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
   let centralSample = sampleView.sampleTag + "-" + sampleView.sampleClass;
 
   newNodes.push({
-    id: sampleView.sampleUuid, sampleName: centralSample, color: "#004C70", size: nodeSize,
-    x: xF, y: yF, symbolType: "circle"
+    id: sampleView.sampleUuid,
+    sampleName: centralSample,
+    color: GRAPH_COLORS.NODES.FOCUS,
+    size: nodeSize * 3,
+    x: xF,
+    y: yF,
+    symbolType: 'circle',
   });
   //newNodes.push({id: centralSample, nodeid: sampleUuid, fill: "red", size: nodeSize,
   //x: xF, y: yF});
@@ -212,10 +227,15 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
     }
     let displayName = childSamples[i].sampleTag;// + "-" + childSamples[i].sampleClass;
     newNodes.push({
-      id: childSamples[i].sampleUuid, sampleName: displayName, color: "#006495",
-      size: nodeSize, x: xC, y: yC, symbolType: "triangle"
+      id:childSamples[i].sampleUuid,
+      sampleName: displayName,
+      color: GRAPH_COLORS.NODES.CHILD,
+      size: nodeSize,
+      x: xC,
+      y: yC,
+      symbolType: 'triangle',
     });
-    newLinks.push({ source: sampleView.sampleUuid, target: childSamples[i].sampleUuid, color: "#D3D3D3" });
+    newLinks.push({ source: sampleView.sampleUuid, target: childSamples[i].sampleUuid, color: GRAPH_COLORS.LINKS });
     // newNodes.push({id: displayName, nodeid: childSamples[i].sampleUuid, fill: "green",
     //size: nodeSize, x: xC, y: yC});
     // newLinks.push({source: centralSample, target: displayName});
@@ -232,10 +252,15 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
     }
     let displayName = parentSamples[i].sampleTag;// + "-" + parentSamples[i].sampleClass;
     newNodes.push({
-      id: parentSamples[i].sampleUuid, sampleName: displayName, color: "#0093D1",
-      size: nodeSize, x: xP, y: yP, symbolType: "square"
+      id: parentSamples[i].sampleUuid,
+      sampleName: displayName,
+      color: GRAPH_COLORS.NODES.PARENT,
+      size: nodeSize,
+      x: xP,
+      y: yP,
+      symbolType: 'square',
     });
-    newLinks.push({ source: sampleView.sampleUuid, target: parentSamples[i].sampleUuid, color: "#D3D3D3" });
+    newLinks.push({ source: sampleView.sampleUuid, target: parentSamples[i].sampleUuid, color: GRAPH_COLORS.LINKS });
     // newNodes.push({id: displayName, nodeid: parentSamples[i].sampleUuid, fill: "blue",
     //size: nodeSize, x: xP, y: yP});
     // newLinks.push({source: centralSample, target: displayName});
@@ -246,8 +271,8 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
     for (let bc = 0; bc < uuidBreadcrumbs.length; bc++) {
       if ((uuidBreadcrumbs.length !== 1) && (newNodes[i].id === uuidBreadcrumbs[bc]) &&
         newNodes[i].id !== sampleView.sampleUuid) {
-        newNodes[i].color = "orange";
-        newNodes[i].symbolType = "diamond";
+        newNodes[i].color = GRAPH_COLORS.NODES.PREVIOUS;
+        newNodes[i].symbolType = 'diamond';
         newNodes[i].size = nodeSize - 50;
       }
     }
@@ -258,8 +283,15 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
 
 export const createCsv = (samples) => {
   const { Parser } = require("json2csv");
-  let headers = ["sampleUuid", "sampleClass", "sampleTag", "barcode", "archiveGuid", "parentSampleUuids",
-    "childSampleUuids"];
+  let headers = [
+    "sampleUuid",
+    "sampleClass",
+    "sampleTag",
+    "barcode",
+    "archiveGuid",
+    "parentSampleUuids",
+    "childSampleUuids",
+  ];
   let csvData = [];
   if (typeof samples === "undefined" || samples === null || samples.length === 0) {
     console.log("No Samples.  This should not happen.")
@@ -348,3 +380,29 @@ export const createCsv = (samples) => {
 
   return csvResult;
 }
+
+export const smsFields = new Map([
+  ['analysis_type', 'Type of analysis at external lab'],
+  ['container_id', 'Identifier of the multi-well storage box or plate containing the sample'],
+  ['container_mass', 'Mass of the sample within the container in grams'],
+  ['fate', 'Fate of a sample'],
+  ['filter_volume', 'Volume of material passed through filter'],
+  ['sample_mass', 'Mass of the sample in grams'],
+  ['num_containers', 'Number of vials or containers associated with a sampleID'],
+  ['preservative_concentration', 'Concentration of preservative used in the sample'],
+  ['preservative_type', 'Type of preservative used in the sample'],
+  ['preservative_volume', 'Volume of preservative used in the sample'],
+  ['remarks', 'Associated remarks field'],
+  ['sample_code', 'Barcode of a sample'],
+  ['sample_condition', 'Condition of a sample'],
+  ['sample_tag', 'Identifier for sample'],
+  ['sample_type', 'Type of sample'],
+  ['sample_volume', 'Volume of the sample'],
+  ['shipment_condition', 'The condition in which the shipment was received'],
+  ['specimen_count', 'Number of individuals in the container'],
+  ['temperature', 'Temperature of the cooler when the sample arrived at the external lab'],
+  ['well_coordinate', 'Location of sample in multi-well storage box or plate'],
+  ['guid', 'Global Unique Identifier'],
+  ['fate_date', 'Transaction date of a fate update for a sample'],
+  ['fate_location', 'Transaction location of a fate location update for a sample'],
+]);

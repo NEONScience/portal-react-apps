@@ -1,7 +1,5 @@
 import React from 'react';
 
-import Paper from '@material-ui/core/Paper';
-
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
 import SampleQueryPresentation from './SampleQueryPresentation';
@@ -32,16 +30,8 @@ const TopPresentation = (props) => {
         </div>
         {queryErrorStr !== 'success' ? null : (
           <React.Fragment>
-            <div className="events">
-              <Paper style={{ padding: "20px" }}>
-                <SampleEventPresentation {...props} />
-              </Paper>
-            </div>
-            <div className="graph">
-              <Paper style={{ padding: "20px" }}>
-                <SampleGraphContainer />
-              </Paper>
-            </div>
+            <SampleEventPresentation {...props} />
+            <SampleGraphContainer />
           </React.Fragment>
         )}
       </div>

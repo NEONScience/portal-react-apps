@@ -34,7 +34,7 @@ const SampleEventPresentation = (props) => {
   };
 
   return (
-    <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="sample-events-section">
+    <div style={{ marginBottom: Theme.spacing(3) }} data-selenium="sample-events-section">
       <Typography variant="h4" gutterBottom>
         Sample Events
       </Typography>
@@ -50,7 +50,7 @@ const SampleEventPresentation = (props) => {
       </div>
       <div style={{ marginBottom: Theme.spacing(3), display: 'flex', flexWrap: 'wrap' }}>
         <Button
-          style={{ marginRight: Theme.spacing(3), whiteSpace: 'nowrap' }}
+          style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
           variant="outlined"
           color="primary"
           onClick={downloadPossibleSMSFields}

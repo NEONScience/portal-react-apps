@@ -18,6 +18,7 @@ import { GRAPH_COLORS } from "../../util/appUtil";
 
 const useStyles = makeStyles(theme => ({
   container: {
+    cursor: 'move',
     border: `1px solid ${Theme.palette.grey[400]}`,
     backgroundColor: Theme.palette.grey[50],
     overflow: 'auto',

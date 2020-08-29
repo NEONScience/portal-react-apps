@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 const QueryBySampleTag = (props) => {
   const {
     onSetQuerySampleTag,
-    query: { sampleTag, queryErrorStr },
+    query: { sampleTag, queryErrorStr, queryIsLoading },
   } = props;
 
   const classes = useStyles(Theme);
@@ -33,6 +33,7 @@ const QueryBySampleTag = (props) => {
       onChange={(e) => onSetQuerySampleTag(e.target.value)}
       className={classes.textField}
       error={queryErrorStr !== null && queryErrorStr !== 'success'}
+      disabled={queryIsLoading}
       data-selenium="sample-search-form.sample-tag"
     />
   );

@@ -162,6 +162,7 @@ const reducer = (state = {}, action) => {
         ...state,
         query: {
           ...state.query,
+          queryIsLoading: false,
           queryErrorStr: errorDisplay,
         },
         sampleUuid: "",
@@ -176,7 +177,7 @@ const reducer = (state = {}, action) => {
         ...state,
         query: {
           ...state.query,
-          queryIsLoading: action.isLoading
+          queryIsLoading: true,
         }
       }
       return update;
@@ -241,6 +242,7 @@ const reducer = (state = {}, action) => {
         ...state,
         query: {
           ...state.query,
+          queryIsLoading: false,
           sampleClasses: classes
         }
       }
@@ -368,6 +370,7 @@ const reducer = (state = {}, action) => {
             ...state,
             query: {
               ...state.query,
+              queryIsLoading: false,
               queryErrorStr: "success",
               sampleClass: sampleClass,
             },

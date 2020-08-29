@@ -79,7 +79,7 @@ export const querySample = (url, cacheControl) => {
   let fetchFunc = getFetch();
 
   return (dispatch) => {
-    dispatch(queryIsRunning(true));
+    dispatch(queryIsRunning());
     fetchFunc(url, fetchInit)
       .then(checkStatus)
       .then((response) => {
@@ -88,7 +88,6 @@ export const querySample = (url, cacheControl) => {
           error.response = response
           throw error
         }
-        dispatch(queryIsRunning(false));
         return response;
       })
       .then((response) => response.json())
@@ -161,7 +160,7 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
   let fetchFunc = getFetch();
 
   return (dispatch) => {
-    dispatch(queryIsRunning(true));
+    dispatch(queryIsRunning());
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
@@ -170,7 +169,6 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
           error.response = response
           throw error
         }
-        dispatch(queryIsRunning(false));
         return response;
       })
       .then((response) => response.json())
@@ -218,7 +216,7 @@ export const querySupportedSampleClasses = (url, query, download) => {
   if (query) {
     let fetchFunc = getFetch();
     return (dispatch) => {
-      dispatch(queryIsRunning(true));
+      dispatch(queryIsRunning());
       fetchFunc(url, fetchInit)
         .then(checkStatus)
         .then((response) => {
@@ -227,7 +225,6 @@ export const querySupportedSampleClasses = (url, query, download) => {
             error.response = response
             throw error
           }
-          dispatch(queryIsRunning(false));
           return response;
         })
         .then((response) => response.json())

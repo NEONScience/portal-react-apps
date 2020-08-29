@@ -33,6 +33,7 @@ const QueryBySampleTagAndClass = (props) => {
       sampleTag,
       sampleClass,
       sampleClasses,
+      queryIsLoading,
     },
   } = props;
 
@@ -54,7 +55,7 @@ const QueryBySampleTagAndClass = (props) => {
         labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
         data-selenium="sample-search-form.sample-class"
         value={sampleClass || ''}
-        disabled={!sampleClasses.length}
+        disabled={!sampleClasses.length || queryIsLoading}
         SelectDisplayProps={sampleClasses.length ? null : { style: { cursor: 'not-allowed' }}}
         onChange={(event) => {
           const appliedSampleClass = event.target.value;

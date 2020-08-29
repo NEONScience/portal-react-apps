@@ -113,10 +113,9 @@ export const querySampleClassHasCompleted = (payload) => {
   };
 }
 
-export const queryIsRunning = (bool) => {
+export const queryIsRunning = () => {
   return {
     type: QUERY_RUNNING,
-    isLoading: bool
   };
 }
 

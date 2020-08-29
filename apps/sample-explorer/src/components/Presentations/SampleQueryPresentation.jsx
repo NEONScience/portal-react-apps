@@ -6,6 +6,7 @@ import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 
 import Button from "@material-ui/core/Button";
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from '@material-ui/icons/Search';
 
@@ -32,6 +33,10 @@ const useStyles = makeStyles(theme => ({
       margin: theme.spacing(0, 2, 2, 0),
     }
   },
+  searchIcon: {
+    marginLeft: Theme.spacing(1.5),
+    marginRight: Theme.spacing(-0.5),
+  },
 }));
 
 const SampleQueryPresentation = (props) => {
@@ -43,6 +48,7 @@ const SampleQueryPresentation = (props) => {
       barcode,
       sampleTag,
       archiveGuid,
+      queryIsLoading,
     },
     cacheControl,
     onQueryClick,
@@ -124,13 +130,20 @@ const SampleQueryPresentation = (props) => {
             variant="contained"
             color="primary"
             onClick={submitQuery}
+            disabled={queryIsLoading}
             data-selenium="sample-search-form.submit-button"
           >
-            Search
-            <SearchIcon
-              fontSize="small"
-              style={{ marginLeft: Theme.spacing(1.5), marginRight: Theme.spacing(-0.5) }}
-            />
+            {queryIsLoading ? (
+              <React.Fragment>
+                Searching...
+                <CircularProgress size={24} className={classes.searchIcon} />
+              </React.Fragment>
+            ) : (          
+              <React.Fragment>
+                Search
+                <SearchIcon fontSize="small" className={classes.searchIcon} />
+              </React.Fragment>
+            )}
           </Button>
         </div>
         {renderError()}

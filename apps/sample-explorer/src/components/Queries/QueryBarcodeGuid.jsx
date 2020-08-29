@@ -11,6 +11,7 @@ const QueryBarcodeGuid = (props) => {
       queryType,
       barcode,
       archiveGuid,
+      queryIsLoading,
     },
     onSetQueryBarcode,
     onSetQueryArchiveGuid,
@@ -36,6 +37,7 @@ const QueryBarcodeGuid = (props) => {
       value={currentValue}
       variant="outlined"
       style={{ minWidth: '240px' }}
+      disabled={queryIsLoading}
       data-selenium="sample-search-form.barcode-guid"
       onChange={(e) => {
         switch (queryType) {

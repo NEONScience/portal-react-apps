@@ -133,6 +133,7 @@ const DownloadSamplesPresentation = (props) => {
             dialogOpen: true,
           });
         }}
+        style={{ marginBottom: Theme.spacing(3), whiteSpace: 'nowrap' }}
         data-selenium="download-samples-button"
       >
         Download Sample(s)

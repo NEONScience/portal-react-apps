@@ -113,6 +113,7 @@ export const querySampleClassHasCompleted = (payload) => {
   };
 }
 
+// Only for MAIN query, not any queries around, for example, supported sample classes
 export const queryIsRunning = () => {
   return {
     type: QUERY_RUNNING,

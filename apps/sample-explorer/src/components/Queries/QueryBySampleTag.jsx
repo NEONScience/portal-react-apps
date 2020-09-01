@@ -34,6 +34,7 @@ const QueryBySampleTag = (props) => {
       className={classes.textField}
       error={queryErrorStr !== null && queryErrorStr !== 'success'}
       disabled={queryIsLoading}
+      data-gtm="sample-search-form.sample-identifier"
       data-selenium="sample-search-form.sample-tag"
     />
   );

@@ -13,7 +13,7 @@ import "font-awesome/css/font-awesome.min.css";
 
 /**
    CSS Overrides
-   The DataTable component uses Bootstrap as the basis for its CSS. The cor components Theme is
+   The DataTable component uses Bootstrap as the basis for its CSS. The core components Theme is
    Material UI. Ultimately this component should be reimplemented using Material Table or similar
    (as other tables in react apps are currently). Until that happens this set of CSS overrides
    maintains close-enough visual parity with the current theme.
@@ -154,7 +154,7 @@ const DataTablePresentation = (props) => {
   const { taxonQuery, columns, onToggleColumnManagerVisibility } = props;
   const classes = useStyles(Theme);
   return (
-    <div className={classes.root}>
+    <div className={classes.root} data-selenium="table-section">
       <DataTable
         taxonQuery={taxonQuery}
         columns={columns}

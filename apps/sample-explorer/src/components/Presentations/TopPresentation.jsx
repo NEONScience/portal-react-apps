@@ -20,21 +20,15 @@ const TopPresentation = (props) => {
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}
       useCoreHeader
-      >
-      <div className="samples-container">
-        <div className="text">
-          <InfoPresentation {...props} />
-        </div>
-        <div className="query">
-          <SampleQueryPresentation {...props} />
-        </div>
-        {queryErrorStr !== 'success' ? null : (
-          <React.Fragment>
-            <SampleEventPresentation {...props} />
-            <SampleGraphContainer />
-          </React.Fragment>
-        )}
-      </div>
+    >
+      <InfoPresentation {...props} />
+      <SampleQueryPresentation {...props} />
+      {queryErrorStr !== 'success' ? null : (
+        <React.Fragment>
+          <SampleEventPresentation {...props} />
+          <SampleGraphContainer />
+        </React.Fragment>
+      )}
     </NeonPage>
   );
 };

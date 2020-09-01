@@ -160,7 +160,6 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
   let fetchFunc = getFetch();
 
   return (dispatch) => {
-    dispatch(queryIsRunning());
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
@@ -216,7 +215,6 @@ export const querySupportedSampleClasses = (url, query, download) => {
   if (query) {
     let fetchFunc = getFetch();
     return (dispatch) => {
-      dispatch(queryIsRunning());
       fetchFunc(url, fetchInit)
         .then(checkStatus)
         .then((response) => {

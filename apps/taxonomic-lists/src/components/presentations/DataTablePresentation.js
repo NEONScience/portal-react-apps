@@ -62,6 +62,14 @@ const useStyles = makeStyles(theme => ({
     },
     '& .dataTables_wrapper div.row > div': {
       marginBottom: theme.spacing(3),
+      '@media (max-width:767.95px)': {
+        display: 'flex',
+      },
+      '@media (min-width:768px)': {
+        '&.datatable-row-container': {
+          overflowX: 'scroll',
+        },
+      }
     },
     '& .dataTables_filter > label': {
       margin: 0,
@@ -70,11 +78,12 @@ const useStyles = makeStyles(theme => ({
       margin: 0,
     },
     '& .toggle-columns': {
+      display: 'flex',
       '@media (max-width:767.95px)': {
-        textAlign: 'center',
+        justifyContent: 'flex-start',
       },
       '@media (min-width:768px)': {
-        textAlign: 'right',
+        justifyContent: 'flex-end',
       },
     },
     '& .dataTables_info': {

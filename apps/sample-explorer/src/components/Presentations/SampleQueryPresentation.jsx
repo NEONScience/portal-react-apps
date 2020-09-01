@@ -131,6 +131,7 @@ const SampleQueryPresentation = (props) => {
             color="primary"
             onClick={submitQuery}
             disabled={queryIsLoading}
+            data-gtm="sample-search-form.submit-button"
             data-selenium="sample-search-form.submit-button"
           >
             {queryIsLoading ? (

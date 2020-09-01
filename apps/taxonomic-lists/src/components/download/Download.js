@@ -111,6 +111,7 @@ class Download extends Component {
             variant="contained"
             color="primary"
             onClick={() => this.handleDownload()}
+            data-selenium="download-taxonomic-list-button"
           >
             {buttonLabel}
             <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />

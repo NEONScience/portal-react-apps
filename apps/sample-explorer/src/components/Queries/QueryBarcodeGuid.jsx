@@ -38,6 +38,7 @@ const QueryBarcodeGuid = (props) => {
       variant="outlined"
       style={{ minWidth: '240px' }}
       disabled={queryIsLoading}
+      data-gtm="sample-search-form.sample-identifier"
       data-selenium="sample-search-form.barcode-guid"
       onChange={(e) => {
         switch (queryType) {

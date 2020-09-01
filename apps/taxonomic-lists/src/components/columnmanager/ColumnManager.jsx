@@ -57,6 +57,7 @@ const ColumnManager = (props) => {
         <FormControlLabel
           key={`${column.title}-${column.queryName}`}
           style={{ display: 'flex' }}
+          data-selenium="column-manager-dialog.column-option"
           control={
             <Checkbox
               checked={column.visible}
@@ -102,6 +103,7 @@ const ColumnManager = (props) => {
       maxWidth="xl"
       open={columnManagerVisible}
       aria-labelledby="column-manager-title"
+      data-selenium="column-manager-dialog"
     >
       <DialogTitle id="column-manager-title" disableTypography>
         <Typography variant="h4" style={{ marginTop: '8px' }}>
@@ -112,10 +114,19 @@ const ColumnManager = (props) => {
         {renderColumnDisplay()}
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onSetColumns(getColumns())} color="primary">
+        <Button
+          color="primary" 
+          onClick={() => onSetColumns(getColumns())}
+          data-selenium="column-manager-dialog.reset-button"
+        >
           Reset to Defaults
         </Button>
-        <Button onClick={onToggleColumnManagerVisibility} variant="contained" color="primary">
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={onToggleColumnManagerVisibility}
+          data-selenium="column-manager-dialog.close-button"
+        >
           Close
         </Button>
       </DialogActions>

@@ -35,11 +35,12 @@ const SelectSampleIdentifier = (props) => {
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <InputLabel id="select-sample-identifier-label" ref={labelRef}>Sample Identifier</InputLabel>
+      <InputLabel id="select-identifier-type-label" ref={labelRef}>Identifier Type</InputLabel>
       <Select
-        labelId="select-sample-identifier-label"
+        labelId="select-identifier-type-label"
         labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
-        data-selenium="select-sample-identifier"
+        data-gtm="sample-search-form.select-identifier-type"
+        data-selenium="sample-search-form.select-identifier-type"
         value={queryType}
         onChange={(event) => {
           onSetQueryType(event.target.value);

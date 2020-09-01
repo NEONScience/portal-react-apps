@@ -53,7 +53,8 @@ const QueryBySampleTagAndClass = (props) => {
       <Select
         labelId="select-sample-class-label"
         labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
-        data-selenium="sample-search-form.sample-class"
+        data-gtm="sample-search-form.select-sample-class"
+        data-selenium="sample-search-form.select-sample-class"
         value={sampleClass || ''}
         disabled={!sampleClasses.length || queryIsLoading}
         SelectDisplayProps={sampleClasses.length ? null : { style: { cursor: 'not-allowed' }}}

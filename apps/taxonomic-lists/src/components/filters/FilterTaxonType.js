@@ -31,6 +31,7 @@ class FilterTaxonType extends Component {
         style={{ minWidth: '180px' }}
         SelectDisplayProps={{ style: { padding: '10.5px 16px' }}}
         aria-labelledby="taxon-type-title"
+        data-selenium="select-taxon-type"
       >
         {this.props.taxonTypes.map((taxonType) => {
           return (

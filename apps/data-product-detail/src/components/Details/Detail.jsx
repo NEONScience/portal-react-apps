@@ -11,7 +11,7 @@ import DetailTooltip from './DetailTooltip';
 
 const useStyles = makeStyles(theme => ({
   div: {
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(3),
   },
   typography: {
     overflowWrap: 'break-word',
@@ -40,12 +40,16 @@ const Detail = (props) => {
       </Typography>
     ) : children;
 
+  const titleStyle = {
+    marginBottom: Theme.spacing(tooltip ? 0.5 : 1),
+  };
+
   return (
     <div
       className={classes.div}
       data-selenium={`data-product-page.detail.${seleniumKey}`}
     >
-      <Typography variant="h6" component="div" gutterBottom>
+      <Typography variant="h6" component="div" style={titleStyle}>
         {title}
         {tooltip ? <DetailTooltip tooltip={tooltip} /> : null}
       </Typography>

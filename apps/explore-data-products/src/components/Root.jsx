@@ -1,7 +1,7 @@
 import React from "react";
 import { Provider } from 'react-redux';
 
-import NeonAuthRoot from 'portal-core-components/lib/components/NeonAuthRoot';
+import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
 import App from "./App";
 
@@ -9,9 +9,9 @@ import { configureStore } from "../store/store";
 
 const Root = () => (
   <Provider store={configureStore()}>
-    <NeonAuthRoot
-      app={(props) => { return (<App {...props} />); }}
-    />
+    <NeonRouter>
+      <App />
+    </NeonRouter>
   </Provider>
 );
 

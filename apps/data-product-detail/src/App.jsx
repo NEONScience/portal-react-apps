@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import NeonAuthRoot from 'portal-core-components/lib/components/NeonAuthRoot';
+
+import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
 import { AppStatuses } from './actions';
 import { StoreContext } from './Store';
@@ -35,14 +36,10 @@ export default function App() {
   }
 
   return (
-    <NeonAuthRoot
-      disableRedirect
-      cleanPath={false}
-      app={() => (
-        <DataProductPage loading={loading} error={error}>
-          ...
-        </DataProductPage>
-      )}
-    />
+    <NeonRouter disableRedirect cleanPath={false}>
+      <DataProductPage loading={loading} error={error}>
+        ...
+      </DataProductPage>
+    </NeonRouter>
   );
 }

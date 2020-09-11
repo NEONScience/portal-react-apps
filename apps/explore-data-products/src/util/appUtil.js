@@ -78,10 +78,16 @@ export const buildAppState = (state) => {
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly.
     const isBundleChild = !!bundlesJSON.children[productCode];
-    const isBundleParent = bundlesJSON.parents.includes(productCode);
+    const isBundleParent = Object.keys(bundlesJSON.parents).includes(productCode);
+    let forwardAvailability = null;
+    if (isBundleChild) {
+      // eslint-disable-next-line max-len
+      forwardAvailability = bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability;
+    }
     product.bundle = {
       isChild: isBundleChild,
       isParent: isBundleParent,
+      forwardAvailability,
       parent: isBundleChild ? bundlesJSON.children[productCode] : null,
       children: isBundleParent ? (
         Object.keys(bundlesJSON.children)
@@ -185,10 +191,12 @@ export const buildAppState = (state) => {
   // Update Bundle Children
   // For all bundle children set certain filterable values related to data availability
   // to that of their parent, then add to the global filter count using the updated values.
+  // We skip this for any bundles where forwardAvailability is false.
   Object.keys(bundlesJSON.children).forEach((childProductCode) => {
     if (!dataStore.products[childProductCode]) { return; }
     const parentProductCode = dataStore.products[childProductCode].bundle.parent;
     if (!dataStore.products[parentProductCode]) { return; }
+    if (!bundlesJSON.parents[parentProductCode].forwardAvailability) { return; }
     const parent = dataStore.products[parentProductCode];
     BUNDLE_INHERITIED_FILTER_KEYS.forEach((filterKey) => {
       dataStore.products[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];

@@ -65,6 +65,8 @@ const AvailabilitySection = (props) => {
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
 
+  const { bundleParent, bundleForwardAvailabilityFromParent } = state;
+
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
   const computeAvailableDateRange = () => (productData.siteCodes || []).reduce((acc, siteCode) => {
@@ -81,7 +83,7 @@ const AvailabilitySection = (props) => {
   const availableDatesFormatted = availableDates
     .map(month => moment(`${month}-02`).format('MMMM YYYY'));
 
-  const isBundleChild = state.bundleParent !== null;
+  const isBundleChild = bundleParent !== null;
   const bundleParentLink = isBundleChild ? (
     <Link
       href={`${NeonEnvironment.getHost()}/data-products/${state.bundleParent.productCode}`}
@@ -90,6 +92,34 @@ const AvailabilitySection = (props) => {
       {`${state.bundleParent.productName} (${state.bundleParent.productCode})`}
     </Link>
   ) : null;
+
+  // Bundle children that don't forward availability: no donwload button, just link to parent
+  if (isBundleChild && !bundleForwardAvailabilityFromParent) {
+    return (
+      <Section {...props}>
+        <SnackbarContent
+          className={classes.infoSnackbar}
+          message={(
+            <div className={classes.startFlex} style={{ width: '100%' }}>
+              <BundleIcon fontSize="large" className={classes.infoSnackbarIcon} />
+              <div style={{ flexGrow: 1 }}>
+                <Typography variant="subtitle2">
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
+                  This data product is bundled into {bundleParentLink}
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
+                </Typography>
+                <Typography variant="body2">
+                  It is not available as a standalone download. Data availability information
+                  and product download is only available through the parent product.
+                </Typography>
+              </div>
+            </div>
+          )}
+        />
+      </Section>
+    );
+  }
+
   const bundleInfo = isBundleChild ? (
     <SnackbarContent
       className={classes.infoSnackbar}

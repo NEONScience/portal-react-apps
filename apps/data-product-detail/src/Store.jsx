@@ -15,6 +15,7 @@ const initialState = {
   product: null,
   bundleParentCodeToFetch: null,
   bundleParent: null,
+  bundleForwardAvailabilityFromParent: null,
   error: null,
 };
 
@@ -28,6 +29,7 @@ const StoreProvider = (props) => {
 
   const reducer = (state = {}, action) => {
     let update;
+    let bundleParentCode = null;
     switch (action.type) {
       case ActionTypes.INITIALIZE:
         update = {
@@ -42,7 +44,12 @@ const StoreProvider = (props) => {
           productCodeToFetch: action.payload.productCode,
         };
         if (bundles.children && bundles.children[action.payload.productCode]) {
-          update.bundleParentCodeToFetch = bundles.children[action.payload.productCode];
+          bundleParentCode = bundles.children[action.payload.productCode];
+          update.bundleParentCodeToFetch = bundleParentCode;
+          if (bundles.parents[bundleParentCode]) {
+            // eslint-disable-next-line max-len
+            update.bundleForwardAvailabilityFromParent = bundles.parents[bundleParentCode].forwardAvailability;
+          }
         }
         return update;
       case ActionTypes.FETCH_PRODUCT_DATA:

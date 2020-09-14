@@ -15,31 +15,32 @@ export const getProductCode = () => {
   return parse === null ? null : parse[1];
 };
 
-const buildFetchObservable = (productCode, bundleParentCode = null) => {
+const buildFetchObservable = (productCode, bundleParentCodes = []) => {
   const getAJAX = code => NeonApi.getProductObservable(code);
   const requests = [getAJAX(productCode)];
-  const requestMap = { product: 0 };
-  if (bundleParentCode) {
+  bundleParentCodes.forEach((bundleParentCode) => {
     requests.push(getAJAX(bundleParentCode));
-    requestMap.bundleParent = 1;
-  }
+  });
   const mergeResponses = mergeMap((response) => {
     // Handle product
     let product = null;
-    if (!response[requestMap.product] || !response[requestMap.product].data) {
+    if (!response[0] || !response[0].data) {
       return of(fetchProductDataFailed('invalid product API response'));
     }
-    product = response[requestMap.product].data || null;
+    product = response[0].data || null;
     // Handle bundleParent
-    let bundleParent = null;
-    if (requestMap.bundleParent) {
-      if (!response[requestMap.bundleParent] || !response[requestMap.bundleParent].data) {
+    let bundleParents = null;
+    if (response.length > 1) {
+      if (response.slice(1).some(bundleResponse => !bundleResponse || !bundleResponse.data)) {
         return of(fetchProductDataFailed('invalid bundle parent API response'));
       }
-      bundleParent = response[requestMap.bundleParent].data || null;
+      bundleParents = {};
+      response.slice(1).forEach((bundleResponse) => {
+        bundleParents[bundleResponse.data.productCode] = bundleResponse.data;
+      });
     }
     // Done
-    return of(fetchProductDataFulfilled(product, bundleParent));
+    return of(fetchProductDataFulfilled(product, bundleParents));
   });
   const handleError = catchError((error) => {
     let message = null;
@@ -59,7 +60,7 @@ const applyMiddleware = dispatch => (action) => {
       return dispatch(storeProductCode(productCode));
 
     case ActionTypes.FETCH_PRODUCT_DATA:
-      return buildFetchObservable(action.payload.productCode, action.payload.bundleParentCode)
+      return buildFetchObservable(action.payload.productCode, action.payload.bundleParentCodes)
         .subscribe(responseAction => dispatch(responseAction));
 
     default:

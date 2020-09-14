@@ -13,8 +13,8 @@ const initialState = {
   appStatus: null,
   productCodeToFetch: null,
   product: null,
-  bundleParentCodeToFetch: null,
-  bundleParent: null,
+  bundleParentCodesToFetch: null,
+  bundleParents: null,
   bundleForwardAvailabilityFromParent: null,
   error: null,
 };
@@ -29,7 +29,7 @@ const StoreProvider = (props) => {
 
   const reducer = (state = {}, action) => {
     let update;
-    let bundleParentCode = null;
+    let bundleParentCodes = null;
     switch (action.type) {
       case ActionTypes.INITIALIZE:
         update = {
@@ -44,11 +44,14 @@ const StoreProvider = (props) => {
           productCodeToFetch: action.payload.productCode,
         };
         if (bundles.children && bundles.children[action.payload.productCode]) {
-          bundleParentCode = bundles.children[action.payload.productCode];
-          update.bundleParentCodeToFetch = bundleParentCode;
-          if (bundles.parents[bundleParentCode]) {
-            // eslint-disable-next-line max-len
-            update.bundleForwardAvailabilityFromParent = bundles.parents[bundleParentCode].forwardAvailability;
+          bundleParentCodes = [bundles.children[action.payload.productCode]].flat();
+          update.bundleParentCodesToFetch = bundleParentCodes;
+          update.bundleForwardAvailabilityFromParent = false;
+          if (
+            bundleParentCodes.length === 1
+              && bundles.parents[bundleParentCodes[0]].forwardAvailability
+          ) {
+            update.bundleForwardAvailabilityFromParent = true;
           }
         }
         return update;
@@ -63,19 +66,23 @@ const StoreProvider = (props) => {
           ...state,
           appStatus: AppStatuses.FETCH_SUCCESS,
           product: { ...action.payload.product },
-          bundleParent: action.payload.bundleParent ? { ...action.payload.bundleParent } : null,
+          bundleParents: action.payload.bundleParents ? { ...action.payload.bundleParents } : null,
           error: null,
         };
         if (update.product.sites && !update.product.siteCodes) {
           update.product.siteCodes = [...update.product.sites];
           delete update.product.sites;
         }
-        if (update.bundleParent) {
+        if (update.bundleParents) {
           // Bundle children come back as "FUTURE" but they're really active by way of the parent.
           update.product.productStatus = 'ACTIVE';
-          if (update.bundleParent.sites && !update.bundleParent.siteCodes) {
-            update.bundleParent.siteCodes = [...update.bundleParent.sites];
-            delete update.bundleParent.sites;
+          if (
+            Object.keys(update.bundleParents).length === 1
+              && update.bundleForwardAvailabilityFromParent
+          ) {
+            update.product.siteCodes = [
+              ...update.bundleParents[Object.keys(update.bundleParents)[0]].siteCodes,
+            ];
           }
         }
         return update;

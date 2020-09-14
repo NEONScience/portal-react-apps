@@ -65,8 +65,9 @@ const AvailabilitySection = (props) => {
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
 
-  const { bundleParent, bundleForwardAvailabilityFromParent } = state;
+  const { bundleParents, bundleForwardAvailabilityFromParent } = state;
 
+  const isBundleChild = bundleParents !== null && Object.keys(bundleParents).length;
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
   const computeAvailableDateRange = () => (productData.siteCodes || []).reduce((acc, siteCode) => {
@@ -83,15 +84,40 @@ const AvailabilitySection = (props) => {
   const availableDatesFormatted = availableDates
     .map(month => moment(`${month}-02`).format('MMMM YYYY'));
 
-  const isBundleChild = bundleParent !== null;
-  const bundleParentLink = isBundleChild ? (
+  const getParentProductLink = (parentProductData = {}) => (
     <Link
-      href={`${NeonEnvironment.getHost()}/data-products/${state.bundleParent.productCode}`}
+      href={`${NeonEnvironment.getHost()}/data-products/${parentProductData.productCode}`}
       target="_blank"
     >
-      {`${state.bundleParent.productName} (${state.bundleParent.productCode})`}
+      {`${parentProductData.productName} (${parentProductData.productCode})`}
     </Link>
-  ) : null;
+  );
+
+  let bundleParentLink = null;
+  if (isBundleChild) {
+    const parentCodes = Object.keys(bundleParents);
+    bundleParentLink = parentCodes.length === 1
+      ? (
+        <Typography variant="subtitle2">
+          {/* eslint-disable react/jsx-one-expression-per-line */}
+          This data product is bundled into {getParentProductLink(bundleParents[parentCodes[0]])}
+          {/* eslint-enable react/jsx-one-expression-per-line */}
+        </Typography>
+      ) : (
+        <React.Fragment>
+          <Typography variant="subtitle2">
+            This data product has been split and bundled into more than one parent data product:
+          </Typography>
+          <ul style={{ margin: Theme.spacing(1, 0) }}>
+            {parentCodes.map(parentCode => (
+              <li key={parentCode}>
+                {getParentProductLink(bundleParents[parentCode])}
+              </li>
+            ))}
+          </ul>
+        </React.Fragment>
+      );
+  }
 
   // Bundle children that don't forward availability: no donwload button, just link to parent
   if (isBundleChild && !bundleForwardAvailabilityFromParent) {
@@ -103,14 +129,13 @@ const AvailabilitySection = (props) => {
             <div className={classes.startFlex} style={{ width: '100%' }}>
               <BundleIcon fontSize="large" className={classes.infoSnackbarIcon} />
               <div style={{ flexGrow: 1 }}>
-                <Typography variant="subtitle2">
-                  {/* eslint-disable react/jsx-one-expression-per-line */}
-                  This data product is bundled into {bundleParentLink}
-                  {/* eslint-enable react/jsx-one-expression-per-line */}
-                </Typography>
+                {bundleParentLink}
                 <Typography variant="body2">
-                  It is not available as a standalone download. Data availability information
-                  and product download is only available through the parent product.
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
+                  It is not available as a standalone download.
+                  Data availability information and product download is only available through
+                  the parent product{Object.keys(bundleParents).length > 1 ? 's' : ''}.
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
               </div>
             </div>
@@ -127,11 +152,7 @@ const AvailabilitySection = (props) => {
         <div className={classes.startFlex} style={{ width: '100%' }}>
           <BundleIcon fontSize="large" className={classes.infoSnackbarIcon} />
           <div style={{ flexGrow: 1 }}>
-            <Typography variant="subtitle2">
-              {/* eslint-disable react/jsx-one-expression-per-line */}
-              This data product is bundled into {bundleParentLink}
-              {/* eslint-enable react/jsx-one-expression-per-line */}
-            </Typography>
+            {bundleParentLink}
             <Typography variant="body2">
               It is not available as a standalone download. Data availability shown
               below reflects availability of the entire bundle.

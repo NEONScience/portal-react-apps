@@ -9,19 +9,19 @@ import DataProductPage from './components/DataProductPage';
 
 export default function App() {
   const { state, actions } = React.useContext(StoreContext);
-  const { appStatus, productCodeToFetch, bundleParentCodeToFetch } = state;
+  const { appStatus, productCodeToFetch, bundleParentCodesToFetch } = state;
 
   // Trigger actions from particular app statuses
   useEffect(() => {
     if (appStatus === null) {
       actions.initialize();
     } else if (appStatus === AppStatuses.READY_TO_FETCH) {
-      actions.fetchProductData(productCodeToFetch, bundleParentCodeToFetch);
+      actions.fetchProductData(productCodeToFetch, bundleParentCodesToFetch);
     }
   }, [
     appStatus,
     productCodeToFetch,
-    bundleParentCodeToFetch,
+    bundleParentCodesToFetch,
     actions,
   ]);
 

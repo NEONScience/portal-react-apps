@@ -24,14 +24,14 @@ export const storeProductCode = productCode => ({
   payload: { productCode },
 });
 
-export const fetchProductData = (productCode, bundleParentCode = null) => ({
+export const fetchProductData = (productCode, bundleParentCodes = []) => ({
   type: ActionTypes.FETCH_PRODUCT_DATA,
-  payload: { productCode, bundleParentCode },
+  payload: { productCode, bundleParentCodes },
 });
 
-export const fetchProductDataFulfilled = (product, bundleParent = null) => ({
+export const fetchProductDataFulfilled = (product, bundleParents = null) => ({
   type: ActionTypes.FETCH_PRODUCT_DATA_FULFILLED,
-  payload: { product, bundleParent },
+  payload: { product, bundleParents },
 });
 
 export const fetchProductDataFailed = (error = null) => ({
@@ -42,7 +42,7 @@ export const fetchProductDataFailed = (error = null) => ({
 export const useActions = (state, dispatch) => ({
   initialize: data => dispatch(initialize(data)),
   storeProductCode: data => dispatch(storeProductCode(data)),
-  fetchProductData: (productCode, bundleParentCode = null) => {
-    dispatch(fetchProductData(productCode, bundleParentCode));
+  fetchProductData: (productCode, bundleParentCodes = []) => {
+    dispatch(fetchProductData(productCode, bundleParentCodes));
   },
 });

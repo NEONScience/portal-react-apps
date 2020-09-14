@@ -110,7 +110,9 @@ const DataProduct = React.memo((props) => {
   const isBundleChild = bundle.isChild && bundleParentProductData;
   let siteCodes = [];
   if (isBundleChild) {
-    siteCodes = bundle.forwardAvailability ? bundleParentProductData.siteCodes : [];
+    siteCodes = bundle.forwardAvailability && !Array.isArray(bundleParentProductData)
+      ? bundleParentProductData.siteCodes
+      : [];
   } else {
     siteCodes = productData.siteCodes;
   }
@@ -163,22 +165,44 @@ const DataProduct = React.memo((props) => {
     </Typography>
   );
 
-  const bundleParentLink = isBundleChild ? (
+  const getParentProductLink = (parentProductData = {}) => (
     <Link
-      href={`${NeonEnvironment.getHost()}/data-products/${bundleParentProductData.productCode}`}
+      href={`${NeonEnvironment.getHost()}/data-products/${parentProductData.productCode}`}
       target="_blank"
     >
-      {`${bundleParentProductData.productName} (${bundleParentProductData.productCode})`}
-    </Link>
-  ) : null;
+      {`${parentProductData.productName} (${parentProductData.productCode})`}
+    </Link>    
+  );
+  
+  let bundleParentLink = null;
+  if (isBundleChild) {
+    bundleParentLink = !Array.isArray(bundleParentProductData)
+      ? (
+        <Typography variant="subtitle2">
+          This data product is bundled into {getParentProductLink(bundleParentProductData)}
+        </Typography>
+      ) : (
+        <React.Fragment>
+          <Typography variant="subtitle2">
+            This data product has been split and bundled into more than one parent data product:
+          </Typography>
+          <ul style={{ margin: Theme.spacing(1, 0) }}>
+            {bundleParentProductData.map(bundleParentProduct => (
+              <li key={bundleParentProduct.productCode}>
+                {getParentProductLink(bundleParentProduct)}
+              </li>
+            ))}
+          </ul>
+        </React.Fragment>
+      );
+  }
+
   const bundleInfo = isBundleChild ? (
     <Card className={classes.card}>
       <CardContent className={classes.cardContent}>
         <BundleIcon fontSize="large" className={classes.cardIcon} />
         <div style={{ flexGrow: 1 }}>
-          <Typography variant="subtitle2">
-            This data product is bundled into {bundleParentLink}
-          </Typography>
+          {bundleParentLink}
           <Typography variant="body2">
             {bundle.forwardAvailability ? (
               <React.Fragment>
@@ -187,8 +211,9 @@ const DataProduct = React.memo((props) => {
               </React.Fragment>
             ) : (
               <React.Fragment>
-                It is not available as a standalone download. Data availability information
-                and product download is only available through the parent product.
+                It is not available as a standalone download.
+                Data availability information and product download is only available through
+                the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
               </React.Fragment>
             )}
           </Typography>

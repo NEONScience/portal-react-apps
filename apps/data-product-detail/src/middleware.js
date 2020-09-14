@@ -18,7 +18,7 @@ export const getProductCode = () => {
 const buildFetchObservable = (productCode, bundleParentCodes = []) => {
   const getAJAX = code => NeonApi.getProductObservable(code);
   const requests = [getAJAX(productCode)];
-  bundleParentCodes.forEach((bundleParentCode) => {
+  (bundleParentCodes || []).forEach((bundleParentCode) => {
     requests.push(getAJAX(bundleParentCode));
   });
   const mergeResponses = mergeMap((response) => {

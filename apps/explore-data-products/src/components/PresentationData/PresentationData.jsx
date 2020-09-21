@@ -72,6 +72,12 @@ const PresentationData = (props) => {
     });
   }, []);
 
+  const getBundleParentProductData = (productCode) => {
+    const { isChild, hasManyParents, parent } = products[productCode].bundle;
+    if (!isChild || !parent) { return null; }
+    return !hasManyParents ? products[parent] : parent.map((parentCode) => products[parentCode]);
+  };
+
   /**
    * Render
    */
@@ -101,11 +107,7 @@ const PresentationData = (props) => {
         <DataProduct
           key={productCode}
           productData={products[productCode]}
-          bundleParentProductData={(
-            products[productCode].bundle.isChild
-              ? products[products[productCode].bundle.parent]
-              : null
-          )}
+          bundleParentProductData={getBundleParentProductData(productCode)}
           descriptionExpanded={productDescriptionExpanded[productCode]}
           isAopViewerProduct={aopViewerProducts.includes(productCode)}
           onExpandProductDescription={onExpandProductDescription}

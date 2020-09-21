@@ -76,12 +76,21 @@ export const buildAppState = (state) => {
     const productCode = product.productCode;
 
     // Set bundle values now so we can use them downstream. A bundle child may take on
-    // several attributes of its parent so as to be presented properly.
+    // several attributes of its parent so as to be presented properly. Note that some bundle
+    // children may have more than one parent, and forwarding availability will never work for them.
     const isBundleChild = !!bundlesJSON.children[productCode];
-    const isBundleParent = bundlesJSON.parents.includes(productCode);
+    const isBundleParent = Object.keys(bundlesJSON.parents).includes(productCode);
+    let forwardAvailability = null;
+    const hasManyParents = Array.isArray(bundlesJSON.children[productCode]);
+    if (isBundleChild && !hasManyParents) {
+      // eslint-disable-next-line max-len
+      forwardAvailability = bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability;
+    }
     product.bundle = {
       isChild: isBundleChild,
       isParent: isBundleParent,
+      hasManyParents,
+      forwardAvailability,
       parent: isBundleChild ? bundlesJSON.children[productCode] : null,
       children: isBundleParent ? (
         Object.keys(bundlesJSON.children)
@@ -185,16 +194,21 @@ export const buildAppState = (state) => {
   // Update Bundle Children
   // For all bundle children set certain filterable values related to data availability
   // to that of their parent, then add to the global filter count using the updated values.
-  Object.keys(bundlesJSON.children).forEach((childProductCode) => {
-    if (!dataStore.products[childProductCode]) { return; }
-    const parentProductCode = dataStore.products[childProductCode].bundle.parent;
-    if (!dataStore.products[parentProductCode]) { return; }
-    const parent = dataStore.products[parentProductCode];
-    BUNDLE_INHERITIED_FILTER_KEYS.forEach((filterKey) => {
-      dataStore.products[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];
+  // We skip this for any bundles where forwardAvailability is false or where there is more than
+  // one parent.
+  Object.keys(bundlesJSON.children)
+    .filter(childProductCode => !Array.isArray(bundlesJSON.children[childProductCode]))
+    .forEach((childProductCode) => {
+      if (!dataStore.products[childProductCode]) { return; }
+      const parentProductCode = dataStore.products[childProductCode].bundle.parent;
+      if (!dataStore.products[parentProductCode]) { return; }
+      if (!bundlesJSON.parents[parentProductCode].forwardAvailability) { return; }
+      const parent = dataStore.products[parentProductCode];
+      BUNDLE_INHERITIED_FILTER_KEYS.forEach((filterKey) => {
+        dataStore.products[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];
+      });
+      addProductToFilterItemCounts(dataStore.products[childProductCode]);
     });
-    addProductToFilterItemCounts(dataStore.products[childProductCode]);
-  });
 
   // Make the final allKeywordsByLetter object unique, alphabetized, and split by first letter
   allKeywords = Array.from(new Set(allKeywords));

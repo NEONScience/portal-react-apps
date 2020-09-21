@@ -79,6 +79,7 @@ export const COUNTABLE_FILTER_KEYS = [
 
 // Array of filter keys that bundle children will inherit filter values
 // from their parent (keys generally having to do with data availability)
+// NOTE: this only applies to bundle children that DO forward availability from the parent
 export const BUNDLE_INHERITIED_FILTER_KEYS = [
   FILTER_KEYS.DATA_STATUS,
   FILTER_KEYS.DATE_RANGE,

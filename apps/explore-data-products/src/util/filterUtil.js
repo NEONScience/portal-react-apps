@@ -269,11 +269,12 @@ export const DEFAULT_SORT_DIRECTION = 'ASC';
  */
 const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((score, term) => {
   const regex = new RegExp(`[\\S]{0,1}${term}[\\S]{0,1}`, 'g');
-  [...product.filterableValues[FILTER_KEYS.SEARCH].matchAll(regex)]
-    .map(match => match[0])
-    .forEach(match => {
+  const matches = (product.filterableValues[FILTER_KEYS.SEARCH] || '').match(regex);
+  if (matches) {
+    matches.forEach(match => {
       score += (match === term ? 3 : 1) * term.length;
     });
+  }
   return score;
 }, 0);
 
@@ -484,7 +485,9 @@ export const generateSearchFilterableValue = (product, neonContextState) => {
   search.push(product.filterableValues[FILTER_KEYS.SITES].map(site => sitesJSON[site].description).join(' '));
   search.push(product.filterableValues[FILTER_KEYS.STATES].map(state => statesJSON[state].name).join(' '));
   search.push(product.filterableValues[FILTER_KEYS.DOMAINS].map(domain => domainsJSON[domain].name).join(' '));
-  search.push((new Set(product.filterableValues[FILTER_KEYS.DATE_RANGE].map(d => d.substr(0, 4)))).join(' '));
+  // Include all available data years
+  const dataYears = new Set(product.filterableValues[FILTER_KEYS.DATE_RANGE].map(d => d.substr(0, 4)));
+  search.push([...dataYears].join(' '));
   // Flatten everything into a single string, cast to lower case, and strip out special characters
   return search.join(' ').toLowerCase().replace(/[^\w. ]/g, ' ').replace(/[ ]{2,}/g, ' ');
 };

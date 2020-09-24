@@ -1,6 +1,6 @@
 {
   "name": "browse-refactor",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "private": true,
   "homepage": "https://localhost/data-products/explore",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
-    "core-js": "^3.1.4",
+    "core-js": "^3.6.5",
     "d3": "^4.12.2",
     "d3-dsv": "^1.0.8",
     "d3-scale": "^1.0.7",
@@ -17,7 +17,7 @@
     "jspdf": "^1.5.3",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.5.2",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.5.4",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
@@ -45,7 +45,7 @@
   "browserslist": [
     ">0.2%",
     "not dead",
-    "not ie <= 10",
-    "not op_mini all"
+    "not op_mini all",
+    "ie 11"
   ]
 }

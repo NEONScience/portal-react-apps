@@ -18,24 +18,18 @@ const getSearchURLParam = () => {
 };
 
 const getSitesURLParams = () => {
-  const matches = window.location.search.matchAll(/[?&]site=([A-Z]{4})/g);
-  return Array.from(
-    new Set([...matches].map(match => match[1])),
-  );
+  const matches = window.location.search.match(/[?&]site=([A-Z]{4})/g) || [];
+  return Array.from(new Set(matches));
 };
 
 const getStatesURLParams = () => {
-  const matches = window.location.search.matchAll(/[?&]state=([A-Z]{2})/g);
-  return Array.from(
-    new Set([...matches].map(match => match[1])),
-  );
+  const matches = window.location.search.match(/[?&]state=([A-Z]{2})/g) || [];
+  return Array.from(new Set(matches));
 };
 
 const getDomainsURLParams = () => {
-  const matches = window.location.search.matchAll(/[?&]domain=(D[\d]{2})/g);
-  return Array.from(
-    new Set([...matches].map(match => match[1])),
-  );
+  const matches = window.location.search.match(/[?&]domain=(D[\d]{2})/g) || [];
+  return Array.from(new Set(matches));
 };
 
 const DEFAULT_STATE = {

@@ -19,7 +19,6 @@ const TopPresentation = (props) => {
     <NeonPage
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}
-      useCoreHeader
     >
       <InfoPresentation {...props} />
       <SampleQueryPresentation {...props} />

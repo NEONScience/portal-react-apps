@@ -49,7 +49,7 @@ const FilterSite = (props) => {
       selection="SITES"
       selectedItems={filterValues[filterKey]}
       buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
-      onSave={(newSites) => { onApplyFilter(filterKey, Array.from(newSites)); }}
+      onSave={(newSites) => { onApplyFilter(filterKey, Array.from(newSites), true); }}
     />
   );
 

@@ -57,8 +57,8 @@ const mapDispatchToProps = dispatch => ({
   onApplySort: (sortMethod, sortDirection) => {
     dispatch(applySort(sortMethod, sortDirection));
   },
-  onApplyFilter: (filterKey, filterValue) => {
-    dispatch(applyFilter(filterKey, filterValue));
+  onApplyFilter: (filterKey, filterValue, showOnlySelected = false) => {
+    dispatch(applyFilter(filterKey, filterValue, showOnlySelected));
   },
   onResetFilter: (filterKey) => {
     dispatch(resetFilter(filterKey));

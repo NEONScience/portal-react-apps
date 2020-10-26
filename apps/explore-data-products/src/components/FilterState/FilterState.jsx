@@ -49,7 +49,7 @@ const FilterState = (props) => {
       selection="STATES"
       selectedItems={filterValues[filterKey]}
       buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
-      onSave={(newStates) => { onApplyFilter(filterKey, Array.from(newStates)); }}
+      onSave={(newStates) => { onApplyFilter(filterKey, Array.from(newStates), true); }}
     />
   );
 

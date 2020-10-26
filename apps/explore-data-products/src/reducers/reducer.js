@@ -86,6 +86,13 @@ const reducer = (state = {}, action) => {
     case APPLY_SORT:
       return applySort(state, action.sortMethod, action.sortDirection);
     case APPLY_FILTER:
+      if (action.showOnlySelected) { 
+        return changeFilterItemVisibility(
+          applyFilter(state, action.filterKey, action.filterValue),
+          action.filterKey,
+          FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+        );
+      }
       return applyFilter(state, action.filterKey, action.filterValue);
     case RESET_FILTER:
       return resetFilter(state, action.filterKey);

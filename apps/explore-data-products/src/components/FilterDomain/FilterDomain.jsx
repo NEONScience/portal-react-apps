@@ -49,7 +49,7 @@ const FilterDomain = (props) => {
       selection="DOMAINS"
       selectedItems={filterValues[filterKey]}
       buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
-      onSave={(newDomains) => { onApplyFilter(filterKey, Array.from(newDomains)); }}
+      onSave={(newDomains) => { onApplyFilter(filterKey, Array.from(newDomains), true); }}
     />
   );
 

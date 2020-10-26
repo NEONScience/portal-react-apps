@@ -23,6 +23,13 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     minHeight: '30px',
   },
+  titleButtonContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      marginLeft: theme.spacing(1),
+    },
+  },
   title: {
     fontWeight: 500,
   },
@@ -43,6 +50,7 @@ const FilterBase = (props) => {
     skeleton,
     showResetButton,
     handleResetFilter,
+    additionalTitleButton,
     'data-selenium': dataSeleniumTag,
   } = props;
 
@@ -67,19 +75,22 @@ const FilterBase = (props) => {
         <Typography variant="h5" component="h3" className={classes.title}>
           {title}
         </Typography>
-        {typeof handleResetFilter === 'function' && showResetButton ? (
-          <Button
-            title={`Reset the ${title} Filter`}
-            aria-label={`Reset the ${title} Filter`}
-            variant="outlined"
-            color="primary"
-            size="small"
-            startIcon={<ClearIcon />}
-            onClick={handleResetFilter}
-          >
-            Reset
-          </Button>
-        ) : null}
+        <div className={classes.titleButtonContainer}>
+          {React.isValidElement(additionalTitleButton) && !skeleton ? additionalTitleButton : null}
+          {typeof handleResetFilter === 'function' && showResetButton ? (
+            <Button
+              title={`Reset the ${title} Filter`}
+              aria-label={`Reset the ${title} Filter`}
+              variant="outlined"
+              color="primary"
+              size="small"
+              startIcon={<ClearIcon />}
+              onClick={handleResetFilter}
+            >
+              Reset
+            </Button>
+          ) : null}
+        </div>
       </div>
       {subtitle ? (
         <Typography variant="body2" className={classes.subtitle}>{subtitle}</Typography>

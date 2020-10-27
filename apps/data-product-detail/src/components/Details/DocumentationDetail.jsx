@@ -11,7 +11,7 @@ import CodeIcon from '@material-ui/icons/Code';
 import DocumentIcon from '@material-ui/icons/DescriptionOutlined';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import ImageIcon from '@material-ui/icons/Photo';
-import PresentationIcon from '@material-ui/icons/PresentToAll';
+import PresentationIcon from '@material-ui/icons/Tv';
 import SpreadsheetIcon from '@material-ui/icons/GridOn';
 
 
@@ -31,6 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   listItemIcon: {
     minWidth: theme.spacing(4),
+    marginRight: theme.spacing(1),
   },
 }));
 
@@ -102,7 +103,7 @@ const documentTypeKeys = Object.keys(documentTypes);
 
 const defaultDocumentType = {
   Icon: FileIcon,
-  title: 'Unknown file type',
+  title: 'File type unavailable',
 };
 
 const DocumentationDetail = () => {

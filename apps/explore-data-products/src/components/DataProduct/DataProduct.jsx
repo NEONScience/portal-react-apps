@@ -99,8 +99,10 @@ const DataProduct = React.memo((props) => {
     bundle,
     themes,
     productName,
-    productDescription,
+    productDescription: rawProductDescription,
   } = productData;
+
+  const productDescription = rawProductDescription ? rawProductDescription : '--';
 
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },

@@ -73,10 +73,11 @@ export const applySort = (sortMethod, sortDirection) => ({
   sortDirection,
 });
 
-export const applyFilter = (filterKey, filterValue) => ({
+export const applyFilter = (filterKey, filterValue, showOnlySelected = false) => ({
   type: APPLY_FILTER,
   filterKey,
   filterValue,
+  showOnlySelected,
 });
 
 export const resetFilter = filterKey => ({

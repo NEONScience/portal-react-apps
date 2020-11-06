@@ -15,7 +15,6 @@ const App = () => {
     <NeonPage
       title="Taxonomic Lists"
       breadcrumbs={breadcrumbs}
-      useCoreHeader
     >
       <InfoPresentation />
       <ControlPresentation />

@@ -75,7 +75,6 @@ const DataProductPage = (props) => {
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarSubtitle={state.product ? state.product.productCode : '--'}
-      useCoreHeader
     >
       {skeleton ? renderPageContents() : (
         <DownloadDataContext.Provider

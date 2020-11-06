@@ -143,8 +143,8 @@ const PresentationFilter = (props) => {
           <FilterDataStatus {...filterProps} />
           <FilterVisualization {...filterProps} />
           <FilterScienceTeam {...filterProps} />
-          <FilterState {...filterProps} />
           <FilterSite {...filterProps} />
+          <FilterState {...filterProps} />
           <FilterDomain {...filterProps} />
           <FilterTheme {...filterProps} />
         </React.Fragment>

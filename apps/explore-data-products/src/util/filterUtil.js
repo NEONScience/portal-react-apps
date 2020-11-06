@@ -294,7 +294,7 @@ const productIsVisibleByFilter = (productVisibility) => !Object.keys(productVisi
  * (for all products in map: set boolean filter visibility value and recalculate CURRENT visibility)
  * @param {object} state - current whole state object
  * @param {string} filterKey - identifier for filter as it appears in FILTER_KEYS
- * @param {*} value - value to apply to filter
+ * @param {*} filterValue - value to apply to filter
  * @return {object} updated whole state object
  */
 export const applyFilter = (state, filterKey, filterValue) => {

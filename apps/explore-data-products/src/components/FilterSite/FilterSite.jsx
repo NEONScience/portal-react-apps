@@ -1,5 +1,7 @@
 import React from 'react';
 
+import MapSelectionButton from 'portal-core-components/lib/components/MapSelectionButton';
+
 import FilterBase from '../FilterBase/FilterBase';
 import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
 import FilterItemVisibilityButtons from '../FilterItemVisibilityButtons/FilterItemVisibilityButtons';
@@ -29,9 +31,7 @@ const FilterSite = (props) => {
     filterValues: filterValues[filterKey],
   };
 
-  const subtitle = filtersApplied.includes(filterKey)
-    ? `(${filterValues[filterKey].length} selected)`
-    : null;
+  const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
 
   const byVisibility = (item, idx) => {
     switch (filterItemVisibility[filterKey]) {
@@ -44,6 +44,15 @@ const FilterSite = (props) => {
     }
   };
 
+  const mapSelectionButton = (
+    <MapSelectionButton
+      selection="SITES"
+      selectedItems={filterValues[filterKey]}
+      buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
+      onSave={(newSites) => { onApplyFilter(filterKey, Array.from(newSites), true); }}
+    />
+  );
+
   return (
     <FilterBase
       title="Sites"
@@ -52,6 +61,7 @@ const FilterSite = (props) => {
       data-selenium="browse-data-products-page.filters.sites"
       handleResetFilter={() => onResetFilter(filterKey)}
       showResetButton={filtersApplied.includes(filterKey)}
+      additionalTitleButton={mapSelectionButton}
     >
       <ul>
         {filterItems[filterKey].filter(byVisibility).map((filterItem) => (

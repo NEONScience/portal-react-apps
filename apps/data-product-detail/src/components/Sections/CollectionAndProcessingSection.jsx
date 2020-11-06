@@ -25,15 +25,15 @@ const CollectionAndProcessingSection = (props) => {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
-          <DocumentationDetail />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
+        <Grid item xs={12}>
           <Detail
             title="Instrumentation"
             content={state.product.productSensor}
           />
+        </Grid>
+
+        <Grid item xs={12}>
+          <DocumentationDetail />
         </Grid>
 
         <Grid item xs={12}>

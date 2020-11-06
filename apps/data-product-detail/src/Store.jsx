@@ -17,6 +17,10 @@ const initialState = {
   bundleParents: null,
   bundleForwardAvailabilityFromParent: null,
   error: null,
+  release: {
+    latestForProduct: 'NEON.2021.0',
+    focused: null,
+  },
 };
 
 const StoreContext = React.createContext(initialState);
@@ -101,8 +105,13 @@ const StoreProvider = (props) => {
         return state;
     }
   };
+  const wrappedReducer = (state = {}, action) => {
+    const update = reducer(state, action);
+    console.log('STATE', update);
+    return update;
+  };
 
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(wrappedReducer, initialState);
 
   // Attach middleware to dispatch to create enhancedDispatch
   // enhancedDispatch triggers side effects after reducers complete as defined

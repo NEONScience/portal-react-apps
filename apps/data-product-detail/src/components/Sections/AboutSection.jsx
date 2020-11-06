@@ -47,7 +47,7 @@ const AboutSection = (props) => {
           />
           {state.product.productRemarks ? (
             <Detail
-              title="Remarks"
+              title="Additional Information"
               content={(
                 <Markdown>{state.product.productRemarks}</Markdown>
               )}

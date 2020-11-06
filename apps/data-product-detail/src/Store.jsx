@@ -69,6 +69,8 @@ const StoreProvider = (props) => {
           bundleParents: action.payload.bundleParents ? { ...action.payload.bundleParents } : null,
           error: null,
         };
+        // Sort the documents by document number
+        update.product.specs.sort((a, b) => (a.specNumber > b.specNumber ? 1 : -1));
         if (update.product.sites && !update.product.siteCodes) {
           update.product.siteCodes = [...update.product.sites];
           delete update.product.sites;

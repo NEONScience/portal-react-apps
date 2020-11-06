@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles } from '@material-ui/core/styles';
 
 import List from '@material-ui/core/List';
@@ -28,6 +29,16 @@ const useStyles = makeStyles(theme => ({
   },
   listItem: {
     paddingLeft: theme.spacing(1),
+    '& p': {
+      marginTop: theme.spacing(0.5),
+      '& > span > span': {
+        whiteSpace: 'nowrap',
+      },
+    },
+  },
+  listItemSecondarySpacer: {
+    margin: theme.spacing(0, 2),
+    color: theme.palette.grey[200],
   },
   listItemIcon: {
     minWidth: theme.spacing(4),
@@ -109,6 +120,7 @@ const defaultDocumentType = {
 const DocumentationDetail = () => {
   const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
+  const atXs = useMediaQuery(Theme.breakpoints.down('xs'));
 
   const renderDocument = (spec) => {
     if (!spec) { return null; }
@@ -130,9 +142,36 @@ const DocumentationDetail = () => {
     }
     const { title: typeTitle, Icon: TypeIcon } = documentType;
     // Generate description strings
-    const primary = description || number;
     const typeTitleString = typeof typeTitle === 'function' ? typeTitle(type) : typeTitle.toString();
-    const secondary = size ? `${typeTitleString} - ${formatBytes(size)}` : typeTitleString;
+    const primary = description || <i>No description</i>;
+    const spacer = <span className={classes.listItemSecondarySpacer}>|</span>;
+    const typeAndSize = (
+      <React.Fragment>
+        <span title={`file type: ${typeTitleString}`}>{typeTitleString}</span>
+        {!size ? null : (
+          <React.Fragment>
+            {spacer}
+            <span title={`file size: ${formatBytes(size)}`}>{formatBytes(size)}</span>
+          </React.Fragment>
+        )}
+      </React.Fragment>
+    );
+    const fileNumber = (
+      <span title={`file number: ${number}`}>{number}</span>
+    );
+    const secondary = atXs ? (
+      <span>
+        {fileNumber}
+        <br />
+        {typeAndSize}
+      </span>
+    ) : (
+      <span>
+        {typeAndSize}
+        {spacer}
+        {fileNumber}
+      </span>
+    );
     // Render
     return (
       <ListItem
@@ -140,7 +179,7 @@ const DocumentationDetail = () => {
         className={classes.listItem}
         component="a"
         href={apiPath}
-        title={`Click to download ${secondary}`}
+        title={`Click to download ${number}`}
         button
       >
         <ListItemIcon className={classes.listItemIcon}>

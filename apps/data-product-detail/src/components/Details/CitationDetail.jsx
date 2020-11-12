@@ -28,6 +28,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
   citationText: {
+    fontFamily: 'monospace',
+  },
+  citationTextWithQualifier: {
     marginTop: theme.spacing(1.5),
     fontFamily: 'monospace',
   },
@@ -39,8 +42,11 @@ const CitationDetail = () => {
 
   const {
     product,
-    release,
+    releases,
+    currentRelease,
   } = state;
+
+  const latestRelease = (releases || []).length ? releases[releases.length - 1] : null;
 
   const doi = null;
 
@@ -69,9 +75,10 @@ const CitationDetail = () => {
   const renderCitationCard = (releaseId, conditional = false) => {
     const provisional = releaseId === 'provisional';
     let conditionalText = null;
+    let citationClassName = classes.citationText;
     if (conditional) {
       conditionalText = (
-        <Typography variant="subtitle1" component="h5">
+        <Typography variant="body1" component="h6">
           {(
             provisional
               ? 'If Provisional data are used, include:'
@@ -79,13 +86,14 @@ const CitationDetail = () => {
           )}
         </Typography>
       );
+      citationClassName = classes.citationTextWithQualifier;
     }
     const citationText = getCitationText(releaseId);
     return (
       <Card className={classes.citationCard}>
         <CardContent>
           {conditionalText}
-          <Typography variant="body1" className={classes.citationText}>
+          <Typography variant="body1" className={citationClassName}>
             {citationText}
           </Typography>
         </CardContent>
@@ -105,18 +113,18 @@ const CitationDetail = () => {
     <Detail title="Citation">
       <Typography variant="subtitle2">
         {(
-          release.focused
-            ? 'Please use the appropriate citation(s) from below in your publications. If you using both provisional and release data please include both citations. '
-            : 'Please use this citation in your publications. '
+          currentRelease
+            ? 'Please use this citation in your publications. '
+            : 'Please use the appropriate citation(s) from below in your publications. If using both provisional and release data please include both citations. '
         )}
         See {dataPolicyLink} for more info.
       </Typography>
-      {release.focused ? (
-        renderCitationCard(release.focused)
+      {currentRelease ? (
+        renderCitationCard(currentRelease)
       ) : (
         <React.Fragment>
           {renderCitationCard('provisional', true)}
-          {renderCitationCard(release.latestForProduct, true)}
+          {latestRelease ? renderCitationCard(latestRelease.name, true) : null}
         </React.Fragment>
       )}
     </Detail>

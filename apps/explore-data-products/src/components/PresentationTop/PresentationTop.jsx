@@ -27,6 +27,11 @@ const useStyles = makeStyles(theme => ({
     color: Theme.palette.grey[400],
     marginBottom: Theme.spacing(3),
   },
+  releaseSubtitle: {
+    fontSize: '1.6rem',
+    fontWeight: 600,
+    color: theme.palette.grey[600],
+  },
 }));
 
 const DEBOUNCE_MILLISECONDS = 100;
@@ -40,6 +45,7 @@ const PresentationTop = (props) => {
     onFetchAppState,
     productOrder,
     scrollCutoff,
+    currentRelease,
     onIncrementScrollCutoff,
     activeDataVisualization,
     onChangeActiveDataVisualization,
@@ -131,6 +137,11 @@ const PresentationTop = (props) => {
       loading={loading}
       error={error}
       title="Explore Data Products"
+      subtitle={!currentRelease ? null : (
+        <span className={classes.releaseSubtitle}>
+          {`Release ${currentRelease}`}
+        </span>
+      )}
       breadcrumbs={breadcrumbs}
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarWidth={340}

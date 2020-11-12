@@ -17,6 +17,15 @@ const CollectionAndProcessingSection = (props) => {
 
         <Grid item xs={12}>
           <Detail
+            title="Study Description"
+            content={(
+              <Markdown>{state.product.productStudyDescription || '_n/a_'}</Markdown>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Detail
             title="Design Description"
             tooltip="More information about the science design can be found in this data product's documentation."
             content={(

@@ -62,6 +62,14 @@ const DEFAULT_STATE = {
   productSearchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
   productDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
 
+  releases: [
+    { name: 'NEON.2021.0', doi: 'https://doi.org/abc/def_ghi_jkl_mnopqrstu' },
+    { name: 'NEON.2021.1', doi: 'https://doi.org/abc/jkl_mno_pqr_stuvwx/yzabcdef' },
+    { name: 'NEON.2021.2', doi: 'https://doi.org/abc/psr_stu_vwxyz_abcdef' },
+    { name: 'NEON.2022.0', doi: 'https://doi.org/abc/vwx_yza_bcd_efghijklmnop' },
+  ],
+  currentRelease: null,
+
   catalogStats: { // Stats about the entire product catalog we need and can derive once on load
     totalProducts: 0,
     totalSites: 0,

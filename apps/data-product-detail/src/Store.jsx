@@ -17,10 +17,13 @@ const initialState = {
   bundleParents: null,
   bundleForwardAvailabilityFromParent: null,
   error: null,
-  release: {
-    latestForProduct: 'NEON.2021.0',
-    focused: null,
-  },
+  releases: [
+    { name: 'NEON.2021.0', doi: 'https://doi.org/abc/def_ghi_jkl_mnopqrstu' },
+    { name: 'NEON.2021.1', doi: 'https://doi.org/abc/jkl_mno_pqr_stuvwx/yzabcdef' },
+    { name: 'NEON.2021.2', doi: 'https://doi.org/abc/psr_stu_vwxyz_abcdef' },
+    { name: 'NEON.2022.0', doi: 'https://doi.org/abc/vwx_yza_bcd_efghijklmnop' },
+  ],
+  currentRelease: null,
 };
 
 const StoreContext = React.createContext(initialState);
@@ -32,23 +35,20 @@ const StoreProvider = (props) => {
   const { bundles } = neonContextData;
 
   const reducer = (state = {}, action) => {
-    let update;
+    const update = { ...state };
     let bundleParentCodes = null;
-    switch (action.type) {
+    const { type, payload } = action;
+    switch (type) {
       case ActionTypes.INITIALIZE:
-        update = {
-          ...state,
-          appStatus: AppStatuses.INITIALIZING,
-        };
+        update.appStatus = AppStatuses.INITIALIZING;
         return update;
-      case ActionTypes.STORE_PRODUCT_CODE:
-        update = {
-          ...state,
-          appStatus: AppStatuses.READY_TO_FETCH,
-          productCodeToFetch: action.payload.productCode,
-        };
-        if (bundles.children && bundles.children[action.payload.productCode]) {
-          bundleParentCodes = [bundles.children[action.payload.productCode]].flat();
+
+      case ActionTypes.STORE_PRODUCT_CODE_AND_CURRENT_RELEASE:
+        update.appStatus = AppStatuses.READY_TO_FETCH;
+        update.productCodeToFetch = payload.productCode;
+        update.currentRelease = payload.currentRelease;
+        if (bundles.children && bundles.children[payload.productCode]) {
+          bundleParentCodes = [bundles.children[payload.productCode]].flat();
           update.bundleParentCodesToFetch = bundleParentCodes;
           update.bundleForwardAvailabilityFromParent = false;
           if (
@@ -59,20 +59,16 @@ const StoreProvider = (props) => {
           }
         }
         return update;
+
       case ActionTypes.FETCH_PRODUCT_DATA:
-        update = {
-          ...state,
-          appStatus: AppStatuses.FETCHING,
-        };
+        update.appStatus = AppStatuses.FETCHING;
         return update;
+
       case ActionTypes.FETCH_PRODUCT_DATA_FULFILLED:
-        update = {
-          ...state,
-          appStatus: AppStatuses.FETCH_SUCCESS,
-          product: { ...action.payload.product },
-          bundleParents: action.payload.bundleParents ? { ...action.payload.bundleParents } : null,
-          error: null,
-        };
+        update.appStatus = AppStatuses.FETCH_SUCCESS;
+        update.product = { ...payload.product };
+        update.bundleParents = payload.bundleParents ? { ...payload.bundleParents } : null;
+        update.error = null;
         // Sort the documents by document number
         update.product.specs.sort((a, b) => (a.specNumber > b.specNumber ? 1 : -1));
         if (update.product.sites && !update.product.siteCodes) {
@@ -92,15 +88,38 @@ const StoreProvider = (props) => {
           }
         }
         return update;
+
       case ActionTypes.FETCH_PRODUCT_DATA_FAILED:
-        update = {
-          ...state,
-          appStatus: AppStatuses.FETCH_ERROR,
-          product: null,
-          bundleParent: null,
-          error: action.payload.error,
-        };
+        update.appStatus = AppStatuses.FETCH_ERROR;
+        update.product = null;
+        update.bundleParent = null;
+        update.error = payload.error;
         return update;
+
+      case ActionTypes.SET_RELEASE:
+        if (payload.release !== 'n/a' && !state.releases.find(r => r.name === payload.release)) {
+          return state;
+        }
+        if (payload.release === 'n/a') {
+          update.currentRelease = null;
+          // window.location.href = `/data-products/${state.product.productCode}/`;
+          window.history.pushState(
+            null,
+            `NEON | ${state.product.productName}`,
+            `/data-products/${state.product.productCode}/`,
+          );
+        } else {
+          update.currentRelease = payload.release;
+          // window.location.href = `/data-products/
+          // ${state.product.productCode}/${update.currentRelease}/`;
+          window.history.pushState(
+            null,
+            `NEON | ${state.product.productName} | Release ${update.currentRelease}`,
+            `/data-products/${state.product.productCode}/${update.currentRelease}`,
+          );
+        }
+        return update;
+
       default:
         return state;
     }

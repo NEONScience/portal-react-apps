@@ -8,10 +8,11 @@ export const AppStatuses = {
 
 export const ActionTypes = {
   INITIALIZE: 'INITIALIZE',
-  STORE_PRODUCT_CODE: 'STORE_PRODUCT_CODE',
+  STORE_PRODUCT_CODE: 'STORE_PRODUCT_CODE_AND_CURRENT_RELEASE',
   FETCH_PRODUCT_DATA: 'FETCH_PRODUCT_DATA',
   FETCH_PRODUCT_DATA_FULFILLED: 'FETCH_PRODUCT_DATA_FULFILLED',
   FETCH_PRODUCT_DATA_FAILED: 'FETCH_PRODUCT_DATA_FAILED',
+  SET_RELEASE: 'SET_RELEASE',
 };
 
 export const initialize = () => ({
@@ -19,9 +20,9 @@ export const initialize = () => ({
   payload: {},
 });
 
-export const storeProductCode = productCode => ({
-  type: ActionTypes.STORE_PRODUCT_CODE,
-  payload: { productCode },
+export const storeProductCodeAndCurrentRelease = (productCode, currentRelease = null) => ({
+  type: ActionTypes.STORE_PRODUCT_CODE_AND_CURRENT_RELEASE,
+  payload: { productCode, currentRelease },
 });
 
 export const fetchProductData = (productCode, bundleParentCodes = []) => ({
@@ -39,10 +40,22 @@ export const fetchProductDataFailed = (error = null) => ({
   payload: { error },
 });
 
+export const setRelease = (release = '') => ({
+  type: ActionTypes.SET_RELEASE,
+  payload: { release },
+});
+
 export const useActions = (state, dispatch) => ({
-  initialize: data => dispatch(initialize(data)),
-  storeProductCode: data => dispatch(storeProductCode(data)),
+  initialize: (data) => {
+    dispatch(initialize(data));
+  },
+  storeProductCodeAndCurrentRelease: (productCode, currentRelease = null) => {
+    dispatch(storeProductCodeAndCurrentRelease(productCode, currentRelease));
+  },
   fetchProductData: (productCode, bundleParentCodes = []) => {
     dispatch(fetchProductData(productCode, bundleParentCodes));
+  },
+  setRelease: (release) => {
+    dispatch(setRelease(release));
   },
 });

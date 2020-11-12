@@ -24,6 +24,8 @@ export const CHANGE_ACTIVE_DATA_VISUALIZATION = 'CHANGE_ACTIVE_DATA_VISUALIZATIO
 
 export const INCREMENT_SCROLL_CUTOFF = 'INCREMENT_SCROLL_CUTOFF';
 
+export const CHANGE_RELEASE = 'CHANGE_RELEASE';
+
 /**
  * Initial Setup Definitions
  * FetchStateType - progress types for fetching app data
@@ -151,4 +153,12 @@ export const changeActiveDataVisualization = (component = null, productCode = nu
 export const changeNeonContextState = (neonContextState) => ({
   type: CHANGE_NEON_CONTEXT_STATE,
   neonContextState,
+});
+
+/**
+   Release Actions
+*/
+export const changeRelease = (release) => ({
+  type: CHANGE_RELEASE,
+  release,
 });

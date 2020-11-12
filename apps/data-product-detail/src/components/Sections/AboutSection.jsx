@@ -9,10 +9,9 @@ import Detail from '../Details/Detail';
 import IdentifierDetail from '../Details/IdentifierDetail';
 import ThemesDetail from '../Details/ThemesDetail';
 import DataRangeDetail from '../Details/DataRangeDetail';
-// import TrafficDetail from '../Details/TrafficDetail';
-// import LastUpdatedDetail from '../Details/LastUpdatedDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
+import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
 
 const AboutSection = (props) => {
   const { state } = useContext(StoreContext);
@@ -29,6 +28,7 @@ const AboutSection = (props) => {
             content={state.product.productScienceTeam}
           />
           <DataRangeDetail />
+          <ReleaseLinksDetail />
           <KeywordsDetail />
         </Grid>
 

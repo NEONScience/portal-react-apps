@@ -31,6 +31,7 @@ import {
   INCREMENT_SCROLL_CUTOFF,
   DataVisualizationComponents,
   CHANGE_ACTIVE_DATA_VISUALIZATION,
+  CHANGE_RELEASE,
 } from "../actions/actions";
 
 const buildAppStateIfReady = (state) => {
@@ -147,6 +148,15 @@ const reducer = (state = {}, action) => {
       return {
         ...state,
         scrollCutoff: state.scrollCutoff + 10,
+      };
+
+    case CHANGE_RELEASE:
+      if (action.release !== 'n/a' && !state.releases.find(r => r.name === action.release)) {
+        return state;
+      }
+      return {
+        ...state,
+        currentRelease: (action.release === 'n/a' ? null : action.release),
       };
 
     default:

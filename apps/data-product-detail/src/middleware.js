@@ -5,14 +5,18 @@ import NeonApi from 'portal-core-components/lib/components/NeonApi';
 
 import {
   ActionTypes,
-  storeProductCode,
+  storeProductCodeAndCurrentRelease,
   fetchProductDataFulfilled,
   fetchProductDataFailed,
 } from './actions';
 
-export const getProductCode = () => {
-  const parse = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})/g.exec(window.location.pathname);
-  return parse === null ? null : parse[1];
+export const getProductCodeAndCurrentRelease = () => {
+  const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([A-Z0-9.]+)?/g;
+  const parse = regex.exec(window.location.pathname);
+  if (parse === null) {
+    return [null, null];
+  }
+  return [parse[1] || null, parse[2] || null];
 };
 
 const buildFetchObservable = (productCode, bundleParentCodes = []) => {
@@ -54,10 +58,11 @@ const buildFetchObservable = (productCode, bundleParentCodes = []) => {
 
 const applyMiddleware = dispatch => (action) => {
   let productCode = null;
+  let currentRelease = null;
   switch (action.type) {
     case ActionTypes.INITIALIZE:
-      productCode = getProductCode();
-      return dispatch(storeProductCode(productCode));
+      [productCode, currentRelease] = getProductCodeAndCurrentRelease();
+      return dispatch(storeProductCodeAndCurrentRelease(productCode, currentRelease));
 
     case ActionTypes.FETCH_PRODUCT_DATA:
       return buildFetchObservable(action.payload.productCode, action.payload.bundleParentCodes)

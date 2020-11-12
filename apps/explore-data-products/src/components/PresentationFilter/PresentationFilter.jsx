@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
+import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import FilterHeader from '../FilterHeader/FilterHeader';
@@ -72,8 +73,11 @@ const PresentationFilter = (props) => {
     onCollapseFilterItems,
     onShowSelectedFilterItems,
     onToggleFilterVisibility,
+    onChangeRelease,
     urlParams,
     localStorageSearch,
+    releases,
+    currentRelease,
     skeleton,
   } = props;
   
@@ -93,6 +97,13 @@ const PresentationFilter = (props) => {
     onCollapseFilterItems,
     onShowSelectedFilterItems,
     skeleton,
+  };
+
+  const releaseFilterProps = {
+    releases,
+    selected: currentRelease,
+    skeleton,
+    onChange: onChangeRelease,
   };
 
   // Refs for filter inputs that we can't directly control due to poor performance
@@ -130,6 +141,7 @@ const PresentationFilter = (props) => {
             <FilterDomain {...filterProps} />
           </div>
           <div className={classes.column}>
+            <ReleaseFilter {...releaseFilterProps} />
             <FilterDateRange {...filterProps} />
             <FilterVisualization {...filterProps} />
             <FilterTheme {...filterProps} />
@@ -139,6 +151,7 @@ const PresentationFilter = (props) => {
       ) : (
         <React.Fragment>
           {filterSearch}
+          <ReleaseFilter {...releaseFilterProps} />
           <FilterDateRange {...filterProps} />
           <FilterDataStatus {...filterProps} />
           <FilterVisualization {...filterProps} />

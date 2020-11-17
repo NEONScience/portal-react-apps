@@ -15,6 +15,7 @@ import 'core-js/es/string/includes';
 import 'core-js/es/string/pad-start';
 import 'core-js/es/string/repeat';
 import 'core-js/es/string/starts-with';
+import 'core-js/modules/esnext.string.match-all';
 import 'whatwg-fetch';
 
 import React from "react";

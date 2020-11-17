@@ -1,5 +1,7 @@
 import moment from 'moment';
 
+import isEqual from 'lodash/isEqual';
+
 /**
  * Generate a continuous list of "YYYY-MM" strings given an input date range
  * Will extend beginning and end of date range to encompass whole years
@@ -53,6 +55,17 @@ export const FILTER_KEYS = {
   DATE_RANGE: 'DATE_RANGE',
   VISUALIZATIONS: 'VISUALIZATIONS',
 };
+
+// Filter keys that have a discrete list of filter items (for validating updates)
+const LIST_BASED_FILTER_KEYS = [
+  FILTER_KEYS.DATA_STATUS,
+  FILTER_KEYS.THEMES,
+  FILTER_KEYS.STATES,
+  FILTER_KEYS.DOMAINS,
+  FILTER_KEYS.SITES,
+  FILTER_KEYS.SCIENCE_TEAM,
+  FILTER_KEYS.VISUALIZATIONS,
+];
 
 export const FILTER_LABELS = {
   SEARCH: 'Search',
@@ -300,26 +313,42 @@ const productIsVisibleByFilter = (productVisibility) => !Object.keys(productVisi
 export const applyFilter = (state, filterKey, filterValue) => {
   if (!FILTER_KEYS[filterKey]) { return state; }
   const filterFunction = FILTER_FUNCTIONS[filterKey];
+  // For list-based filters narrow down to the intersection with available filter items
+  let updatedFilterValue = filterValue;
+  if (LIST_BASED_FILTER_KEYS.includes(filterKey)) {
+    const validValues = state.filterItems[filterKey].map(i => i.value);
+    updatedFilterValue = (filterValue || []).filter(v => validValues.includes(v));
+  }
+  // Apply to state
   const updated = {
     ...state,
     scrollCutoff: 10,
-    filtersApplied: [...state.filtersApplied.filter(f => f !== filterKey), filterKey],
     filterValues: {
       ...state.filterValues,
-      [filterKey]: filterValue,
+      [filterKey]: updatedFilterValue,
     },
   };
+  // Either add or remove this filter from the applied list depending on the new value
+  const otherAppliedFilters = [...state.filtersApplied.filter(f => f !== filterKey)];
+  const filterIsNowApplied = !isEqual(updatedFilterValue, INITIAL_FILTER_VALUES[filterKey]);
+  updated.filtersApplied = filterIsNowApplied ? [...otherAppliedFilters, filterKey] : otherAppliedFilters;
+  // For extendable list-based filters if the filter is not applied then also revert the item visibility
+  if (updated.filterItemVisibility[filterKey] && !filterIsNowApplied) {
+    updated.filterItemVisibility[filterKey] = FILTER_ITEM_VISIBILITY_STATES.COLLAPSED;
+  }
   // Set visibility (and, if necessary, search relevance) for each product
   const depluralizedTerms = filterKey === FILTER_KEYS.SEARCH ? depluralizeSearchTerms(filterValue) : [];
   Object.keys(state.products).forEach((productCode) => {
-    updated.productVisibility[productCode][filterKey] = filterFunction(state.products[productCode], filterValue);
+    updated.productVisibility[productCode][filterKey] = filterIsNowApplied
+      ? filterFunction(state.products[productCode], filterValue)
+      : null;
     updated.productVisibility[productCode].BY_FILTER =  productIsVisibleByFilter(updated.productVisibility[productCode]);
     if (filterKey === FILTER_KEYS.SEARCH) {
       updated.productSearchRelevance[productCode] = calculateSearchRelevance(state.products[productCode], depluralizedTerms);
     }
   });
   // Always change to sort by relevance
-  if (filterKey === FILTER_KEYS.SEARCH) {
+  if (filterKey === FILTER_KEYS.SEARCH && filterIsNowApplied) {
     updated.sortMethod = 'searchRelevance';
     updated.sortDirection = 'ASC';
   }

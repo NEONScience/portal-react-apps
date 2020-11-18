@@ -1,13 +1,16 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
+import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
-import { AppStatuses } from './actions';
-import { StoreContext } from './Store';
+// import { AppStatuses } from './actions';
+// import { StoreContext } from './Store';
 
-import DataProductPage from './components/DataProductPage';
+import DataProductContext from './components/DataProductContext';
+// import DataProductPage from './components/DataProductPage';
 
 export default function App() {
+  /*
   const { state, actions } = React.useContext(StoreContext);
   const { appStatus, productCodeToFetch, bundleParentCodesToFetch } = state;
 
@@ -34,12 +37,15 @@ export default function App() {
   if (appStatus === AppStatuses.FETCH_ERROR) {
     error = state.error ? `Error loading data product: ${state.error}` : 'Data product not found';
   }
+  */
 
   return (
     <NeonRouter disableRedirect cleanPath={false}>
-      <DataProductPage loading={loading} error={error}>
-        ...
-      </DataProductPage>
+      <DataProductContext.Provider>
+        <NeonPage loading="Loading data product...">
+          ...
+        </NeonPage>
+      </DataProductContext.Provider>
     </NeonRouter>
   );
 }

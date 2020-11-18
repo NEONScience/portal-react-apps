@@ -22,15 +22,14 @@ import ReactDOM from 'react-dom';
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import App from './App';
-import { getProductCodeAndCurrentRelease } from './middleware';
-import { StoreProvider } from './Store';
+import DataProductContext from './components/DataProductContext';
 
-const [productCode] = getProductCodeAndCurrentRelease();
-NeonJsonLd.injectProduct(productCode);
+const [productCode] = DataProductContext.getProductCodeAndReleaseFromURL();
+if (productCode) {
+  NeonJsonLd.injectProduct(productCode);
+}
 
 ReactDOM.render(
-  <StoreProvider>
-    <App />
-  </StoreProvider>,
+  <App />,
   document.getElementById('root'),
 );

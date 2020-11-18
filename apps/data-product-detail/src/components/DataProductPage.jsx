@@ -12,14 +12,12 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import DataProductContext from './components/DataProductContext';
 import SkeletonSection from './Sections/SkeletonSection';
 import AboutSection from './Sections/AboutSection';
 import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
-
-import { StoreContext } from '../Store';
-import { getPageTitle, getProductCodeAndCurrentReleaseFromURL } from '../utils';
 
 const useStyles = makeStyles(theme => ({
   releaseSubtitle: {
@@ -35,7 +33,7 @@ const DataProductPage = (props) => {
 
   const classes = useStyles(Theme);
 
-  const { state, actions } = useContext(StoreContext);
+  const { state, dispatch } = DataProductContext.useDataProductContextState();
   const { product, releases, currentRelease } = state;
 
   const breadcrumbs = [
@@ -45,6 +43,14 @@ const DataProductPage = (props) => {
     breadcrumbs.push({ name: product ? product.productCode : '--' });
   }
 
+  /*
+    const getPageTitle = (state) => {
+    const { product, currentRelease } = state;
+    if (!product || !product.productName) { return 'NEON | Data Product'; }
+    const baseTitle = `NEON | ${product.productName}`;
+    return (!currentRelease ? baseTitle : `${baseTitle} | Release ${currentRelease}`);
+    };
+  */
   const title = product ? product.productName : null;
 
   const sidebarLinks = [

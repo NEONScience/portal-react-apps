@@ -10845,7 +10845,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#data-product-release-support":
   version "1.5.8"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/b919d99dd1471adfdb7ba3ee1aa3257411f5ccf3"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/855a1d135a0724bdf5b6d92d65ebfcaf2509ea3d"
   dependencies:
     "@date-io/moment" "^1.3.9"
     "@material-ui/core" "^4.11.0"

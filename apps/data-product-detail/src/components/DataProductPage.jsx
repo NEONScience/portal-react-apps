@@ -5,8 +5,6 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-// eslint-disable-next-line import/no-unresolved
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataProductContext from './DataProductContext';
@@ -50,18 +48,19 @@ const DataProductPage = (props) => {
       breadcrumbs.push({ name: productCode, href: `/data-products/${productCode}` });
       breadcrumbs.push({ name: currentRelease });
       product = productReleases[currentRelease];
-      title = `${product ? product.productName : productCode} :: Release ${currentRelease}`;
     } else {
       breadcrumbs.push({ name: productCode });
       product = generalProduct;
-      title = product ? product.productName : productCode;
     }
+    title = product ? product.productName : productCode;
   }
 
   // Effeft - Keep the browser document title up to date with the state-generated title
   useLayoutEffect(() => {
-    document.title = `NEON | ${title}`;
-  }, [title]);
+    document.title = currentRelease
+      ? `NEON | ${title} | Release ${currentRelease}`
+      : `NEON | ${title}`;
+  }, [title, currentRelease]);
 
   const sidebarLinks = [
     {
@@ -97,21 +96,6 @@ const DataProductPage = (props) => {
 
   const downloadContextProductData = state.bundleParent ? state.bundleParent : product;
 
-  /*
-  const releaseFilter = skeleton ? (
-    <ReleaseFilter skeleton />
-  ) : (
-    <div>
-      <ReleaseFilter
-        releases={releases}
-        selected={currentRelease}
-        onChange={(newRelease) => { actions.setRelease(newRelease); }}
-      />
-    </div>
-  );
-  */
-  const releaseFilter = <ReleaseFilter skeleton />;
-
   return (
     <NeonPage
       {...props}
@@ -123,7 +107,6 @@ const DataProductPage = (props) => {
       )}
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
-      sidebarLinksAdditionalContent={releaseFilter}
       sidebarSubtitle={productCode || '--'}
       data-currentRelease={currentRelease}
     >

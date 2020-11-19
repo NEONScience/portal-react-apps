@@ -104,9 +104,9 @@ const calculateAppStatus = (state) => {
   return updatedState;
 };
 
-const getProductCodeAndReleaseFromURL = () => {
-  const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([\w]+)?/g;
-  const urlParts = regex.exec(window.location.pathname);
+const getProductCodeAndReleaseFromURL = (pathname = window.location.pathname) => {
+  const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([\w-]+)?/g;
+  const urlParts = regex.exec(pathname);
   return !urlParts ? [null, null] : [urlParts[1], urlParts[2] || null];
 };
 
@@ -132,11 +132,15 @@ const useDataProductContextState = () => {
 const reducer = (state, action) => {
   const newState = { ...state };
   switch (action.type) {
+    case 'reinitialize':
+      return cloneDeep(DEFAULT_STATE);
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
       newState.app.error = action.error;
       return newState;
 
+    // Route parsing from initialization only.
+    // See 'setRelease' when route changes with respect to release after initialization
     case 'parseRoute':
       // Fill in state.route from action
       newState.route.productCode = action.productCode;
@@ -157,8 +161,7 @@ const reducer = (state, action) => {
         newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
       });
       // Set app status and return
-      newState.app.status = APP_STATUS.HAS_FETCHES_TO_TRIGGER;
-      return newState;
+      return calculateAppStatus(newState);
 
     case 'fetchesStarted':
       newState.fetches = { ...action.fetches };
@@ -201,6 +204,21 @@ const reducer = (state, action) => {
       newState.data.bundleParents[action.bundleParent] = action.data;
       return calculateAppStatus(newState);
 
+    // Change the current release route from an already initialized state (from DataProductRouter)
+    case 'setRelease':
+      if (action.release === null || action.release === 'n/a') {
+        newState.route.release = null;
+        return newState;
+      }
+      if (!Object.prototype.hasOwnProperty.call(state.data.productReleases, action.release)) {
+        return state;
+      }
+      newState.route.release = action.release;
+      if (!state.fetches.productReleases[action.release]) {
+        newState.fetches.productReleases[action.release] = { status: FETCH_STATUS.AWAITING_CALL };
+      }
+      return calculateAppStatus(newState);
+
     // Default
     default:
       return state;
@@ -208,7 +226,7 @@ const reducer = (state, action) => {
 };
 const wrappedReducer = (state, action) => {
   const newState = reducer(state, action);
-  console.log('STATE', newState);
+  console.log('STATE', action, newState);
   return newState;
 };
 

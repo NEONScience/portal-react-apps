@@ -49,7 +49,7 @@ const DEFAULT_STATE = {
   },
   data: {
     product: null,
-    productReleases: [],
+    productReleases: {},
     bundleParents: {},
   },
   /*
@@ -173,6 +173,10 @@ const reducer = (state, action) => {
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
+      newState.data.product.dois
+        // eslint-disable-next-line max-len
+        .filter(doi => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, doi.release))
+        .forEach((doi) => { newState.data.productReleases[doi.release] = null; });
       return calculateAppStatus(newState);
 
     case 'fetchProductReleaseFailed':
@@ -333,6 +337,7 @@ Provider.defaultProps = {};
 const DataProductContext = {
   Provider,
   useDataProductContextState,
+  APP_STATUS,
   DEFAULT_STATE,
   getProductCodeAndReleaseFromURL,
 };

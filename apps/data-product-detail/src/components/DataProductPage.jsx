@@ -1,8 +1,5 @@
-import React, {
-  useEffect,
-  useContext,
-  useLayoutEffect,
-} from 'react';
+import React, { useLayoutEffect } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -12,12 +9,15 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DataProductContext from './components/DataProductContext';
+import DataProductContext from './DataProductContext';
 import SkeletonSection from './Sections/SkeletonSection';
+
+/*
 import AboutSection from './Sections/AboutSection';
 import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
+*/
 
 const useStyles = makeStyles(theme => ({
   releaseSubtitle: {
@@ -33,77 +33,71 @@ const DataProductPage = (props) => {
 
   const classes = useStyles(Theme);
 
-  const { state, dispatch } = DataProductContext.useDataProductContextState();
-  const { product, releases, currentRelease } = state;
+  const [state] = DataProductContext.useDataProductContextState();
+  const {
+    route: { productCode, release: currentRelease },
+    data: { product: generalProduct, productReleases },
+  } = state;
+
+  let product = null;
+  let title = 'Data Product';
 
   const breadcrumbs = [
     { name: 'Data Products', href: '/data-products/explore' },
   ];
-  if (product) {
-    breadcrumbs.push({ name: product ? product.productCode : '--' });
+  if (productCode) {
+    if (currentRelease) {
+      breadcrumbs.push({ name: productCode, href: `/data-products/${productCode}` });
+      breadcrumbs.push({ name: currentRelease });
+      product = productReleases[currentRelease];
+      title = `${product ? product.productName : productCode} :: Release ${currentRelease}`;
+    } else {
+      breadcrumbs.push({ name: productCode });
+      product = generalProduct;
+      title = product ? product.productName : productCode;
+    }
   }
 
-  /*
-    const getPageTitle = (state) => {
-    const { product, currentRelease } = state;
-    if (!product || !product.productName) { return 'NEON | Data Product'; }
-    const baseTitle = `NEON | ${product.productName}`;
-    return (!currentRelease ? baseTitle : `${baseTitle} | Release ${currentRelease}`);
-    };
-  */
-  const title = product ? product.productName : null;
+  // Effeft - Keep the browser document title up to date with the state-generated title
+  useLayoutEffect(() => {
+    document.title = `NEON | ${title}`;
+  }, [title]);
 
   const sidebarLinks = [
     {
       name: 'About',
       hash: '#about',
-      component: AboutSection,
+      // component: AboutSection,
     },
     {
       name: 'Collection and Processing',
       hash: '#collectionAndProcessing',
-      component: CollectionAndProcessingSection,
+      // component: CollectionAndProcessingSection,
     },
     {
       name: 'Availability and Download',
       hash: '#availabilityAndDownload',
-      component: AvailabilitySection,
+      // component: AvailabilitySection,
     },
     {
       name: 'Visualizations',
       hash: '#visualizations',
-      component: VisualizationsSection,
+      // component: VisualizationsSection,
     },
   ];
-
   /*
-    If the page has loaded successfully then append the product name and release to the page title
-  */
-  useLayoutEffect(() => {
-    document.title = getPageTitle(state);
-  }, [state]);
-
-  useEffect(() => {
-    const handleNav = () => {
-      console.log('NAV', document.location.pathName);
-      const [, release] = getProductCodeAndCurrentReleaseFromURL();
-      if (release !== currentRelease) {
-        actions.setRelease(release || 'n/a');
-      }
-    };
-    window.addEventListener('popstate', handleNav, false);
-    return () => {
-      window.removeEventListener('popstate', handleNav, false);
-    };
-  });
-
   const renderPageContents = () => sidebarLinks.map((link) => {
     const Component = skeleton ? SkeletonSection : link.component;
     return <Component key={link.hash} hash={link.hash} name={link.name} />;
   });
+  */
+  const renderPageContents = () => sidebarLinks.map(link => (
+    <SkeletonSection key={link.hash} hash={link.hash} name={link.name} />
+  ));
 
   const downloadContextProductData = state.bundleParent ? state.bundleParent : product;
 
+  /*
   const releaseFilter = skeleton ? (
     <ReleaseFilter skeleton />
   ) : (
@@ -115,6 +109,8 @@ const DataProductPage = (props) => {
       />
     </div>
   );
+  */
+  const releaseFilter = <ReleaseFilter skeleton />;
 
   return (
     <NeonPage
@@ -128,7 +124,7 @@ const DataProductPage = (props) => {
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarLinksAdditionalContent={releaseFilter}
-      sidebarSubtitle={product ? product.productCode : '--'}
+      sidebarSubtitle={productCode || '--'}
       data-currentRelease={currentRelease}
     >
       {skeleton ? renderPageContents() : (
@@ -144,6 +140,15 @@ const DataProductPage = (props) => {
 };
 
 DataProductPage.propTypes = NeonPage.propTypes;
+DataProductPage.propTypes.children = PropTypes.oneOfType([
+  PropTypes.arrayOf(PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.string,
+  ])),
+  PropTypes.node,
+  PropTypes.string,
+]);
 DataProductPage.defaultProps = NeonPage.defaultProps;
+DataProductPage.defaultProps.children = null;
 
 export default DataProductPage;

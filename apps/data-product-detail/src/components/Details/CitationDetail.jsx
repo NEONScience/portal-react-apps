@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import dateFormat from 'dateformat';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -16,8 +16,7 @@ import CopyIcon from '@material-ui/icons/Assignment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 
 const useStyles = makeStyles(theme => ({
   copyButton: {
@@ -37,18 +36,22 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CitationDetail = () => {
-  const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
   const {
-    product,
-    releases,
-    currentRelease,
+    route: {
+      release: currentRelease,
+    },
+    data: {
+      product: {
+        dois,
+      },
+    },
   } = state;
 
-  const latestRelease = (releases || []).length ? releases[releases.length - 1] : null;
-
-  const doi = null;
+  const latestDoi = dois && dois.length ? dois[0] : null;
 
   const dataPolicyLink = (
     <a href="https://preview.neonscience.org/data-samples/data-policies-citation">
@@ -56,15 +59,16 @@ const CitationDetail = () => {
     </a>
   );
 
-  const getCitationText = (releaseId) => {
-    const provisional = releaseId === 'provisional';
+  const getCitationText = (release) => {
+    const provisional = release === 'provisional';
+    const citationDoi = release && !provisional ? dois.find(doi => doi.release === release) : null;
     const now = new Date();
     const today = dateFormat(now, 'mmmm d, yyyy');
     const neon = 'NEON (National Ecological Observatory Network)';
     const productName = provisional
       ? `${product.productName} (${product.productCode})`
-      : `${product.productName}, ${releaseId} (${product.productCode})`;
-    const doiText = provisional && doi ? `. ${doi}` : '';
+      : `${product.productName}, ${release} (${product.productCode})`;
+    const doiText = citationDoi ? `. ${citationDoi.url}` : '';
     const url = 'https://data.neonscience.org';
     const accessed = provisional
       ? `${url} (accessed ${today})`
@@ -72,8 +76,8 @@ const CitationDetail = () => {
     return `${neon}. ${productName}${doiText}. ${accessed}`;
   };
 
-  const renderCitationCard = (releaseId, conditional = false) => {
-    const provisional = releaseId === 'provisional';
+  const renderCitationCard = (release, conditional = false) => {
+    const provisional = release === 'provisional';
     let conditionalText = null;
     let citationClassName = classes.citationText;
     if (conditional) {
@@ -88,7 +92,7 @@ const CitationDetail = () => {
       );
       citationClassName = classes.citationTextWithQualifier;
     }
-    const citationText = getCitationText(releaseId);
+    const citationText = getCitationText(release);
     return (
       <Card className={classes.citationCard}>
         <CardContent>
@@ -124,7 +128,7 @@ const CitationDetail = () => {
       ) : (
         <React.Fragment>
           {renderCitationCard('provisional', true)}
-          {latestRelease ? renderCitationCard(latestRelease.name, true) : null}
+          {latestDoi ? renderCitationCard(latestDoi.release, true) : null}
         </React.Fragment>
       )}
     </Detail>

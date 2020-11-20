@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -7,8 +7,7 @@ import Chip from '@material-ui/core/Chip';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 
 const useStyles = makeStyles(theme => ({
   chip: {
@@ -18,10 +17,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const KeywordsDetail = () => {
-  const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
-  const { keywords } = state.product;
+  const { keywords } = product;
 
   return (
     <Detail

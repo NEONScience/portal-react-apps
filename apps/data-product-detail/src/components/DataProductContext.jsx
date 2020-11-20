@@ -46,11 +46,13 @@ const DEFAULT_STATE = {
     product: null,
     productReleases: {},
     bundleParents: {},
+    bundleParentReleases: {},
   },
   data: {
     product: null,
     productReleases: {},
     bundleParents: {},
+    bundleParentReleases: {},
   },
   /*
   appStatus: null,
@@ -84,6 +86,11 @@ const stateHasFetchesInStatus = (state, status) => (
     || Object.keys(state.fetches.bundleParents).some(
       f => fetchIsInStatus(state.fetches.bundleParents[f], status),
     )
+    || Object.keys(state.fetches.bundleParentReleases).some(
+      bundleParent => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
+        f => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
+      ),
+    )
 );
 
 const calculateAppStatus = (state) => {
@@ -108,6 +115,19 @@ const getProductCodeAndReleaseFromURL = (pathname = window.location.pathname) =>
   const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([\w-]+)?/g;
   const urlParts = regex.exec(pathname);
   return !urlParts ? [null, null] : [urlParts[1], urlParts[2] || null];
+};
+
+// Evaluates a complete state object to extract the product data currently in focus, be it the
+// general / top-level product or a specific release.
+const getCurrentProductFromState = (state = DEFAULT_STATE) => {
+  const {
+    route: { productCode, release: currentRelease },
+    data: { product: generalProduct, productReleases },
+  } = state;
+  if (!productCode) { return null; }
+  if (!currentRelease) { return generalProduct; }
+  if (!productReleases[currentRelease]) { return null; }
+  return productReleases[currentRelease];
 };
 
 /**
@@ -160,6 +180,16 @@ const reducer = (state, action) => {
       (newState.route.bundle.parentCodes || []).forEach((bundleParentCode) => {
         newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
       });
+      if (action.bundleForwardAvailabilityFromParent) {
+        state.route.bundle.parentCodes.forEach((parentCode) => {
+          newState.fetches.bundleParentReleases[parentCode] = {};
+          if (action.release) {
+            newState.fetches.bundleParentReleases[parentCode][action.release] = {
+              status: FETCH_STATUS.AWAITING_CALL,
+            };
+          }
+        });
+      }
       // Set app status and return
       return calculateAppStatus(newState);
 
@@ -176,6 +206,9 @@ const reducer = (state, action) => {
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
+      if (newState.data.product.dois && newState.data.product.dois.length > 1) {
+        newState.data.product.dois.sort((a, b) => (a.generationDate < b.generationDate ? 1 : -1));
+      }
       newState.data.product.dois
         // eslint-disable-next-line max-len
         .filter(doi => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, doi.release))
@@ -204,6 +237,19 @@ const reducer = (state, action) => {
       newState.data.bundleParents[action.bundleParent] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchBundleParentReleaseFailed':
+      /* eslint-disable max-len */
+      newState.fetches.bundleParents[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.bundleParents[action.bundleParent][action.release].error = action.error;
+      newState.app.error = `Fetching bundle parent product ${action.bundleParent} release ${action.release} failed: ${action.error.message}`;
+      /* eslint-enable max-len */
+      return newState;
+    case 'fetchBundleParentReleaseSucceeded':
+      // eslint-disable-next-line max-len
+      newState.fetches.bundleParents[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
+      newState.data.bundleParents[action.bundleParent][action.release] = action.data;
+      return calculateAppStatus(newState);
+
     // Change the current release route from an already initialized state (from DataProductRouter)
     case 'setRelease':
       if (action.release === null || action.release === 'n/a') {
@@ -216,6 +262,15 @@ const reducer = (state, action) => {
       newState.route.release = action.release;
       if (!state.fetches.productReleases[action.release]) {
         newState.fetches.productReleases[action.release] = { status: FETCH_STATUS.AWAITING_CALL };
+      }
+      if (state.route.bundle.forwardAvailabilityFromParent) {
+        state.route.bundle.parentCodes.forEach((parentCode) => {
+          if (!state.fetches.bundleParentReleases[parentCode][action.release]) {
+            newState.fetches.bundleParentReleases[parentCode][action.release] = {
+              status: FETCH_STATUS.AWAITING_CALL,
+            };
+          }
+        });
       }
       return calculateAppStatus(newState);
 
@@ -323,6 +378,35 @@ const Provider = (props) => {
           },
         );
       });
+    // Bundle parent release fetches
+    Object.keys(fetches.bundleParentReleases)
+      .forEach((bundleParent) => {
+        Object.keys(fetches.bundleParentReleases[bundleParent])
+          .filter(release => (
+            fetchIsAwaitingCall(fetches.bundleParentReleases[bundleParent][release])
+          ))
+          .forEach((release) => {
+            newFetches.bundleParentReleases[bundleParent][release].status = FETCH_STATUS.FETCHING;
+            NeonApi.getProductObservable(bundleParent).subscribe(
+              (response) => {
+                dispatch({
+                  type: 'fetchBundleParentReleaseSucceeded',
+                  bundleParent,
+                  release,
+                  data: response.data,
+                });
+              },
+              (error) => {
+                dispatch({
+                  type: 'fetchBundleParentReleaseFailed',
+                  bundleParent,
+                  release,
+                  error,
+                });
+              },
+            );
+          });
+      });
     dispatch({ type: 'fetchesStarted', fetches: newFetches });
   }, [status, productCode, fetches]);
 
@@ -358,6 +442,7 @@ const DataProductContext = {
   APP_STATUS,
   DEFAULT_STATE,
   getProductCodeAndReleaseFromURL,
+  getCurrentProductFromState,
 };
 
 export default DataProductContext;

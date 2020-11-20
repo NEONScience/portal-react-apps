@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import Link from '@material-ui/core/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
 
 // TODO: get this from a canonical location?
 const dataThemeBaseUrl = 'http://www.neonscience.org/data/data-themes/';
@@ -21,9 +20,10 @@ const dataThemeHrefs = {
 };
 
 const ThemesDetail = () => {
-  const { state } = useContext(StoreContext);
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
-  const { themes } = state.product;
+  const { themes } = product;
 
   const renderTheme = theme => (
     <Link

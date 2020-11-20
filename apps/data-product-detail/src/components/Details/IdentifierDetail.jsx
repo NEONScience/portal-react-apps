@@ -1,15 +1,15 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 
-import React, { useContext } from 'react';
+import React from 'react';
 
 import Typography from '@material-ui/core/Typography';
 
+import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-import { StoreContext } from '../../Store';
-
 const IdentifierDetail = () => {
-  const { state } = useContext(StoreContext);
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
   const fileNamingConventionsLink = (
     <a href="https://data.neonscience.org/file-naming-conventions">
@@ -38,7 +38,7 @@ const IdentifierDetail = () => {
       title="Product ID"
       tooltip={tooltip}
     >
-      <Typography variant="button">{state.product.productCode}</Typography>
+      <Typography variant="button">{product.productCode}</Typography>
     </Detail>
   );
 };

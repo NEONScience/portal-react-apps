@@ -1,22 +1,26 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import Markdown from 'markdown-to-jsx';
 
 import Grid from '@material-ui/core/Grid';
 
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
+
 import Section from './Section';
+import SkeletonSection from './SkeletonSection';
+
 import Detail from '../Details/Detail';
 import IdentifierDetail from '../Details/IdentifierDetail';
 import ThemesDetail from '../Details/ThemesDetail';
-import DataRangeDetail from '../Details/DataRangeDetail';
+// import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
-import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
+// import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
 
 const AboutSection = (props) => {
-  const { state } = useContext(StoreContext);
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
-  return (
+  return !product ? <SkeletonSection /> : (
     <Section {...props}>
       <Grid container spacing={3}>
 
@@ -25,10 +29,10 @@ const AboutSection = (props) => {
           <ThemesDetail />
           <Detail
             title="Responsible Science Team"
-            content={state.product.productScienceTeam}
+            content={product.productScienceTeam}
           />
-          <DataRangeDetail />
-          <ReleaseLinksDetail />
+          {/* <DataRangeDetail /> */}
+          {/* <ReleaseLinksDetail /> */ }
           <KeywordsDetail />
         </Grid>
 
@@ -36,20 +40,20 @@ const AboutSection = (props) => {
           <Detail
             title="Description"
             content={(
-              <Markdown>{state.product.productDescription || '_n/a_'}</Markdown>
+              <Markdown>{product.productDescription || '_n/a_'}</Markdown>
             )}
           />
           <Detail
             title="Abstract"
             content={(
-              <Markdown>{state.product.productAbstract || '_n/a_'}</Markdown>
+              <Markdown>{product.productAbstract || '_n/a_'}</Markdown>
             )}
           />
-          {state.product.productRemarks ? (
+          {product.productRemarks ? (
             <Detail
               title="Additional Information"
               content={(
-                <Markdown>{state.product.productRemarks}</Markdown>
+                <Markdown>{product.productRemarks}</Markdown>
               )}
             />
           ) : null}

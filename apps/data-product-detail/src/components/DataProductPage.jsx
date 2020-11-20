@@ -10,8 +10,8 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import DataProductContext from './DataProductContext';
 import SkeletonSection from './Sections/SkeletonSection';
 
-/*
 import AboutSection from './Sections/AboutSection';
+/*
 import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
@@ -66,33 +66,31 @@ const DataProductPage = (props) => {
     {
       name: 'About',
       hash: '#about',
-      // component: AboutSection,
+      component: AboutSection,
     },
     {
       name: 'Collection and Processing',
       hash: '#collectionAndProcessing',
+      component: SkeletonSection,
       // component: CollectionAndProcessingSection,
     },
     {
       name: 'Availability and Download',
       hash: '#availabilityAndDownload',
+      component: SkeletonSection,
       // component: AvailabilitySection,
     },
     {
       name: 'Visualizations',
       hash: '#visualizations',
+      component: SkeletonSection,
       // component: VisualizationsSection,
     },
   ];
-  /*
   const renderPageContents = () => sidebarLinks.map((link) => {
     const Component = skeleton ? SkeletonSection : link.component;
     return <Component key={link.hash} hash={link.hash} name={link.name} />;
   });
-  */
-  const renderPageContents = () => sidebarLinks.map(link => (
-    <SkeletonSection key={link.hash} hash={link.hash} name={link.name} />
-  ));
 
   const downloadContextProductData = state.bundleParent ? state.bundleParent : product;
 
@@ -123,6 +121,7 @@ const DataProductPage = (props) => {
 };
 
 DataProductPage.propTypes = NeonPage.propTypes;
+// eslint-disable-next-line react/forbid-foreign-prop-types
 DataProductPage.propTypes.children = PropTypes.oneOfType([
   PropTypes.arrayOf(PropTypes.oneOfType([
     PropTypes.node,

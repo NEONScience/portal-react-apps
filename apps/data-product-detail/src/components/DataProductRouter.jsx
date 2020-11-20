@@ -49,7 +49,7 @@ const DataProductRouter = () => {
   const handleProductCodeChange = useCallback((newProductCode) => {
     history.push(`/data-products/${newProductCode}`);
     dispatch({ type: 'reinitialize' });
-  }, [history]);
+  }, [history, dispatch]);
   const handleReleaseChange = useCallback((newRelease) => {
     if (!newRelease || newRelease === 'n/a') {
       history.push(`/data-products/${productCode}`);
@@ -58,7 +58,7 @@ const DataProductRouter = () => {
       history.push(`/data-products/${productCode}/${newRelease}`);
       dispatch({ type: 'setRelease', release: newRelease });
     }
-  }, [history, productCode]);
+  }, [history, dispatch, productCode]);
 
   useEffect(() => {
     if (appStatus !== APP_STATUS.READY) { return; }

@@ -8,6 +8,8 @@ import {
   useHistory,
 } from 'react-router-dom';
 
+import Button from '@material-ui/core/Button';
+
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 
 import DataProductContext from './DataProductContext';
@@ -29,16 +31,17 @@ const DataProductRouter = () => {
 
   let loading = null;
   let error = null;
+  const loadType = currentRelease ? 'data product release' : 'data product';
   switch (appStatus) {
     case APP_STATUS.READY:
       break;
     case APP_STATUS.ERROR:
       error = appError
-        ? `Error loading data product: ${appError}`
-        : 'Data product not found';
+        ? `Error loading ${loadType}: ${appError}`
+        : `Error: ${loadType} not found`;
       break;
     default:
-      loading = 'Loading data product...';
+      loading = `Loading ${loadType}...`;
       break;
   }
 
@@ -77,35 +80,28 @@ const DataProductRouter = () => {
     handleReleaseChange,
   ]);
 
-  const pageProps = {
+  const releases = appStatus === APP_STATUS.READY
+    ? product.dois.map(doi => ({ name: doi.release, doi: doi.url }))
+    : null;
+  const getPageProps = (release = null) => ({
     error,
     loading,
-    sidebarLinksAdditionalContent: <ReleaseFilter skeleton />,
-  };
-
-  if (appStatus === APP_STATUS.READY) {
-    pageProps.sidebarLinksAdditionalContent = (
+    sidebarLinksAdditionalContent: appStatus !== APP_STATUS.READY ? <ReleaseFilter skeleton /> : (
       <nav>
-        <ReleaseFilter
-          releases={product.dois.map(doi => ({ name: doi.release, doi: doi.url }))}
-          selected={currentRelease}
-          onChange={handleReleaseChange}
-        />
+        <ReleaseFilter releases={releases} selected={release} onChange={handleReleaseChange} />
       </nav>
-    );
-  }
+    ),
+  });
 
-  return appStatus !== APP_STATUS.READY ? (
-    <DataProductPage {...pageProps} />
-  ) : (
+  return appStatus !== APP_STATUS.READY ? <DataProductPage {...getPageProps()} /> : (
     <Router basename="/data-products" foreceRefresh={false}>
       <Switch>
-        <Route path={`/${productCode || ''}`} exact>
-          <DataProductPage {...pageProps} />
+        <Route path={productCode ? `/${productCode}` : ''} exact>
+          <DataProductPage {...getPageProps()} />
         </Route>
         {!productCode ? null : Object.keys(productReleases).map(release => (
           <Route key={release} path={`/${productCode}/${release}`}>
-            <DataProductPage {...pageProps} />
+            <DataProductPage {...getPageProps(release)} />
           </Route>
         ))}
       </Switch>

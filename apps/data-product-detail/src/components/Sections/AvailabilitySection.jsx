@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo } from 'react';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,7 +17,7 @@ import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHost
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 import Section from './Section';
 
 const useStyles = makeStyles(theme => ({
@@ -56,7 +56,10 @@ const useStyles = makeStyles(theme => ({
 
 const AvailabilitySection = (props) => {
   const classes = useStyles(Theme);
-  const { state } = useContext(StoreContext);
+
+  const [state] = DataProductContext.useDataProductContextState();
+  // const product = DataProductContext.getCurrentProductFromState(state, true);
+
   const [{
     productData,
     fromManifest,
@@ -65,9 +68,16 @@ const AvailabilitySection = (props) => {
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
 
-  const { bundleParents, bundleForwardAvailabilityFromParent } = state;
+  const {
+    route: {
+      bundle: { parentCodes, forwardAvailabilityFromParent },
+    },
+    data: {
+      bundleParents,
+    },
+  } = state;
+  const isBundleChild = parentCodes.length;
 
-  const isBundleChild = bundleParents !== null && Object.keys(bundleParents).length;
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
   const computeAvailableDateRange = () => (productData.siteCodes || []).reduce((acc, siteCode) => {
@@ -95,7 +105,6 @@ const AvailabilitySection = (props) => {
 
   let bundleParentLink = null;
   if (isBundleChild) {
-    const parentCodes = Object.keys(bundleParents);
     bundleParentLink = parentCodes.length === 1
       ? (
         <Typography variant="subtitle2">
@@ -120,7 +129,7 @@ const AvailabilitySection = (props) => {
   }
 
   // Bundle children that don't forward availability: no donwload button, just link to parent
-  if (isBundleChild && !bundleForwardAvailabilityFromParent) {
+  if (isBundleChild && !forwardAvailabilityFromParent) {
     return (
       <Section {...props}>
         <SnackbarContent

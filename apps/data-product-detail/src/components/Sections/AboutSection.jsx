@@ -11,7 +11,7 @@ import SkeletonSection from './SkeletonSection';
 import Detail from '../Details/Detail';
 import IdentifierDetail from '../Details/IdentifierDetail';
 import ThemesDetail from '../Details/ThemesDetail';
-// import DataRangeDetail from '../Details/DataRangeDetail';
+import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
 // import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
@@ -31,7 +31,7 @@ const AboutSection = (props) => {
             title="Responsible Science Team"
             content={product.productScienceTeam}
           />
-          {/* <DataRangeDetail /> */}
+          <DataRangeDetail />
           {/* <ReleaseLinksDetail /> */ }
           <KeywordsDetail />
         </Grid>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,13 +15,11 @@ import ImageIcon from '@material-ui/icons/Photo';
 import PresentationIcon from '@material-ui/icons/Tv';
 import SpreadsheetIcon from '@material-ui/icons/GridOn';
 
-
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -118,9 +116,11 @@ const defaultDocumentType = {
 };
 
 const DocumentationDetail = () => {
-  const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
   const atXs = useMediaQuery(Theme.breakpoints.down('xs'));
+
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
   const renderDocument = (spec) => {
     if (!spec) { return null; }
@@ -190,7 +190,7 @@ const DocumentationDetail = () => {
     );
   };
 
-  const { specs } = state.product;
+  const { specs } = product;
 
   return (
     <Detail

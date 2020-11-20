@@ -11,11 +11,9 @@ import DataProductContext from './DataProductContext';
 import SkeletonSection from './Sections/SkeletonSection';
 
 import AboutSection from './Sections/AboutSection';
-/*
 import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
-*/
 
 const useStyles = makeStyles(theme => ({
   releaseSubtitle: {
@@ -32,14 +30,13 @@ const DataProductPage = (props) => {
   const classes = useStyles(Theme);
 
   const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
   const {
     route: { productCode, release: currentRelease },
-    data: { product: generalProduct, productReleases },
   } = state;
 
-  let product = null;
+  // Set page title and breadcrumbs
   let title = 'Data Product';
-
   const breadcrumbs = [
     { name: 'Data Products', href: '/data-products/explore' },
   ];
@@ -47,15 +44,13 @@ const DataProductPage = (props) => {
     if (currentRelease) {
       breadcrumbs.push({ name: productCode, href: `/data-products/${productCode}` });
       breadcrumbs.push({ name: currentRelease });
-      product = productReleases[currentRelease];
     } else {
       breadcrumbs.push({ name: productCode });
-      product = generalProduct;
     }
     title = product ? product.productName : productCode;
   }
 
-  // Effeft - Keep the browser document title up to date with the state-generated title
+  // Effect - Keep the browser document title up to date with the state-generated title
   useLayoutEffect(() => {
     document.title = currentRelease
       ? `NEON | ${title} | Release ${currentRelease}`
@@ -71,28 +66,27 @@ const DataProductPage = (props) => {
     {
       name: 'Collection and Processing',
       hash: '#collectionAndProcessing',
-      component: SkeletonSection,
-      // component: CollectionAndProcessingSection,
+      component: CollectionAndProcessingSection,
     },
     {
       name: 'Availability and Download',
       hash: '#availabilityAndDownload',
-      component: SkeletonSection,
-      // component: AvailabilitySection,
+      component: AvailabilitySection,
     },
     {
       name: 'Visualizations',
       hash: '#visualizations',
-      component: SkeletonSection,
-      // component: VisualizationsSection,
+      component: VisualizationsSection,
     },
   ];
   const renderPageContents = () => sidebarLinks.map((link) => {
     const Component = skeleton ? SkeletonSection : link.component;
-    return <Component key={link.hash} hash={link.hash} name={link.name} />;
+    return (
+      <Component key={link.hash} hash={link.hash} name={link.name} />
+    );
   });
 
-  const downloadContextProductData = state.bundleParent ? state.bundleParent : product;
+  const downloadProductData = DataProductContext.getCurrentProductFromState(state, true);
 
   return (
     <NeonPage
@@ -110,7 +104,7 @@ const DataProductPage = (props) => {
     >
       {skeleton ? renderPageContents() : (
         <DownloadDataContext.Provider
-          productData={downloadContextProductData}
+          productData={downloadProductData}
           availabilityView="sites"
         >
           {renderPageContents()}

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import Markdown from 'markdown-to-jsx';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
@@ -26,9 +26,8 @@ import MaterialTable, { MTableToolbar } from 'material-table';
 import Theme from 'portal-core-components/lib/components/Theme';
 import SiteChip from 'portal-core-components/lib/components/SiteChip';
 
+import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
 
 const unresolvedStyle = {
   color: '#9a3036', // portal-core-components Theme COLORS.RED[600]
@@ -77,14 +76,16 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const IssueLogDetail = () => {
-  const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
+
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
   const [xsSortColumn, setXsSortColumn] = useState('issueDate');
   const [xsSortDirection, setXsSortDirection] = useState('desc');
   const [xsSearch, setXsSearch] = useState('');
 
-  const changeLogs = (state.product.changeLogs || []);
+  const changeLogs = (product.changeLogs || []);
 
   if (!changeLogs.length) {
     return (

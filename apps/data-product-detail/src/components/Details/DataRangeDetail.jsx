@@ -1,11 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import dateFormat from 'dateformat';
 
 import Typography from '@material-ui/core/Typography';
 
 import Detail from './Detail';
-
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 
 const renderDemarc = (demarc) => {
   if (!demarc) {
@@ -17,15 +16,21 @@ const renderDemarc = (demarc) => {
 };
 
 const DataRangeDetail = () => {
-  const { state } = useContext(StoreContext);
-  const target = state.bundleParent ? 'bundleParent' : 'product';
-  const { siteCodes } = state[target];
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state, true);
+
+  const {
+    route: {
+      bundle: { forwardAvailabilityFromParent },
+    },
+  } = state;
+  const { siteCodes } = product;
 
   let rangeText = <i>n/a</i>;
 
   // Min/max data data range can only be derived from available site-months,
   // so derive it. Todo: get this back from the API directly?
-  if (state.product.productStatus === 'FUTURE') {
+  if (product.productStatus === 'FUTURE') {
     rangeText = <i>n/a (future data product)</i>;
   } else if (!(siteCodes || []).length) {
     rangeText = <i>n/a (no data)</i>;
@@ -40,7 +45,7 @@ const DataRangeDetail = () => {
         (!acc[1] || site[1] > acc[1] ? site[1] : acc[1]),
       ], [null, null]);
 
-    if (state.product.productStatus === 'ACTIVE') {
+    if (product.productStatus === 'ACTIVE') {
       range[1] = 'ongoing';
     }
 
@@ -48,7 +53,7 @@ const DataRangeDetail = () => {
   }
 
   let tooltip = 'The available date range from the earliest observation to the latest observation, across the entire observatory. Each site may have a different range.';
-  if (state.bundleParent) {
+  if (forwardAvailabilityFromParent) {
     tooltip = `${tooltip} Also, as this product is part of a bundle, these dates represent availability of the entire bundle. See the Availability and Download section below for more detail.`;
   }
 

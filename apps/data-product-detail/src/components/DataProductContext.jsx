@@ -119,12 +119,37 @@ const getProductCodeAndReleaseFromURL = (pathname = window.location.pathname) =>
 
 // Evaluates a complete state object to extract the product data currently in focus, be it the
 // general / top-level product or a specific release.
-const getCurrentProductFromState = (state = DEFAULT_STATE) => {
+const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = false) => {
   const {
-    route: { productCode, release: currentRelease },
-    data: { product: generalProduct, productReleases },
+    route: {
+      productCode,
+      release: currentRelease,
+      bundle: { forwardAvailabilityFromParent },
+    },
+    data: {
+      product: generalProduct,
+      productReleases,
+      bundleParents,
+      bundleParentReleases,
+    },
   } = state;
   if (!productCode) { return null; }
+  // Forward Availability - if requested by the forAvailability param look to the bundle parents
+  if (forAvailability && forwardAvailabilityFromParent) {
+    // Bundles can have more than one parent AND can forward availability. Presently no bundle does
+    // both, so here we can safely just take the first parent code as the one from which to forward
+    // availability. If we ever need to forward availability from more than one bundle parent this
+    // logic will need to be refactored.
+    const firstParentCode = Object.keys(bundleParents)[0] || null;
+    if (!firstParentCode) { return null; }
+    if (!currentRelease) { return bundleParents[firstParentCode]; }
+    if (
+      !bundleParentReleases[firstParentCode]
+        || !bundleParentReleases[firstParentCode][currentRelease]
+    ) { return null; }
+    return bundleParentReleases[firstParentCode][currentRelease];
+  }
+  // No availability forwarding - return either the general product or the release
   if (!currentRelease) { return generalProduct; }
   if (!productReleases[currentRelease]) { return null; }
   return productReleases[currentRelease];

@@ -18,6 +18,8 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
 
+const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
+
 const useStyles = makeStyles(theme => ({
   copyButton: {
     padding: Theme.spacing(0.5, 2),
@@ -54,7 +56,7 @@ const CitationDetail = () => {
   const latestDoi = dois && dois.length ? dois[0] : null;
 
   const dataPolicyLink = (
-    <a href="https://preview.neonscience.org/data-samples/data-policies-citation">
+    <a href={DATA_POLICIES_URL}>
       Data Policies &amp; Citation Guidelines
     </a>
   );

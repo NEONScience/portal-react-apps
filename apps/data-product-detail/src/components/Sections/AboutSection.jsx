@@ -14,18 +14,22 @@ import ThemesDetail from '../Details/ThemesDetail';
 import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
+import DoiDetail from '../Details/DoiDetail';
 // import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
 
 const AboutSection = (props) => {
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
 
-  return !product ? <SkeletonSection /> : (
+  const { route: { release: currentRelease } } = state;
+
+  return !product ? <SkeletonSection {...props} /> : (
     <Section {...props}>
       <Grid container spacing={3}>
 
         <Grid item xs={12} md={5} lg={4}>
           <IdentifierDetail />
+          {currentRelease ? <DoiDetail /> : null}
           <ThemesDetail />
           <Detail
             title="Responsible Science Team"

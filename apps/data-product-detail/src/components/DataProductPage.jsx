@@ -1,10 +1,11 @@
+/* eslint-disable import/no-unresolved */
 import React, { useLayoutEffect } from 'react';
-import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
+import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataProductContext from './DataProductContext';
@@ -15,6 +16,12 @@ import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSe
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
 
+const {
+  APP_STATUS,
+  useDataProductContextState,
+  getCurrentProductFromState,
+} = DataProductContext;
+
 const useStyles = makeStyles(theme => ({
   releaseSubtitle: {
     fontSize: '1.6rem',
@@ -23,17 +30,33 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataProductPage = (props) => {
-  const { loading, error } = props;
-  const skeleton = loading || error;
-
+const DataProductPage = () => {
   const classes = useStyles(Theme);
 
-  const [state] = DataProductContext.useDataProductContextState();
-  const product = DataProductContext.getCurrentProductFromState(state);
+  const [state, dispatch] = useDataProductContextState();
+  const product = getCurrentProductFromState(state);
   const {
+    app: { status: appStatus, error: appError },
     route: { productCode, release: currentRelease },
   } = state;
+
+  // Set loading and error page props
+  let loading = null;
+  let error = null;
+  const loadType = currentRelease ? 'data product release' : 'data product';
+  switch (appStatus) {
+    case APP_STATUS.READY:
+      break;
+    case APP_STATUS.ERROR:
+      error = appError
+        ? `Error loading ${loadType}: ${appError}`
+        : `Error: ${loadType} not found`;
+      break;
+    default:
+      loading = `Loading ${loadType}...`;
+      break;
+  }
+  const skeleton = loading || error;
 
   // Set page title and breadcrumbs
   let title = 'Data Product';
@@ -50,6 +73,25 @@ const DataProductPage = (props) => {
     title = product ? product.productName : productCode;
   }
 
+  // Define the release filter node
+  const releases = appStatus === APP_STATUS.READY && product && Array.isArray(product.dois)
+    ? [...product.dois]
+    : null;
+  let releaseFilterProps = { skeleton: true };
+  if (appStatus === APP_STATUS.READY && product) {
+    releaseFilterProps = {
+      releases,
+      selected: currentRelease,
+      onChange: (value) => {
+        const newRelease = value === 'n/a' ? null : value;
+        dispatch({ type: 'setNextRelease', release: newRelease });
+      },
+    };
+  }
+  const sidebarLinksAdditionalContent = (
+    <ReleaseFilter {...releaseFilterProps} key={currentRelease} />
+  );
+
   // Effect - Keep the browser document title up to date with the state-generated title
   useLayoutEffect(() => {
     document.title = currentRelease
@@ -57,6 +99,7 @@ const DataProductPage = (props) => {
       : `NEON | ${title}`;
   }, [title, currentRelease]);
 
+  // Establish sidebar links mapping to sections
   const sidebarLinks = [
     {
       name: 'About',
@@ -90,7 +133,6 @@ const DataProductPage = (props) => {
 
   return (
     <NeonPage
-      {...props}
       title={title}
       subtitle={!currentRelease ? null : (
         <span className={classes.releaseSubtitle}>
@@ -100,7 +142,10 @@ const DataProductPage = (props) => {
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarSubtitle={productCode || '--'}
+      sidebarLinksAdditionalContent={sidebarLinksAdditionalContent}
       data-currentRelease={currentRelease}
+      loading={loading}
+      error={error}
     >
       {skeleton ? renderPageContents() : (
         <DownloadDataContext.Provider
@@ -113,18 +158,5 @@ const DataProductPage = (props) => {
     </NeonPage>
   );
 };
-
-DataProductPage.propTypes = NeonPage.propTypes;
-// eslint-disable-next-line react/forbid-foreign-prop-types
-DataProductPage.propTypes.children = PropTypes.oneOfType([
-  PropTypes.arrayOf(PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string,
-  ])),
-  PropTypes.node,
-  PropTypes.string,
-]);
-DataProductPage.defaultProps = NeonPage.defaultProps;
-DataProductPage.defaultProps.children = null;
 
 export default DataProductPage;

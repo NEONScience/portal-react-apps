@@ -6,6 +6,8 @@ import Grid from '@material-ui/core/Grid';
 import DataProductContext from '../DataProductContext';
 
 import Section from './Section';
+import SkeletonSection from './SkeletonSection';
+
 import Detail from '../Details/Detail';
 import DocumentationDetail from '../Details/DocumentationDetail';
 import IssueLogDetail from '../Details/IssueLogDetail';
@@ -14,7 +16,7 @@ const CollectionAndProcessingSection = (props) => {
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
 
-  return (
+  return !product ? <SkeletonSection {...props} /> : (
     <Section {...props}>
       <Grid container spacing={3}>
 

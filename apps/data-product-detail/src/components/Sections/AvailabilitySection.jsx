@@ -19,6 +19,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
+import SkeletonSection from './SkeletonSection';
 
 const useStyles = makeStyles(theme => ({
   summaryDivStyle: {
@@ -172,7 +173,7 @@ const AvailabilitySection = (props) => {
     />
   ) : null;
 
-  return (
+  return !productData ? <SkeletonSection {...props} /> : (
     <Section {...props}>
       {!fromManifest && !fromAOPManifest && fromExternalHost ? (
         <React.Fragment>

@@ -1,4 +1,4 @@
-/* eslint-disable import/no-unresolved, no-unused-vars */
+/* eslint-disable import/no-unresolved */
 import React, {
   createContext,
   useContext,
@@ -7,10 +7,17 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import { of } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { map, catchError } from 'rxjs/operators';
+
+import { useHistory, useLocation } from 'react-router-dom';
+
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -41,35 +48,23 @@ const DEFAULT_STATE = {
       parentCodes: [],
       forwardAvailabilityFromParent: null,
     },
+    nextRelease: undefined,
+    nextHash: undefined,
   },
   fetches: {
     product: null,
     productReleases: {},
     bundleParents: {},
     bundleParentReleases: {},
+    aopVizProducts: null,
   },
   data: {
     product: null,
     productReleases: {},
     bundleParents: {},
     bundleParentReleases: {},
+    aopVizProducts: [],
   },
-  /*
-  appStatus: null,
-  productCodeToFetch: null,
-  product: null,
-  bundleParentCodesToFetch: null,
-  bundleParents: null,
-  bundleForwardAvailabilityFromParent: null,
-  error: null,
-  releases: [
-    { name: 'NEON.2021.0', doi: 'https://doi.org/abc/def_ghi_jkl_mnopqrstu' },
-    { name: 'NEON.2021.1', doi: 'https://doi.org/abc/jkl_mno_pqr_stuvwx/yzabcdef' },
-    { name: 'NEON.2021.2', doi: 'https://doi.org/abc/psr_stu_vwxyz_abcdef' },
-    { name: 'NEON.2022.0', doi: 'https://doi.org/abc/vwx_yza_bcd_efghijklmnop' },
-  ],
-  currentRelease: null,
-  */
 };
 
 const fetchIsInStatus = (fetchObject, status) => (
@@ -91,7 +86,42 @@ const stateHasFetchesInStatus = (state, status) => (
         f => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
       ),
     )
+    // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
+    // triggered. Otherwise it should never affect app-level status.
+    || (
+      status === FETCH_STATUS.AWAITING_CALL && fetchIsInStatus(state.fetches.aopVizProducts, status)
+    )
 );
+
+const calculateFetches = (state) => {
+  const newState = { ...state };
+  const {
+    productCode,
+    release,
+    bundle: { parentCodes, forwardAvailabilityFromParent },
+  } = state.route;
+  if (!productCode) { return state; }
+  if (!state.fetches.product) {
+    newState.fetches.product = { status: FETCH_STATUS.AWAITING_CALL };
+  }
+  if (!state.fetches.aopVizProducts) {
+    newState.fetches.aopVizProducts = { status: FETCH_STATUS.AWAITING_CALL };
+  }
+  if (release && !state.fetches.productReleases[release]) {
+    newState.fetches.productReleases[release] = { status: FETCH_STATUS.AWAITING_CALL };
+  }
+  (parentCodes || []).forEach((bundleParentCode) => {
+    newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
+  });
+  if (release && forwardAvailabilityFromParent) {
+    parentCodes.forEach((parentCode) => {
+      newState.fetches.bundleParentReleases[parentCode][release] = {
+        status: FETCH_STATUS.AWAITING_CALL,
+      };
+    });
+  }
+  return newState;
+};
 
 const calculateAppStatus = (state) => {
   const updatedState = { ...state };
@@ -185,7 +215,7 @@ const reducer = (state, action) => {
       return newState;
 
     // Route parsing from initialization only.
-    // See 'setRelease' when route changes with respect to release after initialization
+    // See 'setNextRelease' when route changes with respect to release after initialization
     case 'parseRoute':
       // Fill in state.route from action
       newState.route.productCode = action.productCode;
@@ -195,33 +225,12 @@ const reducer = (state, action) => {
         // eslint-disable-next-line max-len
         newState.route.bundle.forwardAvailabilityFromParent = action.bundleForwardAvailabilityFromParent;
       }
-      // Generate fetches from updated state.route
-      newState.fetches.product = { status: FETCH_STATUS.AWAITING_CALL };
-      if (newState.route.release) {
-        newState.fetches.productReleases[newState.route.release] = {
-          status: FETCH_STATUS.AWAITING_CALL,
-        };
-      }
-      (newState.route.bundle.parentCodes || []).forEach((bundleParentCode) => {
-        newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
-      });
-      if (action.bundleForwardAvailabilityFromParent) {
-        state.route.bundle.parentCodes.forEach((parentCode) => {
-          newState.fetches.bundleParentReleases[parentCode] = {};
-          if (action.release) {
-            newState.fetches.bundleParentReleases[parentCode][action.release] = {
-              status: FETCH_STATUS.AWAITING_CALL,
-            };
-          }
-        });
-      }
-      // Set app status and return
-      return calculateAppStatus(newState);
+      // Initialize fetches, set app status, and return
+      return calculateAppStatus(calculateFetches(newState));
 
     case 'fetchesStarted':
       newState.fetches = { ...action.fetches };
-      newState.app.status = APP_STATUS.FETCHING;
-      return newState;
+      return calculateAppStatus(newState);
 
     case 'fetchProductFailed':
       newState.fetches.product.status = FETCH_STATUS.ERROR;
@@ -245,7 +254,7 @@ const reducer = (state, action) => {
       newState.fetches.productReleases[action.release].error = action.error;
       // eslint-disable-next-line max-len
       newState.app.error = `Fetching product release ${action.release} failed: ${action.error.message}`;
-      return newState;
+      return calculateAppStatus(newState);
     case 'fetchProductReleaseSucceeded':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.SUCCESS;
       newState.data.productReleases[action.release] = action.data;
@@ -256,7 +265,7 @@ const reducer = (state, action) => {
       newState.fetches.bundleParents[action.bundleParent].error = action.error;
       // eslint-disable-next-line max-len
       newState.app.error = `Fetching bundle parent product ${action.bundleParent} failed: ${action.error.message}`;
-      return newState;
+      return calculateAppStatus(newState);
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
@@ -268,36 +277,31 @@ const reducer = (state, action) => {
       newState.fetches.bundleParents[action.bundleParent][action.release].error = action.error;
       newState.app.error = `Fetching bundle parent product ${action.bundleParent} release ${action.release} failed: ${action.error.message}`;
       /* eslint-enable max-len */
-      return newState;
+      return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
       // eslint-disable-next-line max-len
       newState.fetches.bundleParents[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent][action.release] = action.data;
       return calculateAppStatus(newState);
 
-    // Change the current release route from an already initialized state (from DataProductRouter)
-    case 'setRelease':
-      if (action.release === null || action.release === 'n/a') {
-        newState.route.release = null;
-        return newState;
-      }
-      if (!Object.prototype.hasOwnProperty.call(state.data.productReleases, action.release)) {
-        return state;
-      }
-      newState.route.release = action.release;
-      if (!state.fetches.productReleases[action.release]) {
-        newState.fetches.productReleases[action.release] = { status: FETCH_STATUS.AWAITING_CALL };
-      }
-      if (state.route.bundle.forwardAvailabilityFromParent) {
-        state.route.bundle.parentCodes.forEach((parentCode) => {
-          if (!state.fetches.bundleParentReleases[parentCode][action.release]) {
-            newState.fetches.bundleParentReleases[parentCode][action.release] = {
-              status: FETCH_STATUS.AWAITING_CALL,
-            };
-          }
-        });
-      }
+    case 'fetchAOPVizProductsFailed':
+      newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
+      newState.fetches.aopVizProducts.error = action.error;
       return calculateAppStatus(newState);
+    case 'fetchAOPVizProductsSucceeded':
+      newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
+      newState.data.aopVizProducts = action.data;
+      return calculateAppStatus(newState);
+
+    case 'setNextRelease':
+      newState.route.nextRelease = action.release;
+      if (action.hash) { newState.route.nextHash = action.hash.replace(/#/g, ''); }
+      return calculateAppStatus(newState);
+    case 'applyNextRelease':
+      newState.route.release = newState.route.nextRelease;
+      newState.route.nextRelease = undefined;
+      newState.route.nextHash = undefined;
+      return calculateAppStatus(calculateFetches(newState));
 
     // Default
     default:
@@ -324,7 +328,12 @@ const Provider = (props) => {
 
   const {
     app: { status },
-    route: { productCode },
+    route: {
+      productCode,
+      release: currentRelease,
+      nextRelease,
+      nextHash,
+    },
     fetches,
   } = state;
 
@@ -358,6 +367,36 @@ const Provider = (props) => {
       bundleForwardAvailabilityFromParent,
     });
   }, [status, bundles]);
+
+  // HISTORY
+  // Ensure route release and history are always in sync. The main route.release ALWAYS FOLLOWS
+  // the actual URL. Order of precedence:
+  // 1. route.nextRelease - set by dispatch, gets pushed into history
+  // 2. location.pathname - literally the URL, route.release follows this
+  // 3. route.release - only ever set from URL parsing
+  const history = useHistory();
+  const location = useLocation();
+  const { pathname } = location;
+  useEffect(() => {
+    if (status === APP_STATUS.INITIALIZING) { return; }
+    const [locationProductCode, locationRelease] = getProductCodeAndReleaseFromURL(pathname);
+    if (locationProductCode !== productCode) {
+      dispatch({ type: 'reinitialize' });
+      return;
+    }
+    if (nextRelease !== undefined && nextRelease !== locationRelease) {
+      let nextLocation = nextRelease === null
+        ? `/data-products/${productCode}`
+        : `/data-products/${productCode}/${nextRelease}`;
+      if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
+      history.push(nextLocation);
+      dispatch({ type: 'applyNextRelease' });
+      return;
+    }
+    if (locationRelease !== currentRelease) {
+      dispatch({ type: 'setNextRelease', release: locationRelease });
+    }
+  }, [status, history, pathname, productCode, currentRelease, nextRelease, nextHash]);
 
   // Trigger any fetches that are awaiting call
   useEffect(() => {
@@ -432,6 +471,19 @@ const Provider = (props) => {
             );
           });
       });
+    // AOP products fetch
+    if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
+      newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
+        map((response) => {
+          dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.data });
+        }),
+        catchError((error) => {
+          dispatch({ type: 'fetchAOPVizProductsFailed', error });
+          return of('AOP visualization products fetch failed');
+        }),
+      ).subscribe();
+    }
     dispatch({ type: 'fetchesStarted', fetches: newFetches });
   }, [status, productCode, fetches]);
 

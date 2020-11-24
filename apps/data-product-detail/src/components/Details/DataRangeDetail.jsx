@@ -20,6 +20,10 @@ const DataRangeDetail = () => {
   const product = DataProductContext.getCurrentProductFromState(state, true);
 
   const {
+    route: { release: currentRelease },
+  } = state;
+
+  const {
     route: {
       bundle: { forwardAvailabilityFromParent },
     },
@@ -45,7 +49,7 @@ const DataRangeDetail = () => {
         (!acc[1] || site[1] > acc[1] ? site[1] : acc[1]),
       ], [null, null]);
 
-    if (product.productStatus === 'ACTIVE') {
+    if (product.productStatus === 'ACTIVE' && !currentRelease) {
       range[1] = 'ongoing';
     }
 

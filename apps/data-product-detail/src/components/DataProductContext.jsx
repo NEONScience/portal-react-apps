@@ -185,6 +185,17 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
+const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
+  const {
+    route: { release: currentRelease },
+    data: { product: generalProduct },
+  } = state;
+  if (!currentRelease || !generalProduct || !generalProduct.dois || !generalProduct.dois.length) {
+    return null;
+  }
+  return generalProduct.dois.find(doi => doi.release === currentRelease) || null;
+};
+
 /**
    CONTEXT
 */
@@ -247,6 +258,12 @@ const reducer = (state, action) => {
         // eslint-disable-next-line max-len
         .filter(doi => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, doi.release))
         .forEach((doi) => { newState.data.productReleases[doi.release] = null; });
+      // Fake some unresolved issues
+      newState.data.product.changeLogs.forEach((change, idx) => {
+        if (change.resolvedDate > '2019-09-01') {
+          newState.data.product.changeLogs[idx].resolvedDate = null;
+        }
+      });
       return calculateAppStatus(newState);
 
     case 'fetchProductReleaseFailed':
@@ -258,6 +275,12 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseSucceeded':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.SUCCESS;
       newState.data.productReleases[action.release] = action.data;
+      // Fake some unresolved issues
+      newState.data.productReleases[action.release].changeLogs.forEach((change, idx) => {
+        if (change.resolvedDate > '2019-09-01') {
+          newState.data.productReleases[action.release].changeLogs[idx].resolvedDate = null;
+        }
+      });
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':
@@ -520,6 +543,7 @@ const DataProductContext = {
   DEFAULT_STATE,
   getProductCodeAndReleaseFromURL,
   getCurrentProductFromState,
+  getCurrentReleaseObjectFromState,
 };
 
 export default DataProductContext;

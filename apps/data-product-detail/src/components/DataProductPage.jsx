@@ -1,7 +1,16 @@
 /* eslint-disable import/no-unresolved */
 import React, { useLayoutEffect } from 'react';
 
+import moment from 'moment';
+
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+import CopyIcon from '@material-ui/icons/Assignment';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
@@ -9,24 +18,44 @@ import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataProductContext from './DataProductContext';
-import SkeletonSection from './Sections/SkeletonSection';
 
+import SkeletonSection from './Sections/SkeletonSection';
 import AboutSection from './Sections/AboutSection';
 import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
 
+import DetailTooltip from './Details/DetailTooltip';
+
+const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable permanent link to this this data product release';
+
 const {
   APP_STATUS,
   useDataProductContextState,
   getCurrentProductFromState,
+  getCurrentReleaseObjectFromState,
 } = DataProductContext;
 
 const useStyles = makeStyles(theme => ({
-  releaseSubtitle: {
-    fontSize: '1.6rem',
+  card: {
+    backgroundColor: Theme.colors.BROWN[50],
+    borderColor: Theme.colors.BROWN[300],
+    marginBottom: theme.spacing(4),
+  },
+  flex: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing(2),
+  },
+  copyButton: {
+    backgroundColor: '#fff',
+  },
+  releaseAttribTitle: {
+    marginRight: theme.spacing(1),
+  },
+  releaseAttribValue: {
     fontWeight: 600,
-    color: theme.palette.grey[600],
   },
 }));
 
@@ -58,6 +87,14 @@ const DataProductPage = () => {
   }
   const skeleton = loading || error;
 
+  // Get the current release object if appropriate to do so
+  const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  let currentReleaseGenDate = null;
+  if (currentReleaseObject) {
+    const generationMoment = moment(currentReleaseObject.generationDate);
+    currentReleaseGenDate = generationMoment ? generationMoment.format('MMMM D, YYYY') : null;
+  }
+
   // Set page title and breadcrumbs
   let title = 'Data Product';
   const breadcrumbs = [
@@ -82,6 +119,7 @@ const DataProductPage = () => {
     releaseFilterProps = {
       releases,
       selected: currentRelease,
+      showGenerationDate: true,
       onChange: (value) => {
         const newRelease = value === 'n/a' ? null : value;
         dispatch({ type: 'setNextRelease', release: newRelease });
@@ -134,11 +172,6 @@ const DataProductPage = () => {
   return (
     <NeonPage
       title={title}
-      subtitle={!currentRelease ? null : (
-        <span className={classes.releaseSubtitle}>
-          {`Release ${currentRelease}`}
-        </span>
-      )}
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarSubtitle={productCode || '--'}
@@ -152,6 +185,38 @@ const DataProductPage = () => {
           productData={downloadProductData}
           availabilityView="sites"
         >
+          {!currentReleaseObject ? null : (
+            <Card className={classes.card}>
+              <CardContent>
+                <div className={classes.flex}>
+                  <Typography variant="h5" component="h2">
+                    Release:&nbsp;
+                    <b>{currentRelease}</b>
+                  </Typography>
+                  <CopyToClipboard text={currentReleaseObject.url}>
+                    <Button
+                      color="primary"
+                      variant="outlined"
+                      size="small"
+                      className={classes.copyButton}
+                    >
+                      <CopyIcon fontSize="small" />
+                      Copy DOI
+                    </Button>
+                  </CopyToClipboard>
+                </div>
+                <Typography variant="body2" color="textSecondary" component="p">
+                  <span className={classes.releaseAttribTitle}>Generated:</span>
+                  <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
+                </Typography>
+                <Typography variant="body2" color="textSecondary" component="p">
+                  <span className={classes.releaseAttribTitle}>DOI:</span>
+                  <span className={classes.releaseAttribValue}>{currentReleaseObject.url}</span>
+                  <DetailTooltip tooltip={DOI_TOOLTIP} />
+                </Typography>
+              </CardContent>
+            </Card>
+          )}
           {renderPageContents()}
         </DownloadDataContext.Provider>
       )}

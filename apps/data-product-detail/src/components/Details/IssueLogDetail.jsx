@@ -29,6 +29,12 @@ import SiteChip from 'portal-core-components/lib/components/SiteChip';
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
+const {
+  useDataProductContextState,
+  getCurrentProductFromState,
+  // getCurrentReleaseObjectFromState,
+} = DataProductContext;
+
 const unresolvedStyle = {
   color: '#9a3036', // portal-core-components Theme COLORS.RED[600]
   fontWeight: 700,
@@ -75,17 +81,36 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const getDateSortWithNulls = (field, alternateField = null) => (
+  (a, b) => {
+    if (a[field] === b[field]) {
+      if (!alternateField) { return 0; }
+      return a[alternateField] < b[alternateField] ? -1 : 1;
+    }
+    if (a[field] === null) { return 1; }
+    if (b[field] === null) { return -1; }
+    return a[alternateField] < b[alternateField] ? -1 : 1;
+  }
+);
+
 const IssueLogDetail = () => {
   const classes = useStyles(Theme);
 
-  const [state] = DataProductContext.useDataProductContextState();
-  const product = DataProductContext.getCurrentProductFromState(state);
+  const [state] = useDataProductContextState();
+  const product = getCurrentProductFromState(state);
 
-  const [xsSortColumn, setXsSortColumn] = useState('issueDate');
+  const [xsSortColumn, setXsSortColumn] = useState('resolvedDate');
   const [xsSortDirection, setXsSortDirection] = useState('desc');
   const [xsSearch, setXsSearch] = useState('');
 
-  const changeLogs = (product.changeLogs || []);
+  const changeLogs = product.changeLogs || [];
+  /* Filter changelog for unresolved-at-time-of-generation for a release
+  const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  const changeLogs = currentReleaseObject
+    ? (product.changeLogs || []).filter(
+      change => !change.resolvedDate || change.resolvedDate > currentReleaseObject.generationDate,
+    ) : (product.changeLogs || []);
+  */
 
   if (!changeLogs.length) {
     return (
@@ -166,7 +191,6 @@ const IssueLogDetail = () => {
     field: 'issueDate',
     type: 'date',
     sorting: true,
-    defaultSort: 'desc',
     render: row => formatDate(row.issueDate),
   }, {
     title: 'Date Resolved',
@@ -174,6 +198,7 @@ const IssueLogDetail = () => {
     type: 'date',
     sorting: true,
     defaultSort: 'desc',
+    customSort: getDateSortWithNulls('resolvedDate', 'issueDate'),
     render: row => (row.resolvedDate ? formatDate(row.resolvedDate) : 'unresolved'),
     cellStyle: fieldData => (fieldData ? {} : unresolvedStyle),
   }, {
@@ -186,7 +211,6 @@ const IssueLogDetail = () => {
     field: 'dateRangeStart',
     type: 'date',
     sorting: true,
-    defaultSort: 'desc',
     render: row => formatDate(row.dateRangeStart),
   }, {
     title: 'Issue End',
@@ -194,6 +218,7 @@ const IssueLogDetail = () => {
     type: 'date',
     sorting: true,
     defaultSort: 'desc',
+    customSort: getDateSortWithNulls('dateRangeEnd', 'dateRangeStart'),
     render: row => (row.dateRangeEnd ? formatDate(row.dateRangeEnd) : 'ongoing'),
     cellStyle: fieldData => (fieldData ? {} : unresolvedStyle),
   }];
@@ -366,6 +391,9 @@ const IssueLogDetail = () => {
               padding: 'dense',
               detailPanelColumnAlignment: 'right',
               detailPanelType: 'single',
+              rowStyle: row => (row.resolvedDate !== null ? {} : {
+                backgroundColor: Theme.colors.GOLD[50],
+              }),
             }}
           />
         </Detail>

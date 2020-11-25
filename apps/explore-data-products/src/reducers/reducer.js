@@ -151,12 +151,12 @@ const reducer = (state = {}, action) => {
       };
 
     case CHANGE_RELEASE:
-      if (action.release !== 'n/a' && !state.releases.find(r => r.name === action.release)) {
+      if (action.release !== null && !state.releases.find(r => r.release === action.release)) {
         return state;
       }
       return {
         ...state,
-        currentRelease: (action.release === 'n/a' ? null : action.release),
+        currentRelease: action.release,
       };
 
     default:

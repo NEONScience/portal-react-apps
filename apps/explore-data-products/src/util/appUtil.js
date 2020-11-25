@@ -75,6 +75,16 @@ export const buildAppState = (state) => {
     const product = {...rawProduct};
     const productCode = product.productCode;
 
+    // Extend/update releases per the dois to which this product belongs
+    product.dois.forEach((doi) => {
+      const idx = dataStore.releases.findIndex(entry => entry.release === doi.release);
+      if (idx === -1) {
+        dataStore.releases.push({ ...doi, dataProductCodes: new Set([productCode]) });
+      } else {
+        dataStore.releases[idx].dataProductCodes.add(productCode);
+      }
+    });
+
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly. Note that some bundle
     // children may have more than one parent, and forwarding availability will never work for them.
@@ -190,6 +200,15 @@ export const buildAppState = (state) => {
 
     // END MAIN PRODUCTS LOOP
   });
+
+  // Finalize releases
+  // We have dataProductCodes as a Set on each release to make uniqueness easy when building it out.
+  // Now loaded we don't expect this data structure to change so convert all those sets to arrays
+  // as that's what the ReleaseFilter component expects.
+  dataStore.releases = dataStore.releases.map(release => ({
+    ...release,
+    dataProductCodes: Array.from(release.dataProductCodes),
+  }));
 
   // Update Bundle Children
   // For all bundle children set certain filterable values related to data availability

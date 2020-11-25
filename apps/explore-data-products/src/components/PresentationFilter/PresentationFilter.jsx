@@ -63,6 +63,7 @@ const PresentationFilter = (props) => {
     filtersApplied,
     filtersVisible,
     filterItemVisibility,
+    catalogStats,
     productOrder,
     allKeywordsByLetter,
     totalKeywords,
@@ -102,8 +103,13 @@ const PresentationFilter = (props) => {
   const releaseFilterProps = {
     releases,
     selected: currentRelease,
-    skeleton,
+    skeleton: !!skeleton,
     onChange: onChangeRelease,
+    showGenerationDate: true,
+    showProductCount: true,
+    nullReleaseProductCount: catalogStats.totalProducts,
+    maxWidth: 276, // To match with the wider sidebar
+    key: currentRelease,
   };
 
   // Refs for filter inputs that we can't directly control due to poor performance

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
+// import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import FilterHeader from '../FilterHeader/FilterHeader';
@@ -63,7 +63,7 @@ const PresentationFilter = (props) => {
     filtersApplied,
     filtersVisible,
     filterItemVisibility,
-    catalogStats,
+    // catalogStats,
     productOrder,
     allKeywordsByLetter,
     totalKeywords,
@@ -74,11 +74,11 @@ const PresentationFilter = (props) => {
     onCollapseFilterItems,
     onShowSelectedFilterItems,
     onToggleFilterVisibility,
-    onChangeRelease,
+    // onChangeRelease,
     urlParams,
     localStorageSearch,
-    releases,
-    currentRelease,
+    // releases,
+    // currentRelease,
     skeleton,
   } = props;
   
@@ -100,6 +100,7 @@ const PresentationFilter = (props) => {
     skeleton,
   };
 
+  /*
   const releaseFilterProps = {
     releases,
     selected: currentRelease,
@@ -111,6 +112,7 @@ const PresentationFilter = (props) => {
     maxWidth: 276, // To match with the wider sidebar
     key: currentRelease,
   };
+  */
 
   // Refs for filter inputs that we can't directly control due to poor performance
   // but on which we want to set values in certain cases
@@ -147,7 +149,7 @@ const PresentationFilter = (props) => {
             <FilterDomain {...filterProps} />
           </div>
           <div className={classes.column}>
-            <ReleaseFilter {...releaseFilterProps} />
+            {/* <ReleaseFilter {...releaseFilterProps} /> */}
             <FilterDateRange {...filterProps} />
             <FilterVisualization {...filterProps} />
             <FilterTheme {...filterProps} />
@@ -157,7 +159,7 @@ const PresentationFilter = (props) => {
       ) : (
         <React.Fragment>
           {filterSearch}
-          <ReleaseFilter {...releaseFilterProps} />
+          {/* <ReleaseFilter {...releaseFilterProps} /> */}
           <FilterDateRange {...filterProps} />
           <FilterDataStatus {...filterProps} />
           <FilterVisualization {...filterProps} />

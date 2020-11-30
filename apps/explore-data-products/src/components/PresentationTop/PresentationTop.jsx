@@ -11,6 +11,7 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataHeader from '../DataHeader/DataHeader';
+import ReleaseCard from '../ReleaseCard/ReleaseCard';
 import PresentationData from '../PresentationData/PresentationData';
 import PresentationSort from '../PresentationSort/PresentationSort';
 import PresentationFilter from '../PresentationFilter/PresentationFilter';
@@ -27,11 +28,6 @@ const useStyles = makeStyles(theme => ({
     color: Theme.palette.grey[400],
     marginBottom: Theme.spacing(3),
   },
-  releaseSubtitle: {
-    fontSize: '1.6rem',
-    fontWeight: 600,
-    color: theme.palette.grey[600],
-  },
 }));
 
 const DEBOUNCE_MILLISECONDS = 100;
@@ -45,13 +41,13 @@ const PresentationTop = (props) => {
     onFetchAppState,
     productOrder,
     scrollCutoff,
-    currentRelease,
     onIncrementScrollCutoff,
     activeDataVisualization,
     onChangeActiveDataVisualization,
     neonContextState: storedNeonContextState,
     onChangeNeonContextState,
     appBuildState,
+    currentRelease,
   } = props;
 
   // Effect - Trigger the initial app fetch
@@ -131,17 +127,15 @@ const PresentationTop = (props) => {
       window.removeEventListener("resize", scrollHandler);
     };
   });
-
+  
+  /**
+     Main Page Render
+  */
   return (
     <NeonPage
       loading={loading}
       error={error}
       title="Explore Data Products"
-      subtitle={!currentRelease ? null : (
-        <span className={classes.releaseSubtitle}>
-          {`Release ${currentRelease}`}
-        </span>
-      )}
       breadcrumbs={breadcrumbs}
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarWidth={340}
@@ -153,6 +147,7 @@ const PresentationTop = (props) => {
         productCode={activeDataVisualization.productCode}
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
+      <ReleaseCard {...drillProps} key={currentRelease} />
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />

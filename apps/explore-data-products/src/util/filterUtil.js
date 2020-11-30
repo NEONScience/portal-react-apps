@@ -179,7 +179,11 @@ export const INITIAL_FILTER_ITEM_VISIBILITY = {
 };
 
 export const INITIAL_PRODUCT_VISIBILITY = {
-  BY_FILTER: true, // whether the product should be visible given the current filter state
+  // Whether the product should be visible given the current release and filter state
+  BY_RELEASE_AND_FILTERS: true,
+  // Note that RELEASE is NOT a filter (in that resetting all filters should not affect it).
+  // It still behaves like a filter though in lots of other ways, including feeding visiblity here.
+  RELEASE: null,
 };
 Object.keys(FILTER_KEYS).forEach(filterKey => {
   INITIAL_PRODUCT_VISIBILITY[filterKey] = null;
@@ -292,14 +296,14 @@ const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((s
 }, 0);
 
 /**
- * For a given product/filter visibility mapping calculate the BY_FILTER visibility of the product.
+ * For a given product/filter visibility mapping calculate the BY_RELEASE_AND_FILTERS visibility of the product.
  * Returns false if any filters for the product are exactly false (i.e. excluded by the filter)
  * Returns true otherwise (i.e. all filters are null - not applied - or true - included by the filter)
  * @param {object} productVisibility - entry from productVisibility object from state for a single product
  * @return {boolean}
  */
-const productIsVisibleByFilter = (productVisibility) => !Object.keys(productVisibility)
-  .filter(key => !!FILTER_KEYS[key])
+const productIsVisibleByReleaseAndFilters = (productVisibility) => !Object.keys(productVisibility)
+  .filter(key => !!FILTER_KEYS[key] || key === 'RELEASE')
   .some(key => productVisibility[key] === false);
 
 /**
@@ -342,9 +346,13 @@ export const applyFilter = (state, filterKey, filterValue) => {
     updated.productVisibility[productCode][filterKey] = filterIsNowApplied
       ? filterFunction(state.products[productCode], filterValue)
       : null;
-    updated.productVisibility[productCode].BY_FILTER =  productIsVisibleByFilter(updated.productVisibility[productCode]);
+    const isVisible = productIsVisibleByReleaseAndFilters(updated.productVisibility[productCode]);
+    updated.productVisibility[productCode].BY_RELEASE_AND_FILTERS = isVisible;
     if (filterKey === FILTER_KEYS.SEARCH) {
-      updated.productSearchRelevance[productCode] = calculateSearchRelevance(state.products[productCode], depluralizedTerms);
+      updated.productSearchRelevance[productCode] = calculateSearchRelevance(
+        state.products[productCode],
+        depluralizedTerms,
+      );
     }
   });
   // Always change to sort by relevance
@@ -387,7 +395,8 @@ export const resetFilter = (state, filterKey) => {
   if (filterKey === FILTER_KEYS.SEARCH) { localStorage.removeItem('search'); }
   Object.keys(updated.productVisibility).forEach((productCode) => {
     updated.productVisibility[productCode][filterKey] = null;
-    updated.productVisibility[productCode].BY_FILTER = productIsVisibleByFilter(updated.productVisibility[productCode]);
+    const isVisible = productIsVisibleByReleaseAndFilters(updated.productVisibility[productCode]);
+    updated.productVisibility[productCode].BY_RELEASE_AND_FILTERS = isVisible;
   });
   return applySort(updated);
 }
@@ -446,7 +455,7 @@ export const changeFilterItemVisibility = (state, filterKey, visibility) => {
 
 /**
  * In a state object: validate and apply a sortMethod and/or sortDirection, then
- * regenerate productOrder map using BY_FILTER visible products only
+ * regenerate productOrder map using BY_RELEASE_AND_FILTERS visible products only
  * @param {object} state - current whole state object
  * @param {string} sortMethod - key in SORT_METHODS object. If not valid will use current state value.
  * @param {string} sortDirection - item in SORT_DIRECTIONS array. If not valid will use current state value.
@@ -466,11 +475,39 @@ export const applySort = (state, sortMethod = null, sortDirection = null) => {
   localStorage.setItem('sortMethod', updated.sortMethod);
   localStorage.setItem('sortDirection', updated.sortDirection);
   const productOrder = Object.keys(updated.productVisibility)
-    .filter(productCode => updated.productVisibility[productCode].BY_FILTER);
+    .filter(productCode => updated.productVisibility[productCode].BY_RELEASE_AND_FILTERS);
   productOrder.sort(SORT_METHODS[updated.sortMethod].getSortFunction(updated));
   updated.productOrder = productOrder;
   return updated;
 }
+
+/**
+ * In state: update the productVisibility map with respect to the current release set in state.
+ * @param {object} state - current whole state object
+ * @return {object} updated whole state object   
+ */
+export const updateProductVisibilityToCurrentRelease = (state) => {
+  const { currentRelease, releases } = state;
+  let currentReleaseProductCodes = [];
+  if (currentRelease !== null) {
+    const currentReleaseObject = releases.find(r => r.release === currentRelease) || {};
+    currentReleaseProductCodes = currentReleaseObject.dataProductCodes || [];
+  }
+  const updatedProductVisibility = {...state.productVisibility};
+  Object.keys(updatedProductVisibility).forEach(productCode => {
+    if (currentRelease === null) {
+      updatedProductVisibility[productCode].RELEASE = null;
+    } else {
+      updatedProductVisibility[productCode].RELEASE = currentReleaseProductCodes.includes(productCode);
+    }
+    const isVisible = productIsVisibleByReleaseAndFilters(updatedProductVisibility[productCode]);
+    updatedProductVisibility[productCode].BY_RELEASE_AND_FILTERS = isVisible;
+  });
+  return applySort({
+    ...state,
+    productVisibility: updatedProductVisibility,
+  });
+};
 
 /**
  * Parse an input search string into discrete terms.

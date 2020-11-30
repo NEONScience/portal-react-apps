@@ -4,6 +4,7 @@ import {
   resetFilter,
   resetAllFilters,
   changeFilterItemVisibility,
+  updateProductVisibilityToCurrentRelease,
   FILTER_ITEM_VISIBILITY_STATES,
 } from "../util/filterUtil";
 
@@ -154,10 +155,10 @@ const reducer = (state = {}, action) => {
       if (action.release !== null && !state.releases.find(r => r.release === action.release)) {
         return state;
       }
-      return {
+      return updateProductVisibilityToCurrentRelease({
         ...state,
         currentRelease: action.release,
-      };
+      });
 
     default:
       return state;

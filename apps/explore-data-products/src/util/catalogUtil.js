@@ -55,7 +55,11 @@ const payloadColumns = [
   },
   {
     label: 'URL',
-    value: product => `${NeonEnvironment.getHost()}/data-products/${product.productCode}`,
+    value: (product, currentRelease) => (
+      currentRelease === null
+        ? `${NeonEnvironment.getHost()}/data-products/${product.productCode}`
+        : `${NeonEnvironment.getHost()}/data-products/${product.productCode}/${currentRelease}`
+    ),
     formats: ['csv', 'json'],
   },
   {
@@ -64,6 +68,7 @@ const payloadColumns = [
       ? product.filterableValues.DATE_RANGE[0]
       : '',
     formats: ['csv', 'json'],
+    hideFromRelease: true,
   },
   {
     label: 'Latest Available Month',
@@ -71,6 +76,7 @@ const payloadColumns = [
       ? product.filterableValues.DATE_RANGE[product.filterableValues.DATE_RANGE.length - 1]
       : '',
     formats: ['csv', 'json'],
+    hideFromRelease: true,
   },
   {
     label: 'Science Team',
@@ -106,18 +112,23 @@ const orList = (list) => {
   }
 }
 
-const generateProductIDList = (products, productOrder, filtered=false) => {
+const generateProductIDList = (products, productOrder, currentRelease, currentReleaseProductCodes, filtered=false) => {
   if (filtered) { return [...productOrder]; }
-  const list = Object.keys(products);
+  const list = currentRelease === null
+    ? Object.keys(products)
+    : Object.keys(products).filter(p => currentReleaseProductCodes.includes(p));
   list.sort((a, b) => products[a].productName.toUpperCase() < products[b].productName.toUpperCase() ? -1 : 1);
   return list;
 };
 
-const generateCsv = (products, productOrder, filtered=false) => {
-  const rows = [payloadColumns.map(column => column.label).join(',')];
-  const orderedList = generateProductIDList(products, productOrder, filtered);
+const generateCsv = (products, productOrder, currentRelease, currentReleaseProductCodes, filtered=false) => {
+  const columns = currentRelease === null
+    ? [...payloadColumns]
+    : [...payloadColumns].filter(c => !c.hideFromRelease);
+  const rows = [columns.map(column => column.label).join(',')];
+  const orderedList = generateProductIDList(products, productOrder, currentRelease, currentReleaseProductCodes, filtered);
   orderedList.forEach((productCode) => {
-    const row = payloadColumns
+    const row = columns
       .filter(column => column.formats.includes('csv'))
       .map((column) => {
         let value = typeof column.value === 'function'
@@ -131,11 +142,12 @@ const generateCsv = (products, productOrder, filtered=false) => {
   return rows.join('\n');
 };
 
-const generateJson = (products, productOrder, filtered=false) => {
-  const orderedList = generateProductIDList(products, productOrder, filtered);
+const generateJson = (products, productOrder, currentRelease, currentReleaseProductCodes, filtered=false) => {
+  const orderedList = generateProductIDList(products, productOrder, currentRelease, currentReleaseProductCodes, filtered);
   const productList = orderedList.map((productCode) => {
     const product = {};
     payloadColumns
+      .filter(column => (currentRelease !== null || !column.hideFromRelease))
       .filter(column => column.formats.includes('json'))
       .forEach((column) => {
         const key = camelCase(column.label);
@@ -152,6 +164,8 @@ const generateJson = (products, productOrder, filtered=false) => {
 const generatePdf = (
   products,
   productOrder,
+  currentRelease,
+  currentReleaseProductCodes,
   filtersApplied = [],
   filterValues = {},
   sortMethod = null,
@@ -178,7 +192,10 @@ const generatePdf = (
     }
   };
   const filtered = filtersApplied.length > 0;
-  const productList = generateProductIDList(products, productOrder, filtered);
+  const productList = generateProductIDList(products, productOrder, currentRelease, currentReleaseProductCodes, filtered);
+  const releaseTitleInsert = currentRelease === null ? '' : `- Release ${currentRelease} `;
+  const releaseInsert = currentRelease === null ? '' : 'release ';
+  const releaseLength = currentRelease === null ? Object.keys(products).length : currentReleaseProductCodes.length;
   // PDF layout constants (in inches)
   const margin = 0.75;
   const pageWidth = 8.5;
@@ -192,7 +209,7 @@ const generatePdf = (
   pdf.setFont('helvetica', 'normal');
   // Document Title
   pdf.setFontSize(18);
-  pdf.text(`NEON Data Product Catalog (${filtered ? 'Filtered Subset' : 'All Products'})`, margin, margin);
+  pdf.text(`NEON Data Product Catalog ${releaseTitleInsert}(${filtered ? 'Filtered Subset' : 'All Products'})`, margin, margin);
   pdf.setFontSize(11);
   // Catalog Info
   let y = 1.05;
@@ -211,9 +228,9 @@ const generatePdf = (
   pdf.setFont('helvetica', 'normal');
   pdf.text(moment().format('YYYY-MM-DD'), margin + filterLabelWidth, y);
   if (!filtered) {
-    pdf.text(`${Object.keys(products).length} (full catalog)`, margin + filterLabelWidth + 2.27, y);
+    pdf.text(`${releaseLength} (full ${releaseInsert}catalog)`, margin + filterLabelWidth + 2.27, y);
   } else {
-    pdf.text(`${productList.length} (filtered from full catalog of ${Object.keys(products).length})`, margin + filterLabelWidth + 2.27, y);
+    pdf.text(`${productList.length} (filtered from full ${releaseInsert}catalog of ${releaseLength})`, margin + filterLabelWidth + 2.27, y);
     y += blockLineHeight * 1.5;
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(12.5);
@@ -287,7 +304,7 @@ const generatePdf = (
     pdf.text('Status:', margin + 1.5, y + offset);
     pdf.setFont('helvetica', 'normal');
     pdf.text(product.filterableValues.DATA_STATUS, margin + 2.1, y + offset);
-    if (product.filterableValues.DATA_STATUS === 'Available') {
+    if (product.filterableValues.DATA_STATUS === 'Available' && currentRelease === null) {
       const available = `${product.filterableValues.DATE_RANGE[0]} through ${product.filterableValues.DATE_RANGE[product.filterableValues.DATE_RANGE.length - 1]}`;
       pdf.setFont('helvetica', 'bold');
       pdf.text('Data Available:', margin + 3.1, y + offset);
@@ -312,6 +329,8 @@ const generatePdf = (
 export const downloadCatalog = (
   products,
   productOrder,
+  currentRelease,
+  currentReleaseProductCodes,
   ext='csv',
   filtersApplied = [],
   filterValues = {},
@@ -323,18 +342,19 @@ export const downloadCatalog = (
   const filtered = filtersApplied.length > 0;
   let payload = '';
   let mimeType = '';
-  const fileName = `NEON_Data_Product_Catalog_${filtered ? 'FILTERED' : 'ALL_PRODUCTS'}.${ext}`;
+  const releaseInsert = currentRelease !== null ? `RELEASE_${currentRelease}_` : ''
+  const fileName = `NEON_Data_Product_Catalog_${releaseInsert}${filtered ? 'FILTERED' : 'ALL_PRODUCTS'}.${ext}`;
   switch (ext) {
     case 'csv':
-      payload = generateCsv(products, productOrder, filtered);
+      payload = generateCsv(products, productOrder, currentRelease, currentReleaseProductCodes, filtered);
       mimeType = 'text/csv;charset=utf-8';
       break;
     case 'json':
-      payload = generateJson(products, productOrder, filtered);
+      payload = generateJson(products, productOrder, currentRelease, currentReleaseProductCodes, filtered);
       mimeType = 'application/json;charset=utf-8';
       break;
     case 'pdf':
-      payload = generatePdf(products, productOrder, filtersApplied, filterValues, sortMethod, sortDirection, search, statesJSON);
+      payload = generatePdf(products, productOrder, currentRelease, currentReleaseProductCodes, filtersApplied, filterValues, sortMethod, sortDirection, search, statesJSON);
       payload.save(fileName);
       return;
     default:

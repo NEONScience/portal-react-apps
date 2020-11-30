@@ -108,6 +108,8 @@ const DataHeader = (props) => {
     catalogSummaryVisible,
     onToggleCatalogSummaryVisibility,
     neonContextState,
+    currentRelease,
+    releases,
   } = props;
 
   const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
@@ -115,11 +117,17 @@ const DataHeader = (props) => {
 
   const { states: statesJSON = {} } = neonContextState.data;
 
+  let currentReleaseProductCodes = [];
+  if (currentRelease !== null) {
+    const currentReleaseObject = releases.find(r => r.release === currentRelease) || {};
+    currentReleaseProductCodes = currentReleaseObject.dataProductCodes || [];
+  }
+
   const handleDownload = (ext, filtered) => {
     if (!filtered) {
-      downloadCatalog(products, productOrder, ext);
+      downloadCatalog(products, productOrder, currentRelease, currentReleaseProductCodes, ext);
     } else {
-      downloadCatalog(products, productOrder, ext, filtersApplied, filterValues, sortMethod, sortDirection, localStorageSearch, statesJSON);
+      downloadCatalog(products, productOrder, currentRelease, currentReleaseProductCodes, ext, filtersApplied, filterValues, sortMethod, sortDirection, localStorageSearch, statesJSON);
     }
   };
 
@@ -128,18 +136,21 @@ const DataHeader = (props) => {
     'data-gtm-catalog-ext': ext,
     'data-gtm-catalog-filtered': filtered ? 'filtered' : 'full',
   });
-
+  
   const stats = {
     products: {
       total: catalogStats.totalProducts,
+      release: currentReleaseProductCodes.length,
       filtered: productOrder.length,
     },
     sites: {
       total: catalogStats.totalSites,
+      release: 0, // Derive this when reelase-specific availability is present in state
       filtered: 0,
     },
     dateRange: {
       total: catalogStats.totalDateRange,
+      release: [null, null], // Derive this when reelase-specific availability is present in state
       filtered: [null, null],      
     },
   };
@@ -168,17 +179,40 @@ const DataHeader = (props) => {
 
   const getTooltip = (format, filtered) => {
     const baseTooltip = `Download a ${format} file containing catalog data (product name, description, url, etc.--no science data)`;
+    let inRelease = '';
+    let allProducts = `all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}`;
+    if (currentRelease !== null) {
+      allProducts = `all ${stats.products.release} data product${stats.products.release === 1 ? '' : 's'}`;
+      inRelease = ` in the ${currentRelease} release`;
+    }
     return filtered
-      ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`
-      : `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
+      ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'}${inRelease} matching currently applied filters, sorted by the current sort.`
+      : `${baseTooltip} for ${allProducts}${inRelease}, sorted alphabetically by name.`;
   };
 
+  const allProductsStat = currentRelease === null ? (
+    `
+${stats.products.total} product${stats.products.total === 1 ? '' : 's'}
+from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
+    `
+  ) : (
+    `${stats.products.release} product${stats.products.release === 1 ? '' : 's'}`
+  );
+  const filteredProductsStat = currentRelease === null ? (
+    `
+${stats.products.filtered} product${stats.products.filtered === 1 ? '' : 's'}
+from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
+    `
+  ) : (
+    `${stats.products.filtered} product${stats.products.filtered === 1 ? '' : 's'}`
+  );
+  const releaseInsert = currentRelease === null ? '' : 'Release';
   let catalogSummaryContents = (
     <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
       <Grid item xs={12} sm={6}>
         <div className={classes.catalogContainer}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
-            All Products
+            {`All ${releaseInsert} Products`}
           </Typography>
           <div className={classes.statContainer}>
             <div className={classes.stat}>
@@ -188,38 +222,41 @@ const DataHeader = (props) => {
                 className={classes.statLabel}
                 data-selenium={`${selenium}.total-stats.products-and-sites`}
               >
-                {`
-${stats.products.total} product${stats.products.total === 1 ? '' : 's'}
-from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
-                `}
+                {allProductsStat}
               </Typography>
             </div>
-            <div className={classes.stat}>
-              <DateIcon className={classes.statIcon} />
-              <Typography
-                variant="subtitle1"
-                className={classes.statLabel}
-                data-selenium={`${selenium}.total-stats.dates-available`}
-              >
-                {totalAvailability}
-              </Typography>
-            </div>
+            {currentRelease !== null ? null : (
+              <div className={classes.stat}>
+                <DateIcon className={classes.statIcon} />
+                <Typography
+                  variant="subtitle1"
+                  className={classes.statLabel}
+                  data-selenium={`${selenium}.total-stats.dates-available`}
+                >
+                  {totalAvailability}
+                </Typography>
+              </div>
+            )}
           </div>
           <div className={classes.downloadContainer}>
             <Typography variant="caption" className={classes.downloadLabel}>
-              Download Full Catalog:
+              {`Download Full ${currentRelease === null ? '' : 'Release'} Catalog:`}
             </Typography>
             <ButtonGroup
               size="small"
               color="primary"
               variant="text"
-              aria-label="download full catalog (all products)"
+              aria-label={(
+                currentRelease === null
+                  ? 'download full catalog (all products)'
+                  : 'download full release catalog (all products in release)'
+              )}
             >
               <Tooltip title={getTooltip('CSV', false)}>
                 <Button
                   {...gtmProps('csv', false)}
                   onClick={() => { handleDownload('csv', false); }}
-                  aria-label="Download Full Catalog CSV"
+                  aria-label={`Download Full ${releaseInsert} Catalog CSV`}
                 >
                   CSV
                 </Button>
@@ -228,7 +265,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                 <Button
                   {...gtmProps('json', false)}
                   onClick={() => { handleDownload('json', false); }}
-                  aria-label="Download Full Catalog JSON"
+                  aria-label={`Download Full ${releaseInsert} Catalog JSON`}
                 >
                   JSON
                 </Button>
@@ -237,7 +274,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                 <Button
                   {...gtmProps('pdf', false)}
                   onClick={() => { handleDownload('pdf', false); }}
-                  aria-label="Download Full Catalog PDF"
+                  aria-label={`Download Full ${releaseInsert} Catalog PDF`}
                 >
                   PDF
                 </Button>
@@ -249,7 +286,7 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
       <Grid item xs={12} sm={6}>
         <div className={classes.catalogContainer} style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
-            Filtered Products
+            {`Filtered ${releaseInsert} Products`}
           </Typography>
           {filtersApplied.length ? (
             <React.Fragment>
@@ -261,43 +298,46 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                     className={classes.statLabel}
                     data-selenium={`${selenium}.filtered-stats.products-and-sites`}
                   >
-                    {`
-${stats.products.filtered} product${stats.products.filtered === 1 ? '' : 's'}
-from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
-                    `}
+                    {filteredProductsStat}
                   </Typography>
                 </div>
-                <div className={classes.stat}>
-                  {stats.dateRange.filtered.length === 2 ? (
-                    <DateIcon className={classes.statIcon} />
-                  ) : (
-                    <NoneIcon className={classes.statIcon} />
-                  )}
-                  <Typography
-                    variant="subtitle1"
-                    className={classes.statLabel}
-                    data-selenium={`${selenium}.filtered-stats.dates-available`}
-                  >
-                    {filteredAvailability}
-                  </Typography>
-                </div>
+                {currentRelease !== null ? null : (
+                  <div className={classes.stat}>
+                    {stats.dateRange.filtered.length === 2 ? (
+                      <DateIcon className={classes.statIcon} />
+                    ) : (
+                      <NoneIcon className={classes.statIcon} />
+                    )}
+                    <Typography
+                      variant="subtitle1"
+                      className={classes.statLabel}
+                      data-selenium={`${selenium}.filtered-stats.dates-available`}
+                    >
+                      {filteredAvailability}
+                    </Typography>
+                  </div>
+                )}
               </div>
               <div className={classes.downloadContainer}>
                 <Typography variant="caption" className={classes.downloadLabel}>
-                  Download Filtered Catalog:
+                  {`Download Filtered ${currentRelease === null ? '' : 'Release'} Catalog:`}
                 </Typography>
                 <ButtonGroup
                   size="small"
                   color="primary"
                   variant="text"
-                  aria-label="download catalog containing only filtered products"
+                  aria-label={(
+                    currentRelease === null
+                      ? 'download catalog containing only filtered products'
+                      : 'download catalog containing only filtered products in release'
+                  )}
                   disabled={!filtersApplied.length}
                 >
                   <Tooltip title={getTooltip('CSV', true)}>
                     <Button
                       {...gtmProps('csv', true)}
                       onClick={() => { handleDownload('csv', true); }}
-                      aria-label="Download Filtered Catalog CSV"
+                      aria-label={`Download Filtered ${releaseInsert} Catalog CSV`}
                     >
                       CSV
                     </Button>
@@ -306,7 +346,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                     <Button
                       {...gtmProps('json', true)}
                       onClick={() => { handleDownload('json', true); }}
-                      aria-label="Download Filtered Catalog JSON"
+                      aria-label={`Download Filtered ${releaseInsert} Catalog JSON`}
                     >
                       JSON
                     </Button>
@@ -315,7 +355,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                     <Button
                       {...gtmProps('pdf', true)}
                       onClick={() => { handleDownload('pdf', true); }}
-                      aria-label="Download Filtered Catalog PDF"
+                      aria-label={`Download Filtered ${releaseInsert} Catalog PDF`}
                     >
                       PDF
                     </Button>

@@ -259,11 +259,13 @@ const reducer = (state, action) => {
         .filter(doi => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, doi.release))
         .forEach((doi) => { newState.data.productReleases[doi.release] = null; });
       // Fake some unresolved issues
-      newState.data.product.changeLogs.forEach((change, idx) => {
+      /*
+      (newState.data.product.changeLogs || []).forEach((change, idx) => {
         if (change.resolvedDate > '2019-09-01') {
           newState.data.product.changeLogs[idx].resolvedDate = null;
         }
       });
+      */
       return calculateAppStatus(newState);
 
     case 'fetchProductReleaseFailed':

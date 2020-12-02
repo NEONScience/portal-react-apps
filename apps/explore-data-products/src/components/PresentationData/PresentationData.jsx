@@ -10,6 +10,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import DataProduct from "../DataProduct/DataProduct";
 import SkeletonDataProduct from "../SkeletonDataProduct/SkeletonDataProduct";
 
+import { FILTER_KEYS } from '../../util/filterUtil';
 import { FetchStateType } from "../../actions/actions";
 
 const PresentationData = (props) => {
@@ -106,7 +107,7 @@ const PresentationData = (props) => {
       ) : null}
       {productOrder.slice(0, scrollCutoff).map((productCode, idx) => (
         <DataProduct
-          key={productCode}
+          key={`${productCode}/${filterValues[FILTER_KEYS.RELEASE] || ''}`}
           productData={products[productCode]}
           bundleParentProductData={getBundleParentProductData(productCode)}
           descriptionExpanded={productDescriptionExpanded[productCode]}

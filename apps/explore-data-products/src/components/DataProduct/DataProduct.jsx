@@ -233,6 +233,7 @@ const DataProduct = React.memo((props) => {
     <DownloadDataContext.Provider
       productData={isBundleChild ? bundleParentProductData : productData}
       stateObservable={() => highestOrderDownloadSubject.asObservable()}
+      release={currentRelease}
     >
       <DownloadDataButton
         data-gtm="explore-data-products.download-data-button"

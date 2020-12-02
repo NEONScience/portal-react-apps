@@ -97,7 +97,7 @@ const DataProductPage = () => {
 
   // Set page title and breadcrumbs
   let title = 'Data Product';
-  
+
   const breadcrumbs = [
     { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
     { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
@@ -188,6 +188,7 @@ const DataProductPage = () => {
         <DownloadDataContext.Provider
           productData={downloadProductData}
           availabilityView="sites"
+          release={currentRelease}
         >
           {!currentReleaseObject ? null : (
             <Card className={classes.card}>

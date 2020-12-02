@@ -11,7 +11,6 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DataHeader from '../DataHeader/DataHeader';
-import ReleaseCard from '../ReleaseCard/ReleaseCard';
 import PresentationData from '../PresentationData/PresentationData';
 import PresentationSort from '../PresentationSort/PresentationSort';
 import PresentationFilter from '../PresentationFilter/PresentationFilter';
@@ -47,7 +46,6 @@ const PresentationTop = (props) => {
     neonContextState: storedNeonContextState,
     onChangeNeonContextState,
     appBuildState,
-    currentRelease,
   } = props;
 
   // Effect - Trigger the initial app fetch
@@ -96,7 +94,9 @@ const PresentationTop = (props) => {
   const drillProps = {...props, skeleton};
 
   const breadcrumbs = [
-    { name: 'Data Products' },
+    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
+    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Explore Data Products' },
   ];
 
   /**
@@ -136,6 +136,7 @@ const PresentationTop = (props) => {
       loading={loading}
       error={error}
       title="Explore Data Products"
+      breadcrumbHomeHref="https://www.neonscience.org/"
       breadcrumbs={breadcrumbs}
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarWidth={340}
@@ -147,7 +148,6 @@ const PresentationTop = (props) => {
         productCode={activeDataVisualization.productCode}
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
-      <ReleaseCard {...drillProps} key={currentRelease} />
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />

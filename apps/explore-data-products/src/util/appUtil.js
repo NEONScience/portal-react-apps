@@ -75,11 +75,11 @@ export const buildAppState = (state) => {
     const product = {...rawProduct};
     const productCode = product.productCode;
 
-    // Extend/update releases per the dois to which this product belongs
-    product.dois.forEach((doi) => {
-      const idx = dataStore.releases.findIndex(entry => entry.release === doi.release);
+    // Extend/update releases per the releases to which this product belongs
+    (product.releases || []).forEach((productRelease) => {
+      const idx = dataStore.releases.findIndex(entry => entry.release === productRelease.release);
       if (idx === -1) {
-        dataStore.releases.push({ ...doi, dataProductCodes: new Set([productCode]) });
+        dataStore.releases.push({ ...productRelease, dataProductCodes: new Set([productCode]) });
       } else {
         dataStore.releases[idx].dataProductCodes.add(productCode);
       }
@@ -129,6 +129,7 @@ export const buildAppState = (state) => {
       [FILTER_KEYS.DATA_STATUS]: (product.siteCodes || []).length > 0 ? 'Available' : 'Coming Soon',
       [FILTER_KEYS.SITES]: (product.siteCodes || []).map(s => s.siteCode),
       [FILTER_KEYS.SCIENCE_TEAM]: product.productScienceTeam,
+      [FILTER_KEYS.RELEASE]: (product.releases || []).map(r => r.release),
     };
 
     // Filterable value for VISUALIZATIONS
@@ -205,10 +206,12 @@ export const buildAppState = (state) => {
   // We have dataProductCodes as a Set on each release to make uniqueness easy when building it out.
   // Now loaded we don't expect this data structure to change so convert all those sets to arrays
   // as that's what the ReleaseFilter component expects.
+  // Lastly we also harvest the list of valid release tags to serve as valid RELEASE filter items
   dataStore.releases = dataStore.releases.map(release => ({
     ...release,
     dataProductCodes: Array.from(release.dataProductCodes),
   }));
+  dataStore.filterItems[FILTER_KEYS.RELEASE] = dataStore.releases.map(r => r.release);
 
   // Update Bundle Children
   // For all bundle children set certain filterable values related to data availability

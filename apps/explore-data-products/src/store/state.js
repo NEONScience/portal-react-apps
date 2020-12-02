@@ -62,8 +62,7 @@ const DEFAULT_STATE = {
   productSearchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
   productDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
 
-  releases: [],
-  currentRelease: null,
+  releases: [], // Array of all release objects known to exist (with tags, generation dates, and product codes)
 
   catalogStats: { // Stats about the entire product catalog we need and can derive once on load
     totalProducts: 0,

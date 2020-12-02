@@ -16,7 +16,6 @@ import {
   incrementScrollCutoff,
   changeActiveDataVisualization,
   changeNeonContextState,
-  changeRelease,
 } from "../../actions/actions";
 
 // Bind state to properties
@@ -29,7 +28,6 @@ const mapStateToProps = (state, ownProps) => ({
   productVisibility: state.productVisibility,
   productDescriptionExpanded: state.productDescriptionExpanded,
   releases: state.releases,
-  currentRelease: state.currentRelease,
   catalogStats: state.catalogStats,
   scrollCutoff: state.scrollCutoff,
   urlParams: state.urlParams,
@@ -98,9 +96,6 @@ const mapDispatchToProps = dispatch => ({
   },
   onChangeNeonContextState: (neonContextState) => {
     dispatch(changeNeonContextState(neonContextState));
-  },
-  onChangeRelease: (newRelease) => {
-    dispatch(changeRelease(newRelease));
   },
 });
 

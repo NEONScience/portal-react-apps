@@ -4,7 +4,6 @@ import {
   resetFilter,
   resetAllFilters,
   changeFilterItemVisibility,
-  updateProductVisibilityToCurrentRelease,
   FILTER_ITEM_VISIBILITY_STATES,
 } from "../util/filterUtil";
 
@@ -32,7 +31,6 @@ import {
   INCREMENT_SCROLL_CUTOFF,
   DataVisualizationComponents,
   CHANGE_ACTIVE_DATA_VISUALIZATION,
-  CHANGE_RELEASE,
 } from "../actions/actions";
 
 const buildAppStateIfReady = (state) => {
@@ -150,15 +148,6 @@ const reducer = (state = {}, action) => {
         ...state,
         scrollCutoff: state.scrollCutoff + 10,
       };
-
-    case CHANGE_RELEASE:
-      if (action.release !== null && !state.releases.find(r => r.release === action.release)) {
-        return state;
-      }
-      return updateProductVisibilityToCurrentRelease({
-        ...state,
-        currentRelease: action.release,
-      });
 
     default:
       return state;

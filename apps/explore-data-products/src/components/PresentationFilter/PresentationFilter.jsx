@@ -4,12 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import Collapse from '@material-ui/core/Collapse';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-// import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import FilterHeader from '../FilterHeader/FilterHeader';
 import FilterResetAll from '../FilterResetAll/FilterResetAll';
 import FilterSearch from '../FilterSearch/FilterSearch';
+import FilterRelease from '../FilterRelease/FilterRelease';
 import FilterDateRange from '../FilterDateRange/FilterDateRange';
 import FilterDataStatus from '../FilterDataStatus/FilterDataStatus';
 import FilterScienceTeam from '../FilterScienceTeam/FilterScienceTeam';
@@ -63,7 +63,7 @@ const PresentationFilter = (props) => {
     filtersApplied,
     filtersVisible,
     filterItemVisibility,
-    // catalogStats,
+    catalogStats,
     productOrder,
     allKeywordsByLetter,
     totalKeywords,
@@ -74,11 +74,9 @@ const PresentationFilter = (props) => {
     onCollapseFilterItems,
     onShowSelectedFilterItems,
     onToggleFilterVisibility,
-    // onChangeRelease,
     urlParams,
     localStorageSearch,
-    // releases,
-    // currentRelease,
+    releases,
     skeleton,
   } = props;
   
@@ -100,20 +98,6 @@ const PresentationFilter = (props) => {
     skeleton,
   };
 
-  /*
-  const releaseFilterProps = {
-    releases,
-    selected: currentRelease,
-    skeleton: !!skeleton,
-    onChange: onChangeRelease,
-    showGenerationDate: true,
-    showProductCount: true,
-    nullReleaseProductCount: catalogStats.totalProducts,
-    maxWidth: 276, // To match with the wider sidebar
-    key: currentRelease,
-  };
-  */
-
   // Refs for filter inputs that we can't directly control due to poor performance
   // but on which we want to set values in certain cases
   // Used to set search input value when provided from URL (controlling kills typing performance)
@@ -128,6 +112,14 @@ const PresentationFilter = (props) => {
       productOrder={productOrder}
       allKeywordsByLetter={allKeywordsByLetter}
       totalKeywords={totalKeywords}
+      {...filterProps}
+    />
+  );
+
+  const filterRelease = (
+    <FilterRelease
+      releases={releases}
+      catalogStats={catalogStats}
       {...filterProps}
     />
   );
@@ -149,7 +141,7 @@ const PresentationFilter = (props) => {
             <FilterDomain {...filterProps} />
           </div>
           <div className={classes.column}>
-            {/* <ReleaseFilter {...releaseFilterProps} /> */}
+            {filterRelease}
             <FilterDateRange {...filterProps} />
             <FilterVisualization {...filterProps} />
             <FilterTheme {...filterProps} />
@@ -159,7 +151,7 @@ const PresentationFilter = (props) => {
       ) : (
         <React.Fragment>
           {filterSearch}
-          {/* <ReleaseFilter {...releaseFilterProps} /> */}
+          {filterRelease}
           <FilterDateRange {...filterProps} />
           <FilterDataStatus {...filterProps} />
           <FilterVisualization {...filterProps} />

@@ -97,8 +97,11 @@ const DataProductPage = () => {
 
   // Set page title and breadcrumbs
   let title = 'Data Product';
+  
   const breadcrumbs = [
-    { name: 'Data Products', href: '/data-products/explore' },
+    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
+    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Explore Data Products', href: '/data-products/explore' },
   ];
   if (productCode) {
     if (currentRelease) {
@@ -172,6 +175,7 @@ const DataProductPage = () => {
   return (
     <NeonPage
       title={title}
+      breadcrumbHomeHref="https://www.neonscience.org/"
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarSubtitle={productCode || '--'}

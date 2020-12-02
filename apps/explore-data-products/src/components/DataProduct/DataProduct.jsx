@@ -92,7 +92,7 @@ const DataProduct = React.memo((props) => {
     onChangeActiveDataVisualization,
     highestOrderDownloadSubject,
     neonContextState,
-    currentRelease,
+    filterValues,
   } = props;
 
   const {
@@ -122,6 +122,7 @@ const DataProduct = React.memo((props) => {
 
   const productDateRange = productData.filterableValues[FILTER_KEYS.DATE_RANGE];
 
+  const currentRelease = filterValues[FILTER_KEYS.RELEASE];
   const productHref = currentRelease === null
     ? `${NeonEnvironment.getHost()}/data-products/${productCode}`
     : `${NeonEnvironment.getHost()}/data-products/${productCode}/${currentRelease}`;

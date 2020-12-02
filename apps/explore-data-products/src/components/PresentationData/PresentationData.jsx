@@ -24,7 +24,7 @@ const PresentationData = (props) => {
     onChangeActiveDataVisualization,
     highestOrderDownloadSubject,
     neonContextState,
-    currentRelease,
+    filterValues,
   } = props;
 
   const skeleton = [FetchStateType.WORKING, FetchStateType.FAILED].includes(appFetchState);
@@ -115,7 +115,7 @@ const PresentationData = (props) => {
           onChangeActiveDataVisualization={onChangeActiveDataVisualization}
           highestOrderDownloadSubject={highestOrderDownloadSubject}
           neonContextState={neonContextState}
-          currentRelease={currentRelease}
+          filterValues={filterValues}
         />
       ))}
     </div>

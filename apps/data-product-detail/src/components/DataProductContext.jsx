@@ -254,10 +254,10 @@ const reducer = (state, action) => {
       if (newState.data.product.dois && newState.data.product.dois.length > 1) {
         newState.data.product.dois.sort((a, b) => (a.generationDate < b.generationDate ? 1 : -1));
       }
-      newState.data.product.dois
+      newState.data.product.releases
         // eslint-disable-next-line max-len
-        .filter(doi => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, doi.release))
-        .forEach((doi) => { newState.data.productReleases[doi.release] = null; });
+        .filter(r => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, r.release))
+        .forEach((r) => { newState.data.productReleases[r.release] = null; });
       // Fake some unresolved issues
       /*
       (newState.data.product.changeLogs || []).forEach((change, idx) => {

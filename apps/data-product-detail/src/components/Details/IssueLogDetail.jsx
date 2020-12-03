@@ -109,6 +109,7 @@ const IssueLogDetail = () => {
     !row.resolvedDate
       || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
   );
+  const currentRelease = currentReleaseObject ? currentReleaseObject.release : null;
 
   if (!changeLogs.length) {
     return (
@@ -205,7 +206,7 @@ const IssueLogDetail = () => {
               {formatDate(row.resolvedDate)}
             </div>
             <div style={{ fontSize: '0.65rem' }}>
-              unresolved in release
+              {`unresolved in ${currentRelease} release`}
             </div>
           </React.Fragment>
         );

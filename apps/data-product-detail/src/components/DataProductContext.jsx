@@ -22,7 +22,7 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 const fudgeChangeLogResolvedDates = (changeLogs, releases) => {
-  if (releases.length < 3 || changeLogs.length < 3) { return changeLogs; }
+  if (releases.length < 2 || changeLogs.length < 2) { return changeLogs; }
   const middleReleaseIdx = Math.ceil(releases.length / 2) - 1;
   const postResolvedDate = moment
     .utc(releases[middleReleaseIdx].generationDate)

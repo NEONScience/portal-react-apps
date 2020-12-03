@@ -194,6 +194,7 @@ const DataProductPage = () => {
           productData={downloadProductData}
           availabilityView="sites"
           release={currentRelease}
+          key={currentRelease}
         >
           {!currentReleaseObject ? null : (
             <Card className={classes.card}>

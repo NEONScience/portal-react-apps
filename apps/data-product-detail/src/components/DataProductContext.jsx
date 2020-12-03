@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import moment from 'moment';
+
 import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
@@ -18,6 +20,21 @@ import cloneDeep from 'lodash/cloneDeep';
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+
+const fudgeChangeLogResolvedDates = (changeLogs, releases) => {
+  if (releases.length < 3 || changeLogs.length < 3) { return changeLogs; }
+  const middleReleaseIdx = Math.ceil(releases.length / 2) - 1;
+  const postResolvedDate = moment
+    .utc(releases[middleReleaseIdx].generationDate)
+    .add(1, 'days')
+    .format('YYYY-MM-DD[T]hh:mm:ss[Z]');
+  const newChangeLogs = [...changeLogs];
+  newChangeLogs.reverse();
+  newChangeLogs[0].resolvedDate = null;
+  newChangeLogs[1].resolvedDate = postResolvedDate;
+  newChangeLogs.reverse();
+  return newChangeLogs;
+};
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -190,10 +207,11 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
     route: { release: currentRelease },
     data: { product: generalProduct },
   } = state;
-  if (!currentRelease || !generalProduct || !generalProduct.dois || !generalProduct.dois.length) {
-    return null;
-  }
-  return generalProduct.dois.find(doi => doi.release === currentRelease) || null;
+  if (
+    !currentRelease || !generalProduct
+      || !generalProduct.releases || !generalProduct.releases.length
+  ) { return null; }
+  return generalProduct.releases.find(r => r.release === currentRelease) || null;
 };
 
 /**
@@ -259,6 +277,10 @@ const reducer = (state, action) => {
         .filter(r => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, r.release))
         .forEach((r) => { newState.data.productReleases[r.release] = null; });
       // Fake some unresolved issues
+      newState.data.product.changeLogs = fudgeChangeLogResolvedDates(
+        newState.data.product.changeLogs,
+        newState.data.product.releases,
+      );
       /*
       (newState.data.product.changeLogs || []).forEach((change, idx) => {
         if (change.resolvedDate > '2019-09-01') {
@@ -278,11 +300,17 @@ const reducer = (state, action) => {
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.SUCCESS;
       newState.data.productReleases[action.release] = action.data;
       // Fake some unresolved issues
+      newState.data.productReleases[action.release].changeLogs = fudgeChangeLogResolvedDates(
+        newState.data.productReleases[action.release].changeLogs,
+        newState.data.product.releases,
+      );
+      /*
       newState.data.productReleases[action.release].changeLogs.forEach((change, idx) => {
         if (change.resolvedDate > '2019-09-01') {
           newState.data.productReleases[action.release].changeLogs[idx].resolvedDate = null;
         }
       });
+      */
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':

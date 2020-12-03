@@ -32,7 +32,7 @@ import Detail from './Detail';
 const {
   useDataProductContextState,
   getCurrentProductFromState,
-  // getCurrentReleaseObjectFromState,
+  getCurrentReleaseObjectFromState,
 } = DataProductContext;
 
 const unresolvedStyle = {
@@ -104,13 +104,11 @@ const IssueLogDetail = () => {
   const [xsSearch, setXsSearch] = useState('');
 
   const changeLogs = product.changeLogs || [];
-  /* Filter changelog for unresolved-at-time-of-generation for a release
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
-  const changeLogs = currentReleaseObject
-    ? (product.changeLogs || []).filter(
-      change => !change.resolvedDate || change.resolvedDate > currentReleaseObject.generationDate,
-    ) : (product.changeLogs || []);
-  */
+  const rowGetsUnresolvedStyling = row => (
+    !row.resolvedDate
+      || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
+  );
 
   if (!changeLogs.length) {
     return (
@@ -199,8 +197,24 @@ const IssueLogDetail = () => {
     sorting: true,
     defaultSort: 'desc',
     customSort: getDateSortWithNulls('resolvedDate', 'issueDate'),
-    render: row => (row.resolvedDate ? formatDate(row.resolvedDate) : 'unresolved'),
-    cellStyle: fieldData => (fieldData ? {} : unresolvedStyle),
+    render: (row) => {
+      if (rowGetsUnresolvedStyling(row)) {
+        return !row.resolvedDate ? 'unresolved' : (
+          <React.Fragment>
+            <div>
+              {formatDate(row.resolvedDate)}
+            </div>
+            <div style={{ fontSize: '0.65rem' }}>
+              unresolved in release
+            </div>
+          </React.Fragment>
+        );
+      }
+      return formatDate(row.resolvedDate);
+    },
+    cellStyle: fieldData => (
+      rowGetsUnresolvedStyling({ resolvedDate: fieldData }) ? unresolvedStyle : {}
+    ),
   }, {
     title: 'Locations Affected',
     field: 'locationAffected',
@@ -391,7 +405,7 @@ const IssueLogDetail = () => {
               padding: 'dense',
               detailPanelColumnAlignment: 'right',
               detailPanelType: 'single',
-              rowStyle: row => (row.resolvedDate !== null ? {} : {
+              rowStyle: row => (!rowGetsUnresolvedStyling(row) ? {} : {
                 backgroundColor: Theme.colors.GOLD[50],
               }),
             }}

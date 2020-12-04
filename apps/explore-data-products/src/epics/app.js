@@ -1,4 +1,6 @@
+import { createEpicMiddleware } from "redux-observable";
 import { of, forkJoin, concat } from "rxjs";
+import { ajax } from "rxjs/ajax";
 import { switchMap, mergeMap, map, catchError } from "rxjs/operators";
 import { ofType } from "redux-observable";
 
@@ -12,26 +14,6 @@ import {
   fetchAppStateFailed,
   fetchAppStateWorking
 } from "../actions/actions";
-
-/**
- * Epic for fetching the initial app state from products and sites API
- * The forkJoin operator will run the requests in parallel, join when completed,
- * return results as an array indexed by the order passed in to the forJoin operator
- * @param {*} action$ stream of actions
- * @param {*} state$ stream of state
- * @param {*} dependencies$ injected dependencies
- */
-export const fetchAppStateEpic = (action$, state$, { ajax }) => {
-  return action$.pipe(
-    ofType(FETCH_APP_STATE),
-    switchMap(() =>
-      concat(
-        of(fetchAppStateWorking()),
-        buildObservable(ajax)
-      )
-    )
-  );
-}
 
 /**
  * Gets the AJAX observable to subscribe to
@@ -105,3 +87,44 @@ const buildAopViewerProductsObservable = (ajax) => {
     catchError(() => of(null))
   );
 }
+
+/**
+ * Epic for fetching the initial app state from products and sites API
+ * The forkJoin operator will run the requests in parallel, join when completed,
+ * return results as an array indexed by the order passed in to the forJoin operator
+ * @param {*} action$ stream of actions
+ * @param {*} state$ stream of state
+ * @param {*} dependencies$ injected dependencies
+ */
+export const fetchAppStateEpic = (action$, state$, { ajax }) => {
+  return action$.pipe(
+    ofType(FETCH_APP_STATE),
+    switchMap(() =>
+      concat(
+        of(fetchAppStateWorking()),
+        buildObservable(ajax)
+      )
+    )
+  );
+}
+export const getFetchProductsByReleaseEpic = () => (action$, state$, { ajax }) => (
+  action$.pipe(
+    ofType(FETCH_APP_STATE),
+    switchMap(() =>
+      concat(
+        of(fetchAppStateWorking()),
+        buildObservable(ajax)
+      )
+    )
+  )
+);
+
+
+/**
+   Export function to generate the entire combined middleware
+*/
+export const getEpicMiddleware = () => (
+  createEpicMiddleware({
+    dependencies: { ajax },
+  })
+);

@@ -4,19 +4,28 @@ import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 
-import debounce from 'lodash/debounce';
+// import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DataHeader from '../DataHeader/DataHeader';
-import PresentationData from '../PresentationData/PresentationData';
-import PresentationSort from '../PresentationSort/PresentationSort';
-import PresentationFilter from '../PresentationFilter/PresentationFilter';
-import DataVisualizationDialog from '../DataVisualizationDialog/DataVisualizationDialog';
+import ExploreContext from './ExploreContext';
 
-import { BuildStateType } from '../../actions/actions';
+/*
+import DataHeader from './components/DataHeader';
+import PresentationData from './components/PresentationData';
+import PresentationSort from './components/PresentationSort';
+import PresentationFilter from './components/PresentationFilter';
+import DataVisualizationDialog from './components/DataVisualizationDialog';
+*/
+
+const {
+  APP_STATUS,
+  useExploreContextState,
+  // getCurrentReleaseObjectFromState,
+  // getCurrentProductsByReleaseFromState,
+} = ExploreContext;
 
 const useStyles = makeStyles(theme => ({
   lazyLoader: {
@@ -32,25 +41,41 @@ const useStyles = makeStyles(theme => ({
 const DEBOUNCE_MILLISECONDS = 100;
 const SCROLL_PADDING = 400;
 
-const PresentationTop = (props) => {
+const ExplorePage = (props) => {
   const classes = useStyles(Theme);
 
+  // Deconstruct state
+  const [state, dispatch] = useExploreContextState();
   const {
-    products,
-    onFetchAppState,
-    productOrder,
-    scrollCutoff,
-    onIncrementScrollCutoff,
-    activeDataVisualization,
-    onChangeActiveDataVisualization,
-    neonContextState: storedNeonContextState,
-    onChangeNeonContextState,
-    appBuildState,
-  } = props;
+    appStatus,
+  } = state;
 
-  // Effect - Trigger the initial app fetch
-  useEffect(onFetchAppState, [onFetchAppState]);
+  // Set loading and error page props
+  let loading = null;
+  let error = null;
+  switch (appStatus) {
+    case APP_STATUS.READY:
+      break;
+    case APP_STATUS.ERROR:
+      error = 'An error was encountered communicating with the API. Please try again.';
+      break;
+    default:
+      loading = 'Loading data products...';
+      break;
+  }
 
+  // Establish props we drill down to lower order components
+  const skeleton = loading || error;
+  const drillProps = {...props, skeleton};
+  
+  // Breadcrumbs
+  const breadcrumbs = [
+    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
+    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Explore Data Products' },
+  ];
+
+  /*
   // Neon Context State
   const [latestNeonContextState] = NeonContext.useNeonContextState();
 
@@ -75,33 +100,7 @@ const PresentationTop = (props) => {
     latestNeonContextState.hasError,
   ]);
 
-  let loading = null;
-  let error = null;
-  switch (appBuildState) {
-    case BuildStateType.COMPLETE:
-      // Set above as default values
-      break;
-    case BuildStateType.AWAITING_DATA:
-      loading = 'Loading data products...';
-      break;
-    case BuildStateType.FAILED:
-    default:
-      error = 'An error was encountered communicating with the API. Please try again.';
-      break;
-  }
-  const skeleton = loading || error;
-
-  const drillProps = {...props, skeleton};
-
-  const breadcrumbs = [
-    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
-    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
-    { name: 'Explore Data Products' },
-  ];
-
-  /**
-   * Scroll-based Lazy Rendering Management
-   */
+  // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
   const scrollHandler = debounce(() => {
     if (productOrder.length <= scrollCutoff) { return; }
@@ -127,10 +126,13 @@ const PresentationTop = (props) => {
       window.removeEventListener("resize", scrollHandler);
     };
   });
+
+  */
   
   /**
      Main Page Render
   */
+  // sidebarContent={<PresentationFilter {...drillProps} />}
   return (
     <NeonPage
       loading={loading}
@@ -138,19 +140,27 @@ const PresentationTop = (props) => {
       title="Explore Data Products"
       breadcrumbHomeHref="https://www.neonscience.org/"
       breadcrumbs={breadcrumbs}
-      sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarWidth={340}
+      sidebarContent={<div>yo</div>}
       sidebarUnsticky
+      NeonContextProviderProps={{
+        whenFinal: () => { dispatch({ type: 'setNeonContextFinalized' }); }
+      }}
     >
+      {/*
       <DataVisualizationDialog
         products={products}
         component={activeDataVisualization.component}
         productCode={activeDataVisualization.productCode}
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
+      */}
+      {/*
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />
+      */}
+      {/*
       <div
         id="lazy-loader"
         ref={lazyLoaderRef}
@@ -162,8 +172,10 @@ const PresentationTop = (props) => {
         </Typography>
         <CircularProgress disableShrink />
       </div>
+      */}
+      <div>here</div>
     </NeonPage>
   );
 };
 
-export default PresentationTop;
+export default ExplorePage;

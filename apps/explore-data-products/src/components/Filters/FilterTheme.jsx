@@ -3,27 +3,28 @@ import React from 'react';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import FilterBase from '../FilterBase/FilterBase';
-import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+import FilterCheckBox from '../FilterCheckBox';
+
 import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterTheme = (props) => {
+  const { skeleton } = props;
+  
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
+    filtersApplied,
     filterItems,
     filterValues,
-    filtersApplied,
-    onApplyFilter,
-    onResetFilter,
-    skeleton,
-  } = props;
+  } = state;
 
   const filterKey = FILTER_KEYS.THEMES;
 
   const checkboxProps = {
-    filterKey,
-    onApplyFilter,
-    onResetFilter,
     filterValues: filterValues[filterKey],
+    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 
   return (
@@ -31,7 +32,7 @@ const FilterTheme = (props) => {
       title="Themes"
       skeleton={skeleton ? 5 : 0}
       data-selenium="browse-data-products-page.filters.themes"
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={checkboxProps.onResetFilter}
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>

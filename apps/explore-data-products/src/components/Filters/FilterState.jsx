@@ -2,33 +2,35 @@ import React from 'react';
 
 import MapSelectionButton from 'portal-core-components/lib/components/MapSelectionButton';
 
-import FilterBase from '../FilterBase/FilterBase';
-import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
-import FilterItemVisibilityButtons from '../FilterItemVisibilityButtons/FilterItemVisibilityButtons';
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+import FilterCheckBox from '../FilterCheckBox';
+import FilterItemVisibilityButtons from '../FilterItemVisibilityButtons';
+
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUtil';
 
 const FilterState = (props) => {
+  const { skeleton } = props;
+  
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
-    filterItems,
-    filterValues,
     filtersApplied,
+    filterItems,
     filterItemVisibility,
-    onApplyFilter,
-    onResetFilter,
-    onExpandFilterItems,
-    onCollapseFilterItems,
-    onShowSelectedFilterItems,
-    skeleton,
-  } = props;
+    filterValues,
+  } = state;
 
   const filterKey = FILTER_KEYS.STATES;
   const FILTER_SHOW_COUNT = 5;
 
+  const onApplyFilter = (filterValue, showOnlySelected = false) => {
+    dispatch({ type: 'resetFilter', filterKey, filterValue, showOnlySelected });
+  };
+  const onResetFilter = () => dispatch({ type: 'resetFilter', filterKey });
   const checkboxProps = {
-    filterKey,
-    onApplyFilter,
-    onResetFilter,
     filterValues: filterValues[filterKey],
+    onApplyFilter,
+    onResetFilter,    
   };
 
   const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
@@ -49,7 +51,7 @@ const FilterState = (props) => {
       selection="STATES"
       selectedItems={filterValues[filterKey]}
       buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
-      onSave={(newStates) => { onApplyFilter(filterKey, Array.from(newStates), true); }}
+      onSave={(newStates) => { onApplyFilter(Array.from(newStates), true); }}
     />
   );
 
@@ -59,7 +61,7 @@ const FilterState = (props) => {
       subtitle={subtitle}
       skeleton={skeleton ? FILTER_SHOW_COUNT : 0}
       data-selenium="browse-data-products-page.filters.states"
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={onResetFilter}
       showResetButton={filtersApplied.includes(filterKey)}
       additionalTitleButton={mapSelectionButton}
     >
@@ -82,9 +84,9 @@ const FilterState = (props) => {
         currentState={filterItemVisibility[filterKey]}
         totalItemCount={filterItems[filterKey].length}
         selectedItemCount={filterValues[filterKey].length}
-        onExpandFilterItems={onExpandFilterItems}
-        onCollapseFilterItems={onCollapseFilterItems}
-        onShowSelectedFilterItems={onShowSelectedFilterItems}
+        onExpandFilterItems={() => dispatch({ type: 'expandFilterItems', filterKey})}
+        onCollapseFilterItems={() => dispatch({ type: 'collapseFilterItems', filterKey})}
+        onShowSelectedFilterItems={() => dispatch({ type: 'showSelectedFilterItems', filterKey})}
       />
     </FilterBase>
   );

@@ -48,7 +48,6 @@ const FilterCheckBox = (props) => {
     countTitle,
     subtitle,
     checked,
-    filterKey,
     filterValues,
     onApplyFilter,
     onResetFilter,
@@ -62,8 +61,8 @@ const FilterCheckBox = (props) => {
       ? [...filterValues, value]
       : [...filterValues.filter(v => v !== value)];
     const uniqueFilterValue = [...(new Set(updatedFilterValue))];
-    if (!uniqueFilterValue.length) { return onResetFilter(filterKey); }
-    return onApplyFilter(filterKey, uniqueFilterValue);
+    if (!uniqueFilterValue.length) { return onResetFilter(); }
+    return onApplyFilter(uniqueFilterValue);
   };
 
   const label = (

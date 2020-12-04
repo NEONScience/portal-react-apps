@@ -220,12 +220,11 @@ const reducer = (state, action) => {
       return calculateAppStatus(newState);
 
     // Filter
-    case 'toggleFilterVisiblity':
-      return { ...newState, filtersVisible: !state.filtersVisible };
     case 'resetFilter':
       return resetFilter(newState, action.filterKey);
     case 'resetAllFilters':
       return resetAllFilters(newState);
+
     case 'applyFilter':
       if (action.showOnlySelected) { 
         return changeFilterItemVisibility(
@@ -235,6 +234,16 @@ const reducer = (state, action) => {
         );
       }
       return applyFilter(state, action.filterKey, action.filterValue);
+
+    case 'expandFilterItems':
+      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
+    case 'collapseFilterItems':
+      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.COLLAPSED);
+    case 'showSelectedFilterItems':
+      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.SELECTED);
+
+    case 'toggleFilterVisiblity':
+      return { ...newState, filtersVisible: !state.filtersVisible };
 
     // Sort
     case 'toggleSortVisiblity':

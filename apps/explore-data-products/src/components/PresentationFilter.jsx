@@ -12,17 +12,15 @@ import FilterHeader from './FilterHeader';
 import FilterResetAll from './FilterResetAll';
 
 import FilterSearch from './Filters/FilterSearch';
-/*
-import FilterRelease from '../Filters/FilterRelease';
-import FilterDateRange from '../Filters/FilterDateRange';
-import FilterDataStatus from '../Filters/FilterDataStatus';
-import FilterScienceTeam from '../Filters/FilterScienceTeam';
-import FilterState from '../Filters/FilterState';
-import FilterDomain from '../Filters/FilterDomain';
-import FilterSite from '../Filters/FilterSite';
-import FilterTheme from '../Filters/FilterTheme';
-import FilterVisualization from '../Filters/FilterVisualization';
-*/
+import FilterRelease from './Filters/FilterRelease';
+import FilterDateRange from './Filters/FilterDateRange';
+import FilterDataStatus from './Filters/FilterDataStatus';
+import FilterScienceTeam from './Filters/FilterScienceTeam';
+import FilterState from './Filters/FilterState';
+import FilterDomain from './Filters/FilterDomain';
+import FilterSite from './Filters/FilterSite';
+import FilterTheme from './Filters/FilterTheme';
+import FilterVisualization from './Filters/FilterVisualization';
 
 const useStyles = makeStyles(theme => ({
   filterContent: {
@@ -84,28 +82,22 @@ const PresentationFilter = (props) => {
         <div className={classes.twoColumns}>
           <div className={classes.column}>
             {filterSearch}
-            {/*
             <FilterDataStatus {...props} />
             <FilterScienceTeam {...props} />
             <FilterState {...props} />
             <FilterDomain {...props} />
-            */}
           </div>
           <div className={classes.column}>
-            FILTER RELEASE
-            {/*
             <FilterRelease {...props} />
             <FilterDateRange {...props} />
             <FilterVisualization {...props} />
             <FilterTheme {...props} />
             <FilterSite {...props} />
-            */}
           </div>
         </div>
       ) : (
         <React.Fragment>
           {filterSearch}
-          {/*
           <FilterRelease {...props} />
           <FilterDateRange {...props} />
           <FilterDataStatus {...props} />
@@ -115,7 +107,6 @@ const PresentationFilter = (props) => {
           <FilterState {...props} />
           <FilterDomain {...props} />
           <FilterTheme {...props} />
-          */}
         </React.Fragment>
       )}
     </div>

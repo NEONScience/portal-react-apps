@@ -1,28 +1,27 @@
 import React from "react";
 
-import FilterBase from '../FilterBase/FilterBase';
-import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+import FilterCheckBox from '../FilterCheckBox';
+
 import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterDataStatus = (props) => {
+  const { skeleton } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
+    filtersApplied,
     filterItems,
     filterValues,
-    filtersApplied,
-    onApplyFilter,
-    onResetFilter,
-    onInitiateFilterChange,
-    skeleton,
-  } = props;
+  } = state;
 
   const filterKey = FILTER_KEYS.DATA_STATUS;
 
   const checkboxProps = {
-    filterKey,
     filterValues: filterValues[filterKey],
-    onApplyFilter,
-    onResetFilter,
-    onInitiateFilterChange,
+    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 
   return (
@@ -30,7 +29,7 @@ const FilterDataStatus = (props) => {
       title="Data Status"
       skeleton={skeleton ? 2 : 0}
       data-selenium="browse-data-products-page.filters.data-status"
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={checkboxProps.onResetFilter}
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>

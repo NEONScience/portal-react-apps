@@ -9,7 +9,7 @@ import ShowSelectedIcon from '@material-ui/icons/CheckBox';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUtil';
+import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
 const useStyles = makeStyles(theme => ({
   button: {

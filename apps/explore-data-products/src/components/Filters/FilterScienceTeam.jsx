@@ -1,26 +1,27 @@
 import React from 'react';
 
-import FilterBase from '../FilterBase/FilterBase';
-import FilterCheckBox from '../FilterCheckBox/FilterCheckBox';
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+import FilterCheckBox from '../FilterCheckBox';
+
 import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterScienceTeam = (props) => {
+  const { skeleton } = props;
+  
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
+    filtersApplied,
     filterItems,
     filterValues,
-    filtersApplied,
-    onApplyFilter,
-    onResetFilter,
-    skeleton,
-  } = props;
+  } = state;
 
   const filterKey = FILTER_KEYS.SCIENCE_TEAM;
 
   const checkboxProps = {
     filterKey,
-    onApplyFilter,
-    onResetFilter,
-    filterValues: filterValues[filterKey],
+    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 
   return (
@@ -28,7 +29,7 @@ const FilterScienceTeam = (props) => {
       title="Science Team"
       skeleton={skeleton ? 5 : 0}
       data-selenium="browse-data-products-page.filters.science-team"
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={checkboxProps.onResetFilter}
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>

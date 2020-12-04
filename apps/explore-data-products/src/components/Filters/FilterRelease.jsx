@@ -2,19 +2,21 @@ import React from 'react';
 
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 
-import FilterBase from '../FilterBase/FilterBase';
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+
 import { FILTER_KEYS, FILTER_LABELS } from '../../util/filterUtil';
 
 const FilterRelease = (props) => {
+  const { skeleton } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
+    catalogStats,
     filterValues,
     filtersApplied,
-    onApplyFilter,
-    onResetFilter,
-    catalogStats,
     releases,
-    skeleton,
-  } = props;
+  } = state;
 
   const filterKey = FILTER_KEYS.RELEASE;
   const selected = filterValues[filterKey];
@@ -23,7 +25,7 @@ const FilterRelease = (props) => {
     <FilterBase
       title={FILTER_LABELS[filterKey]}
       data-selenium="browse-data-products-page.filters.release"
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={() => { dispatch({ type: 'resetFilter', filterKey }); }}
       showResetButton={filtersApplied.includes(filterKey)}
     >
       {/* maxWidth of 276 to match with the wider sidebar */}
@@ -32,7 +34,7 @@ const FilterRelease = (props) => {
         releases={releases}
         selected={selected}
         skeleton={!!skeleton}
-        onChange={(newReleaseValue) => { onApplyFilter(filterKey, newReleaseValue); }}
+        onChange={(filterValue) => { dispatch({ type: 'applyFilter', filterKey, filterValue }); }}
         showGenerationDate
         showProductCount
         nullReleaseProductCount={catalogStats.totalProducts}

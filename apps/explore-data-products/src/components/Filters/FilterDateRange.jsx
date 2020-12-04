@@ -10,8 +10,10 @@ import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+
 import { FILTER_KEYS } from '../../util/filterUtil';
-import FilterBase from '../FilterBase/FilterBase';
 
 const getYearMonthMoment = yearMonth => moment(`${yearMonth}-01`);
 
@@ -23,15 +25,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const FilterDateRange = (props) => {
+const FilterDateRange = () => {
+  const classes = useStyles(Theme);
+  
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
     filterItems,
     filterValues,
-    onApplyFilter,
-    onResetFilter,
-  } = props;
-  const classes = useStyles(Theme);
+  } = state;
 
   const filterKey = FILTER_KEYS.DATE_RANGE;
   const currentRange = filterValues[filterKey];
@@ -82,7 +84,7 @@ const FilterDateRange = (props) => {
           color="primary"
           style={{ width: '100%' }}
           disabled={!selectableRange.length}
-          onClick={() => onApplyFilter(filterKey, initialFilterValue)}
+          onClick={() => { dispatch({ type: 'applyFilter', filterKey, initialFilterValue }); }}
         >
           Filter on available dates…
         </Button>
@@ -119,14 +121,14 @@ const FilterDateRange = (props) => {
       currentRange[1] === null ? selectableRange[sliderMax] : currentRange[1],
     ];
     newFilterValues[rangeIndex] = formattedValue;
-    onApplyFilter(filterKey, newFilterValues);
+    dispatch({ type: 'applyFilter', filterKey, filterValue: newFilterValues });
   };
 
   // Render active date range filter with slider and date picker inputs
   return (
     <FilterBase
       {...filterBaseProps}
-      handleResetFilter={() => onResetFilter(filterKey)}
+      handleResetFilter={() => { dispatch({ type: 'resetFilter', filterKey }); }}
       showResetButton
     >
       <Slider
@@ -148,13 +150,14 @@ const FilterDateRange = (props) => {
         }}
         onChangeCommitted={(event, values) => {
           setActivelySliding(false);
-          onApplyFilter(
+          dispatch({
+            type: 'applyFilter', 
             filterKey,
-            [
+            filterValue: [
               Math.max(values[0], sliderMin),
               Math.min(values[1], sliderMax),
             ].map(x => selectableRange[x]),
-          );
+          });
         }}
       />
       <MuiPickersUtilsProvider utils={MomentUtils}>

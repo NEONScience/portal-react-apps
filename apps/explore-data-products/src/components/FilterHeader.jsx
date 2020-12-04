@@ -10,7 +10,9 @@ import FilterIcon from "@material-ui/icons/FilterList";
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { FILTER_LABELS } from "../../util/filterUtil";
+import ExploreContext from '../ExploreContext';
+
+import { FILTER_LABELS } from "../util/filterUtil";
 
 const useStyles = makeStyles(theme => ({
   title: {
@@ -36,7 +38,9 @@ const useStyles = makeStyles(theme => ({
 
 const FilterHeader = (props) => {
   const classes = useStyles(Theme);
-  const { filtersVisible, filtersApplied, onToggleFilterVisibility } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
+  const { filtersVisible, filtersApplied } = state;
 
   let filterSummary = 'no filters applied';
   if (filtersApplied.length) {
@@ -72,7 +76,7 @@ const FilterHeader = (props) => {
             placement="left"
             title={`${filtersVisible ? 'Collapse' : 'Expand'} filters`}
           >
-            <IconButton onClick={onToggleFilterVisibility}>
+            <IconButton onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}>
               {filtersVisible ? <ClearIcon /> : <FilterIcon />}
             </IconButton>
           </Tooltip>

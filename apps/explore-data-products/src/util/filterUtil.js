@@ -269,10 +269,10 @@ export const SORT_METHODS = {
     label: 'by Search Relevance',
     isDisabled: filterValues => filterValues[FILTER_KEYS.SEARCH].length === 0,
     getSortFunction: state => (a, b) => {
-      if (state.productSearchRelevance[a] === state.productSearchRelevance[b]) {
+      if (state.currentProducts.searchRelevance[a] === state.currentProducts.searchRelevance[b]) {
         return productNameAscSort(state.products[a], state.products[b]);
       }
-      return state.productSearchRelevance[a] < state.productSearchRelevance[b] ? 1 : -1;
+      return state.currentProducts.searchRelevance[a] < state.currentProducts.searchRelevance[b] ? 1 : -1;
     },
   },
 };
@@ -347,14 +347,15 @@ export const applyFilter = (state, filterKey, filterValue) => {
   }
   // Set visibility (and, if necessary, search relevance) for each product
   const depluralizedTerms = filterKey === FILTER_KEYS.SEARCH ? depluralizeSearchTerms(filterValue) : [];
-  Object.keys(state.products).forEach((productCode) => {
-    updated.productVisibility[productCode][filterKey] = filterIsNowApplied
+  // !!!!!!!!!!!!!! HERE
+  Object.keys(state.products || {}).forEach((productCode) => {
+    updated.currentProducts.visibility[productCode][filterKey] = filterIsNowApplied
       ? filterFunction(state.products[productCode], filterValue)
       : null;
-    const isVisible = productIsVisibleByFilters(updated.productVisibility[productCode]);
-    updated.productVisibility[productCode].BY_FILTERS = isVisible;
+    const isVisible = productIsVisibleByFilters(updated.currentProducts.visibility[productCode]);
+    updated.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
     if (filterKey === FILTER_KEYS.SEARCH) {
-      updated.productSearchRelevance[productCode] = calculateSearchRelevance(
+      updated.currentProducts.searchRelevance[productCode] = calculateSearchRelevance(
         state.products[productCode],
         depluralizedTerms,
       );
@@ -398,10 +399,10 @@ export const resetFilter = (state, filterKey) => {
   localStorage.setItem('filterItemVisibility', JSON.stringify(updated.filterItemVisibility));
   // If resetting search then also remove the search term (not stored with filterValues)
   if (filterKey === FILTER_KEYS.SEARCH) { localStorage.removeItem('search'); }
-  Object.keys(updated.productVisibility).forEach((productCode) => {
-    updated.productVisibility[productCode][filterKey] = null;
-    const isVisible = productIsVisibleByFilters(updated.productVisibility[productCode]);
-    updated.productVisibility[productCode].BY_FILTERS = isVisible;
+  Object.keys(updated.currentProducts.visibility).forEach((productCode) => {
+    updated.currentProducts.visibility[productCode][filterKey] = null;
+    const isVisible = productIsVisibleByFilters(updated.currentProducts.visibility[productCode]);
+    updated.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
   });
   return applySort(updated);
 }
@@ -428,8 +429,8 @@ export const resetAllFilters = (state) => {
   localStorage.removeItem('filterValues');
   localStorage.removeItem('filterItemVisibility');
   localStorage.removeItem('search');
-  Object.keys(state.productVisibility).forEach((productCode) => {
-    updated.productVisibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
+  Object.keys(state.currentProducts.visibility).forEach((productCode) => {
+    updated.currentProducts.visibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
   });
   return applySort(updated);
 };
@@ -479,10 +480,10 @@ export const applySort = (state, sortMethod = null, sortDirection = null) => {
   // Persist updates to localStorage  
   localStorage.setItem('sortMethod', updated.sortMethod);
   localStorage.setItem('sortDirection', updated.sortDirection);
-  const productOrder = Object.keys(updated.productVisibility)
-    .filter(productCode => updated.productVisibility[productCode].BY_FILTERS);
+  const productOrder = Object.keys(updated.currentProducts.visibility)
+    .filter(productCode => updated.currentProducts.visibility[productCode].BY_FILTERS);
   productOrder.sort(SORT_METHODS[updated.sortMethod].getSortFunction(updated));
-  updated.productOrder = productOrder;
+  updated.currentProducts.order = productOrder;
   return updated;
 }
 

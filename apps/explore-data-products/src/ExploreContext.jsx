@@ -19,12 +19,19 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 import {
-  FILTER_KEYS,
-  INITIAL_FILTER_VALUES,
-  INITIAL_FILTER_ITEMS,
-  INITIAL_FILTER_ITEM_VISIBILITY,
+  /* constants */
   DEFAULT_SORT_METHOD,
   DEFAULT_SORT_DIRECTION,
+  FILTER_ITEM_VISIBILITY_STATES,
+  FILTER_KEYS,
+  INITIAL_FILTER_ITEM_VISIBILITY,
+  INITIAL_FILTER_ITEMS,
+  INITIAL_FILTER_VALUES,
+  /* functions */
+  applyFilter,
+  changeFilterItemVisibility,
+  resetAllFilters,
+  resetFilter,
 } from './util/filterUtil';
 
 // Key used in state structures for referring to the released and provisional data set
@@ -61,33 +68,28 @@ const DEFAULT_STATE = {
 
   neonContextFinalized: false,
 
-  // ???
-  // neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
-
   // Unparsed values sniffed from URL params to seed initial filter values
   // This is here primarily for backward-compatibility with legacy portal pages.
   // (pages that want to link to browse with a filter payload)
   // We don't want to support all filters here. Future iterations should look
   // at more elegant / scalable approaches to arbitrary state injection.
-  /*
   urlParams: {
-    search: getSearchURLParam(),
-    release: getReleaseURLParam(),
-    sites: getSitesURLParams(),
-    states: getStatesURLParams(),
-    domains: getDomainsURLParams(),
+    search: null,
+    release: null,
+    sites: [],
+    states: [],
+    domains: [],
   },
-  */
 
   // Unparsed search input value sniffed from local storage
   // We only want to pull this out when we initialize the page
   localStorageSearch: localStorage.getItem('search'),
 
-  currentCatalog: {
-    productOrder: [], // Sorted list of product codes
-    productVisibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
-    productSearchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
-    productDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
+  currentProducts: {
+    order: [], // Sorted list of product codes
+    visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
+    searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
+    descriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
   },
   
   releases: [], // Array of all release objects known to exist (with tags, generation dates, and product codes)
@@ -188,9 +190,11 @@ const useExploreContextState = () => {
 const reducer = (state, action) => {
   const newState = { ...state };
   switch (action.type) {
+    // Neon Context
     case 'setNeonContextFinalized':
       return { ...newState, neonContextFinalized: true };
 
+    // Fetch Handling
     case 'fetchProductsByReleaseReleaseFailed':
       if (!newState.fetches.productsByRelease[action.release]) { return newState; }
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.ERROR;
@@ -215,10 +219,69 @@ const reducer = (state, action) => {
       newState.fetches = { ...action.fetches };
       return calculateAppStatus(newState);
 
+    // Filter
+    case 'toggleFilterVisiblity':
+      return { ...newState, filtersVisible: !state.filtersVisible };
+    case 'resetFilter':
+      return resetFilter(newState, action.filterKey);
+    case 'resetAllFilters':
+      return resetAllFilters(newState);
+    case 'applyFilter':
+      if (action.showOnlySelected) { 
+        return changeFilterItemVisibility(
+          applyFilter(state, action.filterKey, action.filterValue),
+          action.filterKey,
+          FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+        );
+      }
+      return applyFilter(state, action.filterKey, action.filterValue);
+
+    // Sort
+    case 'toggleSortVisiblity':
+      return { ...newState, sortVisible: !state.sortVisible };
+
     // Default
     default:
       return state;
   }
+};
+
+const parseURLParam = (paramName) => {
+  // Supported params with regexes and whether they appear one or many times
+  const URL_PARAMS = {
+    search: {
+      regex: /[?&]search=([^&#]+)/,
+      hasMany: false,
+    },
+    release: {
+      regex: /[?&]release=([^&#]+)/,
+      hasMany: false,
+    },
+    sites: {
+      regex: /[?&]site=([A-Z]{4})/g,
+      hasMany: true,
+    },
+    states: {
+      regex: /[?&]state=([A-Z]{2})/g,
+      hasMany: true,
+    },
+    domains: {
+      regex: /[?&]domain=(D[\d]{2})/g,
+      hasMany: true,
+    },
+  };
+  const urlParam = URL_PARAMS[paramName];
+  if (!urlParam) { return null; }
+  // Parse - many occurrences
+  if (urlParam.hasMany) {
+    const matches = window.location.search.matchAll(urlParam.regex) || [];
+    const set = new Set([...matches].map(match => decodeURIComponent(match[1])));
+    return Array.from(set);
+  }
+  // Parse - single occurrence
+  const match = window.location.search.match(/[?&]release=([^&#]+)/);
+  if (!match) { return null; }
+  return decodeURIComponent(match[1]);
 };
 
 /**
@@ -227,7 +290,16 @@ const reducer = (state, action) => {
 const Provider = (props) => {
   const { children } = props;
 
+  /**
+    State initialization
+  */
   const initialState = cloneDeep(DEFAULT_STATE);
+
+  // Pull params from the URL into state exactly once on initialization
+  Object.keys(initialState.urlParams).forEach((param) => {
+    initialState.urlParams[param] = parseURLParam(param);
+  });
+
   const [state, dispatch] = useReducer(
     process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
     initialState,
@@ -268,7 +340,7 @@ const Provider = (props) => {
           }),
         ).subscribe();
       });
-    // AOP products fetch
+    // Fetch the list of product codes supported by Visus for the AOP Viewer Visualization
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
       newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
       ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
@@ -300,6 +372,9 @@ const Provider = (props) => {
   );
 };
 
+/**
+   Prop Types
+*/
 Provider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.oneOfType([

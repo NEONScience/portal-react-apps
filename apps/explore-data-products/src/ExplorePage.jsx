@@ -12,13 +12,11 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from './ExploreContext';
 
-/*
-import DataHeader from './components/DataHeader';
-import PresentationData from './components/PresentationData';
-import PresentationSort from './components/PresentationSort';
+// import DataHeader from './components/DataHeader';
+// import PresentationData from './components/PresentationData';
+// import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
-import DataVisualizationDialog from './components/DataVisualizationDialog';
-*/
+// import DataVisualizationDialog from './components/DataVisualizationDialog';
 
 const {
   APP_STATUS,
@@ -132,7 +130,6 @@ const ExplorePage = (props) => {
   /**
      Main Page Render
   */
-  // sidebarContent={<PresentationFilter {...drillProps} />}
   return (
     <NeonPage
       loading={loading}
@@ -141,7 +138,7 @@ const ExplorePage = (props) => {
       breadcrumbHomeHref="https://www.neonscience.org/"
       breadcrumbs={breadcrumbs}
       sidebarWidth={340}
-      sidebarContent={<div>yo</div>}
+      sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarUnsticky
       NeonContextProviderProps={{
         whenFinal: () => { dispatch({ type: 'setNeonContextFinalized' }); }

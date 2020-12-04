@@ -18,8 +18,10 @@ import debounce from 'lodash/debounce';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import ExploreContext from '../../ExploreContext';
+import FilterBase from '../FilterBase';
+
 import { FILTER_KEYS, parseSearchTerms } from '../../util/filterUtil';
-import FilterBase from '../FilterBase/FilterBase';
 
 const DEBOUNCE_MILLISECONDS = 200;
 
@@ -75,17 +77,16 @@ const useStyles = makeStyles(theme => ({
 
 const FilterSearch = (props) => {
   const classes = useStyles(Theme);
+  const { searchRef } = props;
 
-  const {
-    searchRef,
-    productOrder,
+  const [state, dispatch] = ExploreContext.useExploreContextState();
+  const {  
+    currentProducts: { order: productOrder },
     allKeywordsByLetter,
     totalKeywords,
     urlParams,
     localStorageSearch,
-    onApplyFilter,
-    onResetFilter,
-  } = props;
+  } = state;
 
   const filterKey = FILTER_KEYS.SEARCH;
 
@@ -106,13 +107,13 @@ const FilterSearch = (props) => {
       localStorage.removeItem('search');
     }
     const terms = parseSearchTerms(searchTerm);
-    if (!terms.length) { return onResetFilter(filterKey); }
+    if (!terms.length) { dispatch({ type: 'resetFilter', filterKey }); }
     // Push an event with latest term to Google Tag Manager
     window.gtmDataLayer.push({
       event: 'dataProductSearch',
       dataProductSearchTerm: searchTerm,
     });
-    return onApplyFilter(filterKey, terms);
+    return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 
   const lastYear = (new Date()).getFullYear() - 1;

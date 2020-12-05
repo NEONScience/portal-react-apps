@@ -15,9 +15,9 @@ const FilterState = (props) => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
-    filterItems,
     filterItemVisibility,
     filterValues,
+    currentProducts: { filterItems },
   } = state;
 
   const filterKey = FILTER_KEYS.STATES;

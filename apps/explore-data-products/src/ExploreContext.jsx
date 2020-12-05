@@ -15,8 +15,16 @@ import { map, catchError } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
+import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+
+import {
+  INITIAL_PRODUCTS_BY_RELEASE,
+  parseURLParam,
+  parseProductsByReleaseData,
+  parseAnyUnparsedProductSets,
+} from './util/stateUtil';
 
 import {
   /* constants */
@@ -27,15 +35,13 @@ import {
   INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
+  LATEST_AND_PROVISIONAL,
   /* functions */
   applyFilter,
   changeFilterItemVisibility,
   resetAllFilters,
   resetFilter,
 } from './util/filterUtil';
-
-// Key used in state structures for referring to the released and provisional data set
-export const PROVISIONAL = 'PROVISIONAL';
 
 export const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -56,17 +62,17 @@ const DEFAULT_STATE = {
 
   fetches: {
     productsByRelease: {
-      [PROVISIONAL]: { status: FETCH_STATUS.AWAITING_CALL },
+      [LATEST_AND_PROVISIONAL]: { status: FETCH_STATUS.AWAITING_CALL },
     },
     aopVizProducts: { status: FETCH_STATUS.AWAITING_CALL },
   },
 
   productsByRelease: {
-    [PROVISIONAL]: null,
+    [LATEST_AND_PROVISIONAL]: cloneDeep(INITIAL_PRODUCTS_BY_RELEASE),
   },
   aopVizProducts: [],
 
-  neonContextFinalized: false,
+  neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 
   // Unparsed values sniffed from URL params to seed initial filter values
   // This is here primarily for backward-compatibility with legacy portal pages.
@@ -89,8 +95,9 @@ const DEFAULT_STATE = {
     order: [], // Sorted list of product codes
     visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
     searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
-    descriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
+    filterItems: cloneDeep(INITIAL_FILTER_ITEMS), // Store for all discrete options for filters that make use of them
   },
+  productsDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
   
   releases: [], // Array of all release objects known to exist (with tags, generation dates, and product codes)
 
@@ -108,15 +115,14 @@ const DEFAULT_STATE = {
   sortMethod: DEFAULT_SORT_METHOD,
   sortDirection: DEFAULT_SORT_DIRECTION,
   
-  filterValues: { ...INITIAL_FILTER_VALUES }, // Store for current values applied for all filters
-  filterItems: { ...INITIAL_FILTER_ITEMS }, // Store for all discrete options for filters that make use of them
+  filterValues: cloneDeep(INITIAL_FILTER_VALUES), // Store for current values applied for all filters
   
   allKeywordsByLetter: {}, // Additional store for list of all unique keywords, sorted by first letter.
   totalKeywords: 0, // count of all unique keywords (used for formatting keyword list)
 
   filtersApplied: [], // List of filter keys that have been applied / are not in a cleared state
   filtersVisible: false, // Whether filter section is expanded (for xs/sm vieports only)
-  filterItemVisibility: { ...INITIAL_FILTER_ITEM_VISIBILITY }, // Expanded / collapsed / selected states for filters with >5 options visibility buttons
+  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY), // Expanded / collapsed / selected states for filters with >5 options visibility buttons
 
   activeDataVisualization: {
     component: null,
@@ -160,7 +166,7 @@ const calculateAppStatus = (state) => {
     updatedState.appStatus = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextFinalized) {
+  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
     updatedState.appStatus = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -191,8 +197,11 @@ const reducer = (state, action) => {
   const newState = { ...state };
   switch (action.type) {
     // Neon Context
-    case 'setNeonContextFinalized':
-      return { ...newState, neonContextFinalized: true };
+    case 'storeFinalizedNeonContextState':
+      return calculateAppStatus(parseAnyUnparsedProductSets({
+        ...newState,
+        neonContextState: action.neonContextState,
+      }));
 
     // Fetch Handling
     case 'fetchProductsByReleaseReleaseFailed':
@@ -203,9 +212,9 @@ const reducer = (state, action) => {
     case 'fetchProductsByReleaseSucceeded':
       if (!newState.fetches.productsByRelease[action.release]) { return newState; }
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
-      newState.productsByRelease[action.release] = action.data;
-      return calculateAppStatus(newState);
-    
+      newState.fetches.productsByRelease[action.release].unparsedData = action.data;
+      return calculateAppStatus(parseProductsByReleaseData(newState, action.release));
+
     case 'fetchAopVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
       newState.fetches.aopVizProducts.error = action.error;
@@ -233,7 +242,7 @@ const reducer = (state, action) => {
           FILTER_ITEM_VISIBILITY_STATES.SELECTED,
         );
       }
-      return applyFilter(state, action.filterKey, action.filterValue);
+      return calculateFetches(applyFilter(state, action.filterKey, action.filterValue));
 
     case 'expandFilterItems':
       return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
@@ -253,44 +262,6 @@ const reducer = (state, action) => {
     default:
       return state;
   }
-};
-
-const parseURLParam = (paramName) => {
-  // Supported params with regexes and whether they appear one or many times
-  const URL_PARAMS = {
-    search: {
-      regex: /[?&]search=([^&#]+)/,
-      hasMany: false,
-    },
-    release: {
-      regex: /[?&]release=([^&#]+)/,
-      hasMany: false,
-    },
-    sites: {
-      regex: /[?&]site=([A-Z]{4})/g,
-      hasMany: true,
-    },
-    states: {
-      regex: /[?&]state=([A-Z]{2})/g,
-      hasMany: true,
-    },
-    domains: {
-      regex: /[?&]domain=(D[\d]{2})/g,
-      hasMany: true,
-    },
-  };
-  const urlParam = URL_PARAMS[paramName];
-  if (!urlParam) { return null; }
-  // Parse - many occurrences
-  if (urlParam.hasMany) {
-    const matches = window.location.search.matchAll(urlParam.regex) || [];
-    const set = new Set([...matches].map(match => decodeURIComponent(match[1])));
-    return Array.from(set);
-  }
-  // Parse - single occurrence
-  const match = window.location.search.match(/[?&]release=([^&#]+)/);
-  if (!match) { return null; }
-  return decodeURIComponent(match[1]);
 };
 
 /**
@@ -331,7 +302,7 @@ const Provider = (props) => {
       .filter(release => fetchIsAwaitingCall(fetches.productsByRelease[release]))
       .forEach((release) => {
         newFetches.productsByRelease[release].status = FETCH_STATUS.FETCHING;
-        const releaseArg = release === PROVISIONAL ? null : release;
+        const releaseArg = release === LATEST_AND_PROVISIONAL ? null : release;
         NeonGraphQL.getAllDataProducts(releaseArg).pipe(
           map((response) => {
             dispatch({

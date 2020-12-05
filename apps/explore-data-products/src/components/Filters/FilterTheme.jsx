@@ -15,8 +15,8 @@ const FilterTheme = (props) => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
-    filterItems,
     filterValues,
+    currentProducts: { filterItems },
   } = state;
 
   const filterKey = FILTER_KEYS.THEMES;

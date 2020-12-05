@@ -7,7 +7,6 @@ import Typography from "@material-ui/core/Typography";
 // import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from './ExploreContext';
@@ -74,30 +73,6 @@ const ExplorePage = (props) => {
   ];
 
   /*
-  // Neon Context State
-  const [latestNeonContextState] = NeonContext.useNeonContextState();
-
-  // Effect - look for any changes to the NeonContext's initialization; stream them into local state
-  useEffect(() => {
-    if (
-      !storedNeonContextState || !latestNeonContextState
-        || ['isActive', 'isFinal', 'hasError'].every(k => (
-          storedNeonContextState[k] === latestNeonContextState[k]
-        ))
-    ) { return; }
-    onChangeNeonContextState(latestNeonContextState);
-  }, [
-    storedNeonContextState,
-    latestNeonContextState,
-    onChangeNeonContextState,
-    storedNeonContextState.isActive,
-    storedNeonContextState.isFinal,
-    storedNeonContextState.hasError,
-    latestNeonContextState.isActive,
-    latestNeonContextState.isFinal,
-    latestNeonContextState.hasError,
-  ]);
-
   // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
   const scrollHandler = debounce(() => {
@@ -124,7 +99,6 @@ const ExplorePage = (props) => {
       window.removeEventListener("resize", scrollHandler);
     };
   });
-
   */
   
   /**
@@ -141,7 +115,9 @@ const ExplorePage = (props) => {
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarUnsticky
       NeonContextProviderProps={{
-        whenFinal: () => { dispatch({ type: 'setNeonContextFinalized' }); }
+        whenFinal: (neonContextState) => {
+          dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
       }}
     >
       {/*

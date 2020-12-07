@@ -15,7 +15,7 @@ import DataHeader from './components/DataHeader';
 import PresentationData from './components/PresentationData';
 import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
-// import DataVisualizationDialog from './components/DataVisualizationDialog';
+import DataVisualizationDialog from './components/DataVisualizationDialog';
 
 import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
 
@@ -119,14 +119,7 @@ const ExplorePage = (props) => {
         },
       }}
     >
-      {/*
-      <DataVisualizationDialog
-        products={products}
-        component={activeDataVisualization.component}
-        productCode={activeDataVisualization.productCode}
-        onChangeActiveDataVisualization={onChangeActiveDataVisualization}
-      />
-      */}
+      <DataVisualizationDialog />
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />

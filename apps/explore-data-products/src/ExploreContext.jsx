@@ -93,7 +93,7 @@ const DEFAULT_STATE = {
   localStorageSearch: localStorage.getItem('search'),
 
   currentProducts: {
-    release: null,
+    release: LATEST_AND_PROVISIONAL,
     order: [], // Sorted list of product codes
     visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
     searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
@@ -275,10 +275,7 @@ const reducer = (state, action) => {
         }
       };
     case 'changeActiveDataVisualization':
-      if (
-        (action.component === null && action.productCode === null)
-        || !VISUALIZATIONS[action.component] || !state.products[action.productCode]
-      ) {
+      if (!action.component || !action.productCode || !VISUALIZATIONS[action.component]) {
         return {
           ...state,
           activeDataVisualization: { component: null, productCode: null },

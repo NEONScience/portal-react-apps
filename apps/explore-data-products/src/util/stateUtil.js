@@ -397,18 +397,18 @@ export const parseProductsByReleaseData = (state, release, action) => {
   }
 
   // Freeze the parts of state we don't expect to ever change again
-  Object.freeze(productsByRelease)
-  /*
+  Object.freeze(productsByRelease);
   if (release === LATEST_AND_PROVISIONAL) {
     Object.freeze(newState.catalogStats);
   }
-  */
 
   // Delete the unparsed data now that we're all done with it
   newState.fetches.productsByRelease[release].unparsedData = null;
 
-  // Apply the completed productsByRelease to new state and return the whole thing
+  // Apply the completed productsByRelease to new state
   newState.productsByRelease[release] = productsByRelease;
+  
+  // Generate the currentProducts structure and return
   return applyCurrentProducts(newState);
 };
 

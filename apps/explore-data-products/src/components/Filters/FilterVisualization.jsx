@@ -19,8 +19,8 @@ const FilterVisualization = (props) => {
   const filterKey = FILTER_KEYS.VISUALIZATIONS;
 
   const checkboxProps = {
-    filterKey,
-    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    filterValues: filterValues[filterKey],
+    onApplyFilter: (filterValue) => dispatch({ type: 'applyFilter', filterKey, filterValue }),
     onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 

@@ -19,8 +19,8 @@ const FilterScienceTeam = (props) => {
   const filterKey = FILTER_KEYS.SCIENCE_TEAM;
 
   const checkboxProps = {
-    filterKey,
-    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    filterValues: filterValues[filterKey],
+    onApplyFilter: (filterValue) => dispatch({ type: 'applyFilter', filterKey, filterValue }),
     onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 

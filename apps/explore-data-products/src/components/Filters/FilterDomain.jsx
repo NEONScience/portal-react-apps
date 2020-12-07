@@ -24,7 +24,7 @@ const FilterDomain = (props) => {
   const FILTER_SHOW_COUNT = 5;
 
   const onApplyFilter = (filterValue, showOnlySelected = false) => {
-    dispatch({ type: 'resetFilter', filterKey, filterValue, showOnlySelected });
+    dispatch({ type: 'applyFilter', filterKey, filterValue, showOnlySelected });
   };
   const onResetFilter = () => dispatch({ type: 'resetFilter', filterKey });
   const checkboxProps = {

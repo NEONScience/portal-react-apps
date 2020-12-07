@@ -294,6 +294,10 @@ export const DEFAULT_SORT_DIRECTION = 'ASC';
 
 /**
    applyCurrentProducts
+   Regenerate the currentProducts object in state. This contains the sorted list of product codes
+   along with visiblity mappings and search relevances. It is subject to change (complete
+   regeneration) any time the release filter selection changes, as that means it refers to a
+   distinct set of product data.
 */
 export const applyCurrentProducts = (state) => {
   // Determine current release per filter value
@@ -415,7 +419,7 @@ export const applyFilter = (state, filterKey, filterValue) => {
   }
 
   // Persist updated filter values to localStorage
-  // localStorage.setItem('filterValues', JSON.stringify(updated.filterValues));
+  localStorage.setItem('filterValues', JSON.stringify(updated.filterValues));
 
   // Update currentProducts with latest filter info and return
   return applyCurrentProducts(updated);

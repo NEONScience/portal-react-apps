@@ -84,7 +84,9 @@ const FilterDateRange = () => {
           color="primary"
           style={{ width: '100%' }}
           disabled={!selectableRange.length}
-          onClick={() => { dispatch({ type: 'applyFilter', filterKey, initialFilterValue }); }}
+          onClick={() => {
+            dispatch({ type: 'applyFilter', filterKey, filterValue: initialFilterValue });
+          }}
         >
           Filter on available dates…
         </Button>

@@ -264,7 +264,7 @@ const DataProduct = React.memo((props) => {
     <DownloadDataContext.Provider
       productData={isBundleChild ? bundleParentProductData : productData}
       stateObservable={() => highestOrderDownloadSubject.asObservable()}
-      release={currentRelease}
+      release={currentRelease === LATEST_AND_PROVISIONAL ? null : currentRelease}
     >
       <DownloadDataButton
         data-gtm="explore-data-products.download-data-button"
@@ -373,7 +373,7 @@ const DataProduct = React.memo((props) => {
               </div>
             </Grid>
           )}
-          {!hasVisualization || currentRelease !== LATEST_AND_PROVISIONAL ? null : (
+          {!hasData || !hasVisualization || currentRelease !== LATEST_AND_PROVISIONAL ? null : (
             <Grid item xs={12} sm={4}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data

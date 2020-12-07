@@ -20,7 +20,7 @@ const FilterDataStatus = (props) => {
 
   const checkboxProps = {
     filterValues: filterValues[filterKey],
-    onApplyFilter: (filterValue) => dispatch({ type: 'resetFilter', filterKey, filterValue }),
+    onApplyFilter: (filterValue) => dispatch({ type: 'applyFilter', filterKey, filterValue }),
     onResetFilter: () => dispatch({ type: 'resetFilter', filterKey }),
   };
 

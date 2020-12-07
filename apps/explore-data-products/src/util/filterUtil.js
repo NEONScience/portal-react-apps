@@ -293,6 +293,56 @@ export const DEFAULT_SORT_METHOD = 'productName';
 export const DEFAULT_SORT_DIRECTION = 'ASC';
 
 /**
+   applyCurrentProducts
+*/
+export const applyCurrentProducts = (state) => {
+  // Determine current release per filter value
+  let currentRelease = state.filterValues[FILTER_KEYS.RELEASE] || LATEST_AND_PROVISIONAL;
+  if (typeof state.productsByRelease[currentRelease] === 'undefined') {
+    currentRelease = LATEST_AND_PROVISIONAL;
+  }
+
+  const productsByRelease = state.productsByRelease[currentRelease];
+
+  // If current release is the same in currentProducts and filterValues
+  // AND product order length is the same as length of productsByRelease
+  // then there's no work to do
+  if (
+    state.currentProducts.release === currentRelease
+      && state.currentProducts.order.legnth === Object.keys(productsByRelease).length
+  ) { return state; }
+
+  const newState = { ...state };
+
+  newState.currentProducts.release = currentRelease;
+
+  // Regenerate product visiblity map
+  const { filtersApplied, filterValues } = state;
+  const depluralizedTerms = depluralizeSearchTerms(filterValues[FILTER_KEYS.SEARCH]);
+  newState.currentProducts.visibility = {};
+  Object.keys(productsByRelease).forEach((productCode) => {
+    newState.currentProducts.visibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
+    filtersApplied.forEach((filterKey) => {
+      const filterFunction = FILTER_FUNCTIONS[filterKey];
+      newState.currentProducts.visibility[productCode][filterKey] = filterFunction(
+        productsByRelease[productCode],
+        filterValues[filterKey],
+      );
+      if (filterKey === FILTER_KEYS.SEARCH) {
+        newState.currentProducts.searchRelevance[productCode] = calculateSearchRelevance(
+          productsByRelease[productCode],
+          depluralizedTerms,
+        );
+      }
+    });
+    const isVisible = productIsVisibleByFilters(newState.currentProducts.visibility[productCode]);
+    newState.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
+  });
+
+  return applySort(newState);
+};
+
+/**
  * Calculate a number to reflect the relevance of a given product for a given
  * search filter input (arbitrarily many terms). Things that contribute to score:
  *  - Exact vs. fuzzy matches of a given term (exact: term appears with spaces
@@ -333,7 +383,7 @@ export const productIsVisibleByFilters = (productVisibility) => !Object.keys(pro
  */
 export const applyFilter = (state, filterKey, filterValue) => {
   if (!FILTER_KEYS[filterKey]) { return state; }
-  const filterFunction = FILTER_FUNCTIONS[filterKey];
+
   // For list-based filters narrow down to the intersection with available filter items
   let updatedFilterValue = filterValue;
   if (LIST_BASED_FILTER_KEYS.includes(filterKey)) {
@@ -357,31 +407,18 @@ export const applyFilter = (state, filterKey, filterValue) => {
   if (updated.filterItemVisibility[filterKey] && !filterIsNowApplied) {
     updated.filterItemVisibility[filterKey] = FILTER_ITEM_VISIBILITY_STATES.COLLAPSED;
   }
-  // Set visibility (and, if necessary, search relevance) for each product
-  const depluralizedTerms = filterKey === FILTER_KEYS.SEARCH ? depluralizeSearchTerms(filterValue) : [];
-  const currentProductsByRelease = getCurrentProductsByRelease(state);
-  Object.keys(currentProductsByRelease).forEach((productCode) => {
-    updated.currentProducts.visibility[productCode][filterKey] = filterIsNowApplied
-      ? filterFunction(currentProductsByRelease[productCode], filterValue)
-      : null;
-    const isVisible = productIsVisibleByFilters(updated.currentProducts.visibility[productCode]);
-    updated.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
-    if (filterKey === FILTER_KEYS.SEARCH) {
-      updated.currentProducts.searchRelevance[productCode] = calculateSearchRelevance(
-        currentProductsByRelease[productCode],
-        depluralizedTerms,
-      );
-    }
-  });
-  // Always change to sort by relevance
+
+  // Always change to sort by relevance if first applying search
   if (filterKey === FILTER_KEYS.SEARCH && filterIsNowApplied) {
     updated.sortMethod = 'searchRelevance';
     updated.sortDirection = 'ASC';
   }
+
   // Persist updated filter values to localStorage
-  localStorage.setItem('filterValues', JSON.stringify(updated.filterValues));
-  // Sort and return
-  return applySort(updated);
+  // localStorage.setItem('filterValues', JSON.stringify(updated.filterValues));
+
+  // Update currentProducts with latest filter info and return
+  return applyCurrentProducts(updated);
 }
 
 /**

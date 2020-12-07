@@ -23,7 +23,12 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../ExploreContext';
 
-import { FILTER_KEYS, VISUALIZATIONS, getCurrentProductsByRelease } from '../util/filterUtil';
+import {
+  FILTER_KEYS,
+  VISUALIZATIONS,
+  LATEST_AND_PROVISIONAL,
+  getCurrentProductsByRelease,
+} from '../util/filterUtil';
 
 const useStyles = makeStyles(theme => ({
   productCard: {
@@ -34,6 +39,10 @@ const useStyles = makeStyles(theme => ({
   },
   productCode: {
     color: theme.palette.grey[300],
+  },
+  release: {
+    color: Theme.colors.BROWN[500],
+    marginLeft: theme.spacing(2),
   },
   descriptionButton: {
     fontSize: theme.spacing(1.5),
@@ -92,7 +101,7 @@ const DataProduct = React.memo((props) => {
     productDescriptionExpanded,
     aopVizProducts,
     neonContextState,
-    filterValues,
+    currentProducts: { release: currentRelease },
   } = state;
   const products = getCurrentProductsByRelease(state);
 
@@ -136,11 +145,9 @@ const DataProduct = React.memo((props) => {
 
   const productDateRange = productData.filterableValues[FILTER_KEYS.DATE_RANGE];
 
-  const currentRelease = filterValues[FILTER_KEYS.RELEASE];
-  const productHref = currentRelease === null
+  const productHref = currentRelease === LATEST_AND_PROVISIONAL
     ? `${NeonEnvironment.getHost()}/data-products/${productCode}`
     : `${NeonEnvironment.getHost()}/data-products/${productCode}/${currentRelease}`;
-  const generalProductHref = `${NeonEnvironment.getHost()}/data-products/${productCode}`;
   
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
@@ -163,9 +170,16 @@ const DataProduct = React.memo((props) => {
   );
 
   const code = (
-    <Typography className={classes.productCode} title="Product ID" variant="subtitle2">
-      {productCode}
-    </Typography>
+    <div className={classes.startFlex}>
+      <Typography className={classes.productCode} title="Product ID" variant="subtitle2">
+        {productCode}
+      </Typography>
+      {currentRelease === LATEST_AND_PROVISIONAL ? null : (
+        <Typography className={classes.release} title="Release" variant="subtitle2">
+          {`Release: ${currentRelease}`}
+        </Typography>
+      )}
+    </div>
   );
 
   const truncatedDescription = productDescription.replace(/^(.{200}[^\s,.-]*).*/, '$1');
@@ -266,7 +280,7 @@ const DataProduct = React.memo((props) => {
     productCode,
   });
   
-  const aopViewerButton = hasData && isAopViewerProduct && currentRelease === null
+  const aopViewerButton = hasData && isAopViewerProduct && currentRelease === LATEST_AND_PROVISIONAL
     ? (
       <Button
         data-gtm="explore-data-products.aop-data-viewer-button"
@@ -282,7 +296,7 @@ const DataProduct = React.memo((props) => {
       </Button>
     ) : null;
 
-  const viewTimeSeriesDataButton = hasTimeSeriesData && currentRelease === null
+  const viewTimeSeriesDataButton = hasTimeSeriesData && currentRelease === LATEST_AND_PROVISIONAL
     ? (
       <Button
         data-gtm="explore-data-products.view-time-series-button"
@@ -321,9 +335,6 @@ const DataProduct = React.memo((props) => {
     </div>
   ));
 
-  const generalProductDetailsLink = (
-    <Link href={generalProductHref} target="_blank">latest and provisional product details</Link>
-  );
   return (
     <Card className={classes.productCard}>
       <CardContent data-selenium={`browse-data-products-page.product-card.${productCode}`}>
@@ -341,48 +352,41 @@ const DataProduct = React.memo((props) => {
 
         {bundleInfo}
 
-        {currentRelease !== null ? (
-          <Typography variant="body2">
-            See {generalProductDetailsLink} for availability.
-          </Typography>
-        ) : (
-          <React.Fragment>
-            <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-              {!timeRange ? null : (
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="subtitle2" className={classes.detailSubtitle}>
-                    Available Dates
-                  </Typography>
-                  <Typography variant="body2">
-                    {timeRange}
-                  </Typography>
-                </Grid>
-              )}
-              {!timeRange && !hasVisualization ? null : (
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="subtitle2" className={classes.detailSubtitle}>
-                    Data Themes
-                  </Typography>
-                  <div style={{ display: 'flex' }}>
-                    {themeIcons}
-                  </div>
-                </Grid>
-              )}
-              {!hasVisualization ? null : (
-                <Grid item xs={12} sm={4}>
-                  <Typography variant="subtitle2" className={classes.detailSubtitle}>
-                    Visualize Data
-                  </Typography>
-                  {viewTimeSeriesDataButton}
-                  {aopViewerButton}
-                </Grid>
-              )}
+        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+          {!timeRange ? null : (
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" className={classes.detailSubtitle}>
+                Available Dates
+              </Typography>
+              <Typography variant="body2">
+                {timeRange}
+              </Typography>
             </Grid>
-            {hasData ? (
-              <DataProductAvailability siteCodes={siteCodes} />
-            ) : null}
-          </React.Fragment>
-        )}
+          )}
+          {!timeRange && !hasVisualization ? null : (
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" className={classes.detailSubtitle}>
+                Data Themes
+              </Typography>
+              <div style={{ display: 'flex' }}>
+                {themeIcons}
+              </div>
+            </Grid>
+          )}
+          {!hasVisualization || currentRelease !== LATEST_AND_PROVISIONAL ? null : (
+            <Grid item xs={12} sm={4}>
+              <Typography variant="subtitle2" className={classes.detailSubtitle}>
+                Visualize Data
+              </Typography>
+              {viewTimeSeriesDataButton}
+              {aopViewerButton}
+            </Grid>
+          )}
+        </Grid>
+
+        {hasData ? (
+          <DataProductAvailability siteCodes={siteCodes} />
+        ) : null}
 
       </CardContent>
     </Card>

@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 
-// import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -17,12 +17,9 @@ import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
 // import DataVisualizationDialog from './components/DataVisualizationDialog';
 
-const {
-  APP_STATUS,
-  useExploreContextState,
-  // getCurrentReleaseObjectFromState,
-  // getCurrentProductsByReleaseFromState,
-} = ExploreContext;
+import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
+
+const { APP_STATUS, useExploreContextState } = ExploreContext;
 
 const useStyles = makeStyles(theme => ({
   lazyLoader: {
@@ -45,6 +42,8 @@ const ExplorePage = (props) => {
   const [state, dispatch] = useExploreContextState();
   const {
     appStatus,
+    scrollCutoff,
+    currentProducts: { release: currentRelease, order: productOrder },
   } = state;
 
   // Set loading and error page props
@@ -57,7 +56,9 @@ const ExplorePage = (props) => {
       error = 'An error was encountered communicating with the API. Please try again.';
       break;
     default:
-      loading = 'Loading data products...';
+      loading = currentRelease === LATEST_AND_PROVISIONAL
+        ? 'Loading data products...'
+        : `Loading data products for release ${currentRelease}...`;
       break;
   }
 
@@ -72,7 +73,6 @@ const ExplorePage = (props) => {
     { name: 'Explore Data Products' },
   ];
 
-  /*
   // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
   const scrollHandler = debounce(() => {
@@ -88,7 +88,7 @@ const ExplorePage = (props) => {
       ? lazyLoaderRef.current.offsetTop
       : documentBottom - SCROLL_PADDING;
     if (scrollBottom > lazyLoaderOffset) {
-      onIncrementScrollCutoff();
+      dispatch({ type: 'incrementScrollCutoff' });
     }
   }, DEBOUNCE_MILLISECONDS);
   useEffect(() => {
@@ -99,7 +99,6 @@ const ExplorePage = (props) => {
       window.removeEventListener("resize", scrollHandler);
     };
   });
-  */
   
   /**
      Main Page Render
@@ -131,7 +130,6 @@ const ExplorePage = (props) => {
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />
-      {/*
       <div
         id="lazy-loader"
         ref={lazyLoaderRef}
@@ -143,7 +141,6 @@ const ExplorePage = (props) => {
         </Typography>
         <CircularProgress disableShrink />
       </div>
-      */}
     </NeonPage>
   );
 };

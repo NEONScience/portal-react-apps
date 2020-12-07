@@ -20,7 +20,6 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 import {
-  applyCurrentProducts,
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
@@ -199,6 +198,7 @@ const useExploreContextState = () => {
 */
 const reducer = (state, action) => {
   const newState = { ...state };
+  let tempState = null;
   switch (action.type) {
     // Neon Context
     case 'storeFinalizedNeonContextState':
@@ -236,18 +236,14 @@ const reducer = (state, action) => {
     case 'resetAllFilters':
       return resetAllFilters(newState);
     case 'applyFilter':
-      if (action.showOnlySelected) { 
-        return changeFilterItemVisibility(
+      tempState = calculateAppStatus(
+        calculateFetches(
           applyFilter(state, action.filterKey, action.filterValue),
-          action.filterKey,
-          FILTER_ITEM_VISIBILITY_STATES.SELECTED,
-        );
-      }
-      return calculateFetches(
-        applyCurrentProducts(
-          applyFilter(state, action.filterKey, action.filterValue),
-        ),
+        )
       );
+      return !action.showOnlySelected
+        ? tempState
+        : changeFilterItemVisibility(tempState, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.SELECTED);
     case 'expandFilterItems':
       return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
     case 'collapseFilterItems':

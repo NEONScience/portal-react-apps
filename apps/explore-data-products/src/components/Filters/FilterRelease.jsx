@@ -34,7 +34,7 @@ const FilterRelease = (props) => {
         releases={releases}
         selected={selected}
         skeleton={!!skeleton}
-        onChange={(filterValue) => { dispatch({ type: 'applyFilter', filterKey, filterValue }); }}
+        onChange={(filterValue) => dispatch({ type: 'applyFilter', filterKey, filterValue })}
         showGenerationDate
         showProductCount
         nullReleaseProductCount={catalogStats.totalProducts}

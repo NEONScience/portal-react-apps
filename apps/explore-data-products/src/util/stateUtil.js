@@ -19,6 +19,7 @@ import {
   parseSearchTerms,
   applyFilter,
   applySort,
+  applyCurrentProducts,
   getContinuousDatesArray,
   /* no need? */
   FILTER_FUNCTIONS,
@@ -74,49 +75,6 @@ export const parseURLParam = (paramName) => {
   const match = window.location.search.match(/[?&]release=([^&#]+)/);
   if (!match) { return null; }
   return decodeURIComponent(match[1]);
-};
-
-
-/**
-   applyCurrentProducts
-*/
-export const applyCurrentProducts = (state) => {
-  // Determine current release per filter value
-  let currentRelease = state.filterValues[FILTER_KEYS.RELEASE] || LATEST_AND_PROVISIONAL;
-  if (!state.productsByRelease[currentRelease]) { currentRelease = LATEST_AND_PROVISIONAL; }
-
-  // Current release is the same in currentProducts and filterValues then there's no work to do
-  if (state.currentProducts.release === currentRelease) { return state; }
-
-  const newState = { ...state };
-  const productsByRelease = state.productsByRelease[currentRelease];
-
-  newState.currentProducts.release = currentRelease;
-
-  // Regenerate product visiblity map
-  const { filtersApplied, filterValues } = state;
-  const depluralizedTerms = depluralizeSearchTerms(filterValues[FILTER_KEYS.SEARCH]);
-  newState.currentProducts.visibility = {};
-  Object.keys(productsByRelease).forEach((productCode) => {
-    newState.currentProducts.visibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
-    filtersApplied.forEach((filterKey) => {
-      const filterFunction = FILTER_FUNCTIONS[filterKey];
-      newState.currentProducts.visibility[productCode][filterKey] = filterFunction(
-        productsByRelease[productCode],
-        filterValues[filterKey],
-      );
-      if (filterKey === FILTER_KEYS.SEARCH) {
-        newState.currentProducts.searchRelevance[productCode] = calculateSearchRelevance(
-          productsByRelease[productCode],
-          depluralizedTerms,
-        );
-      }
-    });
-    const isVisible = productIsVisibleByFilters(newState.currentProducts.visibility[productCode]);
-    newState.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
-  });
-
-  return applySort(newState);
 };
 
 /**
@@ -182,16 +140,6 @@ export const parseProductsByReleaseData = (state, release, action) => {
   ((unparsedData || {}).products || []).forEach((rawProduct) => {
     const product = {...rawProduct};
     const productCode = product.productCode;
-
-    // Extend/update releases per the releases to which this product belongs
-    (product.releases || []).forEach((productRelease) => {
-      const idx = newState.releases.findIndex(entry => entry.release === productRelease.release);
-      if (idx === -1) {
-        newState.releases.push({ ...productRelease, dataProductCodes: new Set([productCode]) });
-      } else {
-        newState.releases[idx].dataProductCodes.add(productCode);
-      }
-    });
 
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly. Note that some bundle
@@ -285,8 +233,18 @@ export const parseProductsByReleaseData = (state, release, action) => {
       newState.productDescriptionExpanded[productCode] = false;
     }
     
-    // LATEST_AND_PROVISIONAL release: initialize some global catalog stat values
-    if (release === LATEST_AND_PROVISIONAL) {      
+    // LATEST_AND_PROVISIONAL release single-product opertations
+    if (release === LATEST_AND_PROVISIONAL) {
+      // Extend/update releases per the releases to which this product belongs
+      (product.releases || []).forEach((productRelease) => {
+        const idx = newState.releases.findIndex(entry => entry.release === productRelease.release);
+        if (idx === -1) {
+          newState.releases.push({ ...productRelease, dataProductCodes: new Set([productCode]) });
+        } else {
+          newState.releases[idx].dataProductCodes.add(productCode);
+        }
+      });
+      // Initialize some global catalog stat values
       const maxDateRangeIdx = product.filterableValues[FILTER_KEYS.DATE_RANGE].length - 1;
       if (
         !newState.catalogStats.totalDateRange[0]
@@ -320,6 +278,11 @@ export const parseProductsByReleaseData = (state, release, action) => {
       ...releaseObject,
       dataProductCodes: Array.from(releaseObject.dataProductCodes),
     }));
+    newState.releases.forEach((releaseObject) => {
+      if (typeof newState.productsByRelease[releaseObject.release] === 'undefined') {
+        newState.productsByRelease[releaseObject.release] = {};
+      }
+    });
   }
 
   // Update Bundle Children

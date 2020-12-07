@@ -13,7 +13,7 @@ const FilterDataStatus = (props) => {
   const {
     filtersApplied,
     filterValues,
-    currentProducts: { filterItems },
+    filterItems,
   } = state;
 
   const filterKey = FILTER_KEYS.DATA_STATUS;

@@ -13,7 +13,7 @@ const FilterVisualization = (props) => {
   const {
     filtersApplied,
     filterValues,
-    currentProducts: { filterItems },
+    filterItems,
   } = state;  
 
   const filterKey = FILTER_KEYS.VISUALIZATIONS;

@@ -17,7 +17,7 @@ const FilterState = (props) => {
     filtersApplied,
     filterItemVisibility,
     filterValues,
-    currentProducts: { filterItems },
+    filterItems,
   } = state;
 
   const filterKey = FILTER_KEYS.STATES;

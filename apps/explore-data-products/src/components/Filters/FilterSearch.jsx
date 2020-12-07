@@ -82,11 +82,12 @@ const FilterSearch = (props) => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {  
     currentProducts: { order: productOrder },
-    allKeywordsByLetter,
-    totalKeywords,
+    keywords: { all: allKeywords, allByLetter: allKeywordsByLetter },
     urlParams,
     localStorageSearch,
   } = state;
+
+  const totalKeywords = allKeywords.size;
 
   const filterKey = FILTER_KEYS.SEARCH;
 

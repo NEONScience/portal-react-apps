@@ -106,7 +106,7 @@ export const BUNDLE_INHERITIED_FILTER_KEYS = [
 // Key used in state structures for referring to the released and provisional data set
 export const LATEST_AND_PROVISIONAL = 'LATEST_AND_PROVISIONAL';
 
-const getCurrentProductsByRelease = (state) => {
+export const getCurrentProductsByRelease = (state) => {
   let currentRelease = state.filterValues[FILTER_KEYS.RELEASE] || LATEST_AND_PROVISIONAL;
   if (!state.productsByRelease[currentRelease]) { currentRelease = LATEST_AND_PROVISIONAL; }
   return state.productsByRelease[currentRelease] || {};
@@ -124,7 +124,7 @@ const filterValuesIntersect = (filterValue, productFilterableValues) => (
 // ever be shimmed in when processing search terms, NEVER when storing / presenting them
 // as the depluralized values showing up out of nowhere would confuse an end user.
 // Ultimately a better search relevance algorithm would obviate this function.
-const depluralizeSearchTerms = (terms) => {
+export const depluralizeSearchTerms = (terms) => {
   const depluralizedTerms = [...terms];
   terms.forEach((term) => {
     if (term.includes(' ')) { return; }
@@ -140,7 +140,7 @@ const depluralizeSearchTerms = (terms) => {
 // whether the product should be visible given ONLY this filter and its value.
 // Since most filters are validated as an intersection of value (array of string) with an array of
 // valid values we start by setting them all to that and then define the special cases below.
-const FILTER_FUNCTIONS = {};
+export const FILTER_FUNCTIONS = {};
 Object.keys(FILTER_KEYS).forEach(key => {
   FILTER_FUNCTIONS[key] = (product, value) => (
     filterValuesIntersect(value, product.filterableValues[key])
@@ -180,7 +180,6 @@ export const INITIAL_FILTER_ITEMS = {
   SCIENCE_TEAM: [],
   DATE_RANGE: [],
   VISUALIZATIONS: [],
-  RELEASE: [],
 };
 
 export const FILTER_ITEM_VISIBILITY_STATES = {
@@ -302,7 +301,7 @@ export const DEFAULT_SORT_DIRECTION = 'ASC';
  *  - Term length (in that when more than one term is present then a longer term
  *    has a greater impact on the score than a shorter term)
  */
-const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((score, term) => {
+export const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((score, term) => {
   const regex = new RegExp(`[\\S]{0,1}${term}[\\S]{0,1}`, 'g');
   const matches = (product.filterableValues[FILTER_KEYS.SEARCH] || '').match(regex);
   if (matches) {
@@ -320,7 +319,7 @@ const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((s
  * @param {object} productVisibility - entry from productVisibility object from state for a single product
  * @return {boolean}
  */
-const productIsVisibleByFilters = (productVisibility) => !Object.keys(productVisibility)
+export const productIsVisibleByFilters = (productVisibility) => !Object.keys(productVisibility)
   .filter(key => !!FILTER_KEYS[key])
   .some(key => productVisibility[key] === false);
 

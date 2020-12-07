@@ -13,7 +13,7 @@ const FilterScienceTeam = (props) => {
   const {
     filtersApplied,
     filterValues,
-    currentProducts: { filterItems },
+    filterItems,
   } = state;
 
   const filterKey = FILTER_KEYS.SCIENCE_TEAM;

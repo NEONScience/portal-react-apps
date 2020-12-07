@@ -32,7 +32,7 @@ const FilterDateRange = () => {
   const {
     filtersApplied,
     filterValues,
-    currentProducts: { filterItems },
+    filterItems,
   } = state;
 
   const filterKey = FILTER_KEYS.DATE_RANGE;

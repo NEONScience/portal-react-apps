@@ -11,6 +11,8 @@ import {
   INITIAL_FILTER_VALUES,
   INITIAL_PRODUCT_VISIBILITY,
   LATEST_AND_PROVISIONAL,
+  SORT_METHODS,
+  SORT_DIRECTIONS,
   VISUALIZATIONS,
   /* functions */
   generateSearchFilterableValue,
@@ -18,8 +20,11 @@ import {
   applyFilter,
   applySort,
   getContinuousDatesArray,
-  SORT_METHODS,
-  SORT_DIRECTIONS,
+  /* no need? */
+  FILTER_FUNCTIONS,
+  calculateSearchRelevance,
+  productIsVisibleByFilters,
+  depluralizeSearchTerms,
 } from './filterUtil';
 
 // Array of common strings that appear in short descriptions for bundle children.
@@ -28,15 +33,6 @@ import {
 const EXCISE_BUNDLE_BLURBS = [
   ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
 ];
-
-export const INITIAL_PRODUCTS_BY_RELEASE = {
-  products: {},
-  filterItems: { ...INITIAL_FILTER_ITEMS },
-  keywords: {
-    allByLetter: {},
-    total: 0,
-  },
-};
 
 /**
    parseURLParam
@@ -80,19 +76,63 @@ export const parseURLParam = (paramName) => {
   return decodeURIComponent(match[1]);
 };
 
+
+/**
+   applyCurrentProducts
+*/
+export const applyCurrentProducts = (state) => {
+  // Determine current release per filter value
+  let currentRelease = state.filterValues[FILTER_KEYS.RELEASE] || LATEST_AND_PROVISIONAL;
+  if (!state.productsByRelease[currentRelease]) { currentRelease = LATEST_AND_PROVISIONAL; }
+
+  // Current release is the same in currentProducts and filterValues then there's no work to do
+  if (state.currentProducts.release === currentRelease) { return state; }
+
+  const newState = { ...state };
+  const productsByRelease = state.productsByRelease[currentRelease];
+
+  newState.currentProducts.release = currentRelease;
+
+  // Regenerate product visiblity map
+  const { filtersApplied, filterValues } = state;
+  const depluralizedTerms = depluralizeSearchTerms(filterValues[FILTER_KEYS.SEARCH]);
+  newState.currentProducts.visibility = {};
+  Object.keys(productsByRelease).forEach((productCode) => {
+    newState.currentProducts.visibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
+    filtersApplied.forEach((filterKey) => {
+      const filterFunction = FILTER_FUNCTIONS[filterKey];
+      newState.currentProducts.visibility[productCode][filterKey] = filterFunction(
+        productsByRelease[productCode],
+        filterValues[filterKey],
+      );
+      if (filterKey === FILTER_KEYS.SEARCH) {
+        newState.currentProducts.searchRelevance[productCode] = calculateSearchRelevance(
+          productsByRelease[productCode],
+          depluralizedTerms,
+        );
+      }
+    });
+    const isVisible = productIsVisibleByFilters(newState.currentProducts.visibility[productCode]);
+    newState.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
+  });
+
+  return applySort(newState);
+};
+
 /**
    parseProductsData
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
    for each product generate filterable value lookups.
 */
-export const parseProductsByReleaseData = (state, release) => {
+export const parseProductsByReleaseData = (state, release, action) => {
   // Release must exist with unparsed data
   if (
     !release || !state.fetches.productsByRelease[release]
       || !state.fetches.productsByRelease[release].unparsedData
-  ) { return; }
+  ) { return state; }
   const { unparsedData } = state.fetches.productsByRelease[release];
-  
+  if (!unparsedData) { return state; }
+
   // NeonContext data must be finalized
   if (!state.neonContextState.isFinal) { return state; }
   const {
@@ -129,13 +169,13 @@ export const parseProductsByReleaseData = (state, release) => {
     });
   }
 
-  // All Keywords
-  // Array of all found keywords across all products that we'll ultimately sort
+  // All Release Keywords
+  // Array of all found keywords across all products in this release that we'll ultimately sort
   // by letter and freeze.
-  let allKeywords = [];
+  let allReleaseKeywords = [];
 
   // Main productsByRelease object map that we'll build using the source data
-  const productsByRelease = cloneDeep(INITIAL_PRODUCTS_BY_RELEASE);
+  const productsByRelease = {};
   
   // MAIN PRODUCTS LOOP
   // Build the products dictionary that we'll ultimately freeze
@@ -240,15 +280,13 @@ export const parseProductsByReleaseData = (state, release) => {
     // from their parent, and only then do we want to add those products to the counts.
     if (!product.bundle.isChild) { addProductToFilterItemCounts(product); }
 
-    // LATEST_AND_PROVISIONAL release: initialize some global product-specific values
-    if (release === LATEST_AND_PROVISIONAL) {
-      // Create initial visibility mapping to filters (all filters null for this product)
-      // newState.currentProducts.visibility[productCode] = {...INITIAL_PRODUCT_VISIBILITY};
-
-      // Initialize all descriptions as not expanded
+    // Ensure a global description expanded boolean is present for this product
+    if (typeof newState.productsDescriptionExpanded[productCode] === 'undefined') {
       newState.productsDescriptionExpanded[productCode] = false;
-      
-      // Update the global filterItems date range to accomodate min/max dates for this product
+    }
+    
+    // LATEST_AND_PROVISIONAL release: initialize some global catalog stat values
+    if (release === LATEST_AND_PROVISIONAL) {      
       const maxDateRangeIdx = product.filterableValues[FILTER_KEYS.DATE_RANGE].length - 1;
       if (
         !newState.catalogStats.totalDateRange[0]
@@ -265,10 +303,10 @@ export const parseProductsByReleaseData = (state, release) => {
     }
 
     // Commit the finalized product to the main products dictionary
-    productsByRelease.products[productCode] = product;
+    productsByRelease[productCode] = product;
 
     // Add the product's keywords to the master list (to be made unique later)
-    allKeywords = allKeywords.concat(product.keywords || []);
+    allReleaseKeywords = allReleaseKeywords.concat(product.keywords || []);
 
     // END MAIN PRODUCTS LOOP
   });
@@ -284,10 +322,6 @@ export const parseProductsByReleaseData = (state, release) => {
     }));
   }
 
-  // Harvest the global list of valid release tags to serve as valid RELEASE filter items
-  // regardless of release
-  productsByRelease.filterItems[FILTER_KEYS.RELEASE] = newState.releases.map(r => r.release);
-
   // Update Bundle Children
   // For all bundle children set certain filterable values related to data availability
   // to that of their parent, then add to the global filter count using the updated values.
@@ -296,32 +330,44 @@ export const parseProductsByReleaseData = (state, release) => {
   Object.keys(bundlesJSON.children)
     .filter(childProductCode => !Array.isArray(bundlesJSON.children[childProductCode]))
     .forEach((childProductCode) => {
-      if (!productsByRelease.products[childProductCode]) { return; }
-      const parentProductCode = productsByRelease.products[childProductCode].bundle.parent;
-      if (!productsByRelease.products[parentProductCode]) { return; }
+      if (!productsByRelease[childProductCode]) { return; }
+      const parentProductCode = productsByRelease[childProductCode].bundle.parent;
+      if (!productsByRelease[parentProductCode]) { return; }
       if (!bundlesJSON.parents[parentProductCode].forwardAvailability) { return; }
-      const parent = productsByRelease.products[parentProductCode];
+      const parent = productsByRelease[parentProductCode];
       BUNDLE_INHERITIED_FILTER_KEYS.forEach((filterKey) => {
-        productsByRelease.products[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];
+        productsByRelease[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];
       });
-      addProductToFilterItemCounts(productsByRelease.products[childProductCode]);
+      addProductToFilterItemCounts(productsByRelease[childProductCode]);
     });
 
-  // Generate the final keywords object by making allByLetter unique, alphabetized, and split by
-  // first letter
-  allKeywords = Array.from(new Set(allKeywords));
-  allKeywords.sort();
-  productsByRelease.keywords.total = allKeywords.length;
-  allKeywords.forEach(keyword => {
+  // Update global keywords. If not yet initialized then load in everything, otherwise just add
+  // what's new. We keep a set of all keywords for quick checking for new additions as well as
+  // a data structure organizing all keywords by first letter in alphabetized lists.
+  const addKeywordByLetter = (keyword) => {
     let firstLetter = keyword.slice(0, 1).toUpperCase();
     if (!/[A-Z]/.test(firstLetter)) { firstLetter = '#'; }
-    if (!productsByRelease.keywords.allByLetter[firstLetter]) {
-      productsByRelease.keywords.allByLetter[firstLetter] = [];
+    if (!newState.keywords.allByLetter[firstLetter]) {
+      newState.keywords.allByLetter[firstLetter] = [];
     }
-    productsByRelease.keywords.allByLetter[firstLetter].push(keyword);
+    newState.keywords.allByLetter[firstLetter].push(keyword);
+  };
+  allReleaseKeywords = new Set(allReleaseKeywords);
+  if (state.keywords.all.size === 0) {
+    newState.keywords.all = allReleaseKeywords;
+    newState.keywords.all.forEach(addKeywordByLetter);
+  } else {
+    [...allReleaseKeywords]
+      .filter(k => !state.keywords.all.has(k))
+      .forEach(addKeywordByLetter);
+  }
+  // Alphabetize all letters
+  Object.keys(newState.keywords.allByLetter).forEach((letter) => {
+    newState.keywords.allByLetter[letter].sort();
   });
 
   // Convert filter item counts into full-fledged filter items (and add meta-data where appropriate)
+  // (all filters EXCEPT releases)
   COUNTABLE_FILTER_KEYS.forEach((key) => {
     const getName = (item) => {
       switch (key) {
@@ -347,63 +393,60 @@ export const parseProductsByReleaseData = (state, release) => {
           return null;
       }
     };
-    productsByRelease.filterItems[key] = Object.keys(filterItemCounts[key])
+    const existingFilterItemsValues = newState.filterItems[key].map(item => item.value);
+    const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
+      .filter(item => !existingFilterItemsValues.includes(item))
       .map(item => ({
         name: getName(item),
         value: item,
         subtitle: getSubtitle(item),
         count: filterItemCounts[key][item],
       }));
+    newState.filterItems[key] = [...newState.filterItems[key], ...nonDuplicateNewFilterItems];
   });
-
-  // Expand catalog-wide availability date range array to all possible dates in the range for filter
-  productsByRelease.filterItems[FILTER_KEYS.DATE_RANGE] = getContinuousDatesArray(
-    newState.catalogStats.totalDateRange,
-    true,
-  );
 
   // Sort all global filterItems lists
-  productsByRelease.filterItems[FILTER_KEYS.STATES].sort((a, b) => {
+  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => {
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
-  productsByRelease.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => {
+  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => {
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
-  productsByRelease.filterItems[FILTER_KEYS.SITES].sort((a, b) => {
+  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => {
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
-  productsByRelease.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => {
+  newState.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => {
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
-  productsByRelease.filterItems[FILTER_KEYS.THEMES].sort((a, b) => {
+  newState.filterItems[FILTER_KEYS.THEMES].sort((a, b) => {
     return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
   });
 
   // Derive final stats
   if (release === LATEST_AND_PROVISIONAL) {
-    newState.catalogStats.totalProducts = Object.keys(productsByRelease.products).length;
-    newState.catalogStats.totalSites = productsByRelease.filterItems[FILTER_KEYS.SITES].length;
+    newState.catalogStats.totalProducts = Object.keys(productsByRelease).length;
+    newState.catalogStats.totalSites = newState.filterItems[FILTER_KEYS.SITES].length;
+    // Expand catalog-wide availability date range array to all possible dates in the range for filter
+    newState.filterItems[FILTER_KEYS.DATE_RANGE] = getContinuousDatesArray(
+      newState.catalogStats.totalDateRange,
+      true,
+    );
   }
 
   // Freeze the parts of state we don't expect to ever change again
-  Object.freeze(productsByRelease.products)
-  Object.freeze(productsByRelease.filterItems);
-  Object.freeze(productsByRelease.allKeywordsByLetter);
+  Object.freeze(productsByRelease)
+  /*
   if (release === LATEST_AND_PROVISIONAL) {
     Object.freeze(newState.catalogStats);
   }
-
-  console.log('RELEASE', release, productsByRelease);
+  */
 
   // Delete the unparsed data now that we're all done with it
-  delete state.fetches.productsByRelease[release].unparsedData;
-
-  // XXX
-  newState.currentProducts.filterItems = productsByRelease.filterItems;
+  newState.fetches.productsByRelease[release].unparsedData = null;
 
   // Apply the completed productsByRelease to new state and return the whole thing
   newState.productsByRelease[release] = productsByRelease;
-  return newState;
+  return applyCurrentProducts(newState);
 };
 
 /**
@@ -416,7 +459,7 @@ export const parseAnyUnparsedProductSets = (state) => {
   if (!state.neonContextState.isFinal) { return state; }
   Object.keys(state.fetches.productsByRelease).forEach((release) => {
     if (!state.fetches.productsByRelease[release].unparsedData) { return; }
-    newState = parseProductsByReleaseData(newState, release);
+    newState = parseProductsByReleaseData(newState, release, 'UNK');
   });
   return newState;
 };

@@ -20,7 +20,7 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 import {
-  INITIAL_PRODUCTS_BY_RELEASE,
+  applyCurrentProducts,
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
@@ -68,7 +68,7 @@ const DEFAULT_STATE = {
   },
 
   productsByRelease: {
-    [LATEST_AND_PROVISIONAL]: cloneDeep(INITIAL_PRODUCTS_BY_RELEASE),
+    [LATEST_AND_PROVISIONAL]: {},
   },
   aopVizProducts: [],
 
@@ -92,10 +92,10 @@ const DEFAULT_STATE = {
   localStorageSearch: localStorage.getItem('search'),
 
   currentProducts: {
+    release: null,
     order: [], // Sorted list of product codes
     visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
     searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
-    filterItems: cloneDeep(INITIAL_FILTER_ITEMS), // Store for all discrete options for filters that make use of them
   },
   productsDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
   
@@ -114,15 +114,17 @@ const DEFAULT_STATE = {
   sortVisible: false, // Whether sort section is expanded (for xs/sm vieports only)
   sortMethod: DEFAULT_SORT_METHOD,
   sortDirection: DEFAULT_SORT_DIRECTION,
-  
-  filterValues: cloneDeep(INITIAL_FILTER_VALUES), // Store for current values applied for all filters
-  
-  allKeywordsByLetter: {}, // Additional store for list of all unique keywords, sorted by first letter.
-  totalKeywords: 0, // count of all unique keywords (used for formatting keyword list)
 
+  keywords: {
+    all: new Set(),
+    allByLetter: {}, // Additional store for list of all unique keywords, sorted by first letter.
+  },
+
+  filterItems: cloneDeep(INITIAL_FILTER_ITEMS), // Store for all discrete options for filters that make use of them
+  filterValues: cloneDeep(INITIAL_FILTER_VALUES), // Store for current values applied for all filters
+  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY), // Expanded / collapsed / selected states for filters with >5 options visibility buttons
   filtersApplied: [], // List of filter keys that have been applied / are not in a cleared state
   filtersVisible: false, // Whether filter section is expanded (for xs/sm vieports only)
-  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY), // Expanded / collapsed / selected states for filters with >5 options visibility buttons
 
   activeDataVisualization: {
     component: null,
@@ -195,6 +197,7 @@ const useExploreContextState = () => {
 */
 const reducer = (state, action) => {
   const newState = { ...state };
+  let f = null;
   switch (action.type) {
     // Neon Context
     case 'storeFinalizedNeonContextState':
@@ -213,7 +216,7 @@ const reducer = (state, action) => {
       if (!newState.fetches.productsByRelease[action.release]) { return newState; }
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
       newState.fetches.productsByRelease[action.release].unparsedData = action.data;
-      return calculateAppStatus(parseProductsByReleaseData(newState, action.release));
+      return calculateAppStatus(parseProductsByReleaseData(newState, action.release, action));
 
     case 'fetchAopVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
@@ -242,7 +245,11 @@ const reducer = (state, action) => {
           FILTER_ITEM_VISIBILITY_STATES.SELECTED,
         );
       }
-      return calculateFetches(applyFilter(state, action.filterKey, action.filterValue));
+      return calculateFetches(
+        applyCurrentProducts(
+          applyFilter(state, action.filterKey, action.filterValue),
+        ),
+      );
 
     case 'expandFilterItems':
       return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
@@ -310,6 +317,7 @@ const Provider = (props) => {
               release,
               data: (response.response || {}).data || {},
             });
+            return true;
           }),
           catchError((error) => {
             dispatch({
@@ -317,6 +325,7 @@ const Provider = (props) => {
               release,
               error,
             });
+            return false;
           }),
         ).subscribe();
       });

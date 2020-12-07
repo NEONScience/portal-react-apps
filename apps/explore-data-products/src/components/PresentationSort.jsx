@@ -24,7 +24,9 @@ import ClearIcon from "@material-ui/icons/Clear";
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { SORT_METHODS, SORT_DIRECTIONS } from "../../util/filterUtil";
+import ExploreContext from '../ExploreContext';
+
+import { SORT_METHODS, SORT_DIRECTIONS } from "../util/filterUtil";
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -87,18 +89,19 @@ const useStyles = makeStyles(theme => ({
 
 const PresentationSort = (props) => {
   const classes = useStyles(Theme);
+
+  const { skeleton } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     sortMethod,
     sortDirection,
     sortVisible,
-    productOrder,
     scrollCutoff,
     filtersApplied,
     filterValues,
-    skeleton,
-    onApplySort,
-    onToggleSortVisibility,
-  } = props;
+    currentProducts: { order: productOrder },
+  } = state;
 
   const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
   const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
@@ -162,7 +165,11 @@ const PresentationSort = (props) => {
             value={sortMethod}
             aria-label="Sort Method"
             className={classes.select}
-            onChange={(event) => onApplySort(event.target.value)}
+            onChange={(event) => dispatch({
+              type: 'applySort',
+              sortMethod: event.target.value,
+              sortDirection: null,
+            })}
             data-selenium="browse-data-products-page.sort.method"
           >
             {Object.keys(SORT_METHODS).map(method => (
@@ -180,7 +187,11 @@ const PresentationSort = (props) => {
           exclusive
           value={sortDirection}
           className={classes.toggleButtonGroup}
-          onChange={(event, value) => onApplySort(null, value)}
+          onChange={(event, value) => dispatch({
+              type: 'applySort',
+              sortMethod: null,
+              sortDirection: value,
+          })}
           data-selenium="browse-data-products-page.sort.direction"
         >
           <ToggleButton
@@ -217,7 +228,7 @@ const PresentationSort = (props) => {
               placement="left"
               title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}
             >
-              <IconButton onClick={onToggleSortVisibility}>
+              <IconButton onClick={() => dispatch({ type: 'toggleSortVisibility' })}>
                 {sortVisible ? <ClearIcon /> : <SortIcon />}
               </IconButton>
             </Tooltip>

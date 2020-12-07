@@ -7,28 +7,22 @@ import Typography from "@material-ui/core/Typography";
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DataProduct from "../DataProduct/DataProduct";
-import SkeletonDataProduct from "../SkeletonDataProduct/SkeletonDataProduct";
+import DataProduct from "./DataProduct";
+import SkeletonDataProduct from "./SkeletonDataProduct";
 
-import { FILTER_KEYS } from '../../util/filterUtil';
-import { FetchStateType } from "../../actions/actions";
+import ExploreContext from '../ExploreContext';
+
+import { FILTER_KEYS } from '../util/filterUtil';
 
 const PresentationData = (props) => {
-  const {
-    appFetchState,
-    products,
-    productOrder,
-    productDescriptionExpanded,
-    scrollCutoff,
-    aopViewerProducts,
-    onExpandProductDescription,
-    onChangeActiveDataVisualization,
-    highestOrderDownloadSubject,
-    neonContextState,
-    filterValues,
-  } = props;
+  const { skeleton, highestOrderDownloadSubject } = props;
 
-  const skeleton = [FetchStateType.WORKING, FetchStateType.FAILED].includes(appFetchState);
+  const [state] = ExploreContext.useExploreContextState();
+  const {
+    scrollCutoff,
+    filterValues,
+    currentProducts: { order: productOrder },
+  } = state;
 
   /**
    * Download Higher Order State Management
@@ -74,12 +68,6 @@ const PresentationData = (props) => {
     });
   }, []);
 
-  const getBundleParentProductData = (productCode) => {
-    const { isChild, hasManyParents, parent } = products[productCode].bundle;
-    if (!isChild || !parent) { return null; }
-    return !hasManyParents ? products[parent] : parent.map((parentCode) => products[parentCode]);
-  };
-
   /**
    * Render
    */
@@ -105,18 +93,11 @@ const PresentationData = (props) => {
           </Typography>
         </div>
       ) : null}
-      {productOrder.slice(0, scrollCutoff).map((productCode, idx) => (
+      {productOrder.slice(0, scrollCutoff).map(productCode => (
         <DataProduct
           key={`${productCode}/${filterValues[FILTER_KEYS.RELEASE] || ''}`}
-          productData={products[productCode]}
-          bundleParentProductData={getBundleParentProductData(productCode)}
-          descriptionExpanded={productDescriptionExpanded[productCode]}
-          isAopViewerProduct={aopViewerProducts.includes(productCode)}
-          onExpandProductDescription={onExpandProductDescription}
-          onChangeActiveDataVisualization={onChangeActiveDataVisualization}
+          productCode={productCode}          
           highestOrderDownloadSubject={highestOrderDownloadSubject}
-          neonContextState={neonContextState}
-          filterValues={filterValues}
         />
       ))}
     </div>

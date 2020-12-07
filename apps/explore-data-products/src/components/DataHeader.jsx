@@ -22,8 +22,10 @@ import ClearIcon from '@material-ui/icons/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { FILTER_KEYS } from '../../util/filterUtil';
-import { downloadCatalog } from '../../util/catalogUtil';
+import ExploreContext from '../ExploreContext';
+
+import { FILTER_KEYS, getCurrentProductsByRelease } from '../util/filterUtil';
+import { downloadCatalog } from '../util/catalogUtil';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -95,20 +97,22 @@ const useStyles = makeStyles(theme => ({
 
 const DataHeader = (props) => {
   const classes = useStyles(Theme);
+
+  const { skeleton } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
-    products,
-    productOrder,
     catalogStats,
     filtersApplied,
     filterValues,
     sortMethod,
     sortDirection,
-    skeleton,
     localStorageSearch,
     catalogSummaryVisible,
-    onToggleCatalogSummaryVisibility,
     neonContextState,
-  } = props;
+    currentProducts: { order: productOrder },
+  } = state;
+  const products = getCurrentProductsByRelease(state);
 
   const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
   const visible = catalogSummaryVisible || !belowMd;
@@ -382,7 +386,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
               placement="left"
               title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
             >
-              <IconButton onClick={onToggleCatalogSummaryVisibility}>
+              <IconButton onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}>
                 {catalogSummaryVisible ? <ClearIcon /> : <ListIcon />}
               </IconButton>
             </Tooltip>

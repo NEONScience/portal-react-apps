@@ -281,8 +281,8 @@ export const parseProductsByReleaseData = (state, release, action) => {
     if (!product.bundle.isChild) { addProductToFilterItemCounts(product); }
 
     // Ensure a global description expanded boolean is present for this product
-    if (typeof newState.productsDescriptionExpanded[productCode] === 'undefined') {
-      newState.productsDescriptionExpanded[productCode] = false;
+    if (typeof newState.productDescriptionExpanded[productCode] === 'undefined') {
+      newState.productDescriptionExpanded[productCode] = false;
     }
     
     // LATEST_AND_PROVISIONAL release: initialize some global catalog stat values

@@ -11,9 +11,9 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from './ExploreContext';
 
-// import DataHeader from './components/DataHeader';
-// import PresentationData from './components/PresentationData';
-// import PresentationSort from './components/PresentationSort';
+import DataHeader from './components/DataHeader';
+import PresentationData from './components/PresentationData';
+import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
 // import DataVisualizationDialog from './components/DataVisualizationDialog';
 
@@ -128,11 +128,9 @@ const ExplorePage = (props) => {
         onChangeActiveDataVisualization={onChangeActiveDataVisualization}
       />
       */}
-      {/*
       <DataHeader {...drillProps} />
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />
-      */}
       {/*
       <div
         id="lazy-loader"
@@ -146,7 +144,6 @@ const ExplorePage = (props) => {
         <CircularProgress disableShrink />
       </div>
       */}
-      <div>here</div>
     </NeonPage>
   );
 };

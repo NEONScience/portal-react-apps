@@ -21,8 +21,9 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { FILTER_KEYS, VISUALIZATIONS } from '../../util/filterUtil';
-import { DataVisualizationComponents } from '../../actions/actions';
+import ExploreContext from '../ExploreContext';
+
+import { FILTER_KEYS, VISUALIZATIONS, getCurrentProductsByRelease } from '../util/filterUtil';
 
 const useStyles = makeStyles(theme => ({
   productCard: {
@@ -83,20 +84,33 @@ const useStyles = makeStyles(theme => ({
 
 const DataProduct = React.memo((props) => {
   const classes = useStyles(Theme);
+
+  const { productCode, highestOrderDownloadSubject } = props;
+
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
-    productData,
-    bundleParentProductData,
-    descriptionExpanded,
-    isAopViewerProduct,
-    onExpandProductDescription,
-    onChangeActiveDataVisualization,
-    highestOrderDownloadSubject,
+    productDescriptionExpanded,
+    aopVizProducts,
     neonContextState,
     filterValues,
-  } = props;
+  } = state;
+  const products = getCurrentProductsByRelease(state);
+
+  if (!products[productCode]) { return null; }
+
+  const productData = products[productCode];
+  let bundleParentProductData = null;
+  const { isChild, hasManyParents, parent } = productData.bundle;
+  if (isChild && parent) {
+    bundleParentProductData = hasManyParents
+      ? parent.map((parentCode) => products[parentCode])
+      : products[parent];
+  }
+  
+  const isAopViewerProduct = aopVizProducts.includes(productCode);
+  const descriptionExpanded = productDescriptionExpanded[productCode];
 
   const {
-    productCode,
     bundle,
     themes,
     productName,
@@ -163,7 +177,10 @@ const DataProduct = React.memo((props) => {
       {showTruncatedDescription ? (
         <React.Fragment>
           {`${truncatedDescription}… `}
-          <Link className={classes.moreLink} onClick={() => onExpandProductDescription(productCode)}>
+          <Link
+            className={classes.moreLink}
+            onClick={() => dispatch({ type: 'expandProductDescription', productCode })}
+          >
             More
             <MoreIcon fontSize="small" className={classes.moreIcon} />
           </Link>
@@ -243,6 +260,12 @@ const DataProduct = React.memo((props) => {
     </DownloadDataContext.Provider>
   ) : null;
 
+  const handleChangeVisualization = component => dispatch({
+    type: 'changeActiveDataVisualization',
+    component,
+    productCode,
+  });
+  
   const aopViewerButton = hasData && isAopViewerProduct && currentRelease === null
     ? (
       <Button
@@ -253,7 +276,7 @@ const DataProduct = React.memo((props) => {
         variant="outlined"
         color="primary"
         endIcon={<AopDataViewerIcon />}
-        onClick={() => onChangeActiveDataVisualization(DataVisualizationComponents.AOP, productCode)}
+        onClick={() => handleChangeVisualization(VISUALIZATIONS.AOP_DATA_VIEWER.key)}
       >
         {VISUALIZATIONS.AOP_DATA_VIEWER.name}
       </Button>
@@ -269,7 +292,7 @@ const DataProduct = React.memo((props) => {
         variant="outlined"
         color="primary"
         endIcon={<TimeSeriesIcon />}
-        onClick={() => onChangeActiveDataVisualization(DataVisualizationComponents.TIME_SERIES, productCode)}
+        onClick={() => handleChangeVisualization(VISUALIZATIONS.TIME_SERIES_VIEWER.key)}
       >
         {VISUALIZATIONS.TIME_SERIES_VIEWER.name}
       </Button>

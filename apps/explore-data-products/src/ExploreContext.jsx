@@ -36,7 +36,9 @@ import {
   INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
   LATEST_AND_PROVISIONAL,
+  VISUALIZATIONS,
   /* functions */
+  applySort,
   applyFilter,
   changeFilterItemVisibility,
   resetAllFilters,
@@ -97,7 +99,7 @@ const DEFAULT_STATE = {
     visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
     searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
   },
-  productsDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
+  productDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
   
   releases: [], // Array of all release objects known to exist (with tags, generation dates, and product codes)
 
@@ -197,7 +199,6 @@ const useExploreContextState = () => {
 */
 const reducer = (state, action) => {
   const newState = { ...state };
-  let f = null;
   switch (action.type) {
     // Neon Context
     case 'storeFinalizedNeonContextState':
@@ -217,7 +218,6 @@ const reducer = (state, action) => {
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
       newState.fetches.productsByRelease[action.release].unparsedData = action.data;
       return calculateAppStatus(parseProductsByReleaseData(newState, action.release, action));
-
     case 'fetchAopVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
       newState.fetches.aopVizProducts.error = action.error;
@@ -226,7 +226,6 @@ const reducer = (state, action) => {
       newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
       newState.aopVizProducts = action.data;
       return calculateAppStatus(newState);
-
     case 'fetchesStarted':
       newState.fetches = { ...action.fetches };
       return calculateAppStatus(newState);
@@ -236,7 +235,6 @@ const reducer = (state, action) => {
       return resetFilter(newState, action.filterKey);
     case 'resetAllFilters':
       return resetAllFilters(newState);
-
     case 'applyFilter':
       if (action.showOnlySelected) { 
         return changeFilterItemVisibility(
@@ -250,7 +248,6 @@ const reducer = (state, action) => {
           applyFilter(state, action.filterKey, action.filterValue),
         ),
       );
-
     case 'expandFilterItems':
       return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
     case 'collapseFilterItems':
@@ -262,8 +259,47 @@ const reducer = (state, action) => {
       return { ...newState, filtersVisible: !state.filtersVisible };
 
     // Sort
+    case 'applySort':
+      return applySort(state, action.sortMethod, action.sortDirection);
     case 'toggleSortVisiblity':
       return { ...newState, sortVisible: !state.sortVisible };
+
+    // Misc
+    case 'toggleCatalogSummaryVisibility':
+      return { ...newState, catalogSummaryVisible: !state.catalogSummaryVisible };
+    case 'expandProductDescription':
+      if (!Object.keys(state.productDescriptionExpanded).includes(action.productCode)) {
+        return state;
+      }
+      return {
+        ...state,
+        productDescriptionExpanded: {
+          ...state.productDescriptionExpanded,
+          [action.productCode]: true,
+        }
+      };
+    case 'changeActiveDataVisualization':
+      if (
+        (action.component === null && action.productCode === null)
+        || !VISUALIZATIONS[action.component] || !state.products[action.productCode]
+      ) {
+        return {
+          ...state,
+          activeDataVisualization: { component: null, productCode: null },
+        };
+      }
+      return {
+        ...state,
+        activeDataVisualization: {
+          component: action.component,
+          productCode: action.productCode,
+        },
+      };
+    case 'incrementScrollCutoff':
+      return {
+        ...state,
+        scrollCutoff: state.scrollCutoff + 10,
+      };
 
     // Default
     default:

@@ -17,9 +17,8 @@ import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
 import DataVisualizationDialog from './components/DataVisualizationDialog';
 
+import { APP_STATUS } from './util/stateUtil';
 import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
-
-const { APP_STATUS, useExploreContextState } = ExploreContext;
 
 const useStyles = makeStyles(theme => ({
   lazyLoader: {
@@ -39,7 +38,7 @@ const ExplorePage = (props) => {
   const classes = useStyles(Theme);
 
   // Deconstruct state
-  const [state, dispatch] = useExploreContextState();
+  const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     appStatus,
     scrollCutoff,

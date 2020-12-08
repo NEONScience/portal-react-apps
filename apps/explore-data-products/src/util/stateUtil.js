@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 
 import {
   /* constants */
@@ -21,12 +21,21 @@ import {
   applySort,
   applyCurrentProducts,
   getContinuousDatesArray,
-  /* no need? */
-  FILTER_FUNCTIONS,
-  calculateSearchRelevance,
-  productIsVisibleByFilters,
-  depluralizeSearchTerms,
 } from './filterUtil';
+
+export const FETCH_STATUS = {
+  AWAITING_CALL: 'AWAITING_CALL',
+  FETCHING: 'FETCHING',
+  ERROR: 'ERROR',
+  SUCCESS: 'SUCCESS',
+};
+
+export const APP_STATUS = {
+  HAS_FETCHES_TO_TRIGGER: 'HAS_FETCHES_TO_TRIGGER',
+  FETCHING: 'FETCHING',
+  READY: 'READY',
+  ERROR: 'ERROR',
+};
 
 // Array of common strings that appear in short descriptions for bundle children.
 // We present the same info in a more visible callout, so we actively scrub it
@@ -72,7 +81,7 @@ export const parseURLParam = (paramName) => {
     return Array.from(set);
   }
   // Parse - single occurrence
-  const match = window.location.search.match(/[?&]release=([^&#]+)/);
+  const match = window.location.search.match(urlParam.regex);
   if (!match) { return null; }
   return decodeURIComponent(match[1]);
 };
@@ -82,7 +91,7 @@ export const parseURLParam = (paramName) => {
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
    for each product generate filterable value lookups.
 */
-export const parseProductsByReleaseData = (state, release, action) => {
+export const parseProductsByReleaseData = (state, release) => {
   // Release must exist with unparsed data
   if (
     !release || !state.fetches.productsByRelease[release]
@@ -102,7 +111,7 @@ export const parseProductsByReleaseData = (state, release, action) => {
   } = state.neonContextState.data;
 
   // State object that we'll update and ultimately return
-  const newState = { ...state };
+  let newState = { ...state };
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -134,10 +143,16 @@ export const parseProductsByReleaseData = (state, release, action) => {
 
   // Main productsByRelease object map that we'll build using the source data
   const productsByRelease = {};
+
+  // Sort the unparsed products array by bundle parents first so that when we parse bundle children
+  // that pull availability data from parents we know it'll be there
+  const unparsedProductsBundleParentsFirst = ((unparsedData || {}).products || []).sort((a, b) => (
+    Object.keys(bundlesJSON.parents).includes(a.productCode) ? -1 : 0
+  ));
   
   // MAIN PRODUCTS LOOP
   // Build the products dictionary that we'll ultimately freeze
-  ((unparsedData || {}).products || []).forEach((rawProduct) => {
+  unparsedProductsBundleParentsFirst.forEach((rawProduct) => {
     const product = {...rawProduct};
     const productCode = product.productCode;
 
@@ -146,11 +161,19 @@ export const parseProductsByReleaseData = (state, release, action) => {
     // children may have more than one parent, and forwarding availability will never work for them.
     const isBundleChild = !!bundlesJSON.children[productCode];
     const isBundleParent = Object.keys(bundlesJSON.parents).includes(productCode);
+    const hasManyParents = isBundleChild && Array.isArray(bundlesJSON.children[productCode]);
     let forwardAvailability = null;
-    const hasManyParents = Array.isArray(bundlesJSON.children[productCode]);
-    if (isBundleChild && !hasManyParents) {
-      // eslint-disable-next-line max-len
-      forwardAvailability = bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability;
+    let availabilitySiteCodes = product.siteCodes || [];
+    if (isBundleChild) {
+      forwardAvailability = !hasManyParents
+        ? bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability
+        : bundlesJSON.children[productCode].every(
+          parent => bundlesJSON.parents[parent].forwardAvailability
+        );
+      const availabilityParentCode = hasManyParents
+        ? bundlesJSON.children[productCode][0]
+        : bundlesJSON.children[productCode];
+      availabilitySiteCodes = productsByRelease[availabilityParentCode].siteCodes || [];
     }
     product.bundle = {
       isChild: isBundleChild,
@@ -176,10 +199,10 @@ export const parseProductsByReleaseData = (state, release, action) => {
     // Generate filterable values - derived values for each product that filters
     // interact with directly. Start with the simple / one-liner ones.
     product.filterableValues = {
-      [FILTER_KEYS.DATA_STATUS]: (product.siteCodes || []).length > 0 ? 'Available' : 'Coming Soon',
-      [FILTER_KEYS.SITES]: (product.siteCodes || []).map(s => s.siteCode),
       [FILTER_KEYS.SCIENCE_TEAM]: product.productScienceTeam,
       [FILTER_KEYS.RELEASE]: (product.releases || []).map(r => r.release),
+      [FILTER_KEYS.DATA_STATUS]: availabilitySiteCodes.length > 0 ? 'Available' : 'Coming Soon',
+      [FILTER_KEYS.SITES]: availabilitySiteCodes.map(s => s.siteCode),
     };
 
     // Filterable value for VISUALIZATIONS
@@ -187,7 +210,7 @@ export const parseProductsByReleaseData = (state, release, action) => {
     if ((timeSeriesDataProductsJSON.productCodes || []).includes(productCode)) {
       product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(VISUALIZATIONS.TIME_SERIES_VIEWER.key);
     }
-    if ((newState.aopViewerProducts || []).includes(productCode)) {
+    if ((newState.aopVizProducts || []).includes(productCode)) {
       product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(VISUALIZATIONS.AOP_DATA_VIEWER.key);
     }
 
@@ -206,7 +229,7 @@ export const parseProductsByReleaseData = (state, release, action) => {
         .map(siteCode => sitesJSON[siteCode] ? sitesJSON[siteCode].stateCode : null)
         .filter(stateCode => stateCode !== null)
     ))];
-
+      
     // Filterable values for DOMAINS (requires sites filterable value)
     product.filterableValues[FILTER_KEYS.DOMAINS] = [...(new Set(
       product.filterableValues[FILTER_KEYS.SITES]
@@ -216,17 +239,15 @@ export const parseProductsByReleaseData = (state, release, action) => {
 
     // Filterable value for DATE_RANGE
     product.filterableValues[FILTER_KEYS.DATE_RANGE] = Array.from(
-      (new Set((product.siteCodes || []).flatMap(siteCode => siteCode.availableMonths || []))),
+      (new Set(availabilitySiteCodes.flatMap(siteCode => siteCode.availableMonths || []))),
     );
     product.filterableValues[FILTER_KEYS.DATE_RANGE].sort();
 
     // Filterable value for SEARCH - done last as it pulls from all other generated filterable values.
     product.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(product, state.neonContextState.data);
 
-    // Add product to the global filter counts only if it's not a bundle child.
-    // After the main products loop we apply some filter values to bundle children
-    // from their parent, and only then do we want to add those products to the counts.
-    if (!product.bundle.isChild) { addProductToFilterItemCounts(product); }
+    // Add product to the global filter counts
+    addProductToFilterItemCounts(product);
 
     // Ensure a global description expanded boolean is present for this product
     if (typeof newState.productDescriptionExpanded[productCode] === 'undefined') {
@@ -284,25 +305,6 @@ export const parseProductsByReleaseData = (state, release, action) => {
       }
     });
   }
-
-  // Update Bundle Children
-  // For all bundle children set certain filterable values related to data availability
-  // to that of their parent, then add to the global filter count using the updated values.
-  // We skip this for any bundles where forwardAvailability is false or where there is more than
-  // one parent.
-  Object.keys(bundlesJSON.children)
-    .filter(childProductCode => !Array.isArray(bundlesJSON.children[childProductCode]))
-    .forEach((childProductCode) => {
-      if (!productsByRelease[childProductCode]) { return; }
-      const parentProductCode = productsByRelease[childProductCode].bundle.parent;
-      if (!productsByRelease[parentProductCode]) { return; }
-      if (!bundlesJSON.parents[parentProductCode].forwardAvailability) { return; }
-      const parent = productsByRelease[parentProductCode];
-      BUNDLE_INHERITIED_FILTER_KEYS.forEach((filterKey) => {
-        productsByRelease[childProductCode].filterableValues[filterKey] = parent.filterableValues[filterKey];
-      });
-      addProductToFilterItemCounts(productsByRelease[childProductCode]);
-    });
 
   // Update global keywords. If not yet initialized then load in everything, otherwise just add
   // what's new. We keep a set of all keywords for quick checking for new additions as well as
@@ -408,6 +410,97 @@ export const parseProductsByReleaseData = (state, release, action) => {
   // Apply the completed productsByRelease to new state
   newState.productsByRelease[release] = productsByRelease;
   
+  // Hydrate from local storage
+  // Various aspects of state can persist in local storage with the expectation that they'll be
+  // "rehydrated" into app state on reload. This is the way we preserve stuff like filter state and
+  // selected download sites when refreshing the page.
+  /*
+  if (!state.localStorageInitiallyParsed) {
+    // Hydrate from local storage: Filter Values
+    const localFilterValuesUnparsed = localStorage.getItem('filterValues');
+    if (localFilterValuesUnparsed) {
+      try {
+        const localFilterValues = JSON.parse(localFilterValuesUnparsed);
+        Object.keys(localFilterValues).forEach((key) => {
+          if (
+            !FILTER_KEYS[key]
+              || isEqual(localFilterValues[key], INITIAL_FILTER_VALUES[key])
+          ) { return; }
+          newState = applyFilter(newState, key, localFilterValues[key]);
+        });
+      } catch {
+        console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
+      }
+    }
+    // Hydrate from local storage: Filter Item Visibility
+    const localFilterItemVisibilityUnparsed = localStorage.getItem('filterItemVisibility');
+    if (localFilterItemVisibilityUnparsed) {
+      try {
+        const localFilterItemVisibility = JSON.parse(localFilterItemVisibilityUnparsed);
+        Object.keys(localFilterItemVisibility)
+          .filter(key => Object.keys(INITIAL_FILTER_ITEM_VISIBILITY).includes(key))
+          .filter(key => Object.keys(FILTER_ITEM_VISIBILITY_STATES).includes(localFilterItemVisibility[key]))
+          .forEach((key) => {
+            newState.filterItemVisibility[key] = localFilterItemVisibility[key];
+          });
+      } catch {
+        console.error('Unable to rebuild filter item visibility from saved local storage. Stored value is not parseable.');
+      }
+    }
+    // Hydrate from local storage: Sort Method
+    const localSortMethod = localStorage.getItem('sortMethod');
+    if (localSortMethod && Object.keys(SORT_METHODS).includes(localSortMethod)) {
+      newState.sortMethod = localSortMethod;
+    }
+    // Hydrate from local storage: Sort Direction
+    const localSortDirection = localStorage.getItem('sortDirection');
+    if (localSortDirection && SORT_DIRECTIONS.includes(localSortDirection)) {
+      newState.sortDirection = localSortDirection;
+    }
+    newState.localStorageInitiallyParsed = true;
+  }
+  */
+
+  // Apply initial filter state from URL params, if present (overrides local storage)
+  // (only select filters supported for backward compatibility with legacy pages)
+  if (!state.urlParamsInitiallyApplied) {
+    if (newState.urlParams.search !== null) {
+      newState = applyFilter(newState, FILTER_KEYS.SEARCH, parseSearchTerms(newState.urlParams.search), false);
+    }
+    if (
+      newState.urlParams.release !== null
+        && newState.releases.find(r => r.release === newState.urlParams.release)
+    ) {
+      newState = applyFilter(newState, FILTER_KEYS.RELEASE, newState.urlParams.release, false);
+      // Schedule the release fetch
+      if (!newState.fetches.productsByRelease[newState.urlParams.release]) {
+        newState.fetches.productsByRelease[newState.urlParams.release] = {
+          status: FETCH_STATUS.AWAITING_CALL,
+        };
+        newState.appStatus = APP_STATUS.HAS_FETCHES_TO_TRIGGER;
+      }
+    }
+    if (newState.urlParams.sites !== null && newState.urlParams.sites.length) {
+      newState = applyFilter(newState, FILTER_KEYS.SITES, newState.urlParams.sites, false);
+      if (newState.filterValues[FILTER_KEYS.SITES].length) {
+        newState.filterItemVisibility[FILTER_KEYS.SITES] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
+      }
+    }
+    if (newState.urlParams.states !== null && newState.urlParams.states.length) {
+      newState = applyFilter(newState, FILTER_KEYS.STATES, newState.urlParams.states, false);
+      if (newState.filterValues[FILTER_KEYS.STATES].length) {
+        newState.filterItemVisibility[FILTER_KEYS.STATES] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
+      }
+    }
+    if (newState.urlParams.domains !== null && newState.urlParams.domains.length) {
+      newState = applyFilter(newState, FILTER_KEYS.DOMAINS, newState.urlParams.domains, false);
+      if (newState.filterValues[FILTER_KEYS.DOMAINS].length) {
+        newState.filterItemVisibility[FILTER_KEYS.DOMAINS] = FILTER_ITEM_VISIBILITY_STATES.SELECTED;
+      }
+    }
+    newState.urlParamsInitiallyApplied = true;
+  }
+
   // Generate the currentProducts structure and return
   return applyCurrentProducts(newState);
 };
@@ -422,7 +515,7 @@ export const parseAnyUnparsedProductSets = (state) => {
   if (!state.neonContextState.isFinal) { return state; }
   Object.keys(state.fetches.productsByRelease).forEach((release) => {
     if (!state.fetches.productsByRelease[release].unparsedData) { return; }
-    newState = parseProductsByReleaseData(newState, release, 'UNK');
+    newState = parseProductsByReleaseData(newState, release);
   });
   return newState;
 };

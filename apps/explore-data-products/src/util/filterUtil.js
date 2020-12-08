@@ -383,9 +383,10 @@ export const productIsVisibleByFilters = (productVisibility) => !Object.keys(pro
  * @param {object} state - current whole state object
  * @param {string} filterKey - identifier for filter as it appears in FILTER_KEYS
  * @param {*} filterValue - value to apply to filter
+ * @param {boolean} returnApplyCurrentProducts - whether to run the response through applyCurrentProducts
  * @return {object} updated whole state object
  */
-export const applyFilter = (state, filterKey, filterValue) => {
+export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentProducts = true) => {
   if (!FILTER_KEYS[filterKey]) { return state; }
 
   // For list-based filters narrow down to the intersection with available filter items
@@ -422,7 +423,7 @@ export const applyFilter = (state, filterKey, filterValue) => {
   localStorage.setItem('filterValues', JSON.stringify(updated.filterValues));
 
   // Update currentProducts with latest filter info and return
-  return applyCurrentProducts(updated);
+  return returnApplyCurrentProducts ? applyCurrentProducts(updated) : updated;
 }
 
 /**

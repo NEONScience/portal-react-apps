@@ -20,6 +20,8 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 import {
+  APP_STATUS,
+  FETCH_STATUS,
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
@@ -43,20 +45,6 @@ import {
   resetAllFilters,
   resetFilter,
 } from './util/filterUtil';
-
-export const FETCH_STATUS = {
-  AWAITING_CALL: 'AWAITING_CALL',
-  FETCHING: 'FETCHING',
-  ERROR: 'ERROR',
-  SUCCESS: 'SUCCESS',
-};
-
-export const APP_STATUS = {
-  HAS_FETCHES_TO_TRIGGER: 'HAS_FETCHES_TO_TRIGGER',
-  FETCHING: 'FETCHING',
-  READY: 'READY',
-  ERROR: 'ERROR',
-};
 
 const DEFAULT_STATE = {
   appStatus: APP_STATUS.HAS_FETCHES_TO_TRIGGER,
@@ -87,10 +75,12 @@ const DEFAULT_STATE = {
     states: [],
     domains: [],
   },
+  urlParamsInitiallyApplied: false,
 
   // Unparsed search input value sniffed from local storage
   // We only want to pull this out when we initialize the page
   localStorageSearch: localStorage.getItem('search'),
+  localStorageInitiallyParsed: false,
 
   currentProducts: {
     release: LATEST_AND_PROVISIONAL,

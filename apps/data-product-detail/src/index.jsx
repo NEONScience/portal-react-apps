@@ -24,9 +24,9 @@ import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 import App from './App';
 import DataProductContext from './components/DataProductContext';
 
-const [productCode] = DataProductContext.getProductCodeAndReleaseFromURL();
+const [productCode, release] = DataProductContext.getProductCodeAndReleaseFromURL();
 if (productCode) {
-  NeonJsonLd.injectProduct(productCode);
+  NeonJsonLd.injectProduct(productCode, release);
 }
 
 ReactDOM.render(

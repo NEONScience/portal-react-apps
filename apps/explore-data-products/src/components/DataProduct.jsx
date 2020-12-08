@@ -4,8 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import BundleIcon from '@material-ui/icons/Archive';
@@ -37,12 +39,20 @@ const useStyles = makeStyles(theme => ({
   productName: {
     fontWeight: 600,
   },
-  productCode: {
-    color: theme.palette.grey[300],
+  productCodeChip: {
+    color: theme.palette.grey[400],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[100],
+    fontWeight: 600,
+    cursor: 'help',
   },
-  release: {
+  releaseChip: {
     color: Theme.colors.BROWN[500],
-    marginLeft: theme.spacing(2),
+    border: `1px solid ${Theme.colors.BROWN[500]}`,
+    backgroundColor: Theme.colors.BROWN[100],
+    fontWeight: 600,
+    marginLeft: theme.spacing(1.5),
+    cursor: 'help',
   },
   descriptionButton: {
     fontSize: theme.spacing(1.5),
@@ -170,14 +180,30 @@ const DataProduct = React.memo((props) => {
   );
 
   const code = (
-    <div className={classes.startFlex}>
-      <Typography className={classes.productCode} title="Product ID" variant="subtitle2">
-        {productCode}
-      </Typography>
+    <div className={classes.startFlex} style={{ margin: Theme.spacing(1.5, 0) }}>
+      <Tooltip
+        title="The unique identifier for this data product independent of release"
+      >
+        <Chip
+          size="small"
+          label={productCode}
+          className={classes.productCodeChip}
+        />
+      </Tooltip>
       {currentRelease === LATEST_AND_PROVISIONAL ? null : (
-        <Typography className={classes.release} title="Release" variant="subtitle2">
-          {`Release: ${currentRelease}`}
-        </Typography>
+        <Tooltip
+          title={(
+            <span>
+              Availability and metadata shown is for the <b>{currentRelease}</b> release of this product
+            </span>
+          )}
+        >
+          <Chip
+            size="small"
+            label={`Release: ${currentRelease}`}
+            className={classes.releaseChip}
+          />
+        </Tooltip>
       )}
     </div>
   );
@@ -262,6 +288,7 @@ const DataProduct = React.memo((props) => {
   
   const downloadDataButton = hasData ? (
     <DownloadDataContext.Provider
+      key={`${productCode}/${currentRelease || ''}`}
       productData={isBundleChild ? bundleParentProductData : productData}
       stateObservable={() => highestOrderDownloadSubject.asObservable()}
       release={currentRelease === LATEST_AND_PROVISIONAL ? null : currentRelease}

@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import logger from 'use-reducer-logger';
+
 import moment from 'moment';
 
 import { of } from 'rxjs';
@@ -20,9 +22,12 @@ import cloneDeep from 'lodash/cloneDeep';
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
+const DO_FUDGE = true;
 const fudgeChangeLogResolvedDates = (changeLogs, releases) => {
-  if (releases.length < 2 || changeLogs.length < 2) { return changeLogs; }
+  if (!DO_FUDGE) { return changeLogs; }
+  if ((releases || []).length < 2 || (changeLogs || []).length < 2) { return changeLogs; }
   const middleReleaseIdx = Math.ceil(releases.length / 2) - 1;
   const postResolvedDate = moment
     .utc(releases[middleReleaseIdx].generationDate)
@@ -269,8 +274,10 @@ const reducer = (state, action) => {
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
-      if (newState.data.product.dois && newState.data.product.dois.length > 1) {
-        newState.data.product.dois.sort((a, b) => (a.generationDate < b.generationDate ? 1 : -1));
+      if (newState.data.product.releases && newState.data.product.releases.length > 1) {
+        newState.data.product.releases.sort(
+          (a, b) => (a.generationDate < b.generationDate ? 1 : -1),
+        );
       }
       newState.data.product.releases
         // eslint-disable-next-line max-len
@@ -281,13 +288,6 @@ const reducer = (state, action) => {
         newState.data.product.changeLogs,
         newState.data.product.releases,
       );
-      /*
-      (newState.data.product.changeLogs || []).forEach((change, idx) => {
-        if (change.resolvedDate > '2019-09-01') {
-          newState.data.product.changeLogs[idx].resolvedDate = null;
-        }
-      });
-      */
       return calculateAppStatus(newState);
 
     case 'fetchProductReleaseFailed':
@@ -304,13 +304,6 @@ const reducer = (state, action) => {
         newState.data.productReleases[action.release].changeLogs,
         newState.data.product.releases,
       );
-      /*
-      newState.data.productReleases[action.release].changeLogs.forEach((change, idx) => {
-        if (change.resolvedDate > '2019-09-01') {
-          newState.data.productReleases[action.release].changeLogs[idx].resolvedDate = null;
-        }
-      });
-      */
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':
@@ -361,11 +354,6 @@ const reducer = (state, action) => {
       return state;
   }
 };
-const wrappedReducer = (state, action) => {
-  const newState = reducer(state, action);
-  console.log('STATE', action, newState);
-  return newState;
-};
 
 /**
    PROVIDER
@@ -374,7 +362,11 @@ const Provider = (props) => {
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
-  const [state, dispatch] = useReducer(wrappedReducer, initialState);
+  const [state, dispatch] = useReducer(
+    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
+    initialState,
+  );
+  // const [state, dispatch] = useReducer(reducer, initialState);
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const { bundles } = neonContextData;
@@ -443,6 +435,7 @@ const Provider = (props) => {
         : `/data-products/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
       history.push(nextLocation);
+      NeonJsonLd.injectProduct(productCode, nextRelease);
       dispatch({ type: 'applyNextRelease' });
       return;
     }

@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-one-expression-per-line */
-
 import React from 'react';
 import dateFormat from 'dateformat';
 
@@ -48,12 +47,19 @@ const CitationDetail = () => {
     },
     data: {
       product: {
-        dois,
+        releases,
       },
     },
   } = state;
 
-  const latestDoi = dois && dois.length ? dois[0] : null;
+  const latestRelease = releases && releases.length ? releases[0] : null;
+  /*
+  const latestDoiUrl = (
+    latestRelease && latestRelease.productDoi && latestRelease.productDoi.url
+      ? latestRelease.productDoi.url
+      : null
+  );
+  */
 
   const dataPolicyLink = (
     <a href={DATA_POLICIES_URL}>
@@ -63,14 +69,21 @@ const CitationDetail = () => {
 
   const getCitationText = (release) => {
     const provisional = release === 'provisional';
-    const citationDoi = release && !provisional ? dois.find(doi => doi.release === release) : null;
+    const citationRelease = !release || provisional ? null : (
+      releases.find(r => r.release === release)
+    );
+    const citationDoi = (
+      citationRelease && citationRelease.productDoi && citationRelease.productDoi.url
+        ? citationRelease.productDoi.url
+        : null
+    );
     const now = new Date();
     const today = dateFormat(now, 'mmmm d, yyyy');
     const neon = 'NEON (National Ecological Observatory Network)';
     const productName = provisional
       ? `${product.productName} (${product.productCode})`
       : `${product.productName}, ${release} (${product.productCode})`;
-    const doiText = citationDoi ? `. ${citationDoi.url}` : '';
+    const doiText = citationDoi ? `. ${citationDoi}` : '';
     const url = 'https://data.neonscience.org';
     const accessed = provisional
       ? `${url} (accessed ${today})`
@@ -130,7 +143,7 @@ const CitationDetail = () => {
       ) : (
         <React.Fragment>
           {renderCitationCard('provisional', true)}
-          {latestDoi ? renderCitationCard(latestDoi.release, true) : null}
+          {latestRelease ? renderCitationCard(latestRelease.release, true) : null}
         </React.Fragment>
       )}
     </Detail>

@@ -21,6 +21,7 @@
     "react-router-dom": "^5.2.0",
     "rxjs": "^6.3.3",
     "stickyfilljs": "^2.1.0",
+    "use-reducer-logger": "^1.0.2",
     "whatwg-fetch": "^3.5.0"
   },
   "devDependencies": {

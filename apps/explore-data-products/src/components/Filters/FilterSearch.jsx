@@ -73,6 +73,11 @@ const useStyles = makeStyles(theme => ({
     color: Theme.palette.grey[400],
     marginTop: Theme.spacing(1),
   },
+  searchInput: {
+    '& input': {
+      backgroundColor: '#fff',
+    },
+  },
 }));
 
 const FilterSearch = (props) => {
@@ -197,6 +202,7 @@ const FilterSearch = (props) => {
                 ref: dialogSearchRef,
                 'aria-label': 'search',
                 type: 'search',
+                className: classes.searchInput,
               }}
             />
             <Typography variant="body2" className={classes.subtitle}>
@@ -254,6 +260,7 @@ const FilterSearch = (props) => {
           ref: searchRef,
           'aria-label': 'search',
           type: 'search',
+          className: classes.searchInput,
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>

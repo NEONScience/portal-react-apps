@@ -2,14 +2,11 @@ import isEqual from 'lodash/isEqual';
 
 import {
   /* constants */
-  BUNDLE_INHERITIED_FILTER_KEYS,
   COUNTABLE_FILTER_KEYS,
   FILTER_ITEM_VISIBILITY_STATES,
   FILTER_KEYS,
   INITIAL_FILTER_ITEM_VISIBILITY,
-  INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
-  INITIAL_PRODUCT_VISIBILITY,
   LATEST_AND_PROVISIONAL,
   SORT_METHODS,
   SORT_DIRECTIONS,
@@ -18,7 +15,6 @@ import {
   generateSearchFilterableValue,
   parseSearchTerms,
   applyFilter,
-  applySort,
   applyCurrentProducts,
   getContinuousDatesArray,
 } from './filterUtil';
@@ -409,12 +405,13 @@ export const parseProductsByReleaseData = (state, release) => {
 
   // Apply the completed productsByRelease to new state
   newState.productsByRelease[release] = productsByRelease;
+
+  let releaseFilterInitialized = false;
   
   // Hydrate from local storage
   // Various aspects of state can persist in local storage with the expectation that they'll be
   // "rehydrated" into app state on reload. This is the way we preserve stuff like filter state and
   // selected download sites when refreshing the page.
-  /*
   if (!state.localStorageInitiallyParsed) {
     // Hydrate from local storage: Filter Values
     const localFilterValuesUnparsed = localStorage.getItem('filterValues');
@@ -426,7 +423,16 @@ export const parseProductsByReleaseData = (state, release) => {
             !FILTER_KEYS[key]
               || isEqual(localFilterValues[key], INITIAL_FILTER_VALUES[key])
           ) { return; }
-          newState = applyFilter(newState, key, localFilterValues[key]);
+          // Special case: validate release here so we know whether to trigger a fetch or not
+          if (
+            key === FILTER_KEYS.RELEASE
+              && !newState.releases.find(r => r.release === localFilterValues[key])
+          ) {
+            return;
+          } else {
+            releaseFilterInitialized = true;
+          }
+          newState = applyFilter(newState, key, localFilterValues[key], false);
         });
       } catch {
         console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
@@ -459,7 +465,6 @@ export const parseProductsByReleaseData = (state, release) => {
     }
     newState.localStorageInitiallyParsed = true;
   }
-  */
 
   // Apply initial filter state from URL params, if present (overrides local storage)
   // (only select filters supported for backward compatibility with legacy pages)
@@ -472,13 +477,7 @@ export const parseProductsByReleaseData = (state, release) => {
         && newState.releases.find(r => r.release === newState.urlParams.release)
     ) {
       newState = applyFilter(newState, FILTER_KEYS.RELEASE, newState.urlParams.release, false);
-      // Schedule the release fetch
-      if (!newState.fetches.productsByRelease[newState.urlParams.release]) {
-        newState.fetches.productsByRelease[newState.urlParams.release] = {
-          status: FETCH_STATUS.AWAITING_CALL,
-        };
-        newState.appStatus = APP_STATUS.HAS_FETCHES_TO_TRIGGER;
-      }
+      releaseFilterInitialized = true;
     }
     if (newState.urlParams.sites !== null && newState.urlParams.sites.length) {
       newState = applyFilter(newState, FILTER_KEYS.SITES, newState.urlParams.sites, false);
@@ -499,6 +498,18 @@ export const parseProductsByReleaseData = (state, release) => {
       }
     }
     newState.urlParamsInitiallyApplied = true;
+  }
+
+  // If the release filter was applied in the local storage or URL param initializations above then
+  // schedule a fetch as needed.
+  if (releaseFilterInitialized) {
+    const initialRelease = newState.filterValues[FILTER_KEYS.RELEASE];
+    if (!newState.fetches.productsByRelease[initialRelease]) {
+      newState.fetches.productsByRelease[initialRelease] = {
+        status: FETCH_STATUS.AWAITING_CALL,
+      };
+      newState.appStatus = APP_STATUS.HAS_FETCHES_TO_TRIGGER;
+    }
   }
 
   // Generate the currentProducts structure and return

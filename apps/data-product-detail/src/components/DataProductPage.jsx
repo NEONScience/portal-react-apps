@@ -97,6 +97,11 @@ const DataProductPage = () => {
     const generationMoment = moment(currentReleaseObject.generationDate);
     currentReleaseGenDate = generationMoment ? generationMoment.format('MMMM D, YYYY') : null;
   }
+  const currentDoiUrl = (
+    currentReleaseObject && currentReleaseObject.productDoi && currentReleaseObject.productDoi.url
+      ? currentReleaseObject.productDoi.url
+      : null
+  );
 
   // Set page title and breadcrumbs
   let title = 'Data Product';
@@ -194,7 +199,7 @@ const DataProductPage = () => {
           productData={downloadProductData}
           availabilityView="sites"
           release={currentRelease}
-          key={currentRelease}
+          key={currentRelease || ''}
         >
           {!currentReleaseObject ? null : (
             <Card className={classes.card}>
@@ -204,27 +209,33 @@ const DataProductPage = () => {
                     Release:&nbsp;
                     <b>{currentRelease}</b>
                   </Typography>
-                  <CopyToClipboard text={currentReleaseObject.url}>
-                    <Button
-                      color="primary"
-                      variant="outlined"
-                      size="small"
-                      className={classes.copyButton}
-                    >
-                      <CopyIcon fontSize="small" />
-                      Copy DOI
-                    </Button>
-                  </CopyToClipboard>
+                  {!currentDoiUrl ? null : (
+                    <CopyToClipboard text={currentDoiUrl}>
+                      <Button
+                        color="primary"
+                        variant="outlined"
+                        size="small"
+                        className={classes.copyButton}
+                      >
+                        <CopyIcon fontSize="small" />
+                        Copy DOI
+                      </Button>
+                    </CopyToClipboard>
+                  )}
                 </div>
                 <Typography variant="body2" color="textSecondary" component="p">
                   <span className={classes.releaseAttribTitle}>Generated:</span>
                   <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
                 </Typography>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  <span className={classes.releaseAttribTitle}>DOI:</span>
-                  <span className={classes.releaseAttribValue}>{currentReleaseObject.url}</span>
-                  <DetailTooltip tooltip={DOI_TOOLTIP} />
-                </Typography>
+                {!currentDoiUrl ? null : (
+                  <Typography variant="body2" color="textSecondary" component="p">
+                    <span className={classes.releaseAttribTitle}>DOI:</span>
+                    <span className={classes.releaseAttribValue}>
+                      {currentDoiUrl}
+                    </span>
+                    <DetailTooltip tooltip={DOI_TOOLTIP} />
+                  </Typography>
+                )}
               </CardContent>
             </Card>
           )}

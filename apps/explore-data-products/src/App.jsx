@@ -12,7 +12,6 @@ import ExplorePage from './ExplorePage';
 // to immediately have the last higher-order download state pushed to them when they're
 // created (e.g. through scrolling, filtering, etc.). Do this here so that the ReplaySubject
 // is invoked exactly once at initiation, but not kept in state.
-
 const highestOrderDownloadSubject = new ReplaySubject(1);
 
 export default function App() {

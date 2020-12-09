@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -7,28 +8,28 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import FormControl from '@material-ui/core/FormControl';
-import Hidden from "@material-ui/core/Hidden";
-import IconButton from "@material-ui/core/IconButton";
+import Hidden from '@material-ui/core/Hidden';
+import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Skeleton from '@material-ui/lab/Skeleton';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 import SortIcon from '@material-ui/icons/SwapVert';
 import AscIcon from '@material-ui/icons/ArrowDownward';
 import DescIcon from '@material-ui/icons/ArrowUpward';
-import ClearIcon from "@material-ui/icons/Clear";
+import ClearIcon from '@material-ui/icons/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../ExploreContext';
 
-import { SORT_METHODS, SORT_DIRECTIONS } from "../util/filterUtil";
+import { SORT_METHODS, SORT_DIRECTIONS } from '../util/filterUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     marginBottom: theme.spacing(3),
     backgroundColor: theme.palette.grey[50],
@@ -128,7 +129,7 @@ const PresentationSort = (props) => {
   );
 
   const summary = `${SORT_METHODS[sortMethod].label} ${sortDirection === 'ASC' ? '(ascending)' : '(descending)'}`;
-  
+
   const sortBlurb = (
     <Typography
       variant="body2"
@@ -158,7 +159,7 @@ const PresentationSort = (props) => {
   );
 
   const sortContent = (
-    <React.Fragment>
+    <>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <FormControl variant="outlined">
           <Select
@@ -172,7 +173,7 @@ const PresentationSort = (props) => {
             })}
             data-selenium="browse-data-products-page.sort.method"
           >
-            {Object.keys(SORT_METHODS).map(method => (
+            {Object.keys(SORT_METHODS).map((method) => (
               <MenuItem
                 key={method}
                 value={method}
@@ -188,9 +189,9 @@ const PresentationSort = (props) => {
           value={sortDirection}
           className={classes.toggleButtonGroup}
           onChange={(event, value) => dispatch({
-              type: 'applySort',
-              sortMethod: null,
-              sortDirection: value,
+            type: 'applySort',
+            sortMethod: null,
+            sortDirection: value,
           })}
           data-selenium="browse-data-products-page.sort.direction"
         >
@@ -210,7 +211,7 @@ const PresentationSort = (props) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </div>
-    </React.Fragment>
+    </>
   );
 
   return (
@@ -257,6 +258,14 @@ const PresentationSort = (props) => {
       </CardContent>
     </Card>
   );
+};
+
+PresentationSort.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+PresentationSort.defaultProps = {
+  skeleton: false,
 };
 
 export default PresentationSort;

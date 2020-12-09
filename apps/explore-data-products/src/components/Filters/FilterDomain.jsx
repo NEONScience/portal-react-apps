@@ -1,4 +1,6 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import MapSelectionButton from 'portal-core-components/lib/components/MapSelectionButton';
 
@@ -11,7 +13,7 @@ import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUti
 
 const FilterDomain = (props) => {
   const { skeleton } = props;
-  
+
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
@@ -24,16 +26,22 @@ const FilterDomain = (props) => {
   const FILTER_SHOW_COUNT = 5;
 
   const onApplyFilter = (filterValue, showOnlySelected = false) => {
-    dispatch({ type: 'applyFilter', filterKey, filterValue, showOnlySelected });
+    dispatch({
+      type: 'applyFilter',
+      filterKey,
+      filterValue,
+      showOnlySelected,
+    });
   };
   const onResetFilter = () => dispatch({ type: 'resetFilter', filterKey });
   const checkboxProps = {
     filterValues: filterValues[filterKey],
     onApplyFilter,
-    onResetFilter,    
+    onResetFilter,
   };
 
-  const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
+  const selected = filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none';
+  const subtitle = `(${selected} selected)`;
 
   const byVisibility = (item, idx) => {
     switch (filterItemVisibility[filterKey]) {
@@ -66,7 +74,7 @@ const FilterDomain = (props) => {
       additionalTitleButton={mapSelectionButton}
     >
       <ul>
-        {filterItems[filterKey].filter(byVisibility).map((filterItem, idx) => (
+        {filterItems[filterKey].filter(byVisibility).map((filterItem) => (
           <li key={filterItem.value}>
             <FilterCheckBox
               name={filterItem.name}
@@ -85,12 +93,20 @@ const FilterDomain = (props) => {
         currentState={filterItemVisibility[filterKey]}
         totalItemCount={filterItems[filterKey].length}
         selectedItemCount={filterValues[filterKey].length}
-        onExpandFilterItems={() => dispatch({ type: 'expandFilterItems', filterKey})}
-        onCollapseFilterItems={() => dispatch({ type: 'collapseFilterItems', filterKey})}
-        onShowSelectedFilterItems={() => dispatch({ type: 'showSelectedFilterItems', filterKey})}
+        onExpandFilterItems={() => dispatch({ type: 'expandFilterItems', filterKey })}
+        onCollapseFilterItems={() => dispatch({ type: 'collapseFilterItems', filterKey })}
+        onShowSelectedFilterItems={() => dispatch({ type: 'showSelectedFilterItems', filterKey })}
       />
     </FilterBase>
   );
+};
+
+FilterDomain.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterDomain.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterDomain;

@@ -1,14 +1,17 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
+import { ReplaySubject } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import Typography from "@material-ui/core/Typography";
+import Typography from '@material-ui/core/Typography';
 
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DataProduct from "./DataProduct";
-import SkeletonDataProduct from "./SkeletonDataProduct";
+import DataProduct from './DataProduct';
+import SkeletonDataProduct from './SkeletonDataProduct';
 
 import ExploreContext from '../ExploreContext';
 
@@ -33,7 +36,7 @@ const PresentationData = (props) => {
   };
 
   // Define a simple reducer for handling whole changes to the download state
-  const downloadReducer = (state, action) => {
+  const downloadReducer = (reducerState, action) => {
     switch (action.type) {
       case 'setDownloadState':
         return {
@@ -41,7 +44,7 @@ const PresentationData = (props) => {
         };
       default:
         return {
-          downloadState: DownloadDataContext.reducer(state.downloadState, action),
+          downloadState: DownloadDataContext.reducer(reducerState.downloadState, action),
         };
     }
   };
@@ -93,15 +96,24 @@ const PresentationData = (props) => {
           </Typography>
         </div>
       ) : null}
-      {productOrder.slice(0, scrollCutoff).map(productCode => (
+      {productOrder.slice(0, scrollCutoff).map((productCode) => (
         <DataProduct
           key={`${productCode}/${filterValues[FILTER_KEYS.RELEASE] || ''}`}
-          productCode={productCode}          
+          productCode={productCode}
           highestOrderDownloadSubject={highestOrderDownloadSubject}
         />
       ))}
     </div>
   );
+};
+
+PresentationData.propTypes = {
+  skeleton: PropTypes.bool,
+  highestOrderDownloadSubject: PropTypes.instanceOf(ReplaySubject).isRequired,
+};
+
+PresentationData.defaultProps = {
+  skeleton: false,
 };
 
 export default PresentationData;

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -11,7 +12,7 @@ import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterTheme = (props) => {
   const { skeleton } = props;
-  
+
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
@@ -36,7 +37,7 @@ const FilterTheme = (props) => {
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>
-        {filterItems[filterKey].map(filterItem => (
+        {filterItems[filterKey].map((filterItem) => (
           <li key={filterItem.value}>
             <FilterCheckBox
               name={(
@@ -60,6 +61,14 @@ const FilterTheme = (props) => {
       </ul>
     </FilterBase>
   );
+};
+
+FilterTheme.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterTheme.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterTheme;

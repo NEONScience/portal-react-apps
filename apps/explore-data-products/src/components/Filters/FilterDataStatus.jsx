@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -33,7 +34,7 @@ const FilterDataStatus = (props) => {
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>
-        {filterItems[filterKey].map(filterItem => (
+        {filterItems[filterKey].map((filterItem) => (
           <li key={filterItem.value}>
             <FilterCheckBox
               name={filterItem.name}
@@ -48,6 +49,14 @@ const FilterDataStatus = (props) => {
       </ul>
     </FilterBase>
   );
+};
+
+FilterDataStatus.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterDataStatus.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterDataStatus;

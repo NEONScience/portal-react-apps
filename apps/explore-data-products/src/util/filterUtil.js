@@ -27,9 +27,9 @@ export const getContinuousDatesArray = (dateRange, roundToYears = false) => {
   while (startMoment.isBefore(endMoment) && months < MAX_MONTHS) {
     contionuousRange.push(startMoment.format('YYYY-MM'));
     startMoment.add(1, 'months');
-    months++;
+    months += 1;
   }
-  return contionuousRange;  
+  return contionuousRange;
 };
 
 // TODO: Move to Core Components?
@@ -114,7 +114,7 @@ export const getCurrentProductsByRelease = (state) => {
 
 const filterValuesIntersect = (filterValue, productFilterableValues) => (
   productFilterableValues
-    .filter(x => filterValue.includes(x))
+    .filter((x) => filterValue.includes(x))
     .length > 0
 );
 
@@ -141,22 +141,26 @@ export const depluralizeSearchTerms = (terms) => {
 // Since most filters are validated as an intersection of value (array of string) with an array of
 // valid values we start by setting them all to that and then define the special cases below.
 export const FILTER_FUNCTIONS = {};
-Object.keys(FILTER_KEYS).forEach(key => {
+Object.keys(FILTER_KEYS).forEach((key) => {
   FILTER_FUNCTIONS[key] = (product, value) => (
     filterValuesIntersect(value, product.filterableValues[key])
   );
 });
 FILTER_FUNCTIONS.SEARCH = (product, value) => (
   value.length
-    ? depluralizeSearchTerms(value).some(term => product.filterableValues.SEARCH.includes(term))
+    ? depluralizeSearchTerms(value).some((term) => product.filterableValues.SEARCH.includes(term))
     : true
 );
 FILTER_FUNCTIONS.DATE_RANGE = (product, value) => filterValuesIntersect(
   getContinuousDatesArray(value),
   product.filterableValues.DATE_RANGE,
 );
-FILTER_FUNCTIONS.DATA_STATUS = (product, value) => value.includes(product.filterableValues.DATA_STATUS);
-FILTER_FUNCTIONS.SCIENCE_TEAM = (product, value) => value.includes(product.filterableValues.SCIENCE_TEAM);
+FILTER_FUNCTIONS.DATA_STATUS = (product, value) => (
+  value.includes(product.filterableValues.DATA_STATUS)
+);
+FILTER_FUNCTIONS.SCIENCE_TEAM = (product, value) => (
+  value.includes(product.filterableValues.SCIENCE_TEAM)
+);
 
 export const INITIAL_FILTER_VALUES = {
   SEARCH: [],
@@ -186,43 +190,47 @@ export const FILTER_ITEM_VISIBILITY_STATES = {
   COLLAPSED: 'COLLAPSED',
   EXPANDED: 'EXPANDED',
   SELECTED: 'SELECTED',
-}
+};
 
 export const INITIAL_FILTER_ITEM_VISIBILITY = {
   SITES: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
   STATES: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
-  DOMAINS :FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
+  DOMAINS: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
 };
 
 export const INITIAL_PRODUCT_VISIBILITY = {
   // Whether the product should be visible given the currentfilter state
   BY_FILTERS: true,
 };
-Object.keys(FILTER_KEYS).forEach(filterKey => {
+Object.keys(FILTER_KEYS).forEach((filterKey) => {
   INITIAL_PRODUCT_VISIBILITY[filterKey] = null;
 });
 
 // Helper function used by all sort methods to place all "Coming Soon" products
 // below "Available" products regardless of method.
 const sortByAvailabiilty = (prodA, prodB) => {
-  if (prodA.filterableValues[FILTER_KEYS.DATA_STATUS] !== prodB.filterableValues[FILTER_KEYS.DATA_STATUS]) {
-    return prodA.filterableValues[FILTER_KEYS.DATA_STATUS] === 'Available' ? -1 : 1;
+  const availabilityA = prodA.filterableValues[FILTER_KEYS.DATA_STATUS];
+  const availabilityB = prodB.filterableValues[FILTER_KEYS.DATA_STATUS];
+  if (availabilityA !== availabilityB) {
+    return availabilityA === 'Available' ? -1 : 1;
   }
   return 0;
-}
+};
 export const SORT_DIRECTIONS = ['ASC', 'DESC'];
-const getSortReturns = sortDirection => [
+const getSortReturns = (sortDirection) => [
   sortDirection === 'ASC' ? -1 : 1,
   sortDirection === 'ASC' ? 1 : -1,
 ];
 // One-liner for ascending alphabetical sort. Used by many sort methods as a fallback
 // when targeted sortable values are equal between products.
-const productNameAscSort = (a, b) => a.productName.toUpperCase() < b.productName.toUpperCase() ? -1 : 1;
+const productNameAscSort = (a, b) => (
+  a.productName.toUpperCase() < b.productName.toUpperCase() ? -1 : 1
+);
 export const SORT_METHODS = {
-  'productName': {
+  productName: {
     label: 'by Product Name',
     isDisabled: () => false, // We can always sort on name!
-    getSortFunction: state => (a, b) => {
+    getSortFunction: (state) => (a, b) => {
       const currentProductsByRelease = getCurrentProductsByRelease(state);
       const prodA = currentProductsByRelease[a];
       const prodB = currentProductsByRelease[b];
@@ -232,19 +240,22 @@ export const SORT_METHODS = {
       return prodA.productName.toUpperCase() < prodB.productName.toUpperCase() ? ret[0] : ret[1];
     },
   },
-  'oldestAvailableData': {
+  oldestAvailableData: {
     label: 'by Oldest Available Data',
     isDisabled: (filterValues) => { // Disable when only showing products with no available data
       const dataStatusFilterValue = filterValues[FILTER_KEYS.DATA_STATUS];
       return (dataStatusFilterValue.length === 1 && dataStatusFilterValue[0] === 'Coming Soon');
     },
-    getSortFunction: state => (a, b) => {
+    getSortFunction: (state) => (a, b) => {
       const currentProductsByRelease = getCurrentProductsByRelease(state);
       const prodA = currentProductsByRelease[a];
       const prodB = currentProductsByRelease[b];
       const byAvailability = sortByAvailabiilty(prodA, prodB);
       if (byAvailability !== 0) { return byAvailability; }
-      if (!prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length || !prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length) {
+      if (
+        !prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length
+          || !prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length
+      ) {
         return productNameAscSort(prodA, prodB);
       }
       const ret = getSortReturns(state.sortDirection);
@@ -254,43 +265,112 @@ export const SORT_METHODS = {
       return aDate < bDate ? ret[0] : ret[1];
     },
   },
-  'newestAvailableData': {
+  newestAvailableData: {
     label: 'by Newest Available Data',
     isDisabled: (filterValues) => { // Disable when only showing products with no available data
       const dataStatusFilterValue = filterValues[FILTER_KEYS.DATA_STATUS];
       return (dataStatusFilterValue.length === 1 && dataStatusFilterValue[0] === 'Coming Soon');
     },
-    getSortFunction: state => (a, b) => {
+    getSortFunction: (state) => (a, b) => {
       const currentProductsByRelease = getCurrentProductsByRelease(state);
       const prodA = currentProductsByRelease[a];
       const prodB = currentProductsByRelease[b];
       const byAvailability = sortByAvailabiilty(prodA, prodB);
       if (byAvailability !== 0) { return byAvailability; }
-      if (!prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length || !prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length) {
+      if (
+        !prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length
+          || !prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length
+      ) {
         return productNameAscSort(prodA, prodB);
       }
       const ret = getSortReturns(state.sortDirection);
-      const aDate = prodA.filterableValues[FILTER_KEYS.DATE_RANGE][prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length - 1];
-      const bDate = prodB.filterableValues[FILTER_KEYS.DATE_RANGE][prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length - 1];
+      const aRangeLength = prodA.filterableValues[FILTER_KEYS.DATE_RANGE].length;
+      const bRangeLength = prodB.filterableValues[FILTER_KEYS.DATE_RANGE].length;
+      const aDate = prodA.filterableValues[FILTER_KEYS.DATE_RANGE][aRangeLength - 1];
+      const bDate = prodB.filterableValues[FILTER_KEYS.DATE_RANGE][bRangeLength - 1];
       if (aDate === bDate) { return productNameAscSort(prodA, prodB); }
       return aDate < bDate ? ret[0] : ret[1];
     },
   },
-  'searchRelevance': {
+  searchRelevance: {
     label: 'by Search Relevance',
-    isDisabled: filterValues => filterValues[FILTER_KEYS.SEARCH].length === 0,
-    getSortFunction: state => (a, b) => {
+    isDisabled: (filterValues) => filterValues[FILTER_KEYS.SEARCH].length === 0,
+    getSortFunction: (state) => (a, b) => {
       const currentProductsByRelease = getCurrentProductsByRelease(state);
       if (state.currentProducts.searchRelevance[a] === state.currentProducts.searchRelevance[b]) {
         return productNameAscSort(currentProductsByRelease[a], currentProductsByRelease[b]);
       }
-      return state.currentProducts.searchRelevance[a] < state.currentProducts.searchRelevance[b] ? 1 : -1;
+      return (
+        state.currentProducts.searchRelevance[a] < state.currentProducts.searchRelevance[b] ? 1 : -1
+      );
     },
   },
 };
 
 export const DEFAULT_SORT_METHOD = 'productName';
 export const DEFAULT_SORT_DIRECTION = 'ASC';
+
+/**
+ * For a given product/filter visibility mapping calculate the BY_FILTERS visibility of the product.
+ * Returns false if any filters for the product are exactly false (i.e. excluded by the filter)
+ * Returns true otherwise (i.e. all filters are null/not applie/true/included by the filter)
+ * @param {object} productVisibility - entry from state productVisibility for a single product
+ * @return {boolean}
+ */
+export const productIsVisibleByFilters = (productVisibility) => !Object.keys(productVisibility)
+  .filter((key) => !!FILTER_KEYS[key])
+  .some((key) => productVisibility[key] === false);
+
+/**
+ * In a state object: validate and apply a sortMethod and/or sortDirection, then
+ * regenerate productOrder map using BY_FILTERS visible products only
+ * @param {object} state - current whole state object
+ * @param {string} sortMethod - key in SORT_METHODS object; if invalid use current state value
+ * @param {string} sortDirection - item in SORT_DIRECTIONS array; if invalid use current state value
+ * @return {object} updated whole state object
+ */
+export const applySort = (state, sortMethod = null, sortDirection = null) => {
+  const updated = {
+    ...state,
+    sortMethod: Object.keys(SORT_METHODS).includes(sortMethod) ? sortMethod : state.sortMethod,
+    sortDirection: SORT_DIRECTIONS.includes(sortDirection) ? sortDirection : state.sortDirection,
+  };
+  if (SORT_METHODS[updated.sortMethod].isDisabled(updated.filterValues)) {
+    updated.sortMethod = DEFAULT_SORT_METHOD;
+    updated.sortDirection = DEFAULT_SORT_DIRECTION;
+  }
+  // Persist updates to localStorage
+  localStorage.setItem('sortMethod', updated.sortMethod);
+  localStorage.setItem('sortDirection', updated.sortDirection);
+  const productOrder = Object.keys(updated.currentProducts.visibility)
+    .filter((productCode) => updated.currentProducts.visibility[productCode].BY_FILTERS);
+  productOrder.sort(SORT_METHODS[updated.sortMethod].getSortFunction(updated));
+  updated.currentProducts.order = productOrder;
+  return updated;
+};
+
+/**
+ * Calculate a number to reflect the relevance of a given product for a given
+ * search filter input (arbitrarily many terms). Things that contribute to score:
+ *  - Exact vs. fuzzy matches of a given term (exact: term appears with spaces
+ *    on both sides; fuzzy: one or both sides of term match is another letter)
+ *  - Frequency of appearance of a given term
+ *  - Term length (in that when more than one term is present then a longer term
+ *    has a greater impact on the score than a shorter term)
+ */
+export const calculateSearchRelevance = (product, searchTerms) => (
+  searchTerms.reduce((score, term) => {
+    let updatedScore = score;
+    const regex = new RegExp(`[\\S]{0,1}${term}[\\S]{0,1}`, 'g');
+    const matches = (product.filterableValues[FILTER_KEYS.SEARCH] || '').match(regex);
+    if (matches) {
+      matches.forEach((match) => {
+        updatedScore += (match === term ? 3 : 1) * term.length;
+      });
+    }
+    return updatedScore;
+  }, 0)
+);
 
 /**
    applyCurrentProducts
@@ -347,43 +427,12 @@ export const applyCurrentProducts = (state) => {
 };
 
 /**
- * Calculate a number to reflect the relevance of a given product for a given
- * search filter input (arbitrarily many terms). Things that contribute to score:
- *  - Exact vs. fuzzy matches of a given term (exact: term appears with spaces
- *    on both sides; fuzzy: one or both sides of term match is another letter)
- *  - Frequency of appearance of a given term
- *  - Term length (in that when more than one term is present then a longer term
- *    has a greater impact on the score than a shorter term)
- */
-export const calculateSearchRelevance = (product, searchTerms) => searchTerms.reduce((score, term) => {
-  const regex = new RegExp(`[\\S]{0,1}${term}[\\S]{0,1}`, 'g');
-  const matches = (product.filterableValues[FILTER_KEYS.SEARCH] || '').match(regex);
-  if (matches) {
-    matches.forEach(match => {
-      score += (match === term ? 3 : 1) * term.length;
-    });
-  }
-  return score;
-}, 0);
-
-/**
- * For a given product/filter visibility mapping calculate the BY_FILTERS visibility of the product.
- * Returns false if any filters for the product are exactly false (i.e. excluded by the filter)
- * Returns true otherwise (i.e. all filters are null - not applied - or true - included by the filter)
- * @param {object} productVisibility - entry from productVisibility object from state for a single product
- * @return {boolean}
- */
-export const productIsVisibleByFilters = (productVisibility) => !Object.keys(productVisibility)
-  .filter(key => !!FILTER_KEYS[key])
-  .some(key => productVisibility[key] === false);
-
-/**
  * In a state object: set filter value and apply filter to all products in the productVisibility map
  * (for all products in map: set boolean filter visibility value and recalculate CURRENT visibility)
  * @param {object} state - current whole state object
  * @param {string} filterKey - identifier for filter as it appears in FILTER_KEYS
  * @param {*} filterValue - value to apply to filter
- * @param {boolean} returnApplyCurrentProducts - whether to run the response through applyCurrentProducts
+ * @param {boolean} returnApplyCurrentProducts - whether wrap response in applyCurrentProducts()
  * @return {object} updated whole state object
  */
 export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentProducts = true) => {
@@ -392,8 +441,8 @@ export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentPro
   // For list-based filters narrow down to the intersection with available filter items
   let updatedFilterValue = filterValue;
   if (LIST_BASED_FILTER_KEYS.includes(filterKey)) {
-    const validValues = state.filterItems[filterKey].map(i => i.value);
-    updatedFilterValue = (filterValue || []).filter(v => validValues.includes(v));
+    const validValues = state.filterItems[filterKey].map((i) => i.value);
+    updatedFilterValue = (filterValue || []).filter((v) => validValues.includes(v));
   }
   // Apply to state
   const updated = {
@@ -405,10 +454,12 @@ export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentPro
     },
   };
   // Either add or remove this filter from the applied list depending on the new value
-  const otherAppliedFilters = [...state.filtersApplied.filter(f => f !== filterKey)];
+  const otherAppliedFilters = [...state.filtersApplied.filter((f) => f !== filterKey)];
   const filterIsNowApplied = !isEqual(updatedFilterValue, INITIAL_FILTER_VALUES[filterKey]);
-  updated.filtersApplied = filterIsNowApplied ? [...otherAppliedFilters, filterKey] : otherAppliedFilters;
-  // For extendable list-based filters if the filter is not applied then also revert the item visibility
+  updated.filtersApplied = (
+    filterIsNowApplied ? [...otherAppliedFilters, filterKey] : otherAppliedFilters
+  );
+  // For extendable list-based filters if the filter is not applied then also revert item visibility
   if (updated.filterItemVisibility[filterKey] && !filterIsNowApplied) {
     updated.filterItemVisibility[filterKey] = FILTER_ITEM_VISIBILITY_STATES.COLLAPSED;
   }
@@ -424,10 +475,10 @@ export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentPro
 
   // Update currentProducts with latest filter info and return
   return returnApplyCurrentProducts ? applyCurrentProducts(updated) : updated;
-}
+};
 
 /**
- * In state: reset a single filter's value and reset all products in the productVisibility map for that filter
+ * In state: reset a single filter's value and reset productVisibility map for that filter
  * (for all products in map: null out filter visibility value and recalculate CURRENT visibility)
  * @param {object} state - current whole state object
  * @param {string} filterKey - identifier for filter as it appears in FILTER_KEYS
@@ -438,11 +489,11 @@ export const resetFilter = (state, filterKey) => {
   const updated = {
     ...state,
     scrollCutoff: 10,
-    filtersApplied: state.filtersApplied.filter(f => f !== filterKey),
+    filtersApplied: state.filtersApplied.filter((f) => f !== filterKey),
     filterValues: {
       ...state.filterValues,
       [filterKey]: INITIAL_FILTER_VALUES[filterKey],
-    }
+    },
   };
   // If this filter is expandable then ensure it's now collapsed
   if (updated.filterItemVisibility[filterKey]) {
@@ -459,7 +510,7 @@ export const resetFilter = (state, filterKey) => {
     updated.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
   });
   return applyCurrentProducts(updated);
-}
+};
 
 /**
  * Resets all values on all filters (rendering all products visible)
@@ -473,7 +524,7 @@ export const resetAllFilters = (state) => {
     scrollCutoff: 10,
     filtersApplied: [],
   };
-  Object.keys(FILTER_KEYS).forEach(filterKey => {
+  Object.keys(FILTER_KEYS).forEach((filterKey) => {
     updated.filterValues[filterKey] = INITIAL_FILTER_VALUES[filterKey];
     if (updated.filterItemVisibility[filterKey]) {
       updated.filterItemVisibility[filterKey] = FILTER_ITEM_VISIBILITY_STATES.COLLAPSED;
@@ -506,40 +557,12 @@ export const changeFilterItemVisibility = (state, filterKey, visibility) => {
     filterItemVisibility: {
       ...state.filterItemVisibility,
       [filterKey]: FILTER_ITEM_VISIBILITY_STATES[visibility],
-    }
+    },
   };
   // Persist updates to localStorage
   localStorage.setItem('filterItemVisibility', JSON.stringify(updated.filterItemVisibility));
   return updated;
 };
-
-/**
- * In a state object: validate and apply a sortMethod and/or sortDirection, then
- * regenerate productOrder map using BY_FILTERS visible products only
- * @param {object} state - current whole state object
- * @param {string} sortMethod - key in SORT_METHODS object. If not valid will use current state value.
- * @param {string} sortDirection - item in SORT_DIRECTIONS array. If not valid will use current state value.
- * @return {object} updated whole state object
- */
-export const applySort = (state, sortMethod = null, sortDirection = null) => {
-  const updated = {
-    ...state,
-    sortMethod: Object.keys(SORT_METHODS).includes(sortMethod) ? sortMethod : state.sortMethod,
-    sortDirection: SORT_DIRECTIONS.includes(sortDirection) ? sortDirection : state.sortDirection,
-  };
-  if (SORT_METHODS[updated.sortMethod].isDisabled(updated.filterValues)) {
-    updated.sortMethod = DEFAULT_SORT_METHOD;
-    updated.sortDirection = DEFAULT_SORT_DIRECTION;
-  }
-  // Persist updates to localStorage  
-  localStorage.setItem('sortMethod', updated.sortMethod);
-  localStorage.setItem('sortDirection', updated.sortDirection);
-  const productOrder = Object.keys(updated.currentProducts.visibility)
-    .filter(productCode => updated.currentProducts.visibility[productCode].BY_FILTERS);
-  productOrder.sort(SORT_METHODS[updated.sortMethod].getSortFunction(updated));
-  updated.currentProducts.order = productOrder;
-  return updated;
-}
 
 /**
  * Parse an input search string into discrete terms.
@@ -552,7 +575,7 @@ export const parseSearchTerms = (input) => {
     .replace(/[^\w\s."]/g, '')
     .match(/(".*?"|[^" \s]+)(?=\s* |\s*$)/g);
   return (terms || [])
-    .map(term => term.replace(/"/g, '').toLowerCase());
+    .map((term) => term.replace(/"/g, '').toLowerCase());
 };
 
 export const generateSearchFilterableValue = (product, neonContextState) => {
@@ -567,24 +590,39 @@ export const generateSearchFilterableValue = (product, neonContextState) => {
     'productRemarks',
     'productScienceTeam',
     'productSensor',
-  ].map(field => (product[field] || ''));
+  ].map((field) => (product[field] || ''));
   // Add generated filterable values
   [
     'SITES',
     'STATES',
     'DOMAINS',
-    'THEMES'
-  ].forEach(key => {
+    'THEMES',
+  ].forEach((key) => {
     search.push((product.filterableValues[key] || []).join(' '));
   });
   // Flatten and add keywords array
   search.push((product.keywords || []).join(' '));
-  // For sites, states, and domains also add additional meta-data (e.g. site description, full state name, etc.)
-  search.push(product.filterableValues[FILTER_KEYS.SITES].map(site => sitesJSON[site].description).join(' '));
-  search.push(product.filterableValues[FILTER_KEYS.STATES].map(state => statesJSON[state].name).join(' '));
-  search.push(product.filterableValues[FILTER_KEYS.DOMAINS].map(domain => domainsJSON[domain].name).join(' '));
+  // For sites, states, and domains also add additional meta-data
+  // (e.g. site description, full state name, etc.)
+  search.push(
+    product.filterableValues[FILTER_KEYS.SITES]
+      .map((site) => sitesJSON[site].description)
+      .join(' '),
+  );
+  search.push(
+    product.filterableValues[FILTER_KEYS.STATES]
+      .map((state) => statesJSON[state].name)
+      .join(' '),
+  );
+  search.push(
+    product.filterableValues[FILTER_KEYS.DOMAINS]
+      .map((domain) => domainsJSON[domain].name)
+      .join(' '),
+  );
   // Include all available data years
-  const dataYears = new Set(product.filterableValues[FILTER_KEYS.DATE_RANGE].map(d => d.substr(0, 4)));
+  const dataYears = new Set(
+    product.filterableValues[FILTER_KEYS.DATE_RANGE].map((d) => d.substr(0, 4)),
+  );
   search.push([...dataYears].join(' '));
   // Flatten everything into a single string, cast to lower case, and strip out special characters
   return search.join(' ').toLowerCase().replace(/[^\w. ]/g, ' ').replace(/[ ]{2,}/g, ' ');

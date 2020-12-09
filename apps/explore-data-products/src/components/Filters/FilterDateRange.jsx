@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
 import Slider from '@material-ui/core/Slider';
 
 import MomentUtils from '@date-io/moment';
@@ -15,9 +15,9 @@ import FilterBase from '../FilterBase';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const getYearMonthMoment = yearMonth => moment(`${yearMonth}-01`);
+const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   slider: {
     width: `calc(100% - ${theme.spacing(6)}px)`,
     marginLeft: Theme.spacing(3),
@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 const FilterDateRange = () => {
   const classes = useStyles(Theme);
-  
+
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
@@ -67,7 +67,7 @@ const FilterDateRange = () => {
     subtitle: 'Show products that have any data available between two dates.',
     'data-selenium': 'browse-data-products-page.filters.date-range',
   };
-  
+
   // Render initial state (no inputs; enable button only) if not applied
   if (!selectableRange.length || !filtersApplied.includes(filterKey)) {
     const initialFilterValue = [
@@ -76,7 +76,7 @@ const FilterDateRange = () => {
     ];
     return (
       <FilterBase {...filterBaseProps}>
-        <Button 
+        <Button
           title="Filter on available dates…"
           aria-label="Filter on available dates…"
           data-selenium="browse-data-products-page.filters.date-range.enable-button"
@@ -91,7 +91,7 @@ const FilterDateRange = () => {
           Filter on available dates…
         </Button>
       </FilterBase>
-    );  
+    );
   }
 
   const marks = [{
@@ -100,16 +100,18 @@ const FilterDateRange = () => {
   }];
   const yearsInSlider = Math.floor(selectableRange.length / 12);
   const innerMark = Math.ceil(yearsInSlider / Math.ceil(yearsInSlider % 3 ? 2 : 3));
-  for (let y = 1; y < yearsInSlider; y++) {
+  for (let y = 1; y < yearsInSlider; y += 1) {
     marks.push({
       value: 12 * y,
-      label: (y === innerMark || y === innerMark * 2) ? selectableRange[12 * y].substring(0, 4) : null,
+      label: (
+        (y === innerMark || y === innerMark * 2) ? selectableRange[12 * y].substring(0, 4) : null
+      ),
     });
   }
   marks.push({
     value: sliderMax,
     label: selectableRange[sliderMax].substring(0, 4),
-  });  
+  });
 
   const handleChangeDatePicker = (rangeIndex, value) => {
     // Confirm arguments are sane
@@ -142,23 +144,23 @@ const FilterDateRange = () => {
         max={sliderMax}
         marks={marks}
         value={sliderValue}
-        valueLabelFormat={x => selectableRange[x]}
+        valueLabelFormat={(x) => selectableRange[x]}
         onMouseDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
           setActivelySlidingDateRange([
             Math.max(values[0], sliderMin),
             Math.min(values[1], sliderMax),
-          ].map(x => selectableRange[x]));
+          ].map((x) => selectableRange[x]));
         }}
         onChangeCommitted={(event, values) => {
           setActivelySliding(false);
           dispatch({
-            type: 'applyFilter', 
+            type: 'applyFilter',
             filterKey,
             filterValue: [
               Math.max(values[0], sliderMin),
               Math.min(values[1], sliderMax),
-            ].map(x => selectableRange[x]),
+            ].map((x) => selectableRange[x]),
           });
         }}
       />

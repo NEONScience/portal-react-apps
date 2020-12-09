@@ -1,4 +1,6 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import MapSelectionButton from 'portal-core-components/lib/components/MapSelectionButton';
 
@@ -11,7 +13,7 @@ import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUti
 
 const FilterState = (props) => {
   const { skeleton } = props;
-  
+
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
@@ -24,13 +26,18 @@ const FilterState = (props) => {
   const FILTER_SHOW_COUNT = 5;
 
   const onApplyFilter = (filterValue, showOnlySelected = false) => {
-    dispatch({ type: 'applyFilter', filterKey, filterValue, showOnlySelected });
+    dispatch({
+      type: 'applyFilter',
+      filterKey,
+      filterValue,
+      showOnlySelected,
+    });
   };
   const onResetFilter = () => dispatch({ type: 'resetFilter', filterKey });
   const checkboxProps = {
     filterValues: filterValues[filterKey],
     onApplyFilter,
-    onResetFilter,    
+    onResetFilter,
   };
 
   const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
@@ -84,12 +91,20 @@ const FilterState = (props) => {
         currentState={filterItemVisibility[filterKey]}
         totalItemCount={filterItems[filterKey].length}
         selectedItemCount={filterValues[filterKey].length}
-        onExpandFilterItems={() => dispatch({ type: 'expandFilterItems', filterKey})}
-        onCollapseFilterItems={() => dispatch({ type: 'collapseFilterItems', filterKey})}
-        onShowSelectedFilterItems={() => dispatch({ type: 'showSelectedFilterItems', filterKey})}
+        onExpandFilterItems={() => dispatch({ type: 'expandFilterItems', filterKey })}
+        onCollapseFilterItems={() => dispatch({ type: 'collapseFilterItems', filterKey })}
+        onShowSelectedFilterItems={() => dispatch({ type: 'showSelectedFilterItems', filterKey })}
       />
     </FilterBase>
   );
+};
+
+FilterState.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterState.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterState;

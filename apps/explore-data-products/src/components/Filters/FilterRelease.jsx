@@ -1,4 +1,6 @@
+/* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 
@@ -43,6 +45,14 @@ const FilterRelease = (props) => {
       />
     </FilterBase>
   );
+};
+
+FilterRelease.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterRelease.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterRelease;

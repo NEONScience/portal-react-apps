@@ -1,4 +1,6 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef } from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
@@ -8,7 +10,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Link from '@material-ui/core/Link';
-import TextField from "@material-ui/core/TextField";
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -25,7 +27,7 @@ import { FILTER_KEYS, parseSearchTerms } from '../../util/filterUtil';
 
 const DEBOUNCE_MILLISECONDS = 200;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   closeButton: {
     color: theme.palette.grey[500],
   },
@@ -85,7 +87,7 @@ const FilterSearch = (props) => {
   const { searchRef } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
-  const {  
+  const {
     currentProducts: { order: productOrder },
     keywords: { all: allKeywords, allByLetter: allKeywordsByLetter },
     urlParams,
@@ -165,7 +167,7 @@ const FilterSearch = (props) => {
       keywordColumns[columnIndex][letter] = allKeywordsByLetter[letter];
       keywordCount += allKeywordsByLetter[letter].length;
       if (keywordCount > (columnBreak * (columnIndex + 1))) {
-        columnIndex++;
+        columnIndex += 1;
       }
     });
 
@@ -216,15 +218,15 @@ const FilterSearch = (props) => {
           </div>
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          {keywordColumns.map(column => (
+          {keywordColumns.map((column) => (
             <div key={Object.keys(column)[0]} className={classes.keywordColumn}>
-              {Object.keys(column).sort().map(letter => (
+              {Object.keys(column).sort().map((letter) => (
                 <div key={letter} className={classes.keywordLetter}>
                   <Typography variant="h6">
                     {letter}
                   </Typography>
                   <div className={classes.keywords}>
-                    {allKeywordsByLetter[letter].map(keyword => (
+                    {allKeywordsByLetter[letter].map((keyword) => (
                       <Chip
                         clickable
                         key={keyword}
@@ -264,7 +266,7 @@ const FilterSearch = (props) => {
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>
-        {/* eslint-enable react/jsx-one-expression-per-line */}
+        {/* eslint-disable react/jsx-one-expression-per-line */}
         Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
         Quote terms to match phrases (e.g. &quot;wind speed&quot;).&nbsp;
         <Link href="#" onClick={() => setDialogOpen(true)}>Browse keywords</Link> for ideas.
@@ -273,6 +275,12 @@ const FilterSearch = (props) => {
       {renderDialog()}
     </FilterBase>
   );
+};
+
+FilterSearch.propTypes = {
+  searchRef: PropTypes.shape({
+    current: PropTypes.instanceOf(Element),
+  }).isRequired,
 };
 
 export default FilterSearch;

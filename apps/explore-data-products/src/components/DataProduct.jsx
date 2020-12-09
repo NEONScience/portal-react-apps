@@ -1,4 +1,8 @@
+/* eslint-disable react/jsx-one-expression-per-line, jsx-a11y/anchor-is-valid */
 import React from 'react';
+import PropTypes from 'prop-types';
+
+import { ReplaySubject } from 'rxjs';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -32,7 +36,7 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   productCard: {
     marginBottom: theme.spacing(3),
   },
@@ -125,7 +129,7 @@ const DataProduct = React.memo((props) => {
       ? parent.map((parentCode) => products[parentCode])
       : products[parent];
   }
-  
+
   const isAopViewerProduct = aopVizProducts.includes(productCode);
   const descriptionExpanded = productDescriptionExpanded[productCode];
 
@@ -136,7 +140,7 @@ const DataProduct = React.memo((props) => {
     productDescription: rawProductDescription,
   } = productData;
 
-  const productDescription = rawProductDescription ? rawProductDescription : '--';
+  const productDescription = rawProductDescription || '--';
 
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
@@ -158,7 +162,7 @@ const DataProduct = React.memo((props) => {
   const productHref = currentRelease === LATEST_AND_PROVISIONAL
     ? `${NeonEnvironment.getHost()}/data-products/${productCode}`
     : `${NeonEnvironment.getHost()}/data-products/${productCode}/${currentRelease}`;
-  
+
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
 
@@ -194,7 +198,8 @@ const DataProduct = React.memo((props) => {
         <Tooltip
           title={(
             <span>
-              Availability and metadata shown is for the <b>{currentRelease}</b> release of this product
+              Availability and metadata shown is for
+              the <b>{currentRelease}</b> release of this product
             </span>
           )}
         >
@@ -215,16 +220,17 @@ const DataProduct = React.memo((props) => {
   const description = (
     <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
       {showTruncatedDescription ? (
-        <React.Fragment>
+        <>
           {`${truncatedDescription}… `}
           <Link
+            component="button"
             className={classes.moreLink}
             onClick={() => dispatch({ type: 'expandProductDescription', productCode })}
           >
             More
             <MoreIcon fontSize="small" className={classes.moreIcon} />
           </Link>
-        </React.Fragment>
+        </>
       ) : productDescription}
     </Typography>
   );
@@ -235,9 +241,9 @@ const DataProduct = React.memo((props) => {
       target="_blank"
     >
       {`${parentProductData.productName} (${parentProductData.productCode})`}
-    </Link>    
+    </Link>
   );
-  
+
   let bundleParentLink = null;
   if (isBundleChild) {
     bundleParentLink = !Array.isArray(bundleParentProductData)
@@ -246,18 +252,18 @@ const DataProduct = React.memo((props) => {
           This data product is bundled into {getParentProductLink(bundleParentProductData)}
         </Typography>
       ) : (
-        <React.Fragment>
+        <>
           <Typography variant="subtitle2">
             This data product has been split and bundled into more than one parent data product:
           </Typography>
           <ul style={{ margin: Theme.spacing(1, 0) }}>
-            {bundleParentProductData.map(bundleParentProduct => (
+            {bundleParentProductData.map((bundleParentProduct) => (
               <li key={bundleParentProduct.productCode}>
                 {getParentProductLink(bundleParentProduct)}
               </li>
             ))}
           </ul>
-        </React.Fragment>
+        </>
       );
   }
 
@@ -269,23 +275,23 @@ const DataProduct = React.memo((props) => {
           {bundleParentLink}
           <Typography variant="body2">
             {bundle.forwardAvailability ? (
-              <React.Fragment>
+              <>
                 It is not available as a standalone download. Data availability shown
                 below reflects availability of the entire bundle.
-              </React.Fragment>
+              </>
             ) : (
-              <React.Fragment>
+              <>
                 It is not available as a standalone download.
                 Data availability information and product download is only available through
                 the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
-              </React.Fragment>
+              </>
             )}
           </Typography>
         </div>
       </CardContent>
     </Card>
   ) : null;
-  
+
   const downloadDataButton = hasData ? (
     <DownloadDataContext.Provider
       key={`${productCode}/${currentRelease || ''}`}
@@ -301,12 +307,12 @@ const DataProduct = React.memo((props) => {
     </DownloadDataContext.Provider>
   ) : null;
 
-  const handleChangeVisualization = component => dispatch({
+  const handleChangeVisualization = (component) => dispatch({
     type: 'changeActiveDataVisualization',
     component,
     productCode,
   });
-  
+
   const aopViewerButton = hasData && isAopViewerProduct && currentRelease === LATEST_AND_PROVISIONAL
     ? (
       <Button
@@ -356,7 +362,7 @@ const DataProduct = React.memo((props) => {
     </Button>
   );
 
-  const themeIcons = (themes || []).sort().map(dataTheme => (
+  const themeIcons = (themes || []).sort().map((dataTheme) => (
     <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
@@ -419,5 +425,10 @@ const DataProduct = React.memo((props) => {
     </Card>
   );
 });
+
+DataProduct.propTypes = {
+  productCode: PropTypes.string.isRequired,
+  highestOrderDownloadSubject: PropTypes.instanceOf(ReplaySubject).isRequired,
+};
 
 export default DataProduct;

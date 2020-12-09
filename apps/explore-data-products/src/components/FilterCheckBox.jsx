@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Checkbox from '@material-ui/core/Checkbox';
@@ -8,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   formControl: {
     width: `calc(100% + ${theme.spacing(2)}px)`,
     marginLeft: theme.spacing(-2),
@@ -16,13 +17,13 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     '& > span.MuiFormControlLabel-label': {
       width: '100%',
-    }
+    },
   },
   countLabel: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',    
+    justifyContent: 'space-between',
   },
   chip: {
     cursor: 'pointer',
@@ -37,7 +38,6 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.grey[300],
   },
 }));
-
 
 const FilterCheckBox = (props) => {
   const classes = useStyles(Theme);
@@ -56,24 +56,24 @@ const FilterCheckBox = (props) => {
   const showCount = typeof count !== 'undefined';
   const showSubtitle = typeof subtitle !== 'undefined';
 
-  const onChange = (value, isChecked) => {
+  const onChange = (isChecked) => {
     const updatedFilterValue = isChecked
       ? [...filterValues, value]
-      : [...filterValues.filter(v => v !== value)];
+      : [...filterValues.filter((v) => v !== value)];
     const uniqueFilterValue = [...(new Set(updatedFilterValue))];
     if (!uniqueFilterValue.length) { return onResetFilter(); }
     return onApplyFilter(uniqueFilterValue);
   };
 
   const label = (
-    <React.Fragment>
+    <>
       <span className={classes.title}>{name}</span>
       {showSubtitle ? (
         <Typography variant="body2" className={classes.subtitle}>
           {subtitle}
         </Typography>
       ) : null}
-    </React.Fragment>
+    </>
   );
 
   return (
@@ -93,15 +93,34 @@ const FilterCheckBox = (props) => {
           </div>
         ) : label
       )}
-      control={
+      control={(
         <Checkbox
           color="primary"
           checked={checked}
-          onChange={() => onChange(value, !checked)}
+          onChange={() => onChange(!checked)}
         />
-      }
+      )}
     />
   );
+};
+
+FilterCheckBox.propTypes = {
+  name: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+  value: PropTypes.string.isRequired,
+  filterValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+  count: PropTypes.number,
+  countTitle: PropTypes.string,
+  subtitle: PropTypes.string,
+  checked: PropTypes.bool,
+  onApplyFilter: PropTypes.func.isRequired,
+  onResetFilter: PropTypes.func.isRequired,
+};
+
+FilterCheckBox.defaultProps = {
+  count: null,
+  countTitle: null,
+  subtitle: null,
+  checked: false,
 };
 
 export default FilterCheckBox;

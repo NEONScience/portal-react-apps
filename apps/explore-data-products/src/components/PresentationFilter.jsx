@@ -22,7 +22,7 @@ import FilterSite from './Filters/FilterSite';
 import FilterTheme from './Filters/FilterTheme';
 import FilterVisualization from './Filters/FilterVisualization';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   filterContent: {
     [theme.breakpoints.up('md')]: {
       width: '276px',
@@ -62,7 +62,7 @@ const PresentationFilter = (props) => {
 
   const [state] = ExploreContext.useExploreContextState();
   const { filtersVisible } = state;
-  
+
   const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
   const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
   const visible = filtersVisible || !belowMd;
@@ -74,7 +74,7 @@ const PresentationFilter = (props) => {
   const filterSearch = (
     <FilterSearch {...props} searchRef={searchRef} />
   );
-  
+
   const filterContent = (
     <div className={classes.filterContent}>
       <FilterResetAll searchRef={searchRef} />
@@ -96,7 +96,7 @@ const PresentationFilter = (props) => {
           </div>
         </div>
       ) : (
-        <React.Fragment>
+        <>
           {filterSearch}
           <FilterRelease {...props} />
           <FilterDateRange {...props} />
@@ -107,7 +107,7 @@ const PresentationFilter = (props) => {
           <FilterState {...props} />
           <FilterDomain {...props} />
           <FilterTheme {...props} />
-        </React.Fragment>
+        </>
       )}
     </div>
   );

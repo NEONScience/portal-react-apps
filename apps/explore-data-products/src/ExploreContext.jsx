@@ -84,23 +84,32 @@ const DEFAULT_STATE = {
 
   currentProducts: {
     release: LATEST_AND_PROVISIONAL,
-    order: [], // Sorted list of product codes
-    visibility: {}, // Mapping by productCode to object containing filter+absolute booleans to track visibility
-    searchRelevance: {}, // Mapping of productCode to a relevance number for current applied search terms
+    // Sorted list of product codes
+    order: [],
+    // Mapping by productCode to object containing filter+absolute booleans to track visibility
+    visibility: {},
+    // Mapping of productCode to a relevance number for current applied search terms
+    searchRelevance: {},
   },
-  productDescriptionExpanded: {}, // Mapping by productCode to booleans to track expanded descriptions
-  
-  releases: [], // Array of all release objects known to exist (with tags, generation dates, and product codes)
+  // Mapping by productCode to booleans to track expanded descriptions
+  productDescriptionExpanded: {},
 
-  catalogStats: { // Stats about the entire product catalog independent of release, derived once on load
+  // Array of all release objects known to exist (with tags, generation dates, and product codes)
+  releases: [],
+
+  // Stats about the entire product catalog independent of release, derived once on load
+  catalogStats: {
     totalProducts: 0,
     totalSites: 0,
     totalDateRange: [null, null],
   },
 
-  scrollCutoff: 10, // How many potentially visible products to actually show; increase with scroll / reset with filter change
-  
-  catalogSummaryVisible: false, // Whether catalog summary section is expanded (for xs/sm vieports only)
+  // How many potentially visible products to actually show
+  // increase with scroll; reset with filter change
+  scrollCutoff: 10,
+
+  // Whether catalog summary section is expanded (for xs/sm vieports only)
+  catalogSummaryVisible: false,
 
   sortVisible: false, // Whether sort section is expanded (for xs/sm vieports only)
   sortMethod: DEFAULT_SORT_METHOD,
@@ -111,11 +120,16 @@ const DEFAULT_STATE = {
     allByLetter: {}, // Additional store for list of all unique keywords, sorted by first letter.
   },
 
-  filterItems: cloneDeep(INITIAL_FILTER_ITEMS), // Store for all discrete options for filters that make use of them
-  filterValues: cloneDeep(INITIAL_FILTER_VALUES), // Store for current values applied for all filters
-  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY), // Expanded / collapsed / selected states for filters with >5 options visibility buttons
-  filtersApplied: [], // List of filter keys that have been applied / are not in a cleared state
-  filtersVisible: false, // Whether filter section is expanded (for xs/sm vieports only)
+  // Store for all discrete options for filters that make use of them
+  filterItems: cloneDeep(INITIAL_FILTER_ITEMS),
+  // Store for current values applied for all filters
+  filterValues: cloneDeep(INITIAL_FILTER_VALUES),
+  // Expanded / collapsed / selected states for filters with >5 options visibility buttons
+  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY),
+  // List of filter keys that have been applied / are not in a cleared state
+  filtersApplied: [],
+  // Whether filter section is expanded (for xs/sm vieports only)
+  filtersVisible: false,
 
   activeDataVisualization: {
     component: null,
@@ -127,11 +141,13 @@ const fetchIsInStatus = (fetchObject, status) => (
   typeof fetchObject === 'object' && fetchObject !== null && fetchObject.status === status
 );
 
-const fetchIsAwaitingCall = fetchObject => fetchIsInStatus(fetchObject, FETCH_STATUS.AWAITING_CALL);
+const fetchIsAwaitingCall = (fetchObject) => (
+  fetchIsInStatus(fetchObject, FETCH_STATUS.AWAITING_CALL)
+);
 
 const stateHasFetchesInStatus = (state, status) => (
   Object.keys(state.fetches.productsByRelease).some(
-    release => fetchIsInStatus(state.fetches.productsByRelease[release], status),
+    (release) => fetchIsInStatus(state.fetches.productsByRelease[release], status),
   )
   // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
   // triggered. Otherwise it should never affect app-level status.
@@ -229,17 +245,33 @@ const reducer = (state, action) => {
       tempState = calculateAppStatus(
         calculateFetches(
           applyFilter(state, action.filterKey, action.filterValue),
-        )
+        ),
       );
       return !action.showOnlySelected
         ? tempState
-        : changeFilterItemVisibility(tempState, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.SELECTED);
+        : changeFilterItemVisibility(
+          tempState,
+          action.filterKey,
+          FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+        );
     case 'expandFilterItems':
-      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.EXPANDED);
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.EXPANDED,
+      );
     case 'collapseFilterItems':
-      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.COLLAPSED);
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
+      );
     case 'showSelectedFilterItems':
-      return changeFilterItemVisibility(state, action.filterKey, FILTER_ITEM_VISIBILITY_STATES.SELECTED);
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+      );
 
     case 'toggleFilterVisiblity':
       return { ...newState, filtersVisible: !state.filtersVisible };
@@ -262,7 +294,7 @@ const reducer = (state, action) => {
         productDescriptionExpanded: {
           ...state.productDescriptionExpanded,
           [action.productCode]: true,
-        }
+        },
       };
     case 'changeActiveDataVisualization':
       if (!action.component || !action.productCode || !VISUALIZATIONS[action.component]) {
@@ -325,7 +357,7 @@ const Provider = (props) => {
     const newFetches = cloneDeep(fetches);
     // Product release fetches
     Object.keys(fetches.productsByRelease)
-      .filter(release => fetchIsAwaitingCall(fetches.productsByRelease[release]))
+      .filter((release) => fetchIsAwaitingCall(fetches.productsByRelease[release]))
       .forEach((release) => {
         newFetches.productsByRelease[release].status = FETCH_STATUS.FETCHING;
         const releaseArg = release === LATEST_AND_PROVISIONAL ? null : release;

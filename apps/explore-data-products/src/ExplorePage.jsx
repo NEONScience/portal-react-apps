@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Typography from "@material-ui/core/Typography";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 
 import debounce from 'lodash/debounce';
 
@@ -20,14 +20,14 @@ import DataVisualizationDialog from './components/DataVisualizationDialog';
 import { APP_STATUS } from './util/stateUtil';
 import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   lazyLoader: {
-    margin: Theme.spacing(5, 5, 0, 5),
+    margin: theme.spacing(5, 5, 0, 5),
     textAlign: 'center',
   },
   lazyLoaderTitle: {
-    color: Theme.palette.grey[400],
-    marginBottom: Theme.spacing(3),
+    color: theme.palette.grey[400],
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -62,9 +62,9 @@ const ExplorePage = (props) => {
   }
 
   // Establish props we drill down to lower order components
-  const skeleton = loading || error;
-  const drillProps = {...props, skeleton};
-  
+  const skeleton = !!(loading || error);
+  const drillProps = { ...props, skeleton };
+
   // Breadcrumbs
   const breadcrumbs = [
     { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
@@ -77,7 +77,9 @@ const ExplorePage = (props) => {
   const scrollHandler = debounce(() => {
     if (productOrder.length <= scrollCutoff) { return; }
     // Y-offset for the TOP of the area in view
-    const scrollOffset = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    const scrollOffset = (
+      window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+    );
     // Y-offset for the BOTTOM of the area in view
     const scrollBottom = window.innerHeight + scrollOffset;
     // Y-offset for the absolute bottom of the document
@@ -91,14 +93,14 @@ const ExplorePage = (props) => {
     }
   }, DEBOUNCE_MILLISECONDS);
   useEffect(() => {
-    window.addEventListener("scroll", scrollHandler);
-    window.addEventListener("resize", scrollHandler);
+    window.addEventListener('scroll', scrollHandler);
+    window.addEventListener('resize', scrollHandler);
     return () => {
-      window.removeEventListener("scroll", scrollHandler);
-      window.removeEventListener("resize", scrollHandler);
+      window.removeEventListener('scroll', scrollHandler);
+      window.removeEventListener('resize', scrollHandler);
     };
   });
-  
+
   /**
      Main Page Render
   */
@@ -126,7 +128,7 @@ const ExplorePage = (props) => {
         id="lazy-loader"
         ref={lazyLoaderRef}
         className={classes.lazyLoader}
-        style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block')  }}
+        style={{ display: (skeleton || productOrder.length <= scrollCutoff ? 'none' : 'block') }}
       >
         <Typography variant="h6" className={classes.lazyLoaderTitle}>
           Loading more data products...

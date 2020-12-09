@@ -1,20 +1,20 @@
-import React from "react";
+import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Hidden from "@material-ui/core/Hidden";
-import Tooltip from "@material-ui/core/Tooltip";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import ClearIcon from "@material-ui/icons/Clear";
-import FilterIcon from "@material-ui/icons/FilterList";
+import Hidden from '@material-ui/core/Hidden';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import ClearIcon from '@material-ui/icons/Clear';
+import FilterIcon from '@material-ui/icons/FilterList';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../ExploreContext';
 
-import { FILTER_LABELS } from "../util/filterUtil";
+import { FILTER_LABELS } from '../util/filterUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   title: {
     fontWeight: 600,
     [theme.breakpoints.up('md')]: {
@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const FilterHeader = (props) => {
+const FilterHeader = () => {
   const classes = useStyles(Theme);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -44,7 +44,7 @@ const FilterHeader = (props) => {
 
   let filterSummary = 'no filters applied';
   if (filtersApplied.length) {
-    const filterLabels = filtersApplied.map(key => FILTER_LABELS[key]);
+    const filterLabels = filtersApplied.map((key) => FILTER_LABELS[key]);
     filterSummary = filterLabels.join(', ');
     if (filtersApplied.length === 2) { filterSummary = filterLabels.join(' and '); }
     if (filtersApplied.length > 2) {
@@ -59,7 +59,7 @@ const FilterHeader = (props) => {
   );
 
   return (
-    <React.Fragment>
+    <>
       <Hidden smDown>
         {title}
       </Hidden>
@@ -82,7 +82,7 @@ const FilterHeader = (props) => {
           </Tooltip>
         </div>
       </Hidden>
-    </React.Fragment>
+    </>
   );
 };
 

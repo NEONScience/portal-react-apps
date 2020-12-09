@@ -10,7 +10,6 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
     "core-js": "^3.6.5",
-    "dygraphs": "^2.1.0",
     "jspdf": "^1.5.3",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
@@ -22,18 +21,22 @@
     "use-reducer-logger": "^1.0.2"
   },
   "devDependencies": {
+    "customize-cra": "^1.0.0",
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.12.4",
-    "eslint-utils": "^1.4.2",
-    "gh-pages": "^2.0.1",
-    "react-scripts": "^3.3.0",
-    "standard": "^12.0.1",
-    "typescript": "^3.5.3"
+    "react-app-rewired": "^2.1.7",
+    "react-scripts": "^3.3.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test - env=jsdom",
+    "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
+    "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
+    "eject": "react-app-rewired eject"
   },
   "browserslist": [
     ">0.2%",

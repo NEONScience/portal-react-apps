@@ -73,7 +73,7 @@ export const parseURLParam = (paramName) => {
   // Parse - many occurrences
   if (urlParam.hasMany) {
     const matches = window.location.search.matchAll(urlParam.regex) || [];
-    const set = new Set([...matches].map(match => decodeURIComponent(match[1])));
+    const set = new Set([...matches].map((match) => decodeURIComponent(match[1])));
     return Array.from(set);
   }
   // Parse - single occurrence
@@ -125,12 +125,12 @@ export const parseProductsByReleaseData = (state, release) => {
       const items = [FILTER_KEYS.DATA_STATUS, FILTER_KEYS.SCIENCE_TEAM].includes(key)
         ? [product.filterableValues[key]]
         : product.filterableValues[key];
-      for (let j = 0; j < items.length; j++) {
+      for (let j = 0; j < items.length; j += 1) {
         if (!filterItemCounts[key][items[j]]) { filterItemCounts[key][items[j]] = 0; }
-        filterItemCounts[key][items[j]]++;
+        filterItemCounts[key][items[j]] += 1;
       }
     });
-  }
+  };
 
   // All Release Keywords
   // Array of all found keywords across all products in this release that we'll ultimately sort
@@ -142,15 +142,15 @@ export const parseProductsByReleaseData = (state, release) => {
 
   // Sort the unparsed products array by bundle parents first so that when we parse bundle children
   // that pull availability data from parents we know it'll be there
-  const unparsedProductsBundleParentsFirst = ((unparsedData || {}).products || []).sort((a, b) => (
+  const unparsedProductsBundleParentsFirst = ((unparsedData || {}).products || []).sort((a) => (
     Object.keys(bundlesJSON.parents).includes(a.productCode) ? -1 : 0
   ));
-  
+
   // MAIN PRODUCTS LOOP
   // Build the products dictionary that we'll ultimately freeze
   unparsedProductsBundleParentsFirst.forEach((rawProduct) => {
-    const product = {...rawProduct};
-    const productCode = product.productCode;
+    const product = { ...rawProduct };
+    const { productCode } = product;
 
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly. Note that some bundle
@@ -164,12 +164,12 @@ export const parseProductsByReleaseData = (state, release) => {
       forwardAvailability = !hasManyParents
         ? bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability
         : bundlesJSON.children[productCode].every(
-          parent => bundlesJSON.parents[parent].forwardAvailability
+          (parent) => bundlesJSON.parents[parent].forwardAvailability,
         );
       const availabilityParentCode = hasManyParents
         ? bundlesJSON.children[productCode][0]
         : bundlesJSON.children[productCode];
-      availabilitySiteCodes = productsByRelease[availabilityParentCode].siteCodes || [];
+      availabilitySiteCodes = (productsByRelease[availabilityParentCode] || {}).siteCodes || [];
     }
     product.bundle = {
       isChild: isBundleChild,
@@ -179,7 +179,7 @@ export const parseProductsByReleaseData = (state, release) => {
       parent: isBundleChild ? bundlesJSON.children[productCode] : null,
       children: isBundleParent ? (
         Object.keys(bundlesJSON.children)
-          .filter(childCode => bundlesJSON.children[childCode] === productCode)
+          .filter((childCode) => bundlesJSON.children[childCode] === productCode)
       ) : null,
     };
 
@@ -196,24 +196,28 @@ export const parseProductsByReleaseData = (state, release) => {
     // interact with directly. Start with the simple / one-liner ones.
     product.filterableValues = {
       [FILTER_KEYS.SCIENCE_TEAM]: product.productScienceTeam,
-      [FILTER_KEYS.RELEASE]: (product.releases || []).map(r => r.release),
+      [FILTER_KEYS.RELEASE]: (product.releases || []).map((r) => r.release),
       [FILTER_KEYS.DATA_STATUS]: availabilitySiteCodes.length > 0 ? 'Available' : 'Coming Soon',
-      [FILTER_KEYS.SITES]: availabilitySiteCodes.map(s => s.siteCode),
+      [FILTER_KEYS.SITES]: availabilitySiteCodes.map((s) => s.siteCode),
     };
 
     // Filterable value for VISUALIZATIONS
     product.filterableValues[FILTER_KEYS.VISUALIZATIONS] = [];
     if ((timeSeriesDataProductsJSON.productCodes || []).includes(productCode)) {
-      product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(VISUALIZATIONS.TIME_SERIES_VIEWER.key);
+      product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+        VISUALIZATIONS.TIME_SERIES_VIEWER.key,
+      );
     }
     if ((newState.aopVizProducts || []).includes(productCode)) {
-      product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(VISUALIZATIONS.AOP_DATA_VIEWER.key);
+      product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+        VISUALIZATIONS.AOP_DATA_VIEWER.key,
+      );
     }
 
     // Filterable value for THEMES (special handling because of lack of ID and
     // incorrect titles from API)
     product.filterableValues[FILTER_KEYS.THEMES] = (product.themes || [])
-      .map(theme => (
+      .map((theme) => (
         theme === 'Land Use, Land Cover, and Land Processes'
           ? 'Land Cover & Processes'
           : theme
@@ -222,25 +226,28 @@ export const parseProductsByReleaseData = (state, release) => {
     // Filterable values for STATES (requires sites filterable value)
     product.filterableValues[FILTER_KEYS.STATES] = [...(new Set(
       product.filterableValues[FILTER_KEYS.SITES]
-        .map(siteCode => sitesJSON[siteCode] ? sitesJSON[siteCode].stateCode : null)
-        .filter(stateCode => stateCode !== null)
+        .map((siteCode) => (sitesJSON[siteCode] ? sitesJSON[siteCode].stateCode : null))
+        .filter((stateCode) => stateCode !== null),
     ))];
-      
+
     // Filterable values for DOMAINS (requires sites filterable value)
     product.filterableValues[FILTER_KEYS.DOMAINS] = [...(new Set(
       product.filterableValues[FILTER_KEYS.SITES]
-        .map(siteCode => sitesJSON[siteCode] ? sitesJSON[siteCode].domainCode : null)
-        .filter(domainCode => domainCode !== null)
+        .map((siteCode) => (sitesJSON[siteCode] ? sitesJSON[siteCode].domainCode : null))
+        .filter((domainCode) => domainCode !== null),
     ))];
 
     // Filterable value for DATE_RANGE
     product.filterableValues[FILTER_KEYS.DATE_RANGE] = Array.from(
-      (new Set(availabilitySiteCodes.flatMap(siteCode => siteCode.availableMonths || []))),
+      (new Set(availabilitySiteCodes.flatMap((siteCode) => siteCode.availableMonths || []))),
     );
     product.filterableValues[FILTER_KEYS.DATE_RANGE].sort();
 
-    // Filterable value for SEARCH - done last as it pulls from all other generated filterable values.
-    product.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(product, state.neonContextState.data);
+    // Filterable value for SEARCH - pulls from all other generated filterable values so do last
+    product.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(
+      product,
+      state.neonContextState.data,
+    );
 
     // Add product to the global filter counts
     addProductToFilterItemCounts(product);
@@ -249,12 +256,14 @@ export const parseProductsByReleaseData = (state, release) => {
     if (typeof newState.productDescriptionExpanded[productCode] === 'undefined') {
       newState.productDescriptionExpanded[productCode] = false;
     }
-    
+
     // LATEST_AND_PROVISIONAL release single-product opertations
     if (release === LATEST_AND_PROVISIONAL) {
       // Extend/update releases per the releases to which this product belongs
       (product.releases || []).forEach((productRelease) => {
-        const idx = newState.releases.findIndex(entry => entry.release === productRelease.release);
+        const idx = newState.releases.findIndex(
+          (entry) => entry.release === productRelease.release,
+        );
         if (idx === -1) {
           newState.releases.push({ ...productRelease, dataProductCodes: new Set([productCode]) });
         } else {
@@ -263,17 +272,19 @@ export const parseProductsByReleaseData = (state, release) => {
       });
       // Initialize some global catalog stat values
       const maxDateRangeIdx = product.filterableValues[FILTER_KEYS.DATE_RANGE].length - 1;
+      const rangeStart = product.filterableValues[FILTER_KEYS.DATE_RANGE][0];
       if (
         !newState.catalogStats.totalDateRange[0]
-          || product.filterableValues[FILTER_KEYS.DATE_RANGE][0] < newState.catalogStats.totalDateRange[0]
+          || rangeStart < newState.catalogStats.totalDateRange[0]
       ) {
-        newState.catalogStats.totalDateRange[0] = product.filterableValues[FILTER_KEYS.DATE_RANGE][0];
+        newState.catalogStats.totalDateRange[0] = rangeStart;
       }
+      const rangeEnd = product.filterableValues[FILTER_KEYS.DATE_RANGE][maxDateRangeIdx];
       if (
         !newState.catalogStats.totalDateRange[1]
-          || product.filterableValues[FILTER_KEYS.DATE_RANGE][maxDateRangeIdx] > newState.catalogStats.totalDateRange[1]
+          || rangeEnd > newState.catalogStats.totalDateRange[1]
       ) {
-        newState.catalogStats.totalDateRange[1] = product.filterableValues[FILTER_KEYS.DATE_RANGE][maxDateRangeIdx];
+        newState.catalogStats.totalDateRange[1] = rangeEnd;
       }
     }
 
@@ -291,7 +302,7 @@ export const parseProductsByReleaseData = (state, release) => {
   // Now loaded we don't expect this data structure to change so convert all those sets to arrays
   // as that's what the ReleaseFilter component expects.
   if (release === LATEST_AND_PROVISIONAL) {
-    newState.releases = newState.releases.map(releaseObject => ({
+    newState.releases = newState.releases.map((releaseObject) => ({
       ...releaseObject,
       dataProductCodes: Array.from(releaseObject.dataProductCodes),
     }));
@@ -319,7 +330,7 @@ export const parseProductsByReleaseData = (state, release) => {
     newState.keywords.all.forEach(addKeywordByLetter);
   } else {
     [...allReleaseKeywords]
-      .filter(k => !state.keywords.all.has(k))
+      .filter((k) => !state.keywords.all.has(k))
       .forEach(addKeywordByLetter);
   }
   // Alphabetize all letters
@@ -354,10 +365,10 @@ export const parseProductsByReleaseData = (state, release) => {
           return null;
       }
     };
-    const existingFilterItemsValues = newState.filterItems[key].map(item => item.value);
+    const existingFilterItemsValues = newState.filterItems[key].map((item) => item.value);
     const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
-      .filter(item => !existingFilterItemsValues.includes(item))
-      .map(item => ({
+      .filter((item) => !existingFilterItemsValues.includes(item))
+      .map((item) => ({
         name: getName(item),
         value: item,
         subtitle: getSubtitle(item),
@@ -367,27 +378,27 @@ export const parseProductsByReleaseData = (state, release) => {
   });
 
   // Sort all global filterItems lists
-  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-  newState.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
-  newState.filterItems[FILTER_KEYS.THEMES].sort((a, b) => {
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
+  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.THEMES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
 
   // Derive final stats
   if (release === LATEST_AND_PROVISIONAL) {
     newState.catalogStats.totalProducts = Object.keys(productsByRelease).length;
     newState.catalogStats.totalSites = newState.filterItems[FILTER_KEYS.SITES].length;
-    // Expand catalog-wide availability date range array to all possible dates in the range for filter
+    // Expand catalog-wide availability date range array to all possible dates in the range
     newState.filterItems[FILTER_KEYS.DATE_RANGE] = getContinuousDatesArray(
       newState.catalogStats.totalDateRange,
       true,
@@ -407,7 +418,7 @@ export const parseProductsByReleaseData = (state, release) => {
   newState.productsByRelease[release] = productsByRelease;
 
   let releaseFilterInitialized = false;
-  
+
   // Hydrate from local storage
   // Various aspects of state can persist in local storage with the expectation that they'll be
   // "rehydrated" into app state on reload. This is the way we preserve stuff like filter state and
@@ -426,12 +437,11 @@ export const parseProductsByReleaseData = (state, release) => {
           // Special case: validate release here so we know whether to trigger a fetch or not
           if (
             key === FILTER_KEYS.RELEASE
-              && !newState.releases.find(r => r.release === localFilterValues[key])
+              && !newState.releases.find((r) => r.release === localFilterValues[key])
           ) {
             return;
-          } else {
-            releaseFilterInitialized = true;
           }
+          releaseFilterInitialized = true;
           newState = applyFilter(newState, key, localFilterValues[key], false);
         });
       } catch {
@@ -444,8 +454,10 @@ export const parseProductsByReleaseData = (state, release) => {
       try {
         const localFilterItemVisibility = JSON.parse(localFilterItemVisibilityUnparsed);
         Object.keys(localFilterItemVisibility)
-          .filter(key => Object.keys(INITIAL_FILTER_ITEM_VISIBILITY).includes(key))
-          .filter(key => Object.keys(FILTER_ITEM_VISIBILITY_STATES).includes(localFilterItemVisibility[key]))
+          .filter((key) => Object.keys(INITIAL_FILTER_ITEM_VISIBILITY).includes(key))
+          .filter((key) => (
+            Object.keys(FILTER_ITEM_VISIBILITY_STATES).includes(localFilterItemVisibility[key])
+          ))
           .forEach((key) => {
             newState.filterItemVisibility[key] = localFilterItemVisibility[key];
           });
@@ -470,11 +482,16 @@ export const parseProductsByReleaseData = (state, release) => {
   // (only select filters supported for backward compatibility with legacy pages)
   if (!state.urlParamsInitiallyApplied) {
     if (newState.urlParams.search !== null) {
-      newState = applyFilter(newState, FILTER_KEYS.SEARCH, parseSearchTerms(newState.urlParams.search), false);
+      newState = applyFilter(
+        newState,
+        FILTER_KEYS.SEARCH,
+        parseSearchTerms(newState.urlParams.search),
+        false,
+      );
     }
     if (
       newState.urlParams.release !== null
-        && newState.releases.find(r => r.release === newState.urlParams.release)
+        && newState.releases.find((r) => r.release === newState.urlParams.release)
     ) {
       newState = applyFilter(newState, FILTER_KEYS.RELEASE, newState.urlParams.release, false);
       releaseFilterInitialized = true;

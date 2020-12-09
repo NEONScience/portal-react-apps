@@ -28,7 +28,7 @@ const DataVisualizationDialog = () => {
   const product = products[productCode];
 
   let title = 'Data Visualization';
-  let contents = <React.Fragment />;
+  let contents = <></>;
   const dialogBaseProps = {};
   const open = (
     typeof product !== 'undefined'
@@ -55,11 +55,11 @@ const DataVisualizationDialog = () => {
 
       default:
         break;
-    };
+    }
   }
 
   return (
-    <Suspense fallback={<React.Fragment />}>
+    <Suspense fallback={<></>}>
       <DialogBase
         open={open}
         title={title}

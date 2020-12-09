@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -8,13 +9,13 @@ import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterVisualization = (props) => {
   const { skeleton } = props;
-  
+
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     filtersApplied,
     filterValues,
     filterItems,
-  } = state;  
+  } = state;
 
   const filterKey = FILTER_KEYS.VISUALIZATIONS;
 
@@ -33,7 +34,7 @@ const FilterVisualization = (props) => {
       showResetButton={filtersApplied.includes(filterKey)}
     >
       <ul>
-        {filterItems[filterKey].map(filterItem => (
+        {filterItems[filterKey].map((filterItem) => (
           <li key={filterItem.value}>
             <FilterCheckBox
               name={filterItem.name}
@@ -48,6 +49,14 @@ const FilterVisualization = (props) => {
       </ul>
     </FilterBase>
   );
+};
+
+FilterVisualization.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+FilterVisualization.defaultProps = {
+  skeleton: false,
 };
 
 export default FilterVisualization;

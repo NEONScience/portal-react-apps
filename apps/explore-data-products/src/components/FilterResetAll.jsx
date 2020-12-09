@@ -1,6 +1,7 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
 import ClearIcon from '@material-ui/icons/Clear';
 
 import ExploreContext from '../ExploreContext';
@@ -16,7 +17,7 @@ const FilterResetAll = (props) => {
       data-selenium="browse-data-products-page.filters.clear-all-button"
       variant="contained"
       color="primary"
-      style={{ width: "100%", marginBottom: '28px' }}
+      style={{ width: '100%', marginBottom: '28px' }}
       onClick={() => {
         // Clear the search field value directly (not through state) because
         // the input field is not controlled (controlling it destroys performance).
@@ -29,6 +30,12 @@ const FilterResetAll = (props) => {
       Reset all filters
     </Button>
   );
+};
+
+FilterResetAll.propTypes = {
+  searchRef: PropTypes.shape({
+    current: PropTypes.instanceOf(Element),
+  }).isRequired,
 };
 
 export default FilterResetAll;

@@ -1,4 +1,5 @@
-import jsPDF from 'jspdf';
+/* eslint-disable import/prefer-default-export */
+import JSPDF from 'jspdf';
 import moment from 'moment';
 import camelCase from 'lodash/camelCase';
 
@@ -39,7 +40,7 @@ const payloadColumns = [
   },
   {
     label: 'Level',
-    value: product => product.productCode.substr(2, 1),
+    value: (product) => product.productCode.substr(2, 1),
     formats: ['csv', 'json'],
   },
   {
@@ -50,26 +51,28 @@ const payloadColumns = [
   },
   {
     label: 'Status',
-    value: product => product.filterableValues.DATA_STATUS,
+    value: (product) => product.filterableValues.DATA_STATUS,
     formats: ['csv', 'json'],
   },
   {
     label: 'URL',
-    value: product => `${NeonEnvironment.getHost()}/data-products/${product.productCode}`,
+    value: (product) => `${NeonEnvironment.getHost()}/data-products/${product.productCode}`,
     formats: ['csv', 'json'],
   },
   {
     label: 'First Available Month',
-    value: product => product.filterableValues.DATE_RANGE.length
-      ? product.filterableValues.DATE_RANGE[0]
-      : '',
+    value: (product) => (
+      product.filterableValues.DATE_RANGE.length ? product.filterableValues.DATE_RANGE[0] : ''
+    ),
     formats: ['csv', 'json'],
   },
   {
     label: 'Latest Available Month',
-    value: product => product.filterableValues.DATE_RANGE.length
-      ? product.filterableValues.DATE_RANGE[product.filterableValues.DATE_RANGE.length - 1]
-      : '',
+    value: (product) => (
+      product.filterableValues.DATE_RANGE.length
+        ? product.filterableValues.DATE_RANGE[product.filterableValues.DATE_RANGE.length - 1]
+        : ''
+    ),
     formats: ['csv', 'json'],
   },
   {
@@ -105,21 +108,23 @@ const orList = (list) => {
     default:
       return `${list.slice(0, list.length - 1).join(', ')}, or ${list[list.length - 1]}`;
   }
-}
+};
 
-const generateProductIDList = (products, productOrder, filtered=false) => {
+const generateProductIDList = (products, productOrder, filtered = false) => {
   if (filtered) { return [...productOrder]; }
   const list = Object.keys(products);
-  list.sort((a, b) => products[a].productName.toUpperCase() < products[b].productName.toUpperCase() ? -1 : 1);
+  list.sort((a, b) => (
+    products[a].productName.toUpperCase() < products[b].productName.toUpperCase() ? -1 : 1
+  ));
   return list;
 };
 
-const generateCsv = (products, productOrder, filtered=false) => {
-  const rows = [payloadColumns.map(column => column.label).join(',')];
+const generateCsv = (products, productOrder, filtered = false) => {
+  const rows = [payloadColumns.map((column) => column.label).join(',')];
   const orderedList = generateProductIDList(products, productOrder, filtered);
   orderedList.forEach((productCode) => {
     const row = payloadColumns
-      .filter(column => column.formats.includes('csv'))
+      .filter((column) => column.formats.includes('csv'))
       .map((column) => {
         let value = typeof column.value === 'function'
           ? column.value(products[productCode])
@@ -132,12 +137,12 @@ const generateCsv = (products, productOrder, filtered=false) => {
   return rows.join('\n');
 };
 
-const generateJson = (products, productOrder, filtered=false) => {
+const generateJson = (products, productOrder, filtered = false) => {
   const orderedList = generateProductIDList(products, productOrder, filtered);
   const productList = orderedList.map((productCode) => {
     const product = {};
     payloadColumns
-      .filter(column => column.formats.includes('json'))
+      .filter((column) => column.formats.includes('json'))
       .forEach((column) => {
         const key = camelCase(column.label);
         const value = typeof column.value === 'function'
@@ -171,9 +176,9 @@ const generatePdf = (
       case FILTER_KEYS.DOMAINS:
         return `Data available from ${orList(filterValues[key])}`;
       case FILTER_KEYS.STATES:
-        return `Data available from ${orList(filterValues[key].map(abb => (statesJSON[abb].name || abb)))}`;
+        return `Data available from ${orList(filterValues[key].map((abb) => (statesJSON[abb].name || abb)))}`;
       case FILTER_KEYS.VISUALIZATIONS:
-        return `Can be visualized by ${orList(filterValues[key].map(viz => (VISUALIZATIONS[viz].name || viz)))}`;
+        return `Can be visualized by ${orList(filterValues[key].map((viz) => (VISUALIZATIONS[viz].name || viz)))}`;
       default:
         return orList(filterValues[key]);
     }
@@ -184,28 +189,37 @@ const generatePdf = (
   const margin = 0.75;
   const pageWidth = 8.5;
   const pageHeight = 11;
-  const lineHeight = 0.17; // vertical baseline-to-baseline at 11pt font size for multi-line text like descriptions
-  const blockLineHeight = 0.22; // vertical baseline-to-baseline at 11pt font size for a block-level element
-  const baseProductHeight = 1.15; // height from hr to description (title and all catalog data except description, including spacing)
+  // vertical baseline-to-baseline at 11pt font size for multi-line text like descriptions
+  const lineHeight = 0.17;
+  // vertical baseline-to-baseline at 11pt font size for a block-level element
+  const blockLineHeight = 0.22;
+  // height from hr to description (title and catalog data except description, including spacing)
+  const baseProductHeight = 1.15;
   // Document Setup
-  const pdf = new jsPDF({ orientation: 'portrait', unit: 'in', format: 'letter'  });
+  const pdf = new JSPDF({ orientation: 'portrait', unit: 'in', format: 'letter' });
   pdf.setTextColor('#000000');
   pdf.setFont('helvetica', 'normal');
   // Document Title
   pdf.setFontSize(18);
-  pdf.text(`NEON Data Product Catalog (${filtered ? 'Filtered Subset' : 'All Products'})`, margin, margin);
+  pdf.text(
+    `NEON Data Product Catalog (${filtered ? 'Filtered Subset' : 'All Products'})`,
+    margin,
+    margin,
+  );
   pdf.setFontSize(11);
   // Catalog Info
   let y = 1.05;
   let sort = 'by Product Name, ascending';
-  const filtersAppliedByLabelWidth = [...filtersApplied.filter(key => FILTER_KEYS[key])];
+  const filtersAppliedByLabelWidth = [...filtersApplied.filter((key) => FILTER_KEYS[key])];
   filtersAppliedByLabelWidth.sort((a, b) => {
     const aWidth = pdf.getTextWidth(FILTER_LABELS[a]);
     const bWidth = pdf.getTextWidth(FILTER_LABELS[b]);
     if (aWidth === bWidth) { return a < b ? -1 : 1; }
     return aWidth <= bWidth ? 1 : -1;
   });
-  const filterLabelWidth = filtered ? Math.max(pdf.getTextWidth(FILTER_LABELS[filtersAppliedByLabelWidth[0]]) + 0.2, 0.88) : 0.88;
+  const filterLabelWidth = filtered
+    ? Math.max(pdf.getTextWidth(FILTER_LABELS[filtersAppliedByLabelWidth[0]]) + 0.2, 0.88)
+    : 0.88;
   pdf.setFont('helvetica', 'bold');
   pdf.text('Generated:', margin, y);
   pdf.text('Product Count:', margin + filterLabelWidth + 1.07, y);
@@ -214,7 +228,11 @@ const generatePdf = (
   if (!filtered) {
     pdf.text(`${Object.keys(products).length} (full catalog)`, margin + filterLabelWidth + 2.27, y);
   } else {
-    pdf.text(`${productList.length} (filtered from full catalog of ${Object.keys(products).length})`, margin + filterLabelWidth + 2.27, y);
+    pdf.text(
+      `${productList.length} (filtered from full catalog of ${Object.keys(products).length})`,
+      margin + filterLabelWidth + 2.27,
+      y,
+    );
     y += blockLineHeight * 1.5;
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(12.5);
@@ -234,7 +252,8 @@ const generatePdf = (
       pdf.text(splitFilterContent, margin + filterLabelWidth, y);
       y += (splitFilterContent.length - 1) * lineHeight;
     });
-    sort = `${SORT_METHODS[sortMethod].label}, ${sortDirection === 'ASC' ? 'ascending' : 'descending'}`;
+    const { label } = SORT_METHODS[sortMethod];
+    sort = `${label}, ${sortDirection === 'ASC' ? 'ascending' : 'descending'}`;
   }
   y += blockLineHeight;
   pdf.setFont('helvetica', 'bold');
@@ -245,8 +264,13 @@ const generatePdf = (
   // Loop through products
   productList.forEach((productCode) => {
     const product = products[productCode];
-    const splitDescription = pdf.splitTextToSize(product.productDescription, pageWidth - (2 * margin));
-    const productHeight = baseProductHeight + (lineHeight * splitDescription.length) + (1.5 * lineHeight);
+    const splitDescription = pdf.splitTextToSize(
+      product.productDescription,
+      pageWidth - (2 * margin),
+    );
+    const productHeight = baseProductHeight
+      + (lineHeight * splitDescription.length)
+      + (1.5 * lineHeight);
     // Draw divider or new page, never both
     if (y + productHeight + margin > pageHeight) {
       pdf.addPage();
@@ -289,7 +313,10 @@ const generatePdf = (
     pdf.setFont('helvetica', 'normal');
     pdf.text(product.filterableValues.DATA_STATUS, margin + 2.1, y + offset);
     if (product.filterableValues.DATA_STATUS === 'Available') {
-      const available = `${product.filterableValues.DATE_RANGE[0]} through ${product.filterableValues.DATE_RANGE[product.filterableValues.DATE_RANGE.length - 1]}`;
+      const rangeStart = product.filterableValues.DATE_RANGE[0];
+      const rangeLength = product.filterableValues.DATE_RANGE.length;
+      const rangeEnd = product.filterableValues.DATE_RANGE[rangeLength - 1];
+      const available = `${rangeStart} through ${rangeEnd}`;
       pdf.setFont('helvetica', 'bold');
       pdf.text('Data Available:', margin + 3.1, y + offset);
       pdf.setFont('helvetica', 'normal');
@@ -313,7 +340,7 @@ const generatePdf = (
 export const downloadCatalog = (
   products,
   productOrder,
-  ext='csv',
+  ext = 'csv',
   filtersApplied = [],
   filterValues = {},
   sortMethod = null,
@@ -335,7 +362,16 @@ export const downloadCatalog = (
       mimeType = 'application/json;charset=utf-8';
       break;
     case 'pdf':
-      payload = generatePdf(products, productOrder, filtersApplied, filterValues, sortMethod, sortDirection, search, statesJSON);
+      payload = generatePdf(
+        products,
+        productOrder,
+        filtersApplied,
+        filterValues,
+        sortMethod,
+        sortDirection,
+        search,
+        statesJSON,
+      );
       payload.save(fileName);
       return;
     default:

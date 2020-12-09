@@ -10,7 +10,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
@@ -27,7 +27,7 @@ import ExploreContext from '../ExploreContext';
 import { FILTER_KEYS, getCurrentProductsByRelease } from '../util/filterUtil';
 import { downloadCatalog } from '../util/catalogUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     marginBottom: theme.spacing(3),
     backgroundColor: theme.palette.grey[50],
@@ -123,7 +123,17 @@ const DataHeader = (props) => {
     if (!filtered) {
       downloadCatalog(products, productOrder, ext);
     } else {
-      downloadCatalog(products, productOrder, ext, filtersApplied, filterValues, sortMethod, sortDirection, localStorageSearch, statesJSON);
+      downloadCatalog(
+        products,
+        productOrder,
+        ext,
+        filtersApplied,
+        filterValues,
+        sortMethod,
+        sortDirection,
+        localStorageSearch,
+        statesJSON,
+      );
     }
   };
 
@@ -144,7 +154,7 @@ const DataHeader = (props) => {
     },
     dateRange: {
       total: catalogStats.totalDateRange,
-      filtered: [null, null],      
+      filtered: [null, null],
     },
   };
 
@@ -152,17 +162,23 @@ const DataHeader = (props) => {
   const filteredDates = new Set();
 
   productOrder.forEach((productCode) => {
-    products[productCode].filterableValues[FILTER_KEYS.SITES].forEach((site) => filteredSites.add(site));
-    products[productCode].filterableValues[FILTER_KEYS.DATE_RANGE].forEach((date) => filteredDates.add(date));
+    products[productCode].filterableValues[FILTER_KEYS.SITES].forEach(
+      (site) => filteredSites.add(site),
+    );
+    products[productCode].filterableValues[FILTER_KEYS.DATE_RANGE].forEach(
+      (date) => filteredDates.add(date),
+    );
   });
 
   stats.sites.filtered = filteredSites.size;
   stats.dateRange.filtered = Array.from(filteredDates).sort();
   stats.dateRange.filtered.splice(1, stats.dateRange.filtered.length - 2);
 
-  const formatRange = (stat, offset) => stats.dateRange[stat][offset]
-    ? moment(`${stats.dateRange[stat][offset]}-02`).format('MMM YYYY')
-    : '';
+  const formatRange = (stat, offset) => (
+    stats.dateRange[stat][offset]
+      ? moment(`${stats.dateRange[stat][offset]}-02`).format('MMM YYYY')
+      : ''
+  );
   const totalAvailability = `Data available ${formatRange('total', 0)} – ${formatRange('total', 1)}`;
   const filteredAvailability = stats.dateRange.filtered.length === 2
     ? `Data available ${formatRange('filtered', 0)} – ${formatRange('filtered', 1)}`
@@ -251,12 +267,15 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
         </div>
       </Grid>
       <Grid item xs={12} sm={6}>
-        <div className={classes.catalogContainer} style={{ opacity: filtersApplied.length ? 1 : 0.5 }}>
+        <div
+          className={classes.catalogContainer}
+          style={{ opacity: filtersApplied.length ? 1 : 0.5 }}
+        >
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
             Filtered Products
           </Typography>
           {filtersApplied.length ? (
-            <React.Fragment>
+            <>
               <div className={classes.statContainer}>
                 <div className={classes.stat}>
                   <ListIcon className={classes.statIcon} />
@@ -326,7 +345,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
                   </Tooltip>
                 </ButtonGroup>
               </div>
-            </React.Fragment>
+            </>
           ) : (
             <div className={classes.statContainer}>
               <NoneIcon className={classes.statIcon} />
@@ -349,7 +368,9 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
       <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
         <Grid item xs={12} sm={6}>
           <div className={classes.catalogContainer}>
-            <Typography component="h3" variant="h5" className={classes.sectionTitle}>All Products</Typography>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+              All Products
+            </Typography>
             <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
             <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
             <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
@@ -357,7 +378,9 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
         </Grid>
         <Grid item xs={12} sm={6}>
           <div className={classes.catalogContainer}>
-            <Typography component="h3" variant="h5" className={classes.sectionTitle}>Filtered Products</Typography>
+            <Typography component="h3" variant="h5" className={classes.sectionTitle}>
+              Filtered Products
+            </Typography>
             <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
             <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
             <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />

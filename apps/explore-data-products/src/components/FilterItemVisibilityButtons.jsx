@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Button from "@material-ui/core/Button";
+import Button from '@material-ui/core/Button';
 import ExpandIcon from '@material-ui/icons/Add';
 import CollapseIcon from '@material-ui/icons/Remove';
 import ShowSelectedIcon from '@material-ui/icons/CheckBox';
@@ -11,7 +11,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1, 1, 0, 0),
   },

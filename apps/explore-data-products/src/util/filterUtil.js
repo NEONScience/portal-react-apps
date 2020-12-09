@@ -314,7 +314,7 @@ export const applyCurrentProducts = (state) => {
   if (
     state.currentProducts.release === currentRelease
       && state.currentProducts.order.legnth === Object.keys(productsByRelease).length
-  ) { return state; }
+  ) { return applySort(state); }
 
   const newState = { ...state };
 
@@ -458,7 +458,7 @@ export const resetFilter = (state, filterKey) => {
     const isVisible = productIsVisibleByFilters(updated.currentProducts.visibility[productCode]);
     updated.currentProducts.visibility[productCode].BY_FILTERS = isVisible;
   });
-  return applySort(updated);
+  return applyCurrentProducts(updated);
 }
 
 /**
@@ -486,7 +486,7 @@ export const resetAllFilters = (state) => {
   Object.keys(state.currentProducts.visibility).forEach((productCode) => {
     updated.currentProducts.visibility[productCode] = { ...INITIAL_PRODUCT_VISIBILITY };
   });
-  return applySort(updated);
+  return applyCurrentProducts(updated);
 };
 
 /**

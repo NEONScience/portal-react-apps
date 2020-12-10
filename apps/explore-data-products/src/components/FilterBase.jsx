@@ -73,9 +73,11 @@ const FilterBase = (props) => {
   return (
     <div className={classes.filter} data-selenium={dataSeleniumTag}>
       <div className={classes.titleContainer}>
-        <Typography variant="h5" component="h3" className={classes.title}>
-          {title}
-        </Typography>
+        {typeof title !== 'string' ? title : (
+          <Typography variant="h5" component="h3" className={classes.title}>
+            {title}
+          </Typography>
+        )}
         <div className={classes.titleButtonContainer}>
           {React.isValidElement(additionalTitleButton) && !skeleton ? additionalTitleButton : null}
           {typeof handleResetFilter === 'function' && showResetButton ? (
@@ -102,7 +104,10 @@ const FilterBase = (props) => {
 };
 
 FilterBase.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.string,
+  ]).isRequired,
   subtitle: PropTypes.string,
   skeleton: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   showResetButton: PropTypes.bool,

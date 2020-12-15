@@ -2,6 +2,10 @@
 import React from 'react';
 import dateFormat from 'dateformat';
 
+import { of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { ajax } from 'rxjs/ajax';
+
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -34,13 +38,13 @@ const CITATION_FORMATS = {
     shortName: 'BibTex',
     longName: 'BibTex',
     mime: 'application/x-bibtex',
-    extension: 'bibtex',
-    generateProvisionalCitation: product => (`@misc{,
+    extension: 'bib',
+    generateProvisionalCitation: product => (`@misc{${product.productCode}/provisional,
   doi = {},
   url = {${window.location.href}},
   author = {{National Ecological Observatory Network (NEON)}},
   language = {en},
-  title = {${product.productName}},
+  title = {${product.productName} (${product.productCode})},
   publisher = {National Ecological Observatory Network (NEON)},
   year = {${(new Date()).getFullYear()}}
 }`),
@@ -51,7 +55,7 @@ const CITATION_FORMATS = {
     mime: 'application/x-research-info-systems',
     extension: 'ris',
     generateProvisionalCitation: product => (`TY  - DATA
-T1  - ${product.productName}
+T1  - ${product.productName} (${product.productCode})
 AU  - National Ecological Observatory Network (NEON)
 DO  - 
 UR  - ${window.location.href}
@@ -153,22 +157,55 @@ const CitationDetail = () => {
     return `${neon}. ${productName}${doiText}. ${accessed}`;
   };
 
-  const getCitationHref = (release, format) => {
-    if (!CITATION_FORMATS[format]) { return null; }
-    const { mime, generateProvisionalCitation } = CITATION_FORMATS[format];
+  // Actual function that makes the download happen with payload passed as an argument.
+  // We don't hit the DataCite API directly with a link as, while this will download a valid file,
+  // we have no control over the file name. As such we fetch the content with ajax (see
+  // handleDownloadCitation) and pass it here the same as we do a provisional citation (which
+  // requires no fetch) and execute the download in this way allowing full file name control.
+  const executeDownload = (fileName, mimeType, payload) => {
+    const link = document.createElement('a');
+    if (URL) {
+      link.href = URL.createObjectURL(new Blob([payload], { type: mimeType }));
+    } else {
+      link.setAttribute('href', `data:${mimeType},${encodeURI(payload)}`);
+    }
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Click handler for initiating a citation download
+  const handleDownloadCitation = (release, format) => {
+    if (!CITATION_FORMATS[format]) { return; }
+    const { mime, extension, generateProvisionalCitation } = CITATION_FORMATS[format];
+    const fileName = `NEON-${productCode}-${release}.${extension}`;
+    // Provisional: generate client-side and immediately download
     if (release === 'provisional') {
       const provisionalCitation = generateProvisionalCitation(baseProduct);
-      if (!provisionalCitation) { return null; }
-      return (
-        URL
-          ? URL.createObjectURL(new Blob([provisionalCitation], { type: mime }))
-          : `data:${mime},${encodeURI(provisionalCitation)}`
-      );
+      if (!provisionalCitation) { return; }
+      executeDownload(fileName, mime, provisionalCitation);
+      return;
     }
+    // Release: fetch content from DataCite API to pipe into download
     const fullDoi = getReleaseDoi(release);
-    if (!fullDoi) { return null; }
+    if (!fullDoi) { return; }
     const doiId = fullDoi.split('/').slice(-2).join('/');
-    return `${DATACITE_API_ROOT}${mime}/${doiId}`;
+    const citationUrl = `${DATACITE_API_ROOT}${mime}/${doiId}`;
+    ajax({
+      url: citationUrl,
+      method: 'GET',
+      responseType: 'text',
+    }).pipe(
+      map((citationContent) => {
+        executeDownload(fileName, mime, citationContent.response);
+      }),
+      catchError((error) => {
+        // eslint-disable-next-line no-console
+        console.error(`Unable to download citation ${fileName}`, error);
+        return of(error);
+      }),
+    ).subscribe();
   };
 
   const renderCitationCard = (release, conditional = false) => {
@@ -200,7 +237,7 @@ const CitationDetail = () => {
         <CardActions className={classes.cardActions}>
           <Tooltip
             placement="bottom-start"
-            title="Click to copy the above citation text to the clipboard"
+            title="Click to copy the above plain text citation to the clipboard"
           >
             <CopyToClipboard text={citationText}>
               <Button
@@ -220,7 +257,7 @@ const CitationDetail = () => {
               placement="bottom-start"
               title={(
                 downloadEnabled
-                  ? `Click to download the above citation as a file in ${CITATION_FORMATS[key].longName} format`
+                  ? `Click to download the ${productCode}/${release} citation as a file in ${CITATION_FORMATS[key].longName} format`
                   : 'Citation format downloads are not available because this product release has no DOI'
               )}
             >
@@ -230,8 +267,7 @@ const CitationDetail = () => {
                   color="primary"
                   variant="outlined"
                   className={classes.cardButton}
-                  href={getCitationHref(release, key)}
-                  download={`${productCode}_${release}.${CITATION_FORMATS[key].extension}`}
+                  onClick={() => { handleDownloadCitation(release, key); }}
                   disabled={!downloadEnabled}
                 >
                   <DownloadIcon fontSize="small" className={classes.cardButtonIcon} />

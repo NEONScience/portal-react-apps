@@ -445,6 +445,7 @@ export const parseProductsByReleaseData = (state, release) => {
           newState = applyFilter(newState, key, localFilterValues[key], false);
         });
       } catch {
+        // eslint-disable-next-line no-console
         console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
       }
     }
@@ -462,6 +463,7 @@ export const parseProductsByReleaseData = (state, release) => {
             newState.filterItemVisibility[key] = localFilterItemVisibility[key];
           });
       } catch {
+        // eslint-disable-next-line no-console
         console.error('Unable to rebuild filter item visibility from saved local storage. Stored value is not parseable.');
       }
     }

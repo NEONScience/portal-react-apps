@@ -9,7 +9,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(0.5),
@@ -27,7 +27,7 @@ const KeywordsDetail = () => {
     <Detail
       title="Scientific Keywords"
     >
-      {(keywords || []).length ? keywords.map(keyword => (
+      {(keywords || []).length ? keywords.map((keyword) => (
         <Chip
           label={keyword}
           key={keyword}

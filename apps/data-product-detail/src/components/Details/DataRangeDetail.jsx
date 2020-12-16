@@ -40,7 +40,7 @@ const DataRangeDetail = () => {
     rangeText = <i>n/a (no data)</i>;
   } else {
     const range = siteCodes
-      .map(site => [
+      .map((site) => [
         site.availableMonths[0],
         site.availableMonths[site.availableMonths.length - 1],
       ])

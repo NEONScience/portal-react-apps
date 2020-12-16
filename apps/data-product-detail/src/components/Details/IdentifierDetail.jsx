@@ -9,7 +9,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   productCodeChip: {
     color: theme.palette.grey[500],
     border: `1px solid ${theme.palette.grey[500]}`,
@@ -32,7 +32,7 @@ const IdentifierDetail = () => {
   );
 
   const tooltip = (
-    <React.Fragment>
+    <>
       <div>
         Data Products have unique identifiers in the form DPL.PRNUM.REV, where:
       </div>
@@ -44,7 +44,7 @@ const IdentifierDetail = () => {
       <div>
         See {fileNamingConventionsLink} for more info.
       </div>
-    </React.Fragment>
+    </>
   );
 
   return (

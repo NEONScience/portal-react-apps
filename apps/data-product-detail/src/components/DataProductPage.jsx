@@ -36,7 +36,7 @@ const {
   getCurrentReleaseObjectFromState,
 } = DataProductContext;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   card: {
     backgroundColor: Theme.colors.BROWN[50],
     borderColor: Theme.colors.BROWN[300],

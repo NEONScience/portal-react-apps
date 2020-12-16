@@ -27,7 +27,7 @@ import DataProductContext from '../DataProductContext';
 const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
 
 const IS_PROD_ENV = ['localhost', 'int', 'cert'].every(
-  prefix => !window.location.host.startsWith(prefix),
+  (prefix) => !window.location.host.startsWith(prefix),
 );
 const DATACITE_API_ROOT = IS_PROD_ENV
   ? 'https://api.datacite.org/dois/'
@@ -39,7 +39,7 @@ const CITATION_FORMATS = {
     longName: 'BibTex',
     mime: 'application/x-bibtex',
     extension: 'bib',
-    generateProvisionalCitation: product => (`@misc{${product.productCode}/provisional,
+    generateProvisionalCitation: (product) => (`@misc{${product.productCode}/provisional,
   doi = {},
   url = {${window.location.href}},
   author = {{National Ecological Observatory Network (NEON)}},
@@ -54,7 +54,7 @@ const CITATION_FORMATS = {
     longName: 'Research Information Systems (RIS)',
     mime: 'application/x-research-info-systems',
     extension: 'ris',
-    generateProvisionalCitation: product => (`TY  - DATA
+    generateProvisionalCitation: (product) => (`TY  - DATA
 T1  - ${product.productName} (${product.productCode})
 AU  - National Ecological Observatory Network (NEON)
 DO  - 
@@ -67,7 +67,7 @@ ER  - `),
 };
 Object.keys(CITATION_FORMATS).forEach((key) => { CITATION_FORMATS[key].KEY = key; });
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   cardActions: {
     flexWrap: 'wrap',
     marginTop: theme.spacing(-1),
@@ -123,9 +123,9 @@ const CitationDetail = () => {
     </a>
   );
 
-  const getReleaseObject = release => (
+  const getReleaseObject = (release) => (
     !release || release === 'provisional' ? null : (
-      releases.find(r => r.release === release)
+      releases.find((r) => r.release === release)
     )
   );
 
@@ -251,7 +251,7 @@ const CitationDetail = () => {
               </Button>
             </CopyToClipboard>
           </Tooltip>
-          {Object.keys(CITATION_FORMATS).map(key => (
+          {Object.keys(CITATION_FORMATS).map((key) => (
             <Tooltip
               key={key}
               placement="bottom-start"
@@ -294,10 +294,10 @@ const CitationDetail = () => {
       {currentRelease ? (
         renderCitationCard(currentRelease)
       ) : (
-        <React.Fragment>
+        <>
           {renderCitationCard('provisional', latestRelease !== null)}
           {latestRelease ? renderCitationCard(latestRelease.release, true) : null}
-        </React.Fragment>
+        </>
       )}
     </Detail>
   );

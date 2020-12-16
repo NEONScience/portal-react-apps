@@ -9,8 +9,6 @@ import PropTypes from 'prop-types';
 
 import logger from 'use-reducer-logger';
 
-import moment from 'moment';
-
 import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
@@ -23,23 +21,6 @@ import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
-
-const DO_FUDGE = true;
-const fudgeChangeLogResolvedDates = (changeLogs, releases) => {
-  if (!DO_FUDGE) { return changeLogs; }
-  if ((releases || []).length < 2 || (changeLogs || []).length < 2) { return changeLogs; }
-  const middleReleaseIdx = Math.ceil(releases.length / 2) - 1;
-  const postResolvedDate = moment
-    .utc(releases[middleReleaseIdx].generationDate)
-    .add(1, 'days')
-    .format('YYYY-MM-DD[T]hh:mm:ss[Z]');
-  const newChangeLogs = [...changeLogs];
-  newChangeLogs.reverse();
-  newChangeLogs[0].resolvedDate = null;
-  newChangeLogs[1].resolvedDate = postResolvedDate;
-  newChangeLogs.reverse();
-  return newChangeLogs;
-};
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -93,19 +74,21 @@ const fetchIsInStatus = (fetchObject, status) => (
   typeof fetchObject === 'object' && fetchObject !== null && fetchObject.status === status
 );
 
-const fetchIsAwaitingCall = fetchObject => fetchIsInStatus(fetchObject, FETCH_STATUS.AWAITING_CALL);
+const fetchIsAwaitingCall = (fetchObject) => (
+  fetchIsInStatus(fetchObject, FETCH_STATUS.AWAITING_CALL)
+);
 
 const stateHasFetchesInStatus = (state, status) => (
   fetchIsInStatus(state.fetches.product, status)
     || Object.keys(state.fetches.productReleases).some(
-      f => fetchIsInStatus(state.fetches.productReleases[f], status),
+      (f) => fetchIsInStatus(state.fetches.productReleases[f], status),
     )
     || Object.keys(state.fetches.bundleParents).some(
-      f => fetchIsInStatus(state.fetches.bundleParents[f], status),
+      (f) => fetchIsInStatus(state.fetches.bundleParents[f], status),
     )
     || Object.keys(state.fetches.bundleParentReleases).some(
-      bundleParent => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
-        f => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
+      (bundleParent) => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
+        (f) => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
       ),
     )
     // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
@@ -216,7 +199,7 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
     !currentRelease || !generalProduct
       || !generalProduct.releases || !generalProduct.releases.length
   ) { return null; }
-  return generalProduct.releases.find(r => r.release === currentRelease) || null;
+  return generalProduct.releases.find((r) => r.release === currentRelease) || null;
 };
 
 /**
@@ -280,14 +263,10 @@ const reducer = (state, action) => {
         );
       }
       newState.data.product.releases
-        // eslint-disable-next-line max-len
-        .filter(r => !Object.prototype.hasOwnProperty.call(newState.data.productReleases, r.release))
+        .filter((r) => (
+          !Object.prototype.hasOwnProperty.call(newState.data.productReleases, r.release)
+        ))
         .forEach((r) => { newState.data.productReleases[r.release] = null; });
-      // Fake some unresolved issues
-      newState.data.product.changeLogs = fudgeChangeLogResolvedDates(
-        newState.data.product.changeLogs,
-        newState.data.product.releases,
-      );
       return calculateAppStatus(newState);
 
     case 'fetchProductReleaseFailed':
@@ -299,11 +278,6 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseSucceeded':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.SUCCESS;
       newState.data.productReleases[action.release] = action.data;
-      // Fake some unresolved issues
-      newState.data.productReleases[action.release].changeLogs = fudgeChangeLogResolvedDates(
-        newState.data.productReleases[action.release].changeLogs,
-        newState.data.product.releases,
-      );
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':
@@ -462,7 +436,7 @@ const Provider = (props) => {
     }
     // Product release fetches
     Object.keys(fetches.productReleases)
-      .filter(release => fetchIsAwaitingCall(fetches.productReleases[release]))
+      .filter((release) => fetchIsAwaitingCall(fetches.productReleases[release]))
       .forEach((release) => {
         newFetches.productReleases[release].status = FETCH_STATUS.FETCHING;
         NeonApi.getProductObservable(productCode, release).subscribe(
@@ -476,7 +450,7 @@ const Provider = (props) => {
       });
     // Bundle parent fetches
     Object.keys(fetches.bundleParents)
-      .filter(bundleParent => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
+      .filter((bundleParent) => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
       .forEach((bundleParent) => {
         newFetches.bundleParents[bundleParent].status = FETCH_STATUS.FETCHING;
         NeonApi.getProductObservable(bundleParent).subscribe(
@@ -492,7 +466,7 @@ const Provider = (props) => {
     Object.keys(fetches.bundleParentReleases)
       .forEach((bundleParent) => {
         Object.keys(fetches.bundleParentReleases[bundleParent])
-          .filter(release => (
+          .filter((release) => (
             fetchIsAwaitingCall(fetches.bundleParentReleases[bundleParent][release])
           ))
           .forEach((release) => {

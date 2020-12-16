@@ -40,7 +40,7 @@ const unresolvedStyle = {
   fontWeight: 700,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     backgroundColor: theme.palette.grey[50],
     padding: theme.spacing(2),
@@ -105,7 +105,7 @@ const IssueLogDetail = () => {
 
   const changeLogs = product.changeLogs || [];
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
-  const rowGetsUnresolvedStyling = row => (
+  const rowGetsUnresolvedStyling = (row) => (
     !row.resolvedDate
       || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
   );
@@ -124,7 +124,7 @@ const IssueLogDetail = () => {
 
   const components = {
     Container: Box,
-    Toolbar: props => (
+    Toolbar: (props) => (
       <div style={{ marginLeft: '-24px' }}>
         <MTableToolbar {...props} />
       </div>
@@ -138,9 +138,9 @@ const IssueLogDetail = () => {
     return days === 1 ? '1 Day' : `${days} Days`;
   };
 
-  const formatSummary = issueString => truncate(issueString, { length: 40, separator: /\W+/ });
+  const formatSummary = (issueString) => truncate(issueString, { length: 40, separator: /\W+/ });
 
-  const formatDate = dateString => dateFormat(dateString, 'yyyy-mm-dd');
+  const formatDate = (dateString) => dateFormat(dateString, 'yyyy-mm-dd');
 
   const formatLocations = (locationsString) => {
     const renderLine = (line) => {
@@ -162,7 +162,7 @@ const IssueLogDetail = () => {
     return (
       <div className={classes.locationsContainer}>
         <div className={classes.locations}>
-          {locationsString.split(/;/).filter(line => line.length).map(line => renderLine(line))}
+          {locationsString.split(/;/).filter((line) => line.length).map((line) => renderLine(line))}
         </div>
         <div className={classes.locationsBottom} />
       </div>
@@ -173,7 +173,7 @@ const IssueLogDetail = () => {
     title: 'Issue',
     field: 'issue',
     searchable: true,
-    render: row => formatSummary(row.issue),
+    render: (row) => formatSummary(row.issue),
     cellStyle: (fieldData, rowData) => (rowData.parentIssueID
       ? {
         borderLeft: `1px dotted ${Theme.palette.grey[100]}`,
@@ -190,7 +190,7 @@ const IssueLogDetail = () => {
     field: 'issueDate',
     type: 'date',
     sorting: true,
-    render: row => formatDate(row.issueDate),
+    render: (row) => formatDate(row.issueDate),
   }, {
     title: 'Date Resolved',
     field: 'resolvedDate',
@@ -201,32 +201,32 @@ const IssueLogDetail = () => {
     render: (row) => {
       if (rowGetsUnresolvedStyling(row)) {
         return !row.resolvedDate ? 'unresolved' : (
-          <React.Fragment>
+          <>
             <div>
               {formatDate(row.resolvedDate)}
             </div>
             <div style={{ fontSize: '0.65rem' }}>
               {`unresolved in ${currentRelease} release`}
             </div>
-          </React.Fragment>
+          </>
         );
       }
       return formatDate(row.resolvedDate);
     },
-    cellStyle: fieldData => (
+    cellStyle: (fieldData) => (
       rowGetsUnresolvedStyling({ resolvedDate: fieldData }) ? unresolvedStyle : {}
     ),
   }, {
     title: 'Locations Affected',
     field: 'locationAffected',
     searchable: true,
-    render: row => formatLocations(row.locationAffected),
+    render: (row) => formatLocations(row.locationAffected),
   }, {
     title: 'Issue Start',
     field: 'dateRangeStart',
     type: 'date',
     sorting: true,
-    render: row => formatDate(row.dateRangeStart),
+    render: (row) => formatDate(row.dateRangeStart),
   }, {
     title: 'Issue End',
     field: 'dateRangeEnd',
@@ -234,14 +234,14 @@ const IssueLogDetail = () => {
     sorting: true,
     defaultSort: 'desc',
     customSort: getDateSortWithNulls('dateRangeEnd', 'dateRangeStart'),
-    render: row => (row.dateRangeEnd ? formatDate(row.dateRangeEnd) : 'ongoing'),
-    cellStyle: fieldData => (fieldData ? {} : unresolvedStyle),
+    render: (row) => (row.dateRangeEnd ? formatDate(row.dateRangeEnd) : 'ongoing'),
+    cellStyle: (fieldData) => (fieldData ? {} : unresolvedStyle),
   }];
 
   // This function allows us to call the renders defined for Material Table
   // above in other ways (e.g. small viewport layout)
   const renderIssueField = (issue, field) => {
-    const column = columns.find(col => field === col.field);
+    const column = columns.find((col) => field === col.field);
     if (!column) { return null; }
     return column.render(issue);
   };
@@ -251,8 +251,8 @@ const IssueLogDetail = () => {
       icon: 'unfold_more',
       openIcon: 'unfold_less',
       tooltip: 'View Issue Details',
-      render: row => (
-        <React.Fragment>
+      render: (row) => (
+        <>
           <Container className={classes.container}>
             <Grid container spacing={1}>
               <Grid item xs={12} sm={3} md={2}>
@@ -276,19 +276,19 @@ const IssueLogDetail = () => {
                 )}
               </Grid>
               {row.dateRangeEnd ? (
-                <React.Fragment>
+                <>
                   <Grid item xs={12} sm={3} md={2}>
                     <Typography variant="subtitle2">Duration</Typography>
                   </Grid>
                   <Grid item xs={12} sm={9} md={10}>
                     <Typography variant="body2">{formatDuration(row)}</Typography>
                   </Grid>
-                </React.Fragment>
+                </>
               ) : null}
             </Grid>
           </Container>
           <Divider className={classes.rowDivider} />
-        </React.Fragment>
+        </>
       ),
     },
   ];
@@ -305,7 +305,7 @@ const IssueLogDetail = () => {
   // A table view does not make sense for a small viewport. Instead show the
   // issues in a paginated, serachable "table" containing one column with
   // consistent formatting.
-  const renderIssueXsRow = issue => (
+  const renderIssueXsRow = (issue) => (
     <div
       key={issue.id}
       className={classes.xsRow}
@@ -350,12 +350,12 @@ const IssueLogDetail = () => {
     </div>
   );
 
-  const handleChangeXsSortColumn = event => setXsSortColumn(event.target.value);
-  const handleChangeXsSortDirection = event => setXsSortDirection(event.target.value);
-  const handleChangeXsSearch = event => setXsSearch(event.target.value);
+  const handleChangeXsSortColumn = (event) => setXsSortColumn(event.target.value);
+  const handleChangeXsSortDirection = (event) => setXsSortDirection(event.target.value);
+  const handleChangeXsSearch = (event) => setXsSearch(event.target.value);
   const handleClearXsSearch = () => setXsSearch('');
 
-  const xsFilterOutChildIssues = issue => issue.parentIssueID === null;
+  const xsFilterOutChildIssues = (issue) => issue.parentIssueID === null;
   const xsSearchIssues = (issue) => {
     if (!xsSearch.length) { return true; }
     return (
@@ -376,7 +376,7 @@ const IssueLogDetail = () => {
     .filter(xsFilterOutChildIssues)
     .filter(xsSearchIssues)
     .sort(xsSortIssues)
-    .map(issue => renderIssueXsRow(issue));
+    .map((issue) => renderIssueXsRow(issue));
 
   const totalIssues = changeLogs
     .filter(xsFilterOutChildIssues)
@@ -390,7 +390,7 @@ const IssueLogDetail = () => {
   const showingIssues = `Showing ${visibleIssues} of ${totalIssues} total issues.`;
 
   return (
-    <React.Fragment>
+    <>
       <Hidden smDown>
         <Detail seleniumKey="issue-log">
           <MaterialTable
@@ -398,7 +398,7 @@ const IssueLogDetail = () => {
             components={components}
             columns={columns}
             data={changeLogs}
-            parentChildData={(row, rows) => rows.find(a => a.id === row.parentIssueID)}
+            parentChildData={(row, rows) => rows.find((a) => a.id === row.parentIssueID)}
             detailPanel={detailPanel}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}
             localization={localization}
@@ -406,7 +406,7 @@ const IssueLogDetail = () => {
               padding: 'dense',
               detailPanelColumnAlignment: 'right',
               detailPanelType: 'single',
-              rowStyle: row => (!rowGetsUnresolvedStyling(row) ? {} : {
+              rowStyle: (row) => (!rowGetsUnresolvedStyling(row) ? {} : {
                 backgroundColor: Theme.colors.GOLD[50],
               }),
             }}
@@ -486,7 +486,7 @@ const IssueLogDetail = () => {
           {renderIssueXsRows()}
         </Detail>
       </Hidden>
-    </React.Fragment>
+    </>
   );
 };
 

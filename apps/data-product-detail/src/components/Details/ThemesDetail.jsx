@@ -25,7 +25,7 @@ const ThemesDetail = () => {
 
   const { themes } = product;
 
-  const renderTheme = theme => (
+  const renderTheme = (theme) => (
     <Link
       key={theme}
       title={theme}

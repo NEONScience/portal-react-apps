@@ -73,7 +73,7 @@ const VisualizationsSection = (props) => {
   return (
     <Section {...props}>
       {Object.keys(viz).length ? (
-        Object.keys(viz).map(k => viz[k].node)
+        Object.keys(viz).map((k) => viz[k].node)
       ) : (
         <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
           This product does not currently have any visualizations.

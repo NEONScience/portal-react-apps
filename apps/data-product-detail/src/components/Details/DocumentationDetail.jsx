@@ -21,7 +21,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   list: {
     paddingTop: theme.spacing(0),
   },
@@ -57,52 +57,57 @@ export const formatBytes = (bytes) => {
 
 const documentTypes = {
   pdf: {
-    match: type => (type === 'application/pdf' || type.includes('pdf')),
+    match: (type) => (type === 'application/pdf' || type.includes('pdf')),
     title: 'PDF',
     Icon: DocumentIcon,
   },
   image: {
-    match: type => (['image/gif', 'image/png', 'image/jpeg'].includes(type) || type.startsWith('image')),
-    title: type => `Image (${(type.match(/\/(.*)$/) || [])[1] || 'unknown type'})`,
+    match: (type) => (
+      ['image/gif', 'image/png', 'image/jpeg'].includes(type) || type.startsWith('image')
+    ),
+    title: (type) => `Image (${(type.match(/\/(.*)$/) || [])[1] || 'unknown type'})`,
     Icon: ImageIcon,
   },
   csv: {
-    match: type => (type === 'text/csv' || type.includes('csv')),
+    match: (type) => (type === 'text/csv' || type.includes('csv')),
     title: 'CSV',
     Icon: SpreadsheetIcon,
   },
   text: {
-    match: type => (type === 'text/plain'),
+    match: (type) => (type === 'text/plain'),
     title: 'Plain text file',
     Icon: DocumentIcon,
   },
   document: {
-    match: type => (['application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'].includes(type)),
+    match: (type) => ([
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ].includes(type)),
     title: 'Document',
     Icon: DocumentIcon,
   },
   spreadsheet: {
-    match: type => (type.includes('spreadsheet') || type.includes('excel')),
+    match: (type) => (type.includes('spreadsheet') || type.includes('excel')),
     title: 'Spreadsheet',
     Icon: SpreadsheetIcon,
   },
   presentation: {
-    match: type => (type.includes('presentation') || type.includes('powerpoint')),
+    match: (type) => (type.includes('presentation') || type.includes('powerpoint')),
     title: 'Presentation',
     Icon: PresentationIcon,
   },
   archive: {
-    match: type => (type.includes('zip')),
+    match: (type) => (type.includes('zip')),
     title: 'ZIP archive',
     Icon: ArchiveIcon,
   },
   binary: {
-    match: type => (type === 'application/octet-stream'),
+    match: (type) => (type === 'application/octet-stream'),
     title: 'Raw binary data',
     Icon: FileIcon,
   },
   xml: {
-    match: type => (type === 'application/xml'),
+    match: (type) => (type === 'application/xml'),
     title: 'XML',
     Icon: CodeIcon,
   },
@@ -135,26 +140,28 @@ const DocumentationDetail = () => {
     // Determine document type
     let documentType = defaultDocumentType;
     if (typeof type === 'string') {
-      const matchKey = documentTypeKeys.find(key => documentTypes[key].match(type));
+      const matchKey = documentTypeKeys.find((key) => documentTypes[key].match(type));
       if (matchKey) {
         documentType = documentTypes[matchKey];
       }
     }
     const { title: typeTitle, Icon: TypeIcon } = documentType;
     // Generate description strings
-    const typeTitleString = typeof typeTitle === 'function' ? typeTitle(type) : typeTitle.toString();
+    const typeTitleString = (
+      typeof typeTitle === 'function' ? typeTitle(type) : typeTitle.toString()
+    );
     const primary = description || <i>No description</i>;
     const spacer = <span className={classes.listItemSecondarySpacer}>|</span>;
     const typeAndSize = (
-      <React.Fragment>
+      <>
         <span title={`file type: ${typeTitleString}`}>{typeTitleString}</span>
         {!size ? null : (
-          <React.Fragment>
+          <>
             {spacer}
             <span title={`file size: ${formatBytes(size)}`}>{formatBytes(size)}</span>
-          </React.Fragment>
+          </>
         )}
-      </React.Fragment>
+      </>
     );
     const fileNumber = (
       <span title={`file number: ${number}`}>{number}</span>

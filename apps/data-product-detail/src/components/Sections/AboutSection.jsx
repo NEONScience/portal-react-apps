@@ -14,7 +14,6 @@ import ThemesDetail from '../Details/ThemesDetail';
 import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
-// import ReleaseLinksDetail from '../Details/ReleaseLinksDetail';
 
 const AboutSection = (props) => {
   const [state] = DataProductContext.useDataProductContextState();
@@ -32,7 +31,6 @@ const AboutSection = (props) => {
             content={product.productScienceTeam}
           />
           <DataRangeDetail />
-          {/* <ReleaseLinksDetail /> */ }
           <KeywordsDetail />
         </Grid>
 

@@ -9,7 +9,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 // Theme and override styles are (re)introduced here because without them
 // the primary color is lost and the expansion panel layout gets messed up.
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(6),
   },

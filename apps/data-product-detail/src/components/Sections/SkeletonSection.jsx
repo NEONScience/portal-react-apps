@@ -5,7 +5,7 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import Section from './Section';
 
-const SkeletonSection = props => (
+const SkeletonSection = (props) => (
   <Section {...props} skeleton>
     <Grid container spacing={3}>
 

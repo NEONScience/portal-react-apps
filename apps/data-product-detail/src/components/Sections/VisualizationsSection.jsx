@@ -1,87 +1,79 @@
 /* eslint-disable import/no-unresolved */
 // TODO: figure out why NeonContext raises an import/no-unresolved false positive
 // (why that rule is disabled in this file)
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React from 'react';
 
-import { of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
-
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 import Section from './Section';
-
-const viz = {};
+import SkeletonSection from './SkeletonSection';
 
 const VisualizationsSection = (props) => {
-  const { state } = useContext(StoreContext);
-
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
   } = neonContextData;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
 
-  const [hasViz, setHasViz] = useState(false);
+  const [state, dispatch] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
-  /**
-     Effect: Toggle visibility on if this is a Time Series Viewer product
-  */
-  useEffect(() => {
-    if (
-      state.product && state.product.productCode
-        && timeSeriesProductCodes.includes(state.product.productCode)
-    ) {
-      viz.TIME_SERIES = {
-        name: 'Time Series Viewer',
-        node: <TimeSeriesViewer key="timeSeriesViewer" productCode={state.product.productCode} />,
-      };
-      setHasViz(true);
-    }
-  }, [state, timeSeriesProductCodes, setHasViz]);
+  const {
+    route: { productCode, release: currentRelease },
+    data: { aopVizProducts },
+  } = state;
 
-  /**
-     Effect: conditionally fetch streamable AOP products to add AOP Data Viewer
-  */
-  const isAOP = (state.product && (state.product.productScienceTeam || '').includes('AOP'));
-  const [fetchAopCalled, setFetchAopCalled] = useState(false);
-  const handleFetchAop = useCallback(() => ajax
-    .getJSON(NeonEnvironment.getVisusProductsBaseUrl())
-    .pipe(
-      map((response) => {
-        if (Array.isArray(response.data) && response.data.includes(state.product.productCode)) {
-          viz.AOP = {
-            name: 'AOP Data Viewer',
-            node: <AopDataViewer key="aopDataViewer" productCode={state.product.productCode} />,
-          };
-          setHasViz(true);
-        }
-      }),
-      catchError(() => of('Unable to query for streamable products')),
-    ).subscribe(), [state]);
-  useEffect(() => {
-    if (isAOP && NeonEnvironment.showAopViewer && !fetchAopCalled) {
-      handleFetchAop();
-      setFetchAopCalled(true);
-    }
-  }, [state, isAOP, fetchAopCalled, handleFetchAop]);
+  if (!product) {
+    return <SkeletonSection {...props} />;
+  }
+
+  // Build an object containing rendered visualization nodes
+  const viz = {};
+  if (timeSeriesProductCodes.includes(productCode)) {
+    viz.TIME_SERIES = {
+      name: 'Time Series Viewer',
+      node: <TimeSeriesViewer key="timeSeriesViewer" productCode={productCode} />,
+    };
+  }
+  if (aopVizProducts.includes(productCode)) {
+    viz.AOP = {
+      name: 'AOP Data Viewer',
+      node: <AopDataViewer key="aopDataViewer" productCode={productCode} />,
+    };
+  }
+
+  if (currentRelease && Object.keys(viz).length) {
+    const releaseTag = <b>{currentRelease}</b>;
+    const handleOnClick = () => {
+      dispatch({ type: 'setNextRelease', release: null, hash: 'visualizations' });
+    };
+    return (
+      <Section {...props}>
+        {/* eslint-disable react/jsx-one-expression-per-line */}
+        <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }} gutterBottom>
+          This page is specific to the {releaseTag} release for this data product.
+          <br />
+          Data visualizations for this product can be accessed on the general page for this product.
+        </Typography>
+        {/* eslint-enable react/jsx-one-expression-per-line */}
+        <Button variant="outlined" onClick={handleOnClick}>
+          Go to visualizations for this product
+        </Button>
+      </Section>
+    );
+  }
 
   return (
     <Section {...props}>
-      {hasViz ? (
-        Object.keys(viz).map(k => viz[k].node)
+      {Object.keys(viz).length ? (
+        Object.keys(viz).map((k) => viz[k].node)
       ) : (
         <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
           This product does not currently have any visualizations.
@@ -92,7 +84,6 @@ const VisualizationsSection = (props) => {
 };
 
 VisualizationsSection.propTypes = Section.propTypes;
-
 VisualizationsSection.defaultProps = Section.defaultProps;
 
 export default VisualizationsSection;

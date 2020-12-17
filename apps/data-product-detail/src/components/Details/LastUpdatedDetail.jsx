@@ -1,5 +1,4 @@
 import React from 'react';
-// import React, { useContext } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -13,16 +12,14 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import Detail from './Detail';
 import DetailTooltip from './DetailTooltip';
-// import { StoreContext } from '../../Store';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(1.5),
   },
 }));
 
 const LastUpdatedDetail = () => {
-  // const { state } = useContext(StoreContext);
   const classes = useStyles(Theme);
 
   const dataDate = 'April 10, 2019';

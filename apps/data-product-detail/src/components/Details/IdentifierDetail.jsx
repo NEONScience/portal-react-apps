@@ -1,15 +1,29 @@
 /* eslint-disable react/jsx-one-expression-per-line */
+import React from 'react';
 
-import React, { useContext } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Chip from '@material-ui/core/Chip';
 
-import Typography from '@material-ui/core/Typography';
+import Theme from 'portal-core-components/lib/components/Theme';
 
+import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-import { StoreContext } from '../../Store';
+const useStyles = makeStyles((theme) => ({
+  productCodeChip: {
+    color: theme.palette.grey[500],
+    border: `1px solid ${theme.palette.grey[500]}`,
+    backgroundColor: theme.palette.grey[100],
+    fontWeight: 600,
+    height: '28px',
+  },
+}));
 
 const IdentifierDetail = () => {
-  const { state } = useContext(StoreContext);
+  const classes = useStyles(Theme);
+
+  const [state] = DataProductContext.useDataProductContextState();
+  const product = DataProductContext.getCurrentProductFromState(state);
 
   const fileNamingConventionsLink = (
     <a href="https://data.neonscience.org/file-naming-conventions">
@@ -18,7 +32,7 @@ const IdentifierDetail = () => {
   );
 
   const tooltip = (
-    <React.Fragment>
+    <>
       <div>
         Data Products have unique identifiers in the form DPL.PRNUM.REV, where:
       </div>
@@ -30,7 +44,7 @@ const IdentifierDetail = () => {
       <div>
         See {fileNamingConventionsLink} for more info.
       </div>
-    </React.Fragment>
+    </>
   );
 
   return (
@@ -38,7 +52,10 @@ const IdentifierDetail = () => {
       title="Product ID"
       tooltip={tooltip}
     >
-      <Typography variant="button">{state.product.productCode}</Typography>
+      <Chip
+        label={product.productCode}
+        className={classes.productCodeChip}
+      />
     </Detail>
   );
 };

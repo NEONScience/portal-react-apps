@@ -1,4 +1,4 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo } from 'react';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,10 +17,11 @@ import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHost
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { StoreContext } from '../../Store';
+import DataProductContext from '../DataProductContext';
 import Section from './Section';
+import SkeletonSection from './SkeletonSection';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   summaryDivStyle: {
     width: '100%',
     display: 'flex',
@@ -56,7 +57,10 @@ const useStyles = makeStyles(theme => ({
 
 const AvailabilitySection = (props) => {
   const classes = useStyles(Theme);
-  const { state } = useContext(StoreContext);
+
+  const [state] = DataProductContext.useDataProductContextState();
+  // const product = DataProductContext.getCurrentProductFromState(state, true);
+
   const [{
     productData,
     fromManifest,
@@ -65,9 +69,16 @@ const AvailabilitySection = (props) => {
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
 
-  const { bundleParents, bundleForwardAvailabilityFromParent } = state;
+  const {
+    route: {
+      bundle: { parentCodes, forwardAvailabilityFromParent },
+    },
+    data: {
+      bundleParents,
+    },
+  } = state;
+  const isBundleChild = parentCodes.length;
 
-  const isBundleChild = bundleParents !== null && Object.keys(bundleParents).length;
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
   const computeAvailableDateRange = () => (productData.siteCodes || []).reduce((acc, siteCode) => {
@@ -79,10 +90,10 @@ const AvailabilitySection = (props) => {
   }, [null, null]);
 
   const availableSites = (productData.siteCodes || []).length;
-  const availableSiteCodes = (productData.siteCodes || []).map(site => site.siteCode);
+  const availableSiteCodes = (productData.siteCodes || []).map((site) => site.siteCode);
   const availableDates = useMemo(computeAvailableDateRange, [productData.siteCodes]);
   const availableDatesFormatted = availableDates
-    .map(month => moment(`${month}-02`).format('MMMM YYYY'));
+    .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link
@@ -95,7 +106,6 @@ const AvailabilitySection = (props) => {
 
   let bundleParentLink = null;
   if (isBundleChild) {
-    const parentCodes = Object.keys(bundleParents);
     bundleParentLink = parentCodes.length === 1
       ? (
         <Typography variant="subtitle2">
@@ -104,23 +114,23 @@ const AvailabilitySection = (props) => {
           {/* eslint-enable react/jsx-one-expression-per-line */}
         </Typography>
       ) : (
-        <React.Fragment>
+        <>
           <Typography variant="subtitle2">
             This data product has been split and bundled into more than one parent data product:
           </Typography>
           <ul style={{ margin: Theme.spacing(1, 0) }}>
-            {parentCodes.map(parentCode => (
+            {parentCodes.map((parentCode) => (
               <li key={parentCode}>
                 {getParentProductLink(bundleParents[parentCode])}
               </li>
             ))}
           </ul>
-        </React.Fragment>
+        </>
       );
   }
 
   // Bundle children that don't forward availability: no donwload button, just link to parent
-  if (isBundleChild && !bundleForwardAvailabilityFromParent) {
+  if (isBundleChild && !forwardAvailabilityFromParent) {
     return (
       <Section {...props}>
         <SnackbarContent
@@ -163,21 +173,21 @@ const AvailabilitySection = (props) => {
     />
   ) : null;
 
-  return (
+  return !productData ? <SkeletonSection {...props} /> : (
     <Section {...props}>
       {!fromManifest && !fromAOPManifest && fromExternalHost ? (
-        <React.Fragment>
+        <>
           {!dataAvailable ? null : (
             <div style={{ marginBottom: Theme.spacing(4) }}>
               <DataProductAvailability view="ungrouped" disableSelection />
             </div>
           )}
           <DownloadStepForm stepKey={requiredSteps[0].key} />
-        </React.Fragment>
+        </>
       ) : (
-        <React.Fragment>
+        <>
           {dataAvailable ? (
-            <React.Fragment>
+            <>
               <div className={classes.summaryDivStyle}>
                 {bundleInfo}
                 <div>
@@ -197,7 +207,7 @@ const AvailabilitySection = (props) => {
               </div>
               <Divider style={{ margin: Theme.spacing(3, 0) }} />
               <DataProductAvailability view="ungrouped" disableSelection />
-            </React.Fragment>
+            </>
           ) : (
             <i>No data currently availabile for this product.</i>
           )}
@@ -209,7 +219,7 @@ const AvailabilitySection = (props) => {
               data-selenium="data-product-page.section.availability.external-host-info"
             />
           )}
-        </React.Fragment>
+        </>
       )}
     </Section>
   );

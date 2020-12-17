@@ -9,7 +9,7 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   tooltip: {
     marginLeft: theme.spacing(0.5),
   },

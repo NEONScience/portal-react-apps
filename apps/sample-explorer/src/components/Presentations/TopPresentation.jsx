@@ -13,12 +13,15 @@ const TopPresentation = (props) => {
   } = props;
 
   const breadcrumbs = [
+    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
+    { name: 'Samples & Specimens', href: 'https://www.neonscience.org/samples/' },
     { name: 'Sample Explorer' },
   ];
   return (
     <NeonPage
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}
+      breadcrumbHomeHref="https://www.neonscience.org/"
     >
       <InfoPresentation {...props} />
       <SampleQueryPresentation {...props} />

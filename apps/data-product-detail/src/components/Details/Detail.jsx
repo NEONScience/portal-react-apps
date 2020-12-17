@@ -9,7 +9,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import DetailTooltip from './DetailTooltip';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   div: {
     marginBottom: theme.spacing(3),
   },

@@ -20,6 +20,6 @@ import 'whatwg-fetch';
 
 import React from "react";
 import ReactDOM from "react-dom";
-import Root from "./components/Root";
+import App from "./App";
 
-ReactDOM.render(<Root />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));

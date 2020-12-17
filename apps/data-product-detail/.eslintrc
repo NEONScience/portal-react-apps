@@ -10,6 +10,7 @@
   },
   "rules": {
     "linebreak-style": 0,
+    "react/jsx-props-no-spreading": 0,
     "eslint linebreak-style": [0, "error", "windows"]
   }
 }

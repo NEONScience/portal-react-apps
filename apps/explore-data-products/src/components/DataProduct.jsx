@@ -130,6 +130,9 @@ const DataProduct = React.memo((props) => {
       : products[parent];
   }
 
+  // Used as a key prop on any rendered elements we want to re-render with a release change
+  const renderKey = `${productCode}/${currentRelease || ''}`;
+
   const isAopViewerProduct = aopVizProducts.includes(productCode);
   const descriptionExpanded = productDescriptionExpanded[productCode];
 
@@ -294,7 +297,7 @@ const DataProduct = React.memo((props) => {
 
   const downloadDataButton = hasData ? (
     <DownloadDataContext.Provider
-      key={`${productCode}/${currentRelease || ''}`}
+      key={renderKey}
       productData={isBundleChild ? bundleParentProductData : productData}
       stateObservable={() => highestOrderDownloadSubject.asObservable()}
       release={currentRelease === LATEST_AND_PROVISIONAL ? null : currentRelease}

@@ -15,7 +15,7 @@ import SkeletonDataProduct from './SkeletonDataProduct';
 
 import ExploreContext from '../ExploreContext';
 
-import { FILTER_KEYS } from '../util/filterUtil';
+import { LATEST_AND_PROVISIONAL } from '../util/filterUtil';
 
 const PresentationData = (props) => {
   const { skeleton, highestOrderDownloadSubject } = props;
@@ -23,44 +23,55 @@ const PresentationData = (props) => {
   const [state] = ExploreContext.useExploreContextState();
   const {
     scrollCutoff,
-    filterValues,
-    currentProducts: { order: productOrder },
+    currentProducts: { release: currentRelease, order: productOrder },
   } = state;
 
   /**
    * Download Higher Order State Management
    */
   // Initialize state at the PresentationData component level for keeping the last
-  const initialDownloadState = {
-    downloadState: cloneDeep(DownloadDataContext.DEFAULT_STATE),
-  };
+  const initialDownloadState = cloneDeep(DownloadDataContext.DEFAULT_STATE);
+  if (currentRelease !== LATEST_AND_PROVISIONAL) {
+    initialDownloadState.release.value = currentRelease;
+    initialDownloadState.release.validValues = [currentRelease];
+    initialDownloadState.release.isValid = true;
+  }
 
   // Define a simple reducer for handling whole changes to the download state
   const downloadReducer = (reducerState, action) => {
     switch (action.type) {
       case 'setDownloadState':
-        return {
-          downloadState: action.downloadState,
-        };
+        return action.downloadState;
+      case 'reinitializeDownloadState':
+        return { ...initialDownloadState, broadcast: true };
       default:
-        return {
-          downloadState: DownloadDataContext.reducer(reducerState.downloadState, action),
-        };
+        return DownloadDataContext.reducer(reducerState, action);
     }
   };
   const [downloadState, downloadDispatch] = useReducer(downloadReducer, initialDownloadState);
 
-  // Create an effect to broadcast the higher order download state out on the
+  // Effect to reinitialize download state when explore context release differs. This difference
+  // signals an app-level release change and for simplicity we do not preserve any broadcastable
+  // download selections when changing release.
+  useEffect(() => {
+    if (
+      (downloadState.release.value === null && currentRelease === LATEST_AND_PROVISIONAL)
+        || downloadState.release.value === currentRelease
+    ) { return; }
+    downloadDispatch({ type: 'reinitializeDownloadState' });
+  }, [currentRelease, downloadState.release.value]);
+
+  // Effect to broadcast the higher order download state out on the
   // main observable to be picked up by subscribed contexts whenever the broadcast
   // boolean is true (signifying a change worthy of going out across the board)
   useEffect(() => {
-    if (downloadState.downloadState && downloadState.downloadState.broadcast) {
-      highestOrderDownloadSubject.next(downloadState.downloadState);
+    if (downloadState && downloadState.broadcast) {
+      highestOrderDownloadSubject.next(downloadState);
       downloadDispatch({ type: 'setBroadcastDone' });
     }
-  }, [downloadState.downloadState, highestOrderDownloadSubject]);
+  }, [downloadState, highestOrderDownloadSubject]);
 
-  // Create an effect to listen to updates broadcast from within a single download
+  // Effect to listen to updates broadcast from within a single download
   // context to update the higher-order state and trigger the above broadcast
   useEffect(() => {
     DownloadDataContext.getStateObservable().subscribe((newDownloadState) => {
@@ -98,7 +109,7 @@ const PresentationData = (props) => {
       ) : null}
       {productOrder.slice(0, scrollCutoff).map((productCode) => (
         <DataProduct
-          key={`${productCode}/${filterValues[FILTER_KEYS.RELEASE] || ''}`}
+          key={`${productCode}/${currentRelease || ''}`}
           productCode={productCode}
           highestOrderDownloadSubject={highestOrderDownloadSubject}
         />

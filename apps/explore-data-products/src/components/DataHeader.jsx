@@ -172,7 +172,11 @@ const DataHeader = (props) => {
 
   stats.sites.filtered = filteredSites.size;
   stats.dateRange.filtered = Array.from(filteredDates).sort();
-  stats.dateRange.filtered.splice(1, stats.dateRange.filtered.length - 2);
+  if (stats.dateRange.filtered.length === 1) {
+    stats.dateRange.filtered = [stats.dateRange.filtered[0], stats.dateRange.filtered[0]];
+  } else {
+    stats.dateRange.filtered.splice(1, stats.dateRange.filtered.length - 2);
+  }
 
   const formatRange = (stat, offset) => (
     stats.dateRange[stat][offset]
@@ -180,9 +184,12 @@ const DataHeader = (props) => {
       : ''
   );
   const totalAvailability = `Data available ${formatRange('total', 0)} – ${formatRange('total', 1)}`;
-  const filteredAvailability = stats.dateRange.filtered.length === 2
-    ? `Data available ${formatRange('filtered', 0)} – ${formatRange('filtered', 1)}`
-    : 'No data available';
+  let filteredAvailability = 'No data available';
+  if (stats.dateRange.filtered.length === 2) {
+    filteredAvailability = stats.dateRange.filtered[0] === stats.dateRange.filtered[1]
+      ? `Data available only for ${formatRange('filtered', 0)}`
+      : `Data available ${formatRange('filtered', 0)} – ${formatRange('filtered', 1)}`;
+  }
 
   const selenium = 'browse-data-products-page.data-header';
 

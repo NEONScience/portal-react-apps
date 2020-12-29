@@ -159,6 +159,7 @@ export const parseProductsByReleaseData = (state, release) => {
     const isBundleParent = Object.keys(bundlesJSON.parents).includes(productCode);
     const hasManyParents = isBundleChild && Array.isArray(bundlesJSON.children[productCode]);
     let forwardAvailability = null;
+    let availabilityParentCode = null;
     let availabilitySiteCodes = product.siteCodes || [];
     if (isBundleChild) {
       forwardAvailability = !hasManyParents
@@ -166,7 +167,7 @@ export const parseProductsByReleaseData = (state, release) => {
         : bundlesJSON.children[productCode].every(
           (parent) => bundlesJSON.parents[parent].forwardAvailability,
         );
-      const availabilityParentCode = hasManyParents
+      availabilityParentCode = hasManyParents
         ? bundlesJSON.children[productCode][0]
         : bundlesJSON.children[productCode];
       availabilitySiteCodes = (productsByRelease[availabilityParentCode] || {}).siteCodes || [];
@@ -183,8 +184,10 @@ export const parseProductsByReleaseData = (state, release) => {
       ) : null,
     };
 
-    // Remove bundle blurb from description if this is a bundle child
     if (product.bundle.isChild) {
+      // Bundle children with forwarded availability should have releases identical to the parent
+      product.releases = [...((productsByRelease[availabilityParentCode] || {}).releases || [])];
+      // Remove bundle blurb from description if this is a bundle child
       EXCISE_BUNDLE_BLURBS.forEach((blurb) => {
         if (product.productDescription.includes(blurb)) {
           product.productDescription = product.productDescription.split(blurb).join('');

@@ -120,6 +120,9 @@ const calculateFetches = (state) => {
   });
   if (release && forwardAvailabilityFromParent) {
     parentCodes.forEach((parentCode) => {
+      if (!newState.fetches.bundleParentReleases[parentCode]) {
+        newState.fetches.bundleParentReleases[parentCode] = {};
+      }
       newState.fetches.bundleParentReleases[parentCode][release] = {
         status: FETCH_STATUS.AWAITING_CALL,
       };
@@ -143,6 +146,34 @@ const calculateAppStatus = (state) => {
     return updatedState;
   }
   updatedState.app.status = APP_STATUS.READY;
+  return updatedState;
+};
+
+const sortReleases = (unsortedReleases) => {
+  const releases = [...unsortedReleases];
+  if (releases && releases.length > 1) {
+    releases.sort((a, b) => (a.generationDate < b.generationDate ? 1 : -1));
+  }
+  return releases;
+};
+
+const applyReleasesGlobally = (state, releases) => {
+  const updatedState = { ...state };
+  releases
+    .filter((r) => (
+      !Object.prototype.hasOwnProperty.call(updatedState.data.productReleases, r.release)
+    ))
+    .forEach((r) => { updatedState.data.productReleases[r.release] = null; });
+  if (state.data.product && state.route.bundle.forwardAvailabilityFromParent) {
+    state.route.bundle.parentCodes.forEach((parentCode) => {
+      if (!state.data.bundleParents[parentCode]) { return; }
+      state.data.bundleParents[parentCode].releases.forEach((release) => {
+        if (!updatedState.data.product.releases.some((r) => r.release === release)) {
+          updatedState.data.product.releases.push(release);
+        }
+      });
+    });
+  }
   return updatedState;
 };
 
@@ -257,17 +288,8 @@ const reducer = (state, action) => {
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
-      if (newState.data.product.releases && newState.data.product.releases.length > 1) {
-        newState.data.product.releases.sort(
-          (a, b) => (a.generationDate < b.generationDate ? 1 : -1),
-        );
-      }
-      newState.data.product.releases
-        .filter((r) => (
-          !Object.prototype.hasOwnProperty.call(newState.data.productReleases, r.release)
-        ))
-        .forEach((r) => { newState.data.productReleases[r.release] = null; });
-      return calculateAppStatus(newState);
+      newState.data.product.releases = sortReleases(newState.data.product.releases);
+      return calculateAppStatus(applyReleasesGlobally(newState, newState.data.product.releases));
 
     case 'fetchProductReleaseFailed':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
@@ -289,19 +311,26 @@ const reducer = (state, action) => {
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
-      return calculateAppStatus(newState);
+      // eslint-disable-next-line max-len
+      newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
+      return calculateAppStatus(
+        applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
+      );
 
     case 'fetchBundleParentReleaseFailed':
       /* eslint-disable max-len */
-      newState.fetches.bundleParents[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
-      newState.fetches.bundleParents[action.bundleParent][action.release].error = action.error;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
       newState.app.error = `Fetching bundle parent product ${action.bundleParent} release ${action.release} failed: ${action.error.message}`;
       /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
       // eslint-disable-next-line max-len
-      newState.fetches.bundleParents[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
-      newState.data.bundleParents[action.bundleParent][action.release] = action.data;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
+      if (!newState.data.bundleParentReleases[action.bundleParent]) {
+        newState.data.bundleParentReleases[action.bundleParent] = {};
+      }
+      newState.data.bundleParentReleases[action.bundleParent][action.release] = action.data;
       return calculateAppStatus(newState);
 
     case 'fetchAOPVizProductsFailed':

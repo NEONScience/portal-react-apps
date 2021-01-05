@@ -36,6 +36,7 @@ const APP_STATUS = {
   READY: 'READY',
   ERROR: 'ERROR',
 };
+
 /**
    STATE
 */
@@ -62,10 +63,11 @@ const DEFAULT_STATE = {
     aopVizProducts: null,
   },
   data: {
-    product: null,
-    productReleases: {},
-    bundleParents: {},
-    bundleParentReleases: {},
+    product: null, // Latest and provisional product metadata
+    productReleases: {}, // Product metadata on a per-release basis
+    bundleParents: {}, // Latest and provisional bundle parent product metadata
+    bundleParentReleases: {}, // Bundle parent product metadata on a per-release basis
+    releases: [], // List of release objects; fed from base product or bundle inheritance
     aopVizProducts: [],
   },
 };
@@ -157,6 +159,12 @@ const sortReleases = (unsortedReleases) => {
   return releases;
 };
 
+// Idempotent function to apply releases to state.data.releases. This is the global lookup for
+// all releases applicable to this product. It's separate, and must be populated in this way,
+// because the backend currently has no concept of bundles or metadata inheritance. As such a bundle
+// child may not show as being in any release though the parent is (if the bundle is one that
+// forwards availability). In such a case this will be called when the bundle parent is fetched
+// and will thus populate the global releases object (and so the ReleaseFilter).
 const applyReleasesGlobally = (state, releases) => {
   const updatedState = { ...state };
   releases
@@ -164,16 +172,11 @@ const applyReleasesGlobally = (state, releases) => {
       !Object.prototype.hasOwnProperty.call(updatedState.data.productReleases, r.release)
     ))
     .forEach((r) => { updatedState.data.productReleases[r.release] = null; });
-  if (state.data.product && state.route.bundle.forwardAvailabilityFromParent) {
-    state.route.bundle.parentCodes.forEach((parentCode) => {
-      if (!state.data.bundleParents[parentCode]) { return; }
-      state.data.bundleParents[parentCode].releases.forEach((release) => {
-        if (!updatedState.data.product.releases.some((r) => r.release === release)) {
-          updatedState.data.product.releases.push(release);
-        }
-      });
-    });
-  }
+  releases
+    .filter((r) => (
+      updatedState.data.releases.every((existingR) => r.release !== existingR.release)
+    ))
+    .forEach((r) => { updatedState.data.releases.push(r); });
   return updatedState;
 };
 
@@ -224,13 +227,9 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
 const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
   const {
     route: { release: currentRelease },
-    data: { product: generalProduct },
+    data: { releases },
   } = state;
-  if (
-    !currentRelease || !generalProduct
-      || !generalProduct.releases || !generalProduct.releases.length
-  ) { return null; }
-  return generalProduct.releases.find((r) => r.release === currentRelease) || null;
+  return releases.find((r) => r.release === currentRelease) || null;
 };
 
 /**
@@ -303,19 +302,21 @@ const reducer = (state, action) => {
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':
+      /* eslint-disable max-len */
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParents[action.bundleParent].error = action.error;
-      // eslint-disable-next-line max-len
       newState.app.error = `Fetching bundle parent product ${action.bundleParent} failed: ${action.error.message}`;
       return calculateAppStatus(newState);
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
-      // eslint-disable-next-line max-len
       newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
       return calculateAppStatus(
-        applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
+        newState.route.bundle.forwardAvailabilityFromParent
+          ? applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases)
+          : newState,
       );
+      /* eslint-enable max-len */
 
     case 'fetchBundleParentReleaseFailed':
       /* eslint-disable max-len */

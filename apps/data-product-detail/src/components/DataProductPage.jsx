@@ -67,9 +67,7 @@ const DataProductPage = () => {
   const {
     app: { status: appStatus, error: appError },
     route: { productCode, release: currentRelease },
-    data: {
-      product: generalProduct,
-    },
+    data: { releases },
   } = state;
 
   // Set loading and error page props
@@ -122,11 +120,6 @@ const DataProductPage = () => {
   }
 
   // Define the release filter node
-  const releases = (
-    appStatus === APP_STATUS.READY && product && Array.isArray(generalProduct.releases)
-      ? [...generalProduct.releases]
-      : null
-  );
   let releaseFilterProps = { skeleton: true };
   if (appStatus === APP_STATUS.READY && product) {
     releaseFilterProps = {

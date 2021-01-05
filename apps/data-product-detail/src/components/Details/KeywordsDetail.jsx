@@ -13,6 +13,10 @@ const useStyles = makeStyles((theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(0.5),
+    maxWidth: '-webkit-fill-available',
+  },
+  chipMoz: {
+    maxWidth: '-moz-available',
   },
 }));
 
@@ -27,16 +31,18 @@ const KeywordsDetail = () => {
     <Detail
       title="Scientific Keywords"
     >
-      {(keywords || []).length ? keywords.map((keyword) => (
-        <Chip
-          label={keyword}
-          key={keyword}
-          size="small"
-          className={classes.chip}
-        />
-      )) : (
-        <i>n/a</i>
-      )}
+      <div style={{ overflowX: 'hidden' }}>
+        {(keywords || []).length ? keywords.map((keyword) => (
+          <Chip
+            label={keyword}
+            key={keyword}
+            size="small"
+            className={`${classes.chip} ${classes.chipMoz}`}
+          />
+        )) : (
+          <i>n/a</i>
+        )}
+      </div>
     </Detail>
   );
 };

@@ -451,6 +451,7 @@ const Provider = (props) => {
       dispatch({ type: 'reinitialize' });
       return;
     }
+    // Next release differs from location: navigate to next release and apply to state
     if (nextRelease !== undefined && nextRelease !== locationRelease) {
       let nextLocation = nextRelease === null
         ? `/data-products/${productCode}`
@@ -461,6 +462,12 @@ const Provider = (props) => {
       dispatch({ type: 'applyNextRelease' });
       return;
     }
+    // Next release diffres from current: apply next release to state (used after browser nav)
+    if (nextRelease !== undefined && nextRelease !== currentRelease) {
+      dispatch({ type: 'applyNextRelease' });
+      return;
+    }
+    // Location differs from current release: set the location as the next release
     if (locationRelease !== currentRelease) {
       dispatch({ type: 'setNextRelease', release: locationRelease });
     }

@@ -258,7 +258,7 @@ const CitationDetail = () => {
   const renderCitationCard = (release, conditional = false) => {
     const provisional = release === 'provisional';
     const citationProduct = provisional ? citableBaseProduct : citableReleaseProduct;
-    if (!citationProduct) { console.log('BAIL'); return null; }
+    if (!citationProduct) { return null; }
     const downloadEnabled = provisional || getReleaseDoi(release) !== null;
     let conditionalText = null;
     let citationClassName = classes.citationText;

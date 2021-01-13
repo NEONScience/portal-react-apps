@@ -104,30 +104,42 @@ const calculateFetches = (state) => {
   const newState = { ...state };
   const {
     productCode,
-    release,
+    release: routeRelease,
     bundle: { parentCodes, forwardAvailabilityFromParent },
   } = state.route;
+  const { releases } = state.data;
   if (!productCode) { return state; }
+  const latestRelease = releases && releases.length ? releases[0].release : null;
+  const fetchRelease = routeRelease || latestRelease;
+  // Fetch the base product
   if (!state.fetches.product) {
     newState.fetches.product = { status: FETCH_STATUS.AWAITING_CALL };
   }
+  // Fetch the list of products that support the AOP Visualization
   if (!state.fetches.aopVizProducts) {
     newState.fetches.aopVizProducts = { status: FETCH_STATUS.AWAITING_CALL };
   }
-  if (release && !state.fetches.productReleases[release]) {
-    newState.fetches.productReleases[release] = { status: FETCH_STATUS.AWAITING_CALL };
+  // Fetch the release-specific product
+  if (fetchRelease && !state.fetches.productReleases[fetchRelease]) {
+    newState.fetches.productReleases[fetchRelease] = { status: FETCH_STATUS.AWAITING_CALL };
   }
+  // Fetch all base bundle parent products
   (parentCodes || []).forEach((bundleParentCode) => {
-    newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
+    if (!newState.fetches.bundleParents[bundleParentCode]) {
+      newState.fetches.bundleParents[bundleParentCode] = { status: FETCH_STATUS.AWAITING_CALL };
+    }
   });
-  if (release && forwardAvailabilityFromParent) {
+  // Fetch all release-specific bundle parent products
+  if (fetchRelease && forwardAvailabilityFromParent) {
     parentCodes.forEach((parentCode) => {
       if (!newState.fetches.bundleParentReleases[parentCode]) {
         newState.fetches.bundleParentReleases[parentCode] = {};
       }
-      newState.fetches.bundleParentReleases[parentCode][release] = {
-        status: FETCH_STATUS.AWAITING_CALL,
-      };
+      if (!newState.fetches.bundleParentReleases[parentCode][fetchRelease]) {
+        newState.fetches.bundleParentReleases[parentCode][fetchRelease] = {
+          status: FETCH_STATUS.AWAITING_CALL,
+        };
+      }
     });
   }
   return newState;
@@ -288,7 +300,11 @@ const reducer = (state, action) => {
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
       newState.data.product.releases = sortReleases(newState.data.product.releases);
-      return calculateAppStatus(applyReleasesGlobally(newState, newState.data.product.releases));
+      return calculateAppStatus(
+        calculateFetches(
+          applyReleasesGlobally(newState, newState.data.product.releases),
+        ),
+      );
 
     case 'fetchProductReleaseFailed':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
@@ -312,9 +328,11 @@ const reducer = (state, action) => {
       newState.data.bundleParents[action.bundleParent] = action.data;
       newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
       return calculateAppStatus(
-        newState.route.bundle.forwardAvailabilityFromParent
-          ? applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases)
-          : newState,
+        calculateFetches(
+          newState.route.bundle.forwardAvailabilityFromParent
+            ? applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases)
+            : newState,
+        ),
       );
       /* eslint-enable max-len */
 

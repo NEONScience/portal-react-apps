@@ -13,16 +13,20 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import CopyIcon from '@material-ui/icons/Assignment';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
+
+const { useDataProductContextState } = DataProductContext;
 
 const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
 
@@ -97,30 +101,72 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1.5),
     fontFamily: 'monospace',
   },
+  bundleParentBlurbCard: {
+    backgroundColor: Theme.colors.GOLD[50],
+    marginTop: theme.spacing(1),
+  },
+  bundleParentBlurbCardContent: {
+    padding: theme.spacing(2),
+    paddingBottom: '20px !important',
+  },
+  bundleParentBlurb: {
+    fontStyle: 'italic',
+    fontSize: '0.8rem',
+  },
 }));
 
 const CitationDetail = () => {
   const classes = useStyles(Theme);
-  const [state] = DataProductContext.useDataProductContextState();
-  const product = DataProductContext.getCurrentProductFromState(state);
+  const [state] = useDataProductContextState();
 
   const {
     route: {
-      productCode,
-      release: currentRelease,
+      release: currentReleaseTag,
+      bundle,
     },
     data: {
       product: baseProduct,
+      productReleases,
+      bundleParents,
+      bundleParentReleases,
+      releases,
     },
   } = state;
-  const { releases } = baseProduct;
 
   const latestRelease = releases && releases.length ? releases[0] : null;
 
+  const bundleParentCode = bundle.parentCodes.length ? bundle.parentCodes[0] : null;
+
+  const citableBaseProduct = bundle.parentCodes.length
+    ? bundleParents[bundleParentCode] || baseProduct
+    : baseProduct;
+
+  let citableReleaseProduct = null;
+  const citationReleaseTag = currentReleaseTag || (latestRelease || {}).release || null;
+  if (citationReleaseTag) {
+    citableReleaseProduct = bundleParentCode
+      ? (bundleParentReleases[bundleParentCode] || {})[citationReleaseTag] || null
+      : productReleases[citationReleaseTag] || null;
+  }
+
+  let bundleParentLink = null;
+  if (bundleParentCode) {
+    const bundleParentName = currentReleaseTag
+      ? citableReleaseProduct.productName
+      : citableBaseProduct.productName;
+    let bundleParentHref = `${NeonEnvironment.getHost()}/data-products/${bundleParentCode}`;
+    if (currentReleaseTag) { bundleParentHref += `/${currentReleaseTag}`; }
+    bundleParentLink = (
+      <Link href={bundleParentHref}>
+        {`${bundleParentName} (${bundleParentCode})`}
+      </Link>
+    );
+  }
+
   const dataPolicyLink = (
-    <a href={DATA_POLICIES_URL}>
+    <Link href={DATA_POLICIES_URL}>
       Data Policies &amp; Citation Guidelines
-    </a>
+    </Link>
   );
 
   const getReleaseObject = (release) => (
@@ -136,7 +182,8 @@ const CitationDetail = () => {
       : null;
   };
 
-  const getCitationText = (release) => {
+  const getCitationText = (product, release) => {
+    if (!product) { return null; }
     const releaseObject = getReleaseObject(release);
     const citationDoi = (
       releaseObject && releaseObject.productDoi && releaseObject.productDoi.url
@@ -179,10 +226,10 @@ const CitationDetail = () => {
   const handleDownloadCitation = (release, format) => {
     if (!CITATION_FORMATS[format]) { return; }
     const { mime, extension, generateProvisionalCitation } = CITATION_FORMATS[format];
-    const fileName = `NEON-${productCode}-${release}.${extension}`;
+    const fileName = `NEON-${citableBaseProduct.productCode}-${release}.${extension}`;
     // Provisional: generate client-side and immediately download
     if (release === 'provisional') {
-      const provisionalCitation = generateProvisionalCitation(baseProduct);
+      const provisionalCitation = generateProvisionalCitation(citableBaseProduct);
       if (!provisionalCitation) { return; }
       executeDownload(fileName, mime, provisionalCitation);
       return;
@@ -210,6 +257,8 @@ const CitationDetail = () => {
 
   const renderCitationCard = (release, conditional = false) => {
     const provisional = release === 'provisional';
+    const citationProduct = provisional ? citableBaseProduct : citableReleaseProduct;
+    if (!citationProduct) { console.log('BAIL'); return null; }
     const downloadEnabled = provisional || getReleaseDoi(release) !== null;
     let conditionalText = null;
     let citationClassName = classes.citationText;
@@ -225,7 +274,7 @@ const CitationDetail = () => {
       );
       citationClassName = classes.citationTextWithQualifier;
     }
-    const citationText = getCitationText(release);
+    const citationText = getCitationText(citationProduct, release);
     return (
       <Card className={classes.citationCard}>
         <CardContent>
@@ -257,7 +306,7 @@ const CitationDetail = () => {
               placement="bottom-start"
               title={(
                 downloadEnabled
-                  ? `Click to download the ${productCode}/${release} citation as a file in ${CITATION_FORMATS[key].longName} format`
+                  ? `Click to download the ${citableBaseProduct.productCode}/${release} citation as a file in ${CITATION_FORMATS[key].longName} format`
                   : 'Citation format downloads are not available because this product release has no DOI'
               )}
             >
@@ -285,14 +334,27 @@ const CitationDetail = () => {
     <Detail title="Citation">
       <Typography variant="subtitle2">
         {(
-          currentRelease || latestRelease === null
+          currentReleaseTag || latestRelease === null
             ? 'Please use this citation in your publications. '
             : 'Please use the appropriate citation(s) from below in your publications. If using both provisional and release data please include both citations. '
         )}
         See {dataPolicyLink} for more info.
       </Typography>
-      {currentRelease ? (
-        renderCitationCard(currentRelease)
+      {!bundleParentLink ? null : (
+        <Card className={classes.bundleParentBlurbCard}>
+          <CardContent className={classes.bundleParentBlurbCardContent}>
+            <Typography variant="body2" color="textSecondary" className={classes.bundleParentBlurb}>
+              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              <b>Note:</b> This product bundled into {bundleParentLink}.
+              The {currentReleaseTag || !latestRelease ? 'citation below refers' : 'citations below refer'} to
+              that product and this sub-product is not directly citable.
+              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
+      {currentReleaseTag ? (
+        renderCitationCard(currentReleaseTag)
       ) : (
         <>
           {renderCitationCard('provisional', latestRelease !== null)}

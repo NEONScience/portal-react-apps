@@ -9,9 +9,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import CopyIcon from '@material-ui/icons/Assignment';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
@@ -57,6 +59,11 @@ const useStyles = makeStyles((theme) => ({
   releaseAttribValue: {
     fontWeight: 600,
   },
+  doiFromParentBlurb: {
+    fontStyle: 'italic',
+    fontSize: '0.8rem',
+    marginTop: theme.spacing(1),
+  },
 }));
 
 const DataProductPage = () => {
@@ -66,8 +73,8 @@ const DataProductPage = () => {
   const product = getCurrentProductFromState(state);
   const {
     app: { status: appStatus, error: appError },
-    route: { productCode, release: currentRelease },
-    data: { releases },
+    route: { productCode, release: currentRelease, bundle },
+    data: { releases, bundleParentReleases },
   } = state;
 
   // Set loading and error page props
@@ -100,6 +107,23 @@ const DataProductPage = () => {
       ? currentReleaseObject.productDoi.url
       : null
   );
+
+  // Special handling for bundle children
+  let doiUrlIsFromBundleParent = false;
+  let bundleParentLink = null;
+  if (currentDoiUrl && bundle.parentCodes.length) {
+    doiUrlIsFromBundleParent = true;
+    const bundleParentCode = bundle.parentCodes[0];
+    const bundleParentData = (bundleParentReleases[bundleParentCode] || {})[currentRelease] || {};
+    const { productName: bundleParentName } = bundleParentData;
+    bundleParentLink = !Object.keys(bundleParentData).length ? null : (
+      <Link
+        href={`${NeonEnvironment.getHost()}/data-products/${bundleParentCode}/${currentRelease}`}
+      >
+        {`${bundleParentName} (${bundleParentCode})`}
+      </Link>
+    );
+  }
 
   // Set page title and breadcrumbs
   let title = 'Data Product';
@@ -221,13 +245,28 @@ const DataProductPage = () => {
                   <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
                 </Typography>
                 {!currentDoiUrl ? null : (
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    <span className={classes.releaseAttribTitle}>DOI:</span>
-                    <span className={classes.releaseAttribValue}>
-                      {currentDoiUrl}
-                    </span>
-                    <DetailTooltip tooltip={DOI_TOOLTIP} />
-                  </Typography>
+                  <>
+                    <Typography variant="body2" color="textSecondary" component="p">
+                      <span className={classes.releaseAttribTitle}>DOI:</span>
+                      <span className={classes.releaseAttribValue}>
+                        {currentDoiUrl}
+                      </span>
+                      <DetailTooltip tooltip={DOI_TOOLTIP} />
+                    </Typography>
+                    {!doiUrlIsFromBundleParent ? null : (
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                        className={classes.doiFromParentBlurb}
+                      >
+                        {/* eslint-disable react/jsx-one-expression-per-line */}
+                        <b>Note:</b> This product bundled into {bundleParentLink}. The above DOI
+                        refers to that product and there is no DOI directly to this sub-product.
+                        {/* eslint-enable react/jsx-one-expression-per-line */}
+                      </Typography>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>

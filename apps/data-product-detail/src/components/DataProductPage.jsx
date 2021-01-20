@@ -90,8 +90,14 @@ const DataProductPage = () => {
       break;
     case APP_STATUS.ERROR:
       error = appError
-        ? `Error loading ${loadType}: ${appError}`
-        : `Error: ${loadType} not found`;
+        ? (
+          <>
+            <div>{`Error loading ${loadType}`}</div>
+            <div>{appError}</div>
+          </>
+        ) : (
+          <div>{`Error: ${loadType} not found`}</div>
+        );
       break;
     default:
       loading = `Loading ${loadType}...`;
@@ -203,7 +209,7 @@ const DataProductPage = () => {
 
   const downloadProductData = DataProductContext.getCurrentProductFromState(state, true);
   const releaseInfoHref = !currentRelease ? null : (
-    `${NeonEnvironment.getHost()}/data-samples/data-management/data-revisions-releases/${currentRelease}`
+    `https://www.neonscience.org/data-samples/data-management/data-revisions-releases/${currentRelease}`
   );
   const releaseInfoTooltip = !currentRelease ? null : (
     `Click to view general inforamtion about all data products in the ${currentRelease} release`

@@ -265,6 +265,10 @@ const useDataProductContextState = () => {
 */
 const reducer = (state, action) => {
   const newState = { ...state };
+  const errorDetail = (
+    !action.error ? null
+      : ((action.error.response || {}).error || {}).detail || action.error.message || null
+  );
   switch (action.type) {
     case 'reinitialize':
       return cloneDeep(DEFAULT_STATE);
@@ -294,7 +298,7 @@ const reducer = (state, action) => {
     case 'fetchProductFailed':
       newState.fetches.product.status = FETCH_STATUS.ERROR;
       newState.fetches.product.error = action.error;
-      newState.app.error = `Fetching base product failed: ${action.error.message}`;
+      newState.app.error = `${errorDetail}: product code ${state.route.productCode}`;
       return calculateAppStatus(newState);
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
@@ -310,7 +314,7 @@ const reducer = (state, action) => {
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleases[action.release].error = action.error;
       // eslint-disable-next-line max-len
-      newState.app.error = `Fetching product release ${action.release} failed: ${action.error.message}`;
+      newState.app.error = `${errorDetail}: ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseSucceeded':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.SUCCESS;
@@ -321,7 +325,7 @@ const reducer = (state, action) => {
       /* eslint-disable max-len */
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParents[action.bundleParent].error = action.error;
-      newState.app.error = `Fetching bundle parent product ${action.bundleParent} failed: ${action.error.message}`;
+      newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}`;
       return calculateAppStatus(newState);
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
@@ -338,7 +342,8 @@ const reducer = (state, action) => {
       /* eslint-disable max-len */
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
-      newState.app.error = `Fetching bundle parent product ${action.bundleParent} release ${action.release} failed: ${action.error.message}`;
+      newState.app.error = errorDetail;
+      newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}; release ${action.release}`;
       /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':

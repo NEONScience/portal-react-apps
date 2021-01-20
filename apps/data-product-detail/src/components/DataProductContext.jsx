@@ -105,7 +105,7 @@ const calculateFetches = (state) => {
   const {
     productCode,
     release: routeRelease,
-    bundle: { parentCodes, forwardAvailabilityFromParent },
+    bundle: { parentCodes },
   } = state.route;
   const { releases } = state.data;
   if (!productCode) { return state; }
@@ -130,7 +130,7 @@ const calculateFetches = (state) => {
     }
   });
   // Fetch all release-specific bundle parent products
-  if (fetchRelease && forwardAvailabilityFromParent) {
+  if (fetchRelease) {
     parentCodes.forEach((parentCode) => {
       if (!newState.fetches.bundleParentReleases[parentCode]) {
         newState.fetches.bundleParentReleases[parentCode] = {};
@@ -329,9 +329,7 @@ const reducer = (state, action) => {
       newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
       return calculateAppStatus(
         calculateFetches(
-          newState.route.bundle.forwardAvailabilityFromParent
-            ? applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases)
-            : newState,
+          applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
         ),
       );
       /* eslint-enable max-len */

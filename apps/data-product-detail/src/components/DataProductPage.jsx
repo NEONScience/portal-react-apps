@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import CopyIcon from '@material-ui/icons/Assignment';
 
@@ -29,7 +30,7 @@ import VisualizationsSection from './Sections/VisualizationsSection';
 
 import DetailTooltip from './Details/DetailTooltip';
 
-const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable permanent link to this this data product release';
+const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable, permanent link to this data product release';
 
 const {
   APP_STATUS,
@@ -57,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   releaseAttribValue: {
+    fontWeight: 600,
+  },
+  releaseInfoLink: {
     fontWeight: 600,
   },
   doiFromParentBlurb: {
@@ -198,6 +202,12 @@ const DataProductPage = () => {
   });
 
   const downloadProductData = DataProductContext.getCurrentProductFromState(state, true);
+  const releaseInfoHref = !currentRelease ? null : (
+    `${NeonEnvironment.getHost()}/data-samples/data-management/data-revisions-releases/${currentRelease}`
+  );
+  const releaseInfoTooltip = !currentRelease ? null : (
+    `Click to view general inforamtion about all data products in the ${currentRelease} release`
+  );
 
   return (
     <NeonPage
@@ -224,7 +234,15 @@ const DataProductPage = () => {
                 <div className={classes.flex}>
                   <Typography variant="h5" component="h2">
                     Release:&nbsp;
-                    <b>{currentRelease}</b>
+                    <Tooltip
+                      placement="right"
+                      title={releaseInfoTooltip}
+                      className={classes.tooltip}
+                    >
+                      <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                        {currentRelease}
+                      </Link>
+                    </Tooltip>
                   </Typography>
                   {!currentDoiUrl ? null : (
                     <CopyToClipboard text={currentDoiUrl}>
@@ -262,7 +280,8 @@ const DataProductPage = () => {
                       >
                         {/* eslint-disable react/jsx-one-expression-per-line */}
                         <b>Note:</b> This product bundled into {bundleParentLink}. The above DOI
-                        refers to that product and there is no DOI directly to this sub-product.
+                        refers to that product release and there is no DOI directly associated with
+                        this sub-product release.
                         {/* eslint-enable react/jsx-one-expression-per-line */}
                       </Typography>
                     )}

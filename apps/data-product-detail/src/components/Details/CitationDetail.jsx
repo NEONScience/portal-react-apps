@@ -151,7 +151,7 @@ const CitationDetail = () => {
 
   let bundleParentLink = null;
   if (bundleParentCode) {
-    const bundleParentName = currentReleaseTag
+    const bundleParentName = currentReleaseTag && citableReleaseProduct
       ? citableReleaseProduct.productName
       : citableBaseProduct.productName;
     let bundleParentHref = `${NeonEnvironment.getHost()}/data-products/${bundleParentCode}`;
@@ -345,9 +345,9 @@ const CitationDetail = () => {
           <CardContent className={classes.bundleParentBlurbCardContent}>
             <Typography variant="body2" color="textSecondary" className={classes.bundleParentBlurb}>
               {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-              <b>Note:</b> This product bundled into {bundleParentLink}.
+              <b>Note:</b> This product is bundled into {bundleParentLink}.
               The {currentReleaseTag || !latestRelease ? 'citation below refers' : 'citations below refer'} to
-              that product and this sub-product is not directly citable.
+              that product as this sub-product is not directly citable.
               {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
             </Typography>
           </CardContent>

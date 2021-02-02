@@ -415,7 +415,8 @@ const Provider = (props) => {
     if (status !== APP_STATUS.INITIALIZING) { return; }
     const [routeProductCode, routeRelease] = getProductCodeAndReleaseFromURL();
     if (!routeProductCode) {
-      dispatch({ type: 'error', error: 'Data product not found.' });
+      dispatch({ type: 'error', error: 'Data product not found' });
+      return;
     }
     let bundleParentCodes = null;
     let bundleForwardAvailabilityFromParent = null;

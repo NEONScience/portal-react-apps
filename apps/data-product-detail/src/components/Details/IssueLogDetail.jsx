@@ -89,7 +89,7 @@ const getDateSortWithNulls = (field, alternateField = null) => (
     }
     if (a[field] === null) { return 1; }
     if (b[field] === null) { return -1; }
-    return a[alternateField] < b[alternateField] ? -1 : 1;
+    return a[field] < b[field] ? -1 : 1;
   }
 );
 
@@ -140,7 +140,7 @@ const IssueLogDetail = () => {
 
   const formatSummary = (issueString) => truncate(issueString, { length: 40, separator: /\W+/ });
 
-  const formatDate = (dateString) => dateFormat(dateString, 'yyyy-mm-dd');
+  const formatDate = (dateString) => dateFormat(dateString, 'yyyy-mm-dd', true);
 
   const formatLocations = (locationsString) => {
     const renderLine = (line) => {
@@ -173,7 +173,7 @@ const IssueLogDetail = () => {
     title: 'Issue',
     field: 'issue',
     searchable: true,
-    render: (row) => formatSummary(row.issue),
+    render: (row) => formatSummary(`${row.id} - ${row.issue}`),
     cellStyle: (fieldData, rowData) => (rowData.parentIssueID
       ? {
         borderLeft: `1px dotted ${Theme.palette.grey[100]}`,

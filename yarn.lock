@@ -10314,7 +10314,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#v1.6.2":
   version "1.6.2"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/5cf1f890568ee48225670f8318398e1afc80b794"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/d25f60fec2b4882513713ddcf84ee4ea6a0f120a"
   dependencies:
     "@date-io/moment" "^1.3.9"
     "@material-ui/core" "^4.11.0"

@@ -173,7 +173,7 @@ const IssueLogDetail = () => {
     title: 'Issue',
     field: 'issue',
     searchable: true,
-    render: (row) => formatSummary(`${row.id} - ${row.issue}`),
+    render: (row) => formatSummary(row.issue),
     cellStyle: (fieldData, rowData) => (rowData.parentIssueID
       ? {
         borderLeft: `1px dotted ${Theme.palette.grey[100]}`,

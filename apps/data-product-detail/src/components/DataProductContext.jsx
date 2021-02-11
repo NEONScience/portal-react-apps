@@ -391,7 +391,6 @@ const Provider = (props) => {
     process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
     initialState,
   );
-  // const [state, dispatch] = useReducer(reducer, initialState);
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const { bundles } = neonContextData;

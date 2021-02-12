@@ -1,4 +1,4 @@
-/* eslint-disable import/no-unresolved */
+/* eslint-disable import/no-unresolved, no-unused-vars */
 import React, {
   createContext,
   useContext,
@@ -12,6 +12,22 @@ import logger from 'use-reducer-logger';
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
+import NeonContext from 'portal-core-components/lib/components/NeonContext';
+
+import {
+  /* constants */
+  DEFAULT_SORT_METHOD,
+  DEFAULT_SORT_DIRECTION,
+  FILTER_KEYS,
+  INITIAL_FILTER_ITEMS,
+  INITIAL_FILTER_VALUES,
+  /* functions */
+  applySort,
+  applyFilter,
+  parseAllDatasets,
+  resetAllFilters,
+  resetFilter,
+} from './filterUtil';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -39,7 +55,41 @@ const DEFAULT_STATE = {
     status: FETCH_STATUS.AWAITING_CALL,
     error: null,
   },
-  datasets: null,
+
+  neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
+
+  // Objects indexed by dataset uuid. Items go to unparsed first and only get parsed when
+  // NeonContext is fully loaded.
+  unparsedDatasets: {},
+  datasets: {},
+
+  // Object used present the appropriately sorted subset of datasets based on user inputs
+  currentDatasets: {
+    // Sorted list of dataset uuids
+    order: [],
+    // Mapping by uuid to object containing filter+absolute booleans to track visibility
+    visibility: {},
+    // Mapping of uuid to a relevance number for current applied search terms
+    searchRelevance: {},
+  },
+
+  // Mapping by uuid to booleans to track expanded details
+  datasetDetailsExpanded: {},
+
+  // Stats about the entire product catalog independent of release, derived once on load
+  stats: {
+    totalDatasets: 0,
+    totalDateRange: [null, null],
+  },
+
+  // How many potentially visible products to actually show
+  // increase with scroll; reset with filter change
+  scrollCutoff: 10,
+
+  sort: {
+    method: DEFAULT_SORT_METHOD,
+    direction: DEFAULT_SORT_DIRECTION,
+  },
 };
 
 /**
@@ -58,39 +108,68 @@ const usePrototypeContextState = () => {
   return hookResponse;
 };
 
+const calculateAppStatus = (state) => {
+  const { datasetsFetch: { status: datasetsFetchStatus } } = state;
+  const newState = { ...state };
+  if (datasetsFetchStatus === FETCH_STATUS.AWAITING_CALL) {
+    newState.app.status = APP_STATUS.INITIALIZING;
+    return newState;
+  }
+  if (datasetsFetchStatus === FETCH_STATUS.ERROR) {
+    newState.app.status = APP_STATUS.ERROR;
+    return newState;
+  }
+  if (datasetsFetchStatus === FETCH_STATUS.FETCHING || !state.neonContextState.isFinal) {
+    newState.app.status = APP_STATUS.FETCHING;
+    return newState;
+  }
+  newState.app.status = APP_STATUS.READY;
+  return newState;
+};
+
 /**
    REDUCER
 */
 const reducer = (state, action) => {
-  const newState = { ...state };
+  let newState = { ...state };
   const errorDetail = (
     !action.error ? null
       : ((action.error.response || {}).error || {}).detail || action.error.message || null
   );
 
   switch (action.type) {
+    // Initialization
     case 'reinitialize':
       return cloneDeep(DEFAULT_STATE);
+
+    // General failure
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
       newState.app.error = action.error;
       return newState;
 
+    // Neon Context
+    case 'storeFinalizedNeonContextState':
+      newState = parseAllDatasets({ ...newState, neonContextState: action.neonContextState });
+      return calculateAppStatus(newState);
+
+    // Fetch datasets
     case 'fetchDatasetsStarted':
       newState.datasetsFetch.status = FETCH_STATUS.FETCHING;
-      newState.app.status = APP_STATUS.FETCHING;
-      return newState;
+      return calculateAppStatus(newState);
     case 'fetchDatasetsFailed':
       newState.datasetsFetch.status = FETCH_STATUS.ERROR;
       newState.datasetsFetch.error = action.error;
-      newState.app.status = APP_STATUS.ERROR;
       newState.app.error = errorDetail;
-      return newState;
+      return calculateAppStatus(newState);
     case 'fetchDatasetsSucceeded':
       newState.datasetsFetch.status = FETCH_STATUS.SUCCESS;
-      newState.datasets = action.data;
-      newState.app.status = APP_STATUS.READY;
-      return newState;
+      newState.unparsedDatasets = {};
+      action.data.forEach((dataset) => {
+        if (!dataset || typeof dataset !== 'object' || !dataset.uuid) { return; }
+        newState.unparsedDatasets[dataset.uuid] = dataset;
+      });
+      return calculateAppStatus(parseAllDatasets(newState));
 
     // Default
     default:

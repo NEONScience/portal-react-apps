@@ -3,6 +3,7 @@ import React from 'react';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
 import PrototypeContext from './PrototypeContext';
+import SkeletonDataset from './components/SkeletonDataset';
 
 const {
   APP_STATUS,
@@ -10,7 +11,7 @@ const {
 } = PrototypeContext;
 
 const PrototypePage = () => {
-  const [state] = usePrototypeContextState();
+  const [state, dispatch] = usePrototypeContextState();
 
   const {
     app: { status: appStatus, error: appError },
@@ -29,7 +30,7 @@ const PrototypePage = () => {
       loading = 'Loading Prototype Datasets...';
       break;
   }
-  // const skeleton = loading || error;
+  const skeleton = loading || error;
 
   return (
     <NeonPage
@@ -38,8 +39,25 @@ const PrototypePage = () => {
       breadcrumbs={[]}
       loading={loading}
       error={error}
+      NeonContextProviderProps={{
+        whenFinal: (neonContextState) => {
+          dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
+      }}
     >
-      foo
+      {skeleton ? (
+        <div>
+          <SkeletonDataset />
+          <SkeletonDataset />
+          <SkeletonDataset />
+          <SkeletonDataset />
+          <SkeletonDataset />
+        </div>
+      ) : (
+        <div>
+          foo
+        </div>
+      )}
     </NeonPage>
   );
 };

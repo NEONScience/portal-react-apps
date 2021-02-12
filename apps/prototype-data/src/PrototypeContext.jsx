@@ -90,6 +90,13 @@ const DEFAULT_STATE = {
     method: DEFAULT_SORT_METHOD,
     direction: DEFAULT_SORT_DIRECTION,
   },
+
+  // Store for all discrete options for filters that make use of them
+  filterItems: cloneDeep(INITIAL_FILTER_ITEMS),
+  // Store for current values applied for all filters
+  filterValues: cloneDeep(INITIAL_FILTER_VALUES),
+  // List of filter keys that have been applied / are not in a cleared state
+  filtersApplied: [],
 };
 
 /**

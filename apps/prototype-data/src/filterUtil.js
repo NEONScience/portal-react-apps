@@ -66,7 +66,7 @@ export const getContinuousYearsArray = (dateRange) => {
   if (
     !Array.isArray(dateRange) || dateRange.length !== 2
       || !Number.isInteger(dateRange[0]) || !Number.isInteger(dateRange[1])
-      || dateRange[0] < MIN_YEAR || dateRange[1] > MAX_YEAR || dateRange[1] <= dateRange[0]
+      || dateRange[0] < MIN_YEAR || dateRange[1] > MAX_YEAR || dateRange[1] < dateRange[0]
   ) { return []; }
   const contionuousRange = [];
   let y = dateRange[0];
@@ -106,7 +106,6 @@ export const INITIAL_FILTER_VALUES = {
 };
 
 export const INITIAL_FILTER_ITEMS = {
-  DATA_STATUS: [],
   THEMES: [],
   SCIENCE_TEAM: [],
   DATE_RANGE: [],
@@ -122,9 +121,9 @@ Object.keys(FILTER_KEYS).forEach((filterKey) => {
 
 export const SORT_DIRECTIONS = ['ASC', 'DESC'];
 
-const getSortReturns = (sortDirection) => [
-  sortDirection === 'ASC' ? -1 : 1,
-  sortDirection === 'ASC' ? 1 : -1,
+const getSortReturns = (direction) => [
+  direction === 'ASC' ? -1 : 1,
+  direction === 'ASC' ? 1 : -1,
 ];
 // One-liner for ascending alphabetical sort. Used by many sort methods as a fallback
 // when targeted sortable values are equal between datasets.
@@ -139,7 +138,7 @@ export const SORT_METHODS = {
       const { datasets } = state;
       const datasetA = datasets[a];
       const datasetB = datasets[b];
-      const ret = getSortReturns(state.sortDirection);
+      const ret = getSortReturns(state.sort.direction);
       return (
         datasetA.projectTitle.toUpperCase() < datasetB.projectTitle.toUpperCase() ? ret[0] : ret[1]
       );
@@ -158,7 +157,7 @@ export const SORT_METHODS = {
       ) {
         return projectTitleAscSort(datasetA, datasetB);
       }
-      const ret = getSortReturns(state.sortDirection);
+      const ret = getSortReturns(state.sort.direction);
       const aDate = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE][0];
       const bDate = datasetB.filterableValues[FILTER_KEYS.DATE_RANGE][0];
       if (aDate === bDate) { return projectTitleAscSort(datasetA, datasetB); }
@@ -178,7 +177,7 @@ export const SORT_METHODS = {
       ) {
         return projectTitleAscSort(datasetA, datasetB);
       }
-      const ret = getSortReturns(state.sortDirection);
+      const ret = getSortReturns(state.sort.direction);
       const aRangeLength = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE].length;
       const bRangeLength = datasetB.filterableValues[FILTER_KEYS.DATE_RANGE].length;
       const aDate = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE][aRangeLength - 1];
@@ -217,26 +216,28 @@ export const datasetIsVisibleByFilters = (datasetVisibility) => !Object.keys(dat
   .some((key) => datasetVisibility[key] === false);
 
 /**
- * In a state object: validate and apply a sortMethod and/or sortDirection, then
+ * In a state object: validate and apply a method and/or direction, then
  * regenerate state.currentDatasets.order map using BY_FILTERS visible datasets only
  * @param {object} state - current whole state object
- * @param {string} sortMethod - key in SORT_METHODS object; if invalid use current state value
- * @param {string} sortDirection - item in SORT_DIRECTIONS array; if invalid use current state value
+ * @param {string} method - key in SORT_METHODS object; if invalid use current state value
+ * @param {string} direction - item in SORT_DIRECTIONS array; if invalid use current state value
  * @return {object} updated whole state object
  */
-export const applySort = (state, sortMethod = null, sortDirection = null) => {
+export const applySort = (state, method = null, direction = null) => {
   const updated = {
     ...state,
-    sortMethod: Object.keys(SORT_METHODS).includes(sortMethod) ? sortMethod : state.sortMethod,
-    sortDirection: SORT_DIRECTIONS.includes(sortDirection) ? sortDirection : state.sortDirection,
+    sort: {
+      method: Object.keys(SORT_METHODS).includes(method) ? method : state.sort.method,
+      direction: SORT_DIRECTIONS.includes(direction) ? direction : state.sort.direction,
+    },
   };
-  if (SORT_METHODS[updated.sortMethod].isDisabled(updated.filterValues)) {
-    updated.sortMethod = DEFAULT_SORT_METHOD;
-    updated.sortDirection = DEFAULT_SORT_DIRECTION;
+  if (SORT_METHODS[updated.sort.method].isDisabled(updated.filterValues)) {
+    updated.sort.method = DEFAULT_SORT_METHOD;
+    updated.sort.direction = DEFAULT_SORT_DIRECTION;
   }
   const datasetOrder = Object.keys(updated.currentDatasets.visibility)
     .filter((uuid) => updated.currentDatasets.visibility[uuid].BY_FILTERS);
-  datasetOrder.sort(SORT_METHODS[updated.sortMethod].getSortFunction(updated));
+  datasetOrder.sort(SORT_METHODS[updated.sort.method].getSortFunction(updated));
   updated.currentDatasets.order = datasetOrder;
   return updated;
 };
@@ -337,8 +338,8 @@ export const applyFilter = (state, filterKey, filterValue, returnApplyCurrentDat
 
   // Always change to sort by relevance if first applying search
   if (filterKey === FILTER_KEYS.SEARCH && filterIsNowApplied) {
-    updated.sortMethod = 'searchRelevance';
-    updated.sortDirection = 'ASC';
+    updated.sort.method = 'searchRelevance';
+    updated.sort.direction = 'ASC';
   }
 
   // Update currentDatasets with latest filter info and return
@@ -407,58 +408,77 @@ export const parseSearchTerms = (input) => {
 };
 
 export const generateSearchFilterableValue = (dataset) => {
-  console.log(dataset);
-  return 'foo';
-  // export const generateSearchFilterableValue = (dataset, neonContextState) => {
-  /*
-  const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextState;
-  // Add various product meta-data fields
+  // const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextState;
+  // Add various dataset meta-data fields
   const search = [
-    'productCode',
-    'productAbstract',
-    'productDescription',
-    'productDesignDescription',
-    'productName',
-    'productRemarks',
-    'productScienceTeam',
-    'productSensor',
-  ].map((field) => (product[field] || ''));
+    'projectTitle',
+    'projectDescription',
+    'designDescription',
+    'metadataDescription',
+    'studyAreaDescription',
+    'datasetAbstract',
+  ].map((field) => (dataset[field] || ''));
   // Add generated filterable values
   [
-    'SITES',
-    'STATES',
-    'DOMAINS',
+    // 'SITES',
+    // 'STATES',
+    // 'DOMAINS',
+    'DATE_RANGE',
     'THEMES',
   ].forEach((key) => {
-    search.push((product.filterableValues[key] || []).join(' '));
+    search.push((dataset.filterableValues[key] || []).join(' '));
   });
   // Flatten and add keywords array
-  search.push((product.keywords || []).join(' '));
+  search.push((dataset.keywords || []).join(' '));
   // For sites, states, and domains also add additional meta-data
   // (e.g. site description, full state name, etc.)
+  /*
   search.push(
-    product.filterableValues[FILTER_KEYS.SITES]
+    dataset.filterableValues[FILTER_KEYS.SITES]
       .map((site) => sitesJSON[site].description)
       .join(' '),
   );
   search.push(
-    product.filterableValues[FILTER_KEYS.STATES]
+    dataset.filterableValues[FILTER_KEYS.STATES]
       .map((state) => statesJSON[state].name)
       .join(' '),
   );
   search.push(
-    product.filterableValues[FILTER_KEYS.DOMAINS]
+    dataset.filterableValues[FILTER_KEYS.DOMAINS]
       .map((domain) => domainsJSON[domain].name)
       .join(' '),
   );
-  // Include all available data years
-  const dataYears = new Set(
-    product.filterableValues[FILTER_KEYS.DATE_RANGE].map((d) => d.substr(0, 4)),
-  );
-  search.push([...dataYears].join(' '));
+  */
   // Flatten everything into a single string, cast to lower case, and strip out special characters
   return search.join(' ').toLowerCase().replace(/[^\w. ]/g, ' ').replace(/[ ]{2,}/g, ' ');
-  */
+};
+
+/**
+   parseDataset
+*/
+const parseDataset = (rawDataset, neonContextData = {}) => {
+  const newDataset = cloneDeep({ ...rawDataset, filterableValues: {} });
+  // Filterable value for THEMES (special handling for lack of ID / incorrect titles from API)
+  newDataset.filterableValues[FILTER_KEYS.THEMES] = (rawDataset.dataThemes || [])
+    .map((theme) => (
+      theme === 'Land Use, Land Cover, and Land Processes'
+        ? 'Land Cover & Processes'
+        : theme
+    ));
+  // Filterable value for DATE_RANGE
+  newDataset.dateRange = [
+    Number.parseInt(rawDataset.startYear, 10) || null,
+    Number.parseInt(rawDataset.endYear, 10) || null,
+  ];
+  newDataset.filterableValues[FILTER_KEYS.DATE_RANGE] = (
+    getContinuousYearsArray(newDataset.dateRange)
+  );
+  // Filterable value for SEARCH - pulls from all other generated filterable values so do last
+  newDataset.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(
+    newDataset,
+    neonContextData,
+  );
+  return newDataset;
 };
 
 /**
@@ -469,13 +489,120 @@ export const generateSearchFilterableValue = (dataset) => {
 */
 export const parseAllDatasets = (state) => {
   if (!state.neonContextState.isFinal) { return state; }
+
+  const { neonContextState: { data: neonContextData } } = state;
   const newState = { ...state };
-  Object.keys(state.unparsedDatasets).forEach((uuid) => {
-    newState.datasets[uuid] = cloneDeep({
-      ...state.unparsedDatasets[uuid],
-      parsed: true,
-    });
+
+  // Filter Item Counts
+  // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
+  // for filters with discrete options. To build the lists of all filter items we start out
+  // with counts keyed by item value. This ensures unique values and can be expanded to include
+  // meta-data (where appropriate) after all the counting is complete.
+  const filterItemCounts = {};
+  COUNTABLE_FILTER_KEYS.forEach((key) => {
+    filterItemCounts[key] = {};
   });
+
+  // Function Initiate/increment counts for counted items in global filter item counts
+  // for a single dataset
+  const addDatasetToFilterItemCounts = (dataset) => {
+    COUNTABLE_FILTER_KEYS.forEach((key) => {
+      const items = !Array.isArray(dataset.filterableValues[key])
+        ? [dataset.filterableValues[key]]
+        : dataset.filterableValues[key];
+      for (let j = 0; j < items.length; j += 1) {
+        if (!filterItemCounts[key][items[j]]) { filterItemCounts[key][items[j]] = 0; }
+        filterItemCounts[key][items[j]] += 1;
+      }
+    });
+  };
+
+  // MAIN LOOP - parse each dataset and add to the running global filterItemCounts
+  Object.keys(state.unparsedDatasets).forEach((uuid) => {
+    newState.datasets[uuid] = parseDataset(state.unparsedDatasets[uuid], neonContextData);
+    addDatasetToFilterItemCounts(newState.datasets[uuid]);
+    // Apply dataset date range to expand the current stats totalDateRange
+    const {
+      filterableValues: { [FILTER_KEYS.DATE_RANGE]: datasetDateRange },
+    } = newState.datasets[uuid];
+    const maxDateRangeIdx = datasetDateRange.length - 1;
+    const rangeStart = datasetDateRange[0];
+    if (!newState.stats.totalDateRange[0] || rangeStart < newState.stats.totalDateRange[0]) {
+      newState.stats.totalDateRange[0] = rangeStart;
+    }
+    const rangeEnd = datasetDateRange[maxDateRangeIdx];
+    if (!newState.stats.totalDateRange[1] || rangeEnd > newState.stats.totalDateRange[1]) {
+      newState.stats.totalDateRange[1] = rangeEnd;
+    }
+  });
+
+  // Convert filter item counts into full-fledged filter items (and add meta-data where appropriate)
+  // (all filters EXCEPT releases)
+  COUNTABLE_FILTER_KEYS.forEach((key) => {
+    const getName = (item) => {
+      switch (key) {
+        /*
+        case FILTER_KEYS.STATES:
+          return statesJSON[item].name;
+        */
+        case FILTER_KEYS.SCIENCE_TEAM:
+          return item.substring(0, item.indexOf('(') - 1);
+        default:
+          return item;
+      }
+    };
+    const getSubtitle = (item) => {
+      switch (key) {
+        /*
+        case FILTER_KEYS.SITES:
+          return `${sitesJSON[item].description}, ${sitesJSON[item].stateCode}`;
+        case FILTER_KEYS.DOMAINS:
+          return domainsJSON[item].name;
+        */
+        case FILTER_KEYS.SCIENCE_TEAM:
+          return item.substring(item.indexOf('('));
+        default:
+          return null;
+      }
+    };
+    const existingFilterItemsValues = newState.filterItems[key].map((item) => item.value);
+    const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
+      .filter((item) => !existingFilterItemsValues.includes(item))
+      .map((item) => ({
+        name: getName(item),
+        value: item,
+        subtitle: getSubtitle(item),
+        count: filterItemCounts[key][item],
+      }));
+    newState.filterItems[key] = [...newState.filterItems[key], ...nonDuplicateNewFilterItems];
+  });
+
+  // Sort all global filterItems lists
+  /*
+  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  */
+  newState.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.THEMES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+
+  // Derive final stats
+  newState.stats.totalDatasets = Object.keys(newState.datasets).length;
+  newState.filterItems[FILTER_KEYS.DATE_RANGE] = getContinuousYearsArray(
+    newState.stats.totalDateRange,
+  );
+
+  // Blow away unparsedDatasets and be done
   newState.unparsedDatasets = {};
-  return newState;
+  return applyCurrentDatasets(newState);
 };

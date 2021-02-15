@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
+import { useHistory, useLocation } from 'react-router-dom';
+
 import logger from 'use-reducer-logger';
 
 import cloneDeep from 'lodash/cloneDeep';
@@ -24,6 +26,7 @@ import {
   /* functions */
   applySort,
   applyFilter,
+  getUuidFromURL,
   parseAllDatasets,
   resetAllFilters,
   resetFilter,
@@ -51,9 +54,15 @@ const DEFAULT_STATE = {
     status: APP_STATUS.INITIALIZING,
     error: null,
   },
+
   datasetsFetch: {
     status: FETCH_STATUS.AWAITING_CALL,
     error: null,
+  },
+
+  route: {
+    uuid: null,
+    nextUuid: undefined,
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
@@ -73,10 +82,7 @@ const DEFAULT_STATE = {
     searchRelevance: {},
   },
 
-  // Mapping by uuid to booleans to track expanded details
-  datasetDetailsExpanded: {},
-
-  // Stats about the entire product catalog independent of release, derived once on load
+  // Stats about the entire dataset catalog independent of filters, derived once on load
   stats: {
     totalDatasets: 0,
     totalDateRange: [null, null],
@@ -149,6 +155,19 @@ const reducer = (state, action) => {
     case 'reinitialize':
       return cloneDeep(DEFAULT_STATE);
 
+    // Routing
+    case 'setInitialRouteToUuid':
+      newState.route.uuid = action.uuid || null;
+      newState.route.nextUuid = undefined;
+      return newState;
+    case 'setNextUuid':
+      newState.route.nextUuid = action.uuid;
+      return newState;
+    case 'applyNextUuid':
+      newState.route.uuid = newState.route.nextUuid;
+      newState.route.nextUuid = undefined;
+      return newState;
+
     // General failure
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
@@ -215,11 +234,20 @@ const Provider = (props) => {
   const {
     app: { status: appStatus },
     datasetsFetch: { status: datasetsFetchStatus },
+    route: { uuid: routeUuid, nextUuid: routeNextUuid },
   } = state;
 
   /**
      Effects
   */
+  // Parse uuid out of the route (URL) and set the initial route if not null
+  useEffect(() => {
+    if (appStatus !== APP_STATUS.INITIALIZING) { return; }
+    const uuid = getUuidFromURL();
+    if (!uuid) { return; }
+    dispatch({ type: 'setInitialRouteToUuid', uuid });
+  }, [appStatus]);
+
   // Trigger initial prototype datasets fetch
   useEffect(() => {
     if (
@@ -236,6 +264,42 @@ const Provider = (props) => {
     );
     dispatch({ type: 'fetchDatasetsStarted' });
   });
+
+  // HISTORY
+  // Ensure route uuid and history are always in sync. The main route.uuid ALWAYS FOLLOWS
+  // the actual URL. Order of precedence:
+  // 1. route.nextUuid - set by dispatch, gets pushed into history
+  // 2. location.pathname - literally the URL, route.uuid follows this
+  // 3. route.uuid - only ever set directly from URL parsing
+  const history = useHistory();
+  const location = useLocation();
+  const { pathname } = location;
+  useEffect(() => {
+    if (appStatus === APP_STATUS.INITIALIZING) { return; }
+    const locationUuid = getUuidFromURL(pathname);
+    console.log('ROUTE CHECK', locationUuid, routeUuid, routeNextUuid);
+    // Next uuid differs from location: navigate to next uuid and apply to state
+    if (routeNextUuid !== undefined && routeNextUuid !== locationUuid) {
+      console.log('TRIGGER A');
+      const nextLocation = routeNextUuid === null
+        ? '/prototype-datasets/'
+        : `/prototype-datasets/${routeNextUuid}/`;
+      history.push(nextLocation);
+      dispatch({ type: 'applyNextUuid' });
+      return;
+    }
+    // Next uuid differs from current: apply next uuid to state (used after browser nav)
+    if (routeNextUuid !== undefined && routeNextUuid !== routeUuid) {
+      console.log('TRIGGER B');
+      dispatch({ type: 'applyNextUuid' });
+      return;
+    }
+    // Location differs from current uuid: set the location as the next uuid
+    if (locationUuid !== routeUuid) {
+      console.log('TRIGGER C');
+      dispatch({ type: 'setNextUuid', uuid: locationUuid });
+    }
+  }, [appStatus, history, pathname, routeUuid, routeNextUuid]);
 
   /**
      Render

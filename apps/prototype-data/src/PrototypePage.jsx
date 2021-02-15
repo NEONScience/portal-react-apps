@@ -23,7 +23,7 @@ const {
 const useStyles = makeStyles((theme) => ({
   filters: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     marginBottom: theme.spacing(4),
   },
@@ -34,6 +34,11 @@ const useStyles = makeStyles((theme) => ({
   lazyLoaderTitle: {
     color: theme.palette.grey[400],
     marginBottom: theme.spacing(3),
+  },
+  showing: {
+    marginBottom: theme.spacing(4),
+    fontSize: '0.85rem',
+    color: theme.palette.grey[500],
   },
 }));
 
@@ -47,7 +52,9 @@ const PrototypePage = () => {
   const {
     app: { status: appStatus, error: appError },
     currentDatasets: { order: datasetsOrder },
+    route: { uuid: routeUuid },
     scrollCutoff,
+    filtersApplied,
   } = state;
 
   // Set loading and error page props
@@ -64,6 +71,25 @@ const PrototypePage = () => {
       break;
   }
   const skeleton = loading || error;
+
+  // Breadcrumbs
+  const breadcrumbs = [
+    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
+    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+  ];
+  if (routeUuid) {
+    breadcrumbs.push({ name: 'Prototype Datasets', href: '/prototype-datasets/' });
+    breadcrumbs.push({ name: routeUuid });
+  } else {
+    breadcrumbs.push({ name: 'Prototype Datasets' });
+  }
+
+  // How many datasets are showing
+  const filtered = filtersApplied.length ? 'filtered' : 'total';
+  let showing = (datasetsOrder.length > scrollCutoff)
+    ? `Showing first ${scrollCutoff} of ${datasetsOrder.length} ${filtered} datasets`
+    : `Showing all ${datasetsOrder.length} ${filtered} datasets`;
+  if (!datasetsOrder.length) { showing = ''; }
 
   // Refs for filter inputs that we can't directly control due to poor performance
   // but on which we want to set values in certain cases
@@ -101,9 +127,9 @@ const PrototypePage = () => {
 
   return (
     <NeonPage
-      title="Prototype Data"
+      title="Prototype Datasets"
       breadcrumbHomeHref="https://www.neonscience.org/"
-      breadcrumbs={[]}
+      breadcrumbs={breadcrumbs}
       loading={loading}
       error={error}
       NeonContextProviderProps={{
@@ -125,6 +151,9 @@ const PrototypePage = () => {
           <div className={classes.filters}>
             <Sort />
             <Search searchRef={searchRef} />
+          </div>
+          <div className={classes.showing}>
+            <Typography variant="subtitle2">{showing}</Typography>
           </div>
           <div id="data-presentation">
             {datasetsOrder.length === 0 ? (

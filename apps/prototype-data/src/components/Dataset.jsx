@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Grid from '@material-ui/core/Grid';
@@ -40,7 +41,7 @@ const Dataset = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
 
-  const [state] = usePrototypeContextState();
+  const [state, dispatch] = usePrototypeContextState();
   const { datasets: { [uuid]: dataset } } = state;
 
   if (typeof dataset === 'undefined') { return null; }
@@ -86,9 +87,16 @@ const Dataset = (props) => {
             </div>
           </Grid>
           <Grid item xs={12} sm={10}>
-            <Typography variant="body2">
+            <Typography variant="body2" gutterBottom>
               {projectDescription}
             </Typography>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => dispatch({ type: 'setNextUuid', uuid })}
+            >
+              Dataset Details
+            </Button>
           </Grid>
         </Grid>
       </CardContent>

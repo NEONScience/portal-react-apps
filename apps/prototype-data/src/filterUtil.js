@@ -33,6 +33,13 @@ const filterValuesIntersect = (filterValue, datasetFilterableValues) => (
     .length > 0
 );
 
+export const getUuidFromURL = (pathname = window.location.pathname) => {
+  const uuid = String.raw`[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}`;
+  const regex = RegExp(`prototype-datasets/(${uuid})`, 'g');
+  const urlParts = regex.exec(pathname);
+  return !urlParts ? null : urlParts[1] || null;
+};
+
 // Extend an array of search terms to crudely "depluralize" any unquoted plural terms
 // This is used to address the issue where a term like "nitrates" may not result in any
 // datasets because only the keyword "nitrate" appears anywhere. This function should only
@@ -519,8 +526,12 @@ export const parseAllDatasets = (state) => {
 
   // MAIN LOOP - parse each dataset and add to the running global filterItemCounts
   Object.keys(state.unparsedDatasets).forEach((uuid) => {
+    // Parse the dataset
     newState.datasets[uuid] = parseDataset(state.unparsedDatasets[uuid], neonContextData);
+
+    // Add its filter items to overall counts
     addDatasetToFilterItemCounts(newState.datasets[uuid]);
+
     // Apply dataset date range to expand the current stats totalDateRange
     const {
       filterableValues: { [FILTER_KEYS.DATE_RANGE]: datasetDateRange },

@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: '#fff',
     },
   },
+  textField: {
+    marginTop: '0px',
+  },
 }));
 
 const Search = (props) => {
@@ -48,7 +51,7 @@ const Search = (props) => {
     // Push an event with latest term to Google Tag Manager
     window.gtmDataLayer.push({
       event: 'prototypeDatasetSearch',
-      dataProductSearchTerm: searchTerm,
+      datasetSearchTerm: searchTerm,
     });
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
@@ -57,7 +60,7 @@ const Search = (props) => {
   const placeholder = `Utah, "snow depth", ${lastYear}, etc…`;
 
   return (
-    <FilterBase title="Search" data-selenium="browse-data-products-page.filters.search">
+    <FilterBase title="Search" data-selenium="prototype-datasets-page.filters.search">
       <TextField
         fullWidth
         name={filterKey}
@@ -66,6 +69,7 @@ const Search = (props) => {
         defaultValue=""
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value)}
+        className={classes.textField}
         InputProps={{
           ref: searchRef,
           'aria-label': 'search',
@@ -75,7 +79,7 @@ const Search = (props) => {
       />
       <Typography variant="body2" className={classes.subtitle}>
         {/* eslint-disable react/jsx-one-expression-per-line */}
-        Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
+        Use several terms to match datasets having <i>any</i> term (<i>term OR term</i>).&nbsp;
         Quote terms to match phrases (e.g. &quot;wind speed&quot;)
         {/* eslint-enable react/jsx-one-expression-per-line */}
       </Typography>

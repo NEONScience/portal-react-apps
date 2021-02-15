@@ -28,15 +28,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   title: {
-    fontWeight: 600,
-    [theme.breakpoints.up('md')]: {
-      marginBottom: theme.spacing(2),
-      fontSize: '1.5rem',
-    },
-    [theme.breakpoints.down('sm')]: {
-      marginRight: theme.spacing(1.5),
-      fontSize: '1.3rem',
-    },
+    fontWeight: 500,
+    marginBottom: theme.spacing(1),
   },
   toggleButtonGroup: {
     marginLeft: theme.spacing(2),
@@ -58,7 +51,7 @@ const Sort = () => {
 
   return (
     <div>
-      <Typography variant="h4" component="h2" className={classes.title}>Sort</Typography>
+      <Typography variant="h5" component="h3" className={classes.title}>Sort</Typography>
       <div style={{ display: 'flex' }}>
         <FormControl variant="outlined">
           <Select

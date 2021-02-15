@@ -178,6 +178,18 @@ const reducer = (state, action) => {
       });
       return calculateAppStatus(parseAllDatasets(newState));
 
+    // Sort
+    case 'applySort':
+      return applySort(state, action.method, action.direction);
+
+    // Filter
+    case 'resetFilter':
+      return resetFilter(newState, action.filterKey);
+    case 'resetAllFilters':
+      return resetAllFilters(newState);
+    case 'applyFilter':
+      return applyFilter(state, action.filterKey, action.filterValue);
+
     // Default
     default:
       return state;

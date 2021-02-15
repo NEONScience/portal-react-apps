@@ -1,6 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+
+import debounce from 'lodash/debounce';
 
 import { makeStyles } from '@material-ui/core/styles';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
@@ -24,7 +27,18 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'space-between',
     marginBottom: theme.spacing(4),
   },
+  lazyLoader: {
+    margin: theme.spacing(5, 5, 0, 5),
+    textAlign: 'center',
+  },
+  lazyLoaderTitle: {
+    color: theme.palette.grey[400],
+    marginBottom: theme.spacing(3),
+  },
 }));
+
+const DEBOUNCE_MILLISECONDS = 100;
+const SCROLL_PADDING = 400;
 
 const PrototypePage = () => {
   const classes = useStyles(Theme);
@@ -55,6 +69,35 @@ const PrototypePage = () => {
   // but on which we want to set values in certain cases
   // Used to set search input value when provided from URL (controlling kills typing performance)
   const searchRef = useRef(null);
+
+  // Scroll-based Lazy Rendering Management
+  const lazyLoaderRef = useRef(null);
+  const scrollHandler = debounce(() => {
+    if (datasetsOrder.length <= scrollCutoff) { return; }
+    // Y-offset for the TOP of the area in view
+    const scrollOffset = (
+      window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+    );
+    // Y-offset for the BOTTOM of the area in view
+    const scrollBottom = window.innerHeight + scrollOffset;
+    // Y-offset for the absolute bottom of the document
+    const documentBottom = document.documentElement.offsetHeight;
+    // Y-offset for the TOP of the lazy loader
+    const lazyLoaderOffset = lazyLoaderRef.current
+      ? lazyLoaderRef.current.offsetTop
+      : documentBottom - SCROLL_PADDING;
+    if (scrollBottom > lazyLoaderOffset) {
+      dispatch({ type: 'incrementScrollCutoff' });
+    }
+  }, DEBOUNCE_MILLISECONDS);
+  useEffect(() => {
+    window.addEventListener('scroll', scrollHandler);
+    window.addEventListener('resize', scrollHandler);
+    return () => {
+      window.removeEventListener('scroll', scrollHandler);
+      window.removeEventListener('resize', scrollHandler);
+    };
+  });
 
   return (
     <NeonPage
@@ -94,6 +137,19 @@ const PrototypePage = () => {
             {datasetsOrder.slice(0, scrollCutoff).map((uuid) => (
               <Dataset key={uuid} uuid={uuid} />
             ))}
+          </div>
+          <div
+            id="lazy-loader"
+            ref={lazyLoaderRef}
+            className={classes.lazyLoader}
+            style={{
+              display: (skeleton || datasetsOrder.length <= scrollCutoff ? 'none' : 'block'),
+            }}
+          >
+            <Typography variant="h6" className={classes.lazyLoaderTitle}>
+              Loading more datasets...
+            </Typography>
+            <CircularProgress disableShrink />
           </div>
         </>
       )}

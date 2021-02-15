@@ -190,6 +190,10 @@ const reducer = (state, action) => {
     case 'applyFilter':
       return applyFilter(state, action.filterKey, action.filterValue);
 
+    // Scrolling
+    case 'incrementScrollCutoff':
+      return { ...state, scrollCutoff: state.scrollCutoff + 10 };
+
     // Default
     default:
       return state;

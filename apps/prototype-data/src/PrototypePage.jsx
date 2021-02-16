@@ -51,10 +51,24 @@ const PrototypePage = () => {
   let title = 'Prototype Datasets';
   if (routeUuid) {
     const { datasets: { [routeUuid]: dataset } } = state;
-    if (typeof dataset === 'undefined') { title = 'Prototype Dataset'; }
-    title = dataset.projectTitle;
+    title = (typeof dataset === 'undefined' ? 'Prototype Dataset' : dataset.projectTitle);
   }
-  
+
+  let pageContent = null;
+  if (skeleton) {
+    pageContent = (
+      <div>
+        <SkeletonDataset />
+        <SkeletonDataset />
+        <SkeletonDataset />
+        <SkeletonDataset />
+        <SkeletonDataset />
+      </div>
+    );
+  } else {
+    pageContent = routeUuid ? <DatasetDetails uuid={routeUuid} /> : <ExploreDatasets />;
+  }
+
   return (
     <NeonPage
       title={title}
@@ -68,17 +82,7 @@ const PrototypePage = () => {
         },
       }}
     >
-      {skeleton ? (
-        <div>
-          <SkeletonDataset />
-          <SkeletonDataset />
-          <SkeletonDataset />
-          <SkeletonDataset />
-          <SkeletonDataset />
-        </div>
-      ) : (
-        routeUuid ? <DatasetDetails uuid={routeUuid} /> : <ExploreDatasets />
-      )}
+      {pageContent}
     </NeonPage>
   );
 };

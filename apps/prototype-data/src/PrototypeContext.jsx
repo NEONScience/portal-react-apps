@@ -277,10 +277,8 @@ const Provider = (props) => {
   useEffect(() => {
     if (appStatus === APP_STATUS.INITIALIZING) { return; }
     const locationUuid = getUuidFromURL(pathname);
-    console.log('ROUTE CHECK', locationUuid, routeUuid, routeNextUuid);
     // Next uuid differs from location: navigate to next uuid and apply to state
     if (routeNextUuid !== undefined && routeNextUuid !== locationUuid) {
-      console.log('TRIGGER A');
       const nextLocation = routeNextUuid === null
         ? '/prototype-datasets/'
         : `/prototype-datasets/${routeNextUuid}/`;
@@ -290,13 +288,11 @@ const Provider = (props) => {
     }
     // Next uuid differs from current: apply next uuid to state (used after browser nav)
     if (routeNextUuid !== undefined && routeNextUuid !== routeUuid) {
-      console.log('TRIGGER B');
       dispatch({ type: 'applyNextUuid' });
       return;
     }
     // Location differs from current uuid: set the location as the next uuid
     if (locationUuid !== routeUuid) {
-      console.log('TRIGGER C');
       dispatch({ type: 'setNextUuid', uuid: locationUuid });
     }
   }, [appStatus, history, pathname, routeUuid, routeNextUuid]);

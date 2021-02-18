@@ -69,8 +69,10 @@ const DEFAULT_STATE = {
 
   // Objects indexed by dataset uuid. Items go to unparsed first and only get parsed when
   // NeonContext is fully loaded.
-  unparsedDatasets: {},
   datasets: {},
+  unparsedDatasets: {},
+  manifestRollupFetches: {},
+  manifestRollups: {},
 
   // Object used present the appropriately sorted subset of datasets based on user inputs
   currentDatasets: {
@@ -122,7 +124,10 @@ const usePrototypeContextState = () => {
 };
 
 const calculateAppStatus = (state) => {
-  const { datasetsFetch: { status: datasetsFetchStatus } } = state;
+  const {
+    datasetsFetch: { status: datasetsFetchStatus },
+    manifestRollupFetches,
+  } = state;
   const newState = { ...state };
   if (datasetsFetchStatus === FETCH_STATUS.AWAITING_CALL) {
     newState.app.status = APP_STATUS.INITIALIZING;
@@ -132,7 +137,14 @@ const calculateAppStatus = (state) => {
     newState.app.status = APP_STATUS.ERROR;
     return newState;
   }
-  if (datasetsFetchStatus === FETCH_STATUS.FETCHING || !state.neonContextState.isFinal) {
+  const pendingManifestFetches = Object.keys(state.manifestRollupFetches).filter((uuid) => (
+    [FETCH_STATUS.AWAITING_CALL, FETCH_STATUS.FETCHING].includes(manifestRollupFetches[uuid].status)
+  ));
+  if (
+    datasetsFetchStatus === FETCH_STATUS.FETCHING
+      || !state.neonContextState.isFinal
+      || pendingManifestFetches.length > 0
+  ) {
     newState.app.status = APP_STATUS.FETCHING;
     return newState;
   }
@@ -149,6 +161,19 @@ const reducer = (state, action) => {
     !action.error ? null
       : ((action.error.response || {}).error || {}).detail || action.error.message || null
   );
+  const calculateManifestRollupFetches = () => {
+    const { uuid, nextUuid } = newState.route;
+    if (uuid && !newState.manifestRollupFetches[uuid]) {
+      newState.manifestRollupFetches[uuid] = {
+        status: FETCH_STATUS.AWAITING_CALL, error: null,
+      };
+    }
+    if (nextUuid && !newState.manifestRollupFetches[nextUuid]) {
+      newState.manifestRollupFetches[nextUuid] = {
+        status: FETCH_STATUS.AWAITING_CALL, error: null,
+      };
+    }
+  };
 
   switch (action.type) {
     // Initialization
@@ -159,13 +184,16 @@ const reducer = (state, action) => {
     case 'setInitialRouteToUuid':
       newState.route.uuid = action.uuid || null;
       newState.route.nextUuid = undefined;
+      calculateManifestRollupFetches();
       return newState;
     case 'setNextUuid':
       newState.route.nextUuid = action.uuid;
+      calculateManifestRollupFetches();
       return newState;
     case 'applyNextUuid':
       newState.route.uuid = newState.route.nextUuid;
       newState.route.nextUuid = undefined;
+      calculateManifestRollupFetches();
       return newState;
 
     // General failure
@@ -196,6 +224,22 @@ const reducer = (state, action) => {
         newState.unparsedDatasets[dataset.uuid] = dataset;
       });
       return calculateAppStatus(parseAllDatasets(newState));
+
+    // Fetch manifest rollups
+    case 'fetchManifestRollupStarted':
+      if (!newState.manifestRollupFetches[action.uuid]) { return state; }
+      newState.manifestRollupFetches[action.uuid].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchManifestRollupFailed':
+      if (!newState.manifestRollupFetches[action.uuid]) { return state; }
+      newState.manifestRollupFetches[action.uuid].status = FETCH_STATUS.ERROR;
+      newState.manifestRollupFetches[action.uuid].error = action.error;
+      return calculateAppStatus(newState);
+    case 'fetchManifestRollupSucceeded':
+      if (!newState.manifestRollupFetches[action.uuid]) { return state; }
+      newState.manifestRollupFetches[action.uuid].status = FETCH_STATUS.SUCCESS;
+      newState.manifestRollups[action.uuid] = action.data;
+      return calculateAppStatus(newState);
 
     // Sort
     case 'applySort':
@@ -235,7 +279,12 @@ const Provider = (props) => {
     app: { status: appStatus },
     datasetsFetch: { status: datasetsFetchStatus },
     route: { uuid: routeUuid, nextUuid: routeNextUuid },
+    manifestRollupFetches,
   } = state;
+
+  const awaitingManifestFetches = Object.keys(manifestRollupFetches).filter((uuid) => (
+    manifestRollupFetches[uuid].status === FETCH_STATUS.AWAITING_CALL
+  ));
 
   /**
      Effects
@@ -263,7 +312,23 @@ const Provider = (props) => {
       },
     );
     dispatch({ type: 'fetchDatasetsStarted' });
-  });
+  }, [appStatus, datasetsFetchStatus]);
+
+  // Trigger any awaiting manifest fetches
+  useEffect(() => {
+    if (!awaitingManifestFetches.length) { return; }
+    awaitingManifestFetches.forEach((uuid) => {
+      NeonApi.getPrototypeManifestRollupObservable(uuid).subscribe(
+        (response) => {
+          dispatch({ type: 'fetchManifestRollupSucceeded', uuid, data: response.data });
+        },
+        (error) => {
+          dispatch({ type: 'fetchManifestRollupFailed', uuid, error });
+        },
+      );
+      dispatch({ type: 'fetchManifestRollupStarted', uuid });
+    });
+  }, [awaitingManifestFetches]);
 
   // HISTORY
   // Ensure route uuid and history are always in sync. The main route.uuid ALWAYS FOLLOWS

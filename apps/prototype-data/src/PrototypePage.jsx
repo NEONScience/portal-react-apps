@@ -30,7 +30,7 @@ const PrototypePage = () => {
       error = appError;
       break;
     default:
-      loading = 'Loading Prototype Datasets...';
+      loading = `Loading Prototype Dataset${routeUuid ? '' : 's'}...`;
       break;
   }
   const skeleton = loading || error;
@@ -56,7 +56,11 @@ const PrototypePage = () => {
 
   let pageContent = null;
   if (skeleton) {
-    pageContent = (
+    pageContent = routeUuid ? (
+      <div>
+        Skeleton details
+      </div>
+    ) : (
       <div>
         <SkeletonDataset />
         <SkeletonDataset />

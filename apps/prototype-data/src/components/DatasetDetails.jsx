@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
@@ -11,11 +12,13 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
+import DownloadIcon from '@material-ui/icons/SaveAlt';
+import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
 import ZipIcon from '@material-ui/icons/Archive';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import PrototypeContext from '../PrototypeContext';
@@ -41,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
   list: {
     padding: theme.spacing(0),
     marginTop: theme.spacing(-1),
+    marginBottom: theme.spacing(1),
   },
   listItemSecondarySpacer: {
     margin: theme.spacing(0, 2),
@@ -49,9 +53,13 @@ const useStyles = makeStyles((theme) => ({
   listItemIcon: {
     minWidth: theme.spacing(4),
     marginRight: theme.spacing(1),
-    color: theme.palette.primary.main,
   },
   listItemRelatedDataProduct: {
+    borderRadius: theme.spacing(0.5),
+    border: '0.5px solid #ffffff00',
+    '&:hover': {
+      border: `0.5px solid ${theme.palette.primary.main}`,
+    },
     '& p': {
       color: theme.palette.primary.main,
       textDecoration: 'underline',
@@ -62,15 +70,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   listItemFile: {
-    borderRadius: theme.spacing(0.5),
-    border: '0.5px solid #ffffff00',
-    '&:hover': {
-      border: `0.5px solid ${theme.palette.primary.main}`,
-    },
     paddingLeft: theme.spacing(1),
-    '& span.MuiListItemText-primary': {
-      color: theme.palette.primary.main,
-    },
     '& p': {
       marginTop: theme.spacing(0.5),
     },
@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
   },
   section: {
     marginBottom: theme.spacing(4),
+  },
+  sectionSubtitle: {
+    marginBottom: theme.spacing(1),
   },
   sectionTitle: {
     marginBottom: theme.spacing(1.5),
@@ -113,12 +116,34 @@ const formatBytes = (bytes) => {
   return `${(bytes / (1024 ** scale)).toFixed(precision)} ${scales[scale]}`;
 };
 
+export const downloadUuid = (uuid) => {
+  if (!uuid) { return null; }
+  const form = document.createElement('form');
+  form.style.display = 'none';
+  form.action = `${NeonEnvironment.getFullApiPath('download')}/prototype/stream`;
+  form.method = 'POST';
+
+  const input = document.createElement('input');
+  input.name = 'manifest';
+  input.value = JSON.stringify({ uuid });
+  form.appendChild(input);
+
+  document.body.appendChild(form);
+  const submit = form.submit();
+  document.body.removeChild(form);
+
+  return submit;
+};
+
 const DatasetDetails = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
 
   const [state] = usePrototypeContextState();
-  const { datasets: { [uuid]: dataset } } = state;
+  const {
+    datasets: { [uuid]: dataset },
+    manifestRollups: { [uuid]: manifestRollup },
+  } = state;
 
   if (typeof dataset === 'undefined') { return null; }
 
@@ -128,6 +153,7 @@ const DatasetDetails = (props) => {
     dataThemes,
     dateUploaded,
     designDescription,
+    metadataDescription,
     endYear,
     keywords,
     projectDescription,
@@ -142,6 +168,12 @@ const DatasetDetails = (props) => {
   */
   const getSectionTitle = (title) => (
     <Typography variant="h5" component="h3" className={classes.sectionTitle}>
+      {title}
+    </Typography>
+  );
+
+  const getSectionSubtitle = (title) => (
+    <Typography variant="h6" component="h4" className={classes.sectionSubtitle}>
       {title}
     </Typography>
   );
@@ -207,7 +239,7 @@ const DatasetDetails = (props) => {
     </List>
   );
 
-  const downloadFiles = !files.length ? getNA('none available') : (
+  const downloadFileList = !files.length ? getNA('none available') : (
     <List dense className={classes.list}>
       {files.map((file) => {
         const {
@@ -232,9 +264,6 @@ const DatasetDetails = (props) => {
             key={fileName}
             className={classes.listItemFile}
             title={`Click to download ${fileName} (${formattedSize})`}
-            component="a"
-            href=""
-            button
           >
             <ListItemIcon className={classes.listItemIcon}>
               <TypeIcon />
@@ -246,6 +275,24 @@ const DatasetDetails = (props) => {
     </List>
   );
 
+  const downloadButton = (
+    <Button
+      color="primary"
+      variant="contained"
+      onClick={() => { downloadUuid(uuid); }}
+      startIcon={<DownloadIcon />}
+      data-selenium="prototype-dataset-download-button"
+      style={{ marginBottom: Theme.spacing(2) }}
+      disabled={!manifestRollup}
+    >
+      {(
+        manifestRollup
+          ? `Download Package (Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)})`
+          : 'Download not available'
+      )}
+    </Button>
+  );
+
   /**
      Main render
   */
@@ -255,15 +302,22 @@ const DatasetDetails = (props) => {
 
         {/* Left Column */}
         <Grid item xs={12} sm={8} lg={9}>
-          {/* Dataset ID */}
+          {/* Prototype Dataset ID */}
           <div className={classes.section}>
-            {getSectionTitle('Dataset ID')}
+            {getSectionTitle('Prototype Dataset ID')}
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
-          {/* Download Files */}
+          {/* Files and Download */}
           <div className={classes.section}>
-            {getSectionTitle('Download Files')}
-            {downloadFiles}
+            {getSectionTitle('Files and Download')}
+            {downloadButton}
+            {getSectionSubtitle(`Files in this Package (${files.length})`)}
+            {downloadFileList}
+            {!metadataDescription ? null : (
+              <Typography variant="body2">
+                {metadataDescription}
+              </Typography>
+            )}
           </div>
           {/* Project Decription */}
           <div className={classes.section}>

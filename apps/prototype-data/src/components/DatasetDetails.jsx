@@ -1,17 +1,28 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import dateFormat from 'dateformat';
 import moment from 'moment';
+
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
+import CopyIcon from '@material-ui/icons/Assignment';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
@@ -19,11 +30,14 @@ import ZipIcon from '@material-ui/icons/Archive';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import SiteMap from 'portal-core-components/lib/components/SiteMap';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import PrototypeContext from '../PrototypeContext';
 
 const { usePrototypeContextState } = PrototypeContext;
+
+const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
 
 const useStyles = makeStyles((theme) => ({
   chip: {
@@ -33,6 +47,10 @@ const useStyles = makeStyles((theme) => ({
   },
   chipMoz: {
     maxWidth: '-moz-available',
+  },
+  citationText: {
+    fontFamily: 'monospace',
+    fontSize: '1.05rem',
   },
   datasetIdChip: {
     color: theme.palette.grey[500],
@@ -53,6 +71,13 @@ const useStyles = makeStyles((theme) => ({
   listItemIcon: {
     minWidth: theme.spacing(4),
     marginRight: theme.spacing(1),
+  },
+  listItemCitation: {
+    '& span': {
+      fontFamily: 'monospace',
+      fontSize: '0.95rem',
+      lineHeight: 1.5,
+    },
   },
   listItemRelatedDataProduct: {
     borderRadius: theme.spacing(0.5),
@@ -135,6 +160,17 @@ export const downloadUuid = (uuid) => {
   return submit;
 };
 
+const getCitationText = (dataset) => {
+  if (!dataset) { return null; }
+  const { projectTitle } = dataset;
+  const now = new Date();
+  const today = dateFormat(now, 'mmmm d, yyyy');
+  const neon = 'NEON (National Ecological Observatory Network)';
+  const url = `https://data.neonscience.org/prototype-datasets/${dataset.uuid}`;
+  const accessed = `(accessed ${today})`;
+  return `${neon}. ${projectTitle}. ${url} ${accessed}`;
+};
+
 const DatasetDetails = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
@@ -156,7 +192,9 @@ const DatasetDetails = (props) => {
     metadataDescription,
     endYear,
     keywords,
+    locations,
     projectDescription,
+    publicationCitations,
     relatedDataProducts,
     scienceTeams,
     startYear,
@@ -185,12 +223,16 @@ const DatasetDetails = (props) => {
   /**
      Pre-rendering
   */
+  const uploadedMoment = moment(dateUploaded);
+
+  // Theme Icons
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
     <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
 
+  // Keyword Chips
   const keywordChips = !(keywords || []).length ? null : keywords.map((keyword) => (
     <Chip
       label={keyword}
@@ -200,8 +242,7 @@ const DatasetDetails = (props) => {
     />
   ));
 
-  const uploadedMoment = moment(dateUploaded);
-
+  // Science Teams
   let scienceTeamsFormatted = getNA();
   if (scienceTeams.length < 2) {
     scienceTeamsFormatted = (
@@ -219,6 +260,7 @@ const DatasetDetails = (props) => {
     );
   }
 
+  // Related Data Products
   const relatedDataProductsLinks = !relatedDataProducts.length ? getNA('none') : (
     <List dense className={classes.list}>
       {relatedDataProducts.map((dataProduct) => {
@@ -239,6 +281,7 @@ const DatasetDetails = (props) => {
     </List>
   );
 
+  // Download File List
   const downloadFileList = !files.length ? getNA('none available') : (
     <List dense className={classes.list}>
       {files.map((file) => {
@@ -275,6 +318,7 @@ const DatasetDetails = (props) => {
     </List>
   );
 
+  // Download Button
   const downloadButton = (
     <Button
       color="primary"
@@ -293,6 +337,50 @@ const DatasetDetails = (props) => {
     </Button>
   );
 
+  // Manual Location Data
+  const manualLocationData = [];
+  if (Array.isArray(locations) && locations.length) {
+    locations.forEach((location) => {
+      if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) { return; }
+      manualLocationData.push({
+        manualLocationType: 'PROTOTYPE_SITE',
+        ...location,
+      });
+    });
+  }
+
+  // Citation
+  const dataPolicyLink = (
+    <Link href={DATA_POLICIES_URL}>Data Policies &amp; Citation Guidelines</Link>
+  );
+  const citationText = getCitationText(dataset);
+  const citation = (
+    <div>
+      <Typography variant="subtitle2" gutterBottom>
+        Please use this citation in your publications. See {dataPolicyLink} for more info.
+      </Typography>
+      <Card>
+        <CardContent>
+          <Typography variant="body1" className={classes.citationText}>
+            {citationText}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <Tooltip
+            placement="bottom-start"
+            title="Click to copy the above citation to the clipboard"
+          >
+            <CopyToClipboard text={citationText}>
+              <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+                Copy
+              </Button>
+            </CopyToClipboard>
+          </Tooltip>
+        </CardActions>
+      </Card>
+    </div>
+  );
+
   /**
      Main render
   */
@@ -301,15 +389,15 @@ const DatasetDetails = (props) => {
       <Grid container spacing={4}>
 
         {/* Left Column */}
-        <Grid item xs={12} sm={8} lg={9}>
+        <Grid item xs={12} sm={12} md={8} lg={9} xl={10}>
           {/* Prototype Dataset ID */}
           <div className={classes.section}>
             {getSectionTitle('Prototype Dataset ID')}
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
-          {/* Files and Download */}
+          {/* Download */}
           <div className={classes.section}>
-            {getSectionTitle('Files and Download')}
+            {getSectionTitle('Download')}
             {downloadButton}
             {getSectionSubtitle(`Files in this Package (${files.length})`)}
             {downloadFileList}
@@ -340,17 +428,29 @@ const DatasetDetails = (props) => {
               {datasetAbstract}
             </Typography>
           </div>
+          {/* Citation */}
+          <div className={classes.section}>
+            {getSectionTitle('Citation')}
+            {citation}
+          </div>
           {/* Locations and Study Area */}
           <div className={classes.section}>
             {getSectionTitle('Locations and Study Area')}
-            <Typography variant="body2">
+            <Typography variant="body2" gutterBottom>
               {studyAreaDescription}
             </Typography>
+            {!manualLocationData.length ? (
+              <Typography variant="body2" className={classes.NA}>
+                No valid associated locations found
+              </Typography>
+            ) : (
+              <SiteMap manualLocationData={manualLocationData} />
+            )}
           </div>
         </Grid>
 
         {/* Right Column */}
-        <Grid item xs={12} sm={4} lg={3}>
+        <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
           {/* Time Range */}
           <div className={classes.section}>
             {getSectionTitle('Time Range')}
@@ -388,6 +488,26 @@ const DatasetDetails = (props) => {
           <div className={classes.section}>
             {getSectionTitle('Related Data Products')}
             {relatedDataProductsLinks}
+          </div>
+          {/* Publication Citations */}
+          <div className={classes.section}>
+            {getSectionTitle('Publication Citations')}
+            {Array.isArray(publicationCitations) && publicationCitations.length ? (
+              <List dense className={classes.list}>
+                {publicationCitations.map((pubCitation) => {
+                  const { citation: pubCitText } = pubCitation;
+                  return (
+                    <ListItem key={pubCitText} className={classes.listItemCitation}>
+                      <ListItemText primary={pubCitText} />
+                    </ListItem>
+                  );
+                })}
+              </List>
+            ) : (
+              <Typography variant="body1" className={classes.NA}>
+                None
+              </Typography>
+            )}
           </div>
         </Grid>
       </Grid>

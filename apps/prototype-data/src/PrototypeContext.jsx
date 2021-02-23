@@ -126,7 +126,9 @@ const usePrototypeContextState = () => {
 const calculateAppStatus = (state) => {
   const {
     datasetsFetch: { status: datasetsFetchStatus },
+    route: { uuid: routeUuid },
     manifestRollupFetches,
+    datasets,
   } = state;
   const newState = { ...state };
   if (datasetsFetchStatus === FETCH_STATUS.AWAITING_CALL) {
@@ -135,6 +137,7 @@ const calculateAppStatus = (state) => {
   }
   if (datasetsFetchStatus === FETCH_STATUS.ERROR) {
     newState.app.status = APP_STATUS.ERROR;
+    newState.app.error = 'Unable to load datasets';
     return newState;
   }
   const pendingManifestFetches = Object.keys(state.manifestRollupFetches).filter((uuid) => (
@@ -146,6 +149,12 @@ const calculateAppStatus = (state) => {
       || pendingManifestFetches.length > 0
   ) {
     newState.app.status = APP_STATUS.FETCHING;
+    return newState;
+  }
+  // Error if datasets are loaded and route UUID is defined but not in datasets
+  if (datasetsFetchStatus === FETCH_STATUS.SUCCESS && routeUuid && !datasets[routeUuid]) {
+    newState.app.status = APP_STATUS.ERROR;
+    newState.app.error = `Dataset not found: ${routeUuid}`;
     return newState;
   }
   newState.app.status = APP_STATUS.READY;
@@ -162,13 +171,13 @@ const reducer = (state, action) => {
       : ((action.error.response || {}).error || {}).detail || action.error.message || null
   );
   const calculateManifestRollupFetches = () => {
-    const { uuid, nextUuid } = newState.route;
-    if (uuid && !newState.manifestRollupFetches[uuid]) {
+    const { datasets, route: { uuid, nextUuid } } = newState;
+    if (uuid && datasets[uuid] && !newState.manifestRollupFetches[uuid]) {
       newState.manifestRollupFetches[uuid] = {
         status: FETCH_STATUS.AWAITING_CALL, error: null,
       };
     }
-    if (nextUuid && !newState.manifestRollupFetches[nextUuid]) {
+    if (nextUuid && datasets[nextUuid] && !newState.manifestRollupFetches[nextUuid]) {
       newState.manifestRollupFetches[nextUuid] = {
         status: FETCH_STATUS.AWAITING_CALL, error: null,
       };
@@ -223,7 +232,9 @@ const reducer = (state, action) => {
         if (!dataset || typeof dataset !== 'object' || !dataset.uuid) { return; }
         newState.unparsedDatasets[dataset.uuid] = dataset;
       });
-      return calculateAppStatus(parseAllDatasets(newState));
+      newState = parseAllDatasets(newState);
+      calculateManifestRollupFetches();
+      return calculateAppStatus(newState);
 
     // Fetch manifest rollups
     case 'fetchManifestRollupStarted':

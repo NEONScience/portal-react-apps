@@ -4,8 +4,9 @@ import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
 import PrototypeContext from './PrototypeContext';
 import DatasetDetails from './components/DatasetDetails';
+import DatasetDetailsSkeleton from './components/DatasetDetailsSkeleton';
 import ExploreDatasets from './components/ExploreDatasets';
-import SkeletonDataset from './components/SkeletonDataset';
+import ExploreDatasetsSkeleton from './components/ExploreDatasetsSkeleton';
 
 const {
   APP_STATUS,
@@ -57,17 +58,9 @@ const PrototypePage = () => {
   let pageContent = null;
   if (skeleton) {
     pageContent = routeUuid ? (
-      <div>
-        Skeleton details
-      </div>
+      <DatasetDetailsSkeleton />
     ) : (
-      <div>
-        <SkeletonDataset />
-        <SkeletonDataset />
-        <SkeletonDataset />
-        <SkeletonDataset />
-        <SkeletonDataset />
-      </div>
+      <ExploreDatasetsSkeleton />
     );
   } else {
     pageContent = routeUuid ? <DatasetDetails uuid={routeUuid} /> : <ExploreDatasets />;

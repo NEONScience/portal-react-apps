@@ -1,17 +1,36 @@
 import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
-// import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
-
-import Skeleton from '@material-ui/lab/Skeleton';
+import Grid from '@material-ui/core/Grid';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import { getSkeleton } from '../renderUtil';
+
 const useStyles = makeStyles((theme) => ({
+  actions: {
+    justifyContent: 'flex-end',
+  },
+  content: {
+    paddingBottom: theme.spacing(1.5),
+  },
   datasetCard: {
     marginBottom: theme.spacing(3),
+  },
+  cardFirstColumnSection: {
+    marginBottom: theme.spacing(2),
+  },
+  keywordChips: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
+    '& span': {
+      marginRight: theme.spacing(0.5),
+    },
   },
 }));
 
@@ -20,43 +39,35 @@ const SkeletonDataset = () => {
   return (
     <Card className={classes.datasetCard}>
       <CardContent>
-
-        {/*
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-          <Grid item xs={12} sm={7} md={8} lg={9}>
-            <Skeleton height={16} width="80%" style={{ marginBottom: Theme.spacing(2) }} />
-            <Skeleton height={8} width="100%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="100%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
-          </Grid>
-          <Grid item xs={12} sm={5} md={4} lg={3}>
-            <Skeleton height={32} width="100%" variant="rect" />
-            <Skeleton height={32} width="100%" variant="rect" />
-          </Grid>
-        </Grid>
-
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-          <Grid item xs={12} sm={4}>
-            <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="40%" style={{ marginBottom: Theme.spacing(1) }} />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
-            <div style={{ display: 'flex' }}>
-              <Skeleton height={32} width={32} variant="rect" />
-              <Skeleton height={32} width={32} variant="rect" />
+        {getSkeleton(25, [60, 80], 2)}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={2}>
+            <div className={classes.cardFirstColumnSection}>
+              {getSkeleton(22, 60, 1)}
+              {getSkeleton(18, 30, 0)}
+            </div>
+            <div className={classes.cardFirstColumnSection}>
+              {getSkeleton(22, 70, 1)}
+              {getSkeleton(32, 32, 0, false, 'rect')}
             </div>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={32} width="100%" variant="rect" />
+          <Grid item xs={12} sm={10}>
+            {getSkeleton(18, 100, 0.5)}
+            {getSkeleton(18, 100, 0.5)}
+            {getSkeleton(18, [30, 85], 3)}
+            {getSkeleton(22, 60, 1)}
+            <div className={classes.keywordChips}>
+              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+            </div>
           </Grid>
         </Grid>
-        */}
-
-        <Skeleton height={80} width="100%" variant="rect" />
-
       </CardContent>
+      <CardActions className={classes.actions}>
+        {getSkeleton(32, 235, 0, false, 'rect')}
+      </CardActions>
     </Card>
   );
 };

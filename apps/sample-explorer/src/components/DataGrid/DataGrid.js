@@ -45,6 +45,7 @@ class DataGrid extends Component {
     return (
       <div style={containerStyle} className="ag-theme-balham">
         <AgGridReact
+          enableCellTextSelection
           // properties
           columnDefs={this.props.columnDefs}
           rowData={this.props.rowData}

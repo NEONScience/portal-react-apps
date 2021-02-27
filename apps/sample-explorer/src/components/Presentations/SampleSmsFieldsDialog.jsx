@@ -188,6 +188,7 @@ const SampleSmsFieldsDialog = () => {
           <Alert 
             severity="error" 
             style={{ margin: Theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
+            data-selenium="download-sms-fields-dialog.error"
           >
             <AlertTitle>Error</AlertTitle>
             An error occurred when fetching the SMS fields.
@@ -197,7 +198,7 @@ const SampleSmsFieldsDialog = () => {
     );
   };
   return (
-    <div style={{ margin: Theme.spacing(0, 3, 3, 3) }} data-selenium="sample-events-section">
+    <div style={{ margin: Theme.spacing(0, 3, 3, 3) }}>
       <Button
         style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
         variant="outlined"
@@ -251,7 +252,7 @@ const SampleSmsFieldsDialog = () => {
             variant="contained"
             disabled={state.isErrorState || (state.fields.length <= 0)}
             onClick={() => downloadFields(state.fields, dispatch)}
-            data-selenium="download-sms-fields-list-button"
+            data-selenium="download-sms-fields-dialog-button"
           >
             Download
             <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />

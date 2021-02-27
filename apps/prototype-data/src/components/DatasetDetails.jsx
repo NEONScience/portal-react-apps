@@ -1,28 +1,18 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import dateFormat from 'dateformat';
 import moment from 'moment';
-
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import CopyIcon from '@material-ui/icons/Assignment';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
@@ -34,10 +24,9 @@ import SiteMap from 'portal-core-components/lib/components/SiteMap';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import PrototypeContext from '../PrototypeContext';
+import Citation from './Citation';
 
 const { usePrototypeContextState } = PrototypeContext;
-
-const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
 
 const useStyles = makeStyles((theme) => ({
   chip: {
@@ -47,10 +36,6 @@ const useStyles = makeStyles((theme) => ({
   },
   chipMoz: {
     maxWidth: '-moz-available',
-  },
-  citationText: {
-    fontFamily: 'monospace',
-    fontSize: '1.05rem',
   },
   datasetIdChip: {
     color: theme.palette.grey[500],
@@ -158,17 +143,6 @@ export const downloadUuid = (uuid) => {
   document.body.removeChild(form);
 
   return submit;
-};
-
-const getCitationText = (dataset) => {
-  if (!dataset) { return null; }
-  const { projectTitle } = dataset;
-  const now = new Date();
-  const today = dateFormat(now, 'mmmm d, yyyy');
-  const neon = 'NEON (National Ecological Observatory Network)';
-  const url = `https://data.neonscience.org/prototype-datasets/${dataset.uuid}`;
-  const accessed = `(accessed ${today})`;
-  return `${neon}. ${projectTitle}. ${url} ${accessed}`;
 };
 
 const DatasetDetails = (props) => {
@@ -349,38 +323,6 @@ const DatasetDetails = (props) => {
     });
   }
 
-  // Citation
-  const dataPolicyLink = (
-    <Link href={DATA_POLICIES_URL}>Data Policies &amp; Citation Guidelines</Link>
-  );
-  const citationText = getCitationText(dataset);
-  const citation = (
-    <div>
-      <Typography variant="subtitle2" gutterBottom>
-        Please use this citation in your publications. See {dataPolicyLink} for more info.
-      </Typography>
-      <Card>
-        <CardContent>
-          <Typography variant="body1" className={classes.citationText}>
-            {citationText}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Tooltip
-            placement="bottom-start"
-            title="Click to copy the above citation to the clipboard"
-          >
-            <CopyToClipboard text={citationText}>
-              <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
-                Copy
-              </Button>
-            </CopyToClipboard>
-          </Tooltip>
-        </CardActions>
-      </Card>
-    </div>
-  );
-
   /**
      Main render
   */
@@ -407,6 +349,13 @@ const DatasetDetails = (props) => {
               </Typography>
             )}
           </div>
+          {/* Dataset Abstract */}
+          <div className={classes.section}>
+            {getSectionTitle('Dataset Abstract')}
+            <Typography variant="body2">
+              {datasetAbstract}
+            </Typography>
+          </div>
           {/* Project Decription */}
           <div className={classes.section}>
             {getSectionTitle('Project Description')}
@@ -421,17 +370,10 @@ const DatasetDetails = (props) => {
               {designDescription}
             </Typography>
           </div>
-          {/* Dataset Abstract */}
-          <div className={classes.section}>
-            {getSectionTitle('Dataset Abstract')}
-            <Typography variant="body2">
-              {datasetAbstract}
-            </Typography>
-          </div>
           {/* Citation */}
           <div className={classes.section}>
             {getSectionTitle('Citation')}
-            {citation}
+            <Citation uuid={uuid} />
           </div>
           {/* Locations and Study Area */}
           <div className={classes.section}>

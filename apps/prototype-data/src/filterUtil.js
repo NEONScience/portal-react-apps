@@ -5,7 +5,7 @@ export const FILTER_KEYS = {
   SEARCH: 'SEARCH',
   THEMES: 'THEMES',
   SCIENCE_TEAM: 'SCIENCE_TEAM',
-  DATE_RANGE: 'DATE_RANGE',
+  TIME_RANGE: 'TIME_RANGE',
 };
 
 // Filter keys that have a discrete list of filter items (for validating updates)
@@ -18,7 +18,7 @@ export const FILTER_LABELS = {
   SEARCH: 'Search',
   THEMES: 'Themes',
   SCIENCE_TEAM: 'Science Team',
-  DATE_RANGE: 'Available Dates',
+  TIME_RANGE: 'Time Range',
 };
 
 // Array of filter keys that have discrete and countable items
@@ -63,21 +63,21 @@ export const depluralizeSearchTerms = (terms) => {
 // Since most filters are validated as an intersection of value (array of string) with an array of
 // valid values we start by setting them all to that and then define the special cases below.
 /**
- * Generate a continuous list of years given an input date range
+ * Generate a continuous list of years given an input time range
  * (e.g. [2015, 2018] => [2015, 2016, 2017, 2018]
- * @param {array} dateRange - array of exactly two years (as numbers, not strings)
+ * @param {array} timeRange - array of exactly two years (as numbers, not strings)
  */
-export const getContinuousYearsArray = (dateRange) => {
+export const getContinuousYearsArray = (timeRange) => {
   const MIN_YEAR = 2000;
   const MAX_YEAR = 2100;
   if (
-    !Array.isArray(dateRange) || dateRange.length !== 2
-      || !Number.isInteger(dateRange[0]) || !Number.isInteger(dateRange[1])
-      || dateRange[0] < MIN_YEAR || dateRange[1] > MAX_YEAR || dateRange[1] < dateRange[0]
+    !Array.isArray(timeRange) || timeRange.length !== 2
+      || !Number.isInteger(timeRange[0]) || !Number.isInteger(timeRange[1])
+      || timeRange[0] < MIN_YEAR || timeRange[1] > MAX_YEAR || timeRange[1] < timeRange[0]
   ) { return []; }
   const contionuousRange = [];
-  let y = dateRange[0];
-  while (y <= dateRange[1]) {
+  let y = timeRange[0];
+  while (y <= timeRange[1]) {
     contionuousRange.push(y);
     y += 1;
   }
@@ -94,28 +94,22 @@ FILTER_FUNCTIONS.SEARCH = (dataset, value) => (
     ? depluralizeSearchTerms(value).some((term) => dataset.filterableValues.SEARCH.includes(term))
     : true
 );
-FILTER_FUNCTIONS.DATE_RANGE = (dataset, value) => filterValuesIntersect(
+FILTER_FUNCTIONS.TIME_RANGE = (dataset, value) => filterValuesIntersect(
   getContinuousYearsArray(value),
-  dataset.filterableValues.DATE_RANGE,
-);
-FILTER_FUNCTIONS.DATA_STATUS = (dataset, value) => (
-  value.includes(dataset.filterableValues.DATA_STATUS)
-);
-FILTER_FUNCTIONS.SCIENCE_TEAM = (dataset, value) => (
-  value.includes(dataset.filterableValues.SCIENCE_TEAM)
+  dataset.filterableValues.TIME_RANGE,
 );
 
 export const INITIAL_FILTER_VALUES = {
   SEARCH: [],
   THEMES: [],
   SCIENCE_TEAM: [],
-  DATE_RANGE: [null, null],
+  TIME_RANGE: [null, null],
 };
 
 export const INITIAL_FILTER_ITEMS = {
   THEMES: [],
   SCIENCE_TEAM: [],
-  DATE_RANGE: [],
+  TIME_RANGE: [],
 };
 
 export const INITIAL_DATASET_VISIBILITY = {
@@ -159,16 +153,16 @@ export const SORT_METHODS = {
       const datasetA = datasets[a];
       const datasetB = datasets[b];
       if (
-        !datasetA.filterableValues[FILTER_KEYS.DATE_RANGE].length
-          || !datasetB.filterableValues[FILTER_KEYS.DATE_RANGE].length
+        !datasetA.filterableValues[FILTER_KEYS.TIME_RANGE].length
+          || !datasetB.filterableValues[FILTER_KEYS.TIME_RANGE].length
       ) {
         return projectTitleAscSort(datasetA, datasetB);
       }
       const ret = getSortReturns(state.sort.direction);
-      const aDate = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE][0];
-      const bDate = datasetB.filterableValues[FILTER_KEYS.DATE_RANGE][0];
-      if (aDate === bDate) { return projectTitleAscSort(datasetA, datasetB); }
-      return aDate < bDate ? ret[0] : ret[1];
+      const aYear = datasetA.filterableValues[FILTER_KEYS.TIME_RANGE][0];
+      const bYear = datasetB.filterableValues[FILTER_KEYS.TIME_RANGE][0];
+      if (aYear === bYear) { return projectTitleAscSort(datasetA, datasetB); }
+      return aYear < bYear ? ret[0] : ret[1];
     },
   },
   newestAvailableData: {
@@ -179,18 +173,18 @@ export const SORT_METHODS = {
       const datasetA = datasets[a];
       const datasetB = datasets[b];
       if (
-        !datasetA.filterableValues[FILTER_KEYS.DATE_RANGE].length
-          || !datasetB.filterableValues[FILTER_KEYS.DATE_RANGE].length
+        !datasetA.filterableValues[FILTER_KEYS.TIME_RANGE].length
+          || !datasetB.filterableValues[FILTER_KEYS.TIME_RANGE].length
       ) {
         return projectTitleAscSort(datasetA, datasetB);
       }
       const ret = getSortReturns(state.sort.direction);
-      const aRangeLength = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE].length;
-      const bRangeLength = datasetB.filterableValues[FILTER_KEYS.DATE_RANGE].length;
-      const aDate = datasetA.filterableValues[FILTER_KEYS.DATE_RANGE][aRangeLength - 1];
-      const bDate = datasetB.filterableValues[FILTER_KEYS.DATE_RANGE][bRangeLength - 1];
-      if (aDate === bDate) { return projectTitleAscSort(datasetA, datasetB); }
-      return aDate < bDate ? ret[0] : ret[1];
+      const aRangeLength = datasetA.filterableValues[FILTER_KEYS.TIME_RANGE].length;
+      const bRangeLength = datasetB.filterableValues[FILTER_KEYS.TIME_RANGE].length;
+      const aYear = datasetA.filterableValues[FILTER_KEYS.TIME_RANGE][aRangeLength - 1];
+      const bYear = datasetB.filterableValues[FILTER_KEYS.TIME_RANGE][bRangeLength - 1];
+      if (aYear === bYear) { return projectTitleAscSort(datasetA, datasetB); }
+      return aYear < bYear ? ret[0] : ret[1];
     },
   },
   searchRelevance: {
@@ -427,10 +421,8 @@ export const generateSearchFilterableValue = (dataset) => {
   ].map((field) => (dataset[field] || ''));
   // Add generated filterable values
   [
-    // 'SITES',
-    // 'STATES',
-    // 'DOMAINS',
-    'DATE_RANGE',
+    'SCIENCE_TEAMS',
+    'TIME_RANGE',
     'THEMES',
   ].forEach((key) => {
     search.push((dataset.filterableValues[key] || []).join(' '));
@@ -465,6 +457,8 @@ export const generateSearchFilterableValue = (dataset) => {
 */
 const parseDataset = (rawDataset, neonContextData = {}) => {
   const newDataset = cloneDeep({ ...rawDataset, filterableValues: {} });
+  // Filterable value for SCIENCE_TEAM
+  newDataset.filterableValues[FILTER_KEYS.SCIENCE_TEAM] = rawDataset.scienceTeams || [];
   // Filterable value for THEMES (special handling for lack of ID / incorrect titles from API)
   newDataset.filterableValues[FILTER_KEYS.THEMES] = (rawDataset.dataThemes || [])
     .map((theme) => (
@@ -472,13 +466,13 @@ const parseDataset = (rawDataset, neonContextData = {}) => {
         ? 'Land Cover & Processes'
         : theme
     ));
-  // Filterable value for DATE_RANGE
-  newDataset.dateRange = [
+  // Filterable value for TIME_RANGE
+  newDataset.timeRange = [
     Number.parseInt(rawDataset.startYear, 10) || null,
     Number.parseInt(rawDataset.endYear, 10) || null,
   ];
-  newDataset.filterableValues[FILTER_KEYS.DATE_RANGE] = (
-    getContinuousYearsArray(newDataset.dateRange)
+  newDataset.filterableValues[FILTER_KEYS.TIME_RANGE] = (
+    getContinuousYearsArray(newDataset.timeRange)
   );
   // Filterable value for SEARCH - pulls from all other generated filterable values so do last
   newDataset.filterableValues[FILTER_KEYS.SEARCH] = generateSearchFilterableValue(
@@ -532,18 +526,18 @@ export const parseAllDatasets = (state) => {
     // Add its filter items to overall counts
     addDatasetToFilterItemCounts(newState.datasets[uuid]);
 
-    // Apply dataset date range to expand the current stats totalDateRange
+    // Apply dataset time range to expand the current stats totalTimeRange
     const {
-      filterableValues: { [FILTER_KEYS.DATE_RANGE]: datasetDateRange },
+      filterableValues: { [FILTER_KEYS.TIME_RANGE]: datasetTimeRange },
     } = newState.datasets[uuid];
-    const maxDateRangeIdx = datasetDateRange.length - 1;
-    const rangeStart = datasetDateRange[0];
-    if (!newState.stats.totalDateRange[0] || rangeStart < newState.stats.totalDateRange[0]) {
-      newState.stats.totalDateRange[0] = rangeStart;
+    const maxTimeRangeIdx = datasetTimeRange.length - 1;
+    const rangeStart = datasetTimeRange[0];
+    if (!newState.stats.totalTimeRange[0] || rangeStart < newState.stats.totalTimeRange[0]) {
+      newState.stats.totalTimeRange[0] = rangeStart;
     }
-    const rangeEnd = datasetDateRange[maxDateRangeIdx];
-    if (!newState.stats.totalDateRange[1] || rangeEnd > newState.stats.totalDateRange[1]) {
-      newState.stats.totalDateRange[1] = rangeEnd;
+    const rangeEnd = datasetTimeRange[maxTimeRangeIdx];
+    if (!newState.stats.totalTimeRange[1] || rangeEnd > newState.stats.totalTimeRange[1]) {
+      newState.stats.totalTimeRange[1] = rangeEnd;
     }
   });
 
@@ -552,10 +546,6 @@ export const parseAllDatasets = (state) => {
   COUNTABLE_FILTER_KEYS.forEach((key) => {
     const getName = (item) => {
       switch (key) {
-        /*
-        case FILTER_KEYS.STATES:
-          return statesJSON[item].name;
-        */
         case FILTER_KEYS.SCIENCE_TEAM:
           return item.substring(0, item.indexOf('(') - 1);
         default:
@@ -564,12 +554,6 @@ export const parseAllDatasets = (state) => {
     };
     const getSubtitle = (item) => {
       switch (key) {
-        /*
-        case FILTER_KEYS.SITES:
-          return `${sitesJSON[item].description}, ${sitesJSON[item].stateCode}`;
-        case FILTER_KEYS.DOMAINS:
-          return domainsJSON[item].name;
-        */
         case FILTER_KEYS.SCIENCE_TEAM:
           return item.substring(item.indexOf('('));
         default:
@@ -589,17 +573,6 @@ export const parseAllDatasets = (state) => {
   });
 
   // Sort all global filterItems lists
-  /*
-  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => (
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  ));
-  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => (
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  ));
-  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => (
-    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-  ));
-  */
   newState.filterItems[FILTER_KEYS.SCIENCE_TEAM].sort((a, b) => (
     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   ));
@@ -609,8 +582,8 @@ export const parseAllDatasets = (state) => {
 
   // Derive final stats
   newState.stats.totalDatasets = Object.keys(newState.datasets).length;
-  newState.filterItems[FILTER_KEYS.DATE_RANGE] = getContinuousYearsArray(
-    newState.stats.totalDateRange,
+  newState.filterItems[FILTER_KEYS.TIME_RANGE] = getContinuousYearsArray(
+    newState.stats.totalTimeRange,
   );
 
   // Blow away unparsedDatasets and be done

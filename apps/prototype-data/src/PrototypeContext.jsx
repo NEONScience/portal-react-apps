@@ -87,7 +87,7 @@ const DEFAULT_STATE = {
   // Stats about the entire dataset catalog independent of filters, derived once on load
   stats: {
     totalDatasets: 0,
-    totalDateRange: [null, null],
+    totalTimeRange: [null, null],
   },
 
   // How many potentially visible products to actually show
@@ -297,14 +297,24 @@ const Provider = (props) => {
     manifestRollupFetches[uuid].status === FETCH_STATUS.AWAITING_CALL
   ));
 
+  const history = useHistory();
+  const location = useLocation();
+  const { pathname } = location;
+
   /**
      Effects
   */
-  // Parse uuid out of the route (URL) and set the initial route if not null
+  // Parse UUID out of the route (URL) and set the initial route if not null
+  // If we don't parse a UUID but see that there's *something* in the URL then replace the current
+  // URL with the cleaned-up base URL (explore)
   useEffect(() => {
     if (appStatus !== APP_STATUS.INITIALIZING) { return; }
+    const urlHasArg = /^\/prototype-datasets\/(.+)/.test(pathname);
     const uuid = getUuidFromURL();
-    if (!uuid) { return; }
+    if (!uuid) {
+      if (urlHasArg) { history.replace('/prototype-datasets/'); }
+      return;
+    }
     dispatch({ type: 'setInitialRouteToUuid', uuid });
   }, [appStatus]);
 
@@ -347,9 +357,6 @@ const Provider = (props) => {
   // 1. route.nextUuid - set by dispatch, gets pushed into history
   // 2. location.pathname - literally the URL, route.uuid follows this
   // 3. route.uuid - only ever set directly from URL parsing
-  const history = useHistory();
-  const location = useLocation();
-  const { pathname } = location;
   useEffect(() => {
     if (appStatus === APP_STATUS.INITIALIZING) { return; }
     const locationUuid = getUuidFromURL(pathname);

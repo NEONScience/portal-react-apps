@@ -21,15 +21,20 @@ import { SORT_METHODS, SORT_DIRECTIONS } from '../filterUtil';
 const { usePrototypeContextState } = PrototypeContext;
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
   select: {
-    height: theme.spacing(6),
+    height: theme.spacing(4.5),
     '& div': {
       paddingRight: theme.spacing(4.5),
     },
   },
   title: {
     fontWeight: 500,
-    marginBottom: theme.spacing(1),
+    marginRight: theme.spacing(2),
   },
   toggleButtonGroup: {
     marginLeft: theme.spacing(2),
@@ -50,59 +55,58 @@ const Sort = () => {
   const sortDirectionDisabled = (method === 'searchRelevance');
 
   return (
-    <div>
-      <Typography variant="h5" component="h3" className={classes.title}>Sort</Typography>
-      <div style={{ display: 'flex' }}>
-        <FormControl variant="outlined">
-          <Select
-            value={method}
-            aria-label="Sort Method"
-            className={classes.select}
-            onChange={(event) => dispatch({
-              type: 'applySort',
-              method: event.target.value,
-              direction: null,
-            })}
-            data-selenium="browse-data-products-page.sort.method"
-          >
-            {Object.keys(SORT_METHODS).map((methodName) => (
-              <MenuItem
-                key={methodName}
-                value={methodName}
-                disabled={SORT_METHODS[methodName].isDisabled(filterValues)}
-              >
-                {SORT_METHODS[methodName].label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <ToggleButtonGroup
-          exclusive
-          value={direction}
-          className={classes.toggleButtonGroup}
-          onChange={(event, value) => dispatch({
+    <div className={classes.container}>
+      <Typography variant="h6" component="h4" className={classes.title}>Sort</Typography>
+      <FormControl variant="outlined">
+        <Select
+          value={method}
+          aria-label="Sort Method"
+          className={classes.select}
+          onChange={(event) => dispatch({
             type: 'applySort',
-            method: null,
-            direction: value,
+            method: event.target.value,
+            direction: null,
           })}
-          data-selenium="browse-data-products-page.sort.direction"
+          data-selenium="browse-data-products-page.sort.method"
         >
-          <ToggleButton
-            value={SORT_DIRECTIONS[0]}
-            disabled={sortDirectionDisabled}
-            aria-label="Sort Ascending"
-          >
-            <AscIcon />
-          </ToggleButton>
-          <ToggleButton
-            value={SORT_DIRECTIONS[1]}
-            disabled={sortDirectionDisabled}
-            aria-label="Sort Descending"
-          >
-            <DescIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </div>
+          {Object.keys(SORT_METHODS).map((methodName) => (
+            <MenuItem
+              key={methodName}
+              value={methodName}
+              disabled={SORT_METHODS[methodName].isDisabled(filterValues)}
+            >
+              {SORT_METHODS[methodName].label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <ToggleButtonGroup
+        exclusive
+        size="small"
+        value={direction}
+        className={classes.toggleButtonGroup}
+        onChange={(event, value) => dispatch({
+          type: 'applySort',
+          method: null,
+          direction: value,
+        })}
+        data-selenium="browse-data-products-page.sort.direction"
+      >
+        <ToggleButton
+          value={SORT_DIRECTIONS[0]}
+          disabled={sortDirectionDisabled}
+          aria-label="Sort Ascending"
+        >
+          <AscIcon />
+        </ToggleButton>
+        <ToggleButton
+          value={SORT_DIRECTIONS[1]}
+          disabled={sortDirectionDisabled}
+          aria-label="Sort Descending"
+        >
+          <DescIcon />
+        </ToggleButton>
+      </ToggleButtonGroup>
     </div>
   );
 };

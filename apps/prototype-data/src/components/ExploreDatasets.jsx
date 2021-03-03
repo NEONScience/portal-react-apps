@@ -3,24 +3,38 @@ import React, { useEffect, useRef } from 'react';
 import debounce from 'lodash/debounce';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionActions from '@material-ui/core/AccordionActions';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+
+import ClearIcon from '@material-ui/icons/Clear';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import PrototypeContext from '../PrototypeContext';
 import Dataset from './Dataset';
+import FilterScienceTeam from './FilterScienceTeam';
+import FilterSearch from './FilterSearch';
+import FilterTheme from './FilterTheme';
+import FilterTimeRange from './FilterTimeRange';
 import Sort from './Sort';
-import Search from './Search';
 
 const { usePrototypeContextState } = PrototypeContext;
 
 const useStyles = makeStyles((theme) => ({
-  filters: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing(4),
+  accordion: {
+    marginBottom: `${theme.spacing(5)}px !important`,
+  },
+  accordionSummary: {
+    '& div': {
+      fontSize: '1.25rem',
+    },
   },
   lazyLoader: {
     margin: theme.spacing(5, 5, 0, 5),
@@ -31,9 +45,13 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   showing: {
-    marginBottom: theme.spacing(4),
-    fontSize: '0.85rem',
+    fontSize: '1.25rem',
+    fontWeight: 500,
     color: theme.palette.grey[500],
+  },
+  showingContainer: {
+    display: 'flex',
+    alignItems: 'center',
   },
 }));
 
@@ -52,10 +70,11 @@ const ExploreDatasets = () => {
 
   // How many datasets are showing
   const filtered = filtersApplied.length ? 'filtered' : 'total';
+  const plural = datasetsOrder.length === 1 ? '' : 's';
   let showing = (datasetsOrder.length > scrollCutoff)
-    ? `Showing first ${scrollCutoff} of ${datasetsOrder.length} ${filtered} datasets`
-    : `Showing all ${datasetsOrder.length} ${filtered} datasets`;
-  if (!datasetsOrder.length) { showing = ''; }
+    ? `Showing first ${scrollCutoff} of ${datasetsOrder.length} ${filtered} dataset${plural}`
+    : `Showing all ${datasetsOrder.length} ${filtered} dataset${plural}`;
+  if (!datasetsOrder.length) { showing = 'No datasets match current filters'; }
 
   // Refs for filter inputs that we can't directly control due to poor performance
   // but on which we want to set values in certain cases
@@ -93,18 +112,56 @@ const ExploreDatasets = () => {
 
   return (
     <div>
-      <div className={classes.filters}>
-        <Sort />
-        <Search searchRef={searchRef} />
-      </div>
-      <div className={classes.showing}>
-        <Typography variant="subtitle2">{showing}</Typography>
-      </div>
+      <Accordion className={classes.accordion}>
+        <AccordionSummary className={classes.accordionSummary} expandIcon={<ExpandMoreIcon />}>
+          Search / Filter Datasets
+        </AccordionSummary>
+        <AccordionDetails className={classes.filters}>
+          <Grid container spacing={5}>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <FilterSearch searchRef={searchRef} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <FilterTimeRange />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <FilterScienceTeam />
+            </Grid>
+            <Grid item xs={12} sm={6} md={6} lg={3}>
+              <FilterTheme />
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+        <AccordionActions>
+          <Button
+            color="primary"
+            variant="contained"
+            startIcon={<ClearIcon />}
+            disabled={!filtersApplied.length}
+            onClick={() => {
+              // Clear the search field value directly (not through state) because
+              // the input field is not controlled (controlling it destroys performance).
+              if (searchRef.current) { searchRef.current.querySelector('input').value = ''; }
+              dispatch({ type: 'resetAllFilters' });
+            }}
+          >
+            Reset All Filters
+          </Button>
+        </AccordionActions>
+      </Accordion>
+      <Grid container spacing={4} style={{ marginBottom: Theme.spacing(3) }}>
+        <Grid item xs={12} sm={6} className={classes.showingContainer}>
+          <Typography variant="h5" component="h3" className={classes.showing}>{showing}</Typography>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Sort />
+        </Grid>
+      </Grid>
       <div id="data-presentation">
         {datasetsOrder.length === 0 ? (
           <div style={{ margin: Theme.spacing(5), textAlign: 'center' }}>
             <Typography variant="h6" style={{ color: Theme.palette.grey[400] }}>
-              No prototype datasets found to match current filters.
+              Try a less restrictive combination of filters to see prototype datasets.
             </Typography>
           </div>
         ) : null}

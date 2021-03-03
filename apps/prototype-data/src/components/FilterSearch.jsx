@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Search = (props) => {
+const FilterSearch = (props) => {
   const classes = useStyles(Theme);
   const { searchRef } = props;
 
@@ -56,8 +56,7 @@ const Search = (props) => {
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 
-  const lastYear = (new Date()).getFullYear() - 1;
-  const placeholder = `Utah, "snow depth", ${lastYear}, etc…`;
+  const placeholder = 'Utah, "soil chemistry", 2018, etc…';
 
   return (
     <FilterBase title="Search" data-selenium="prototype-datasets-page.filters.search">
@@ -80,17 +79,17 @@ const Search = (props) => {
       <Typography variant="body2" className={classes.subtitle}>
         {/* eslint-disable react/jsx-one-expression-per-line */}
         Use several terms to match datasets having <i>any</i> term (<i>term OR term</i>).&nbsp;
-        Quote terms to match phrases (e.g. &quot;wind speed&quot;)
+        Quote terms to match phrases (e.g. &quot;air pressure&quot;)
         {/* eslint-enable react/jsx-one-expression-per-line */}
       </Typography>
     </FilterBase>
   );
 };
 
-Search.propTypes = {
+FilterSearch.propTypes = {
   searchRef: PropTypes.shape({
     current: PropTypes.instanceOf(Element),
   }).isRequired,
 };
 
-export default Search;
+export default FilterSearch;

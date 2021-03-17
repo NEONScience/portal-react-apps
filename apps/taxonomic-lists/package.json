@@ -1,6 +1,6 @@
 {
   "name": "taxonomic-lists",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {

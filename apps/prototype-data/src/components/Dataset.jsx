@@ -71,6 +71,7 @@ const Dataset = (props) => {
     projectDescription,
     projectTitle,
     startYear,
+    version,
   } = dataset;
 
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
@@ -112,6 +113,14 @@ const Dataset = (props) => {
               <div className={classes.startFlex}>
                 {themeIcons}
               </div>
+            </div>
+            <div className={classes.cardFirstColumnSection}>
+              <Typography variant="subtitle2" className={classes.sectionTitle}>
+                Version
+              </Typography>
+              <Typography variant="body2">
+                {version || '--'}
+              </Typography>
             </div>
           </Grid>
           <Grid item xs={12} sm={10}>

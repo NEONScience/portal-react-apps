@@ -32,43 +32,79 @@ const CITATION_FORMATS = {
     longName: 'BibTex',
     mime: 'application/x-bibtex',
     extension: 'bib',
-    generateProvisionalCitation: (dataset) => (`@misc{${dataset.uuid}/prototype,
-  doi = {},
+    generateProvisionalCitation: (dataset) => {
+      let id = `${dataset.uuid}/prototype`;
+      let doiId = '';
+      let version = '';
+      if (dataset.doi && dataset.doi.url) {
+        id = dataset.doi.url;
+        doiId = dataset.doi.url.split('/').slice(-2).join('/');
+      }
+      if (dataset.version) {
+        version = `, ${dataset.version}`;
+      }
+      return `@misc{${id},
+  doi = {${doiId}},
   url = {${window.location.href}},
-  author = {{National Ecological Observatory Network (NEON)}},
+  author = {National Ecological Observatory Network (NEON)},
   language = {en},
-  title = {${dataset.projectTitle} (${dataset.projectTitle})},
+  title = {${dataset.projectTitle}${version} (${dataset.uuid})},
   publisher = {National Ecological Observatory Network (NEON)},
   year = {${(new Date()).getFullYear()}}
-}`),
+}`;
+    },
   },
   RIS: {
     shortName: 'RIS',
     longName: 'Research Information Systems (RIS)',
     mime: 'application/x-research-info-systems',
     extension: 'ris',
-    generateProvisionalCitation: (dataset) => (`TY  - DATA
-T1  - ${dataset.projectTitle} (${dataset.uuid})
+    generateProvisionalCitation: (dataset) => {
+      let doiId = '';
+      let version = '';
+      if (dataset.doi && dataset.doi.url) {
+        doiId = dataset.doi.url.split('/').slice(-2).join('/');
+      }
+      if (dataset.version) {
+        version = `, ${dataset.version}`;
+      }
+      return `TY  - DATA
+T1  - ${dataset.projectTitle}${version} (${dataset.uuid})
 AU  - National Ecological Observatory Network (NEON)
-DO  - 
+DO  - ${doiId}
 UR  - ${window.location.href}
+AB  - ${dataset.datasetAbstract}
 PY  - ${(new Date()).getFullYear()}
 PB  - National Ecological Observatory Network (NEON)
 LA  - en
-ER  - `),
+ER  - `;
+    },
   },
 };
 Object.keys(CITATION_FORMATS).forEach((key) => { CITATION_FORMATS[key].KEY = key; });
 
 const getCitationText = (dataset) => {
   if (!dataset) { return null; }
-  const { projectTitle } = dataset;
+  const {
+    doi,
+    projectTitle,
+    uuid,
+    version,
+  } = dataset;
+  const hasDoi = doi && doi.url;
   const now = new Date();
   const today = dateFormat(now, 'mmmm d, yyyy');
   const neon = 'NEON (National Ecological Observatory Network)';
-  const url = `https://data.neonscience.org/prototype-datasets/${dataset.uuid}`;
-  const accessed = `(accessed ${today})`;
-  return `${neon}. ${projectTitle}. ${url} ${accessed}`;
+  const url = hasDoi
+    ? `${doi.url}.`
+    : `https://data.neonscience.org/prototype-datasets/${uuid}`;
+  const accessed = hasDoi
+    ? `Dataset accessed from https://data.neonscience.org on ${today}`
+    : `(accessed ${today})`;
+  const title = version
+    ? `${projectTitle}, ${version}`
+    : projectTitle;
+  return `${neon}. ${title} (${uuid}). ${url} ${accessed}`;
 };
 
 const useStyles = makeStyles(() => ({

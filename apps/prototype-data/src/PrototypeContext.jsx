@@ -316,7 +316,7 @@ const Provider = (props) => {
       return;
     }
     dispatch({ type: 'setInitialRouteToUuid', uuid });
-  }, [appStatus]);
+  }, [appStatus, history, pathname]);
 
   // Trigger initial prototype datasets fetch
   useEffect(() => {

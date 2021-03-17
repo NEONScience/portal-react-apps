@@ -64,13 +64,25 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: 1.5,
     },
   },
-  listItemRelatedDataProduct: {
+  listItemRelated: {
     borderRadius: theme.spacing(0.5),
     border: '0.5px solid #ffffff00',
     '&:hover': {
       border: `0.5px solid ${theme.palette.primary.main}`,
     },
+  },
+  listItemRelatedDataProduct: {
     '& p': {
+      color: theme.palette.primary.main,
+      textDecoration: 'underline',
+      marginTop: theme.spacing(0.5),
+      '&:hover': {
+        color: Theme.colors.LIGHT_BLUE[400],
+      },
+    },
+  },
+  listItemRelatedVersion: {
+    '& span': {
       color: theme.palette.primary.main,
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
@@ -170,9 +182,11 @@ const DatasetDetails = (props) => {
     projectDescription,
     publicationCitations,
     relatedDataProducts,
+    relatedVersions,
     scienceTeams,
     startYear,
     studyAreaDescription,
+    version,
   } = dataset;
 
   /**
@@ -234,8 +248,33 @@ const DatasetDetails = (props) => {
     );
   }
 
+  // Related Versions
+  const relatedVersionsSort = (a, b) => (a.datasetVersion < b.datasetVersion ? 1 : -1);
+  const relatedVersionsLinks = (!relatedVersions || !relatedVersions.length) ? getNA('None') : (
+    <List dense className={classes.list}>
+      {relatedVersions.sort(relatedVersionsSort).map((relatedVersion) => {
+        const { datasetUuid, datasetVersion, datasetVersionDescription } = relatedVersion;
+        const href = `../${datasetUuid}`;
+        return (
+          <ListItem
+            key={datasetUuid}
+            className={`${classes.listItemRelated} ${classes.listItemRelatedVersion}`}
+            component="a"
+            href={href}
+            button
+          >
+            <ListItemText
+              primary={datasetVersion}
+              secondary={datasetVersionDescription || '(no description)'}
+            />
+          </ListItem>
+        );
+      })}
+    </List>
+  );
+
   // Related Data Products
-  const relatedDataProductsLinks = !relatedDataProducts.length ? getNA('none') : (
+  const relatedDataProductsLinks = !relatedDataProducts.length ? getNA('None') : (
     <List dense className={classes.list}>
       {relatedDataProducts.map((dataProduct) => {
         const { dataProductCode, dataProductName } = dataProduct;
@@ -243,7 +282,7 @@ const DatasetDetails = (props) => {
         return (
           <ListItem
             key={dataProductCode}
-            className={classes.listItemRelatedDataProduct}
+            className={`${classes.listItemRelated} ${classes.listItemRelatedDataProduct}`}
             component="a"
             href={href}
             button
@@ -316,10 +355,23 @@ const DatasetDetails = (props) => {
   if (Array.isArray(locations) && locations.length) {
     locations.forEach((location) => {
       if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) { return; }
-      manualLocationData.push({
+      const manualLocation = {
         manualLocationType: 'PROTOTYPE_SITE',
         ...location,
-      });
+      };
+      // Scrub URLs out of decommissioned sites. Some such sites have an external URL crammed into
+      // the siteCode field but this is really better kept as separate information, to be fixed
+      // upstream. Here we just throw it out so that siteCodes are simple as expected.
+      const siteCodeHasUrl = /(http:[^\s()[\]{}]+)/.exec(manualLocation.siteCode);
+      if (siteCodeHasUrl) {
+        const cleanSiteCode = manualLocation.siteCode
+          .split(siteCodeHasUrl[0])
+          .join('')
+          .replace(/[()[\]{}]/g, '')
+          .trim();
+        manualLocation.siteCode = cleanSiteCode;
+      }
+      manualLocationData.push(manualLocation);
     });
   }
 
@@ -393,6 +445,13 @@ const DatasetDetails = (props) => {
 
         {/* Right Column */}
         <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
+          {/* Version */}
+          <div className={classes.section}>
+            {getSectionTitle('Version')}
+            <Typography variant="body1">
+              {version || '--'}
+            </Typography>
+          </div>
           {/* Time Range */}
           <div className={classes.section}>
             {getSectionTitle('Time Range')}
@@ -425,6 +484,11 @@ const DatasetDetails = (props) => {
             <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
               {keywordChips}
             </div>
+          </div>
+          {/* Related Versions */}
+          <div className={classes.section}>
+            {getSectionTitle('Related Versions')}
+            {relatedVersionsLinks}
           </div>
           {/* Related Data Products */}
           <div className={classes.section}>

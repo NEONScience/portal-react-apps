@@ -15,6 +15,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
+import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import {
   /* constants */
@@ -312,6 +313,7 @@ const Provider = (props) => {
     const urlHasArg = /^\/prototype-datasets\/(.+)/.test(pathname);
     const uuid = getUuidFromURL();
     if (!uuid) {
+      NeonJsonLd.removeAllMetadata();
       if (urlHasArg) { history.replace('/prototype-datasets/'); }
       return;
     }
@@ -362,15 +364,22 @@ const Provider = (props) => {
     const locationUuid = getUuidFromURL(pathname);
     // Next uuid differs from location: navigate to next uuid and apply to state
     if (routeNextUuid !== undefined && routeNextUuid !== locationUuid) {
-      const nextLocation = routeNextUuid === null
+      const missingNextUuid = routeNextUuid === null;
+      const nextLocation = missingNextUuid
         ? '/prototype-datasets/'
         : `/prototype-datasets/${routeNextUuid}/`;
       history.push(nextLocation);
+      if (missingNextUuid) {
+        NeonJsonLd.removeAllMetadata();
+      } else {
+        NeonJsonLd.injectPrototypeDataset(routeNextUuid);
+      }
       dispatch({ type: 'applyNextUuid' });
       return;
     }
     // Next uuid differs from current: apply next uuid to state (used after browser nav)
     if (routeNextUuid !== undefined && routeNextUuid !== routeUuid) {
+      NeonJsonLd.removeAllMetadata();
       dispatch({ type: 'applyNextUuid' });
       return;
     }

@@ -402,7 +402,7 @@ export const resetAllFilters = (state) => {
  */
 export const parseSearchTerms = (input) => {
   const terms = input
-    .replace(/[^\w\s."]/g, '')
+    .replace(/[^\w\s\-."]/g, '')
     .match(/(".*?"|[^" \s]+)(?=\s* |\s*$)/g);
   return (terms || [])
     .map((term) => term.replace(/"/g, '').toLowerCase());
@@ -412,6 +412,7 @@ export const generateSearchFilterableValue = (dataset) => {
   // const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextState;
   // Add various dataset meta-data fields
   const search = [
+    'uuid',
     'projectTitle',
     'projectDescription',
     'designDescription',
@@ -449,7 +450,7 @@ export const generateSearchFilterableValue = (dataset) => {
   );
   */
   // Flatten everything into a single string, cast to lower case, and strip out special characters
-  return search.join(' ').toLowerCase().replace(/[^\w. ]/g, ' ').replace(/[ ]{2,}/g, ' ');
+  return search.join(' ').toLowerCase().replace(/[^\w\-. ]/g, ' ').replace(/[ ]{2,}/g, ' ');
 };
 
 /**

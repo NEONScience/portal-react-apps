@@ -587,30 +587,6 @@ export const parseAllDatasets = (state) => {
     newState.stats.totalTimeRange,
   );
 
-  // INJECT VERSIONS + DOIS FOR TESTING
-  const vu = '30d084e0-ff4d-4bbe-a527-6e4366c6e545';
-  if (newState.datasets[vu]) {
-    newState.datasets[vu].version = 'v2';
-    newState.datasets[vu].versionDescription = 'Test Version Description';
-    newState.datasets[vu].doi = {
-      url: 'https://handle.stage.datacite.org/10.80606/tdjb-yf68',
-      generationDate: '2021-03-14T19:49:42Z',
-    };
-    newState.datasets[vu].relatedVersions = [
-      {
-        datasetUuid: 'a69ce381-f62b-a710-5a76-900b3c85a2d8',
-        datasetProjectTitle: 'Optimization of a gas sampling system for measuring eddy-covariance fluxes of H2O and CO2, 2013',
-        datasetVersion: 'v1',
-        datasetVersionDescription: 'Original version',
-      },
-      {
-        datasetUuid: 'a69ce381-f62b-a710-5a76-000b3c85a2d8',
-        datasetProjectTitle: 'Optimization of a gas sampling system for measuring eddy-covariance fluxes of H2O and CO2, 2013',
-        datasetVersion: 'v3',
-      },
-    ];
-  }
-
   // Blow away unparsedDatasets and be done
   newState.unparsedDatasets = {};
   return applyCurrentDatasets(newState);

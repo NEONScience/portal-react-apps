@@ -75,7 +75,7 @@ const DEFAULT_STATE = {
   manifestRollupFetches: {},
   manifestRollups: {},
 
-  // Object used present the appropriately sorted subset of datasets based on user inputs
+  // Store for current visible datasets based on user inputs (and how they're sorted)
   currentDatasets: {
     // Sorted list of dataset uuids
     order: [],

@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -58,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   listItemCitation: {
+    display: 'block',
     '& span': {
       fontFamily: 'monospace',
       fontSize: '0.95rem',
@@ -294,6 +296,39 @@ const DatasetDetails = (props) => {
     </List>
   );
 
+  // Publication Citations
+  let publicationCitationsList = (
+    <Typography variant="body1" className={classes.NA}>None</Typography>
+  );
+  if (Array.isArray(publicationCitations) && publicationCitations.length) {
+    publicationCitationsList = (
+      <List dense className={classes.list}>
+        {publicationCitations.map((pubCitation) => {
+          const {
+            citation: pubCitText,
+            citationIdentifier,
+            citationIdentifierType,
+          } = pubCitation;
+          let identifierLink = null;
+          if (citationIdentifierType && citationIdentifier) {
+            const identifier = /^http[s]?:/.test(citationIdentifier)
+              ? <Link href={citationIdentifier}>{citationIdentifier}</Link>
+              : citationIdentifier;
+            identifierLink = (
+              <div>{identifier}</div>
+            );
+          }
+          return (
+            <ListItem key={pubCitText} className={classes.listItemCitation}>
+              <ListItemText primary={pubCitText} />
+              {identifierLink}
+            </ListItem>
+          );
+        })}
+      </List>
+    );
+  }
+
   // Download File List
   const downloadFileList = !files.length ? getNA('none available') : (
     <List dense className={classes.list}>
@@ -498,22 +533,7 @@ const DatasetDetails = (props) => {
           {/* Publication Citations */}
           <div className={classes.section}>
             {getSectionTitle('Publication Citations')}
-            {Array.isArray(publicationCitations) && publicationCitations.length ? (
-              <List dense className={classes.list}>
-                {publicationCitations.map((pubCitation) => {
-                  const { citation: pubCitText } = pubCitation;
-                  return (
-                    <ListItem key={pubCitText} className={classes.listItemCitation}>
-                      <ListItemText primary={pubCitText} />
-                    </ListItem>
-                  );
-                })}
-              </List>
-            ) : (
-              <Typography variant="body1" className={classes.NA}>
-                None
-              </Typography>
-            )}
+            {publicationCitationsList}
           </div>
         </Grid>
       </Grid>

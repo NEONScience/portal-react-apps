@@ -33,6 +33,7 @@ const {
   useDataProductContextState,
   getCurrentProductFromState,
   getCurrentReleaseObjectFromState,
+  getLatestReleaseObjectFromState,
 } = DataProductContext;
 
 const unresolvedStyle = {
@@ -105,9 +106,11 @@ const IssueLogDetail = () => {
 
   const changeLogs = product.changeLogs || [];
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  const latestReleaseObject = getLatestReleaseObjectFromState(state);
   const rowGetsUnresolvedStyling = (row) => (
     !row.resolvedDate
-      || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
+    || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
+    || (!currentReleaseObject && latestReleaseObject?.generationDate < row.resolvedDate)
   );
   const currentRelease = currentReleaseObject ? currentReleaseObject.release : null;
 
@@ -200,16 +203,22 @@ const IssueLogDetail = () => {
     customSort: getDateSortWithNulls('resolvedDate', 'issueDate'),
     render: (row) => {
       if (rowGetsUnresolvedStyling(row)) {
-        return !row.resolvedDate ? 'unresolved' : (
-          <>
-            <div>
-              {formatDate(row.resolvedDate)}
-            </div>
-            <div style={{ fontSize: '0.65rem' }}>
-              {`unresolved in ${currentRelease} release`}
-            </div>
-          </>
-        );
+        if (row.resolvedDate && currentRelease) {
+          return (
+            <>
+              <div>
+                {formatDate(row.resolvedDate)}
+              </div>
+              <div style={{ fontSize: '0.65rem' }}>
+                {`unresolved in ${currentRelease} release`}
+              </div>
+            </>
+          );
+        }
+        if (row.resolvedDate && !currentRelease) {
+          return 'Resolved for next release';
+        }
+        return 'unresolved';
       }
       return formatDate(row.resolvedDate);
     },

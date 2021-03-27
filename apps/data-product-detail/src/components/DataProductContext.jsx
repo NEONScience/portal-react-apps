@@ -312,8 +312,6 @@ const reducer = (state, action) => {
     case 'fetchProductSucceeded':
       newState.fetches.product.status = FETCH_STATUS.SUCCESS;
       newState.data.product = action.data;
-      // TODO: Hack below.
-      newState.data.product.changeLogs[33].resolvedDate = '2021-01-13T00:00:00Z';
       newState.data.product.releases = sortReleases(newState.data.product.releases);
       return calculateAppStatus(
         calculateFetches(

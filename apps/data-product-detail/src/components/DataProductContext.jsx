@@ -82,23 +82,40 @@ const fetchIsAwaitingCall = (fetchObject) => (
 
 const stateHasFetchesInStatus = (state, status) => (
   fetchIsInStatus(state.fetches.product, status)
-    || Object.keys(state.fetches.productReleases).some(
-      (f) => fetchIsInStatus(state.fetches.productReleases[f], status),
-    )
-    || Object.keys(state.fetches.bundleParents).some(
-      (f) => fetchIsInStatus(state.fetches.bundleParents[f], status),
-    )
-    || Object.keys(state.fetches.bundleParentReleases).some(
-      (bundleParent) => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
-        (f) => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
-      ),
-    )
-    // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
-    // triggered. Otherwise it should never affect app-level status.
-    || (
-      status === FETCH_STATUS.AWAITING_CALL && fetchIsInStatus(state.fetches.aopVizProducts, status)
-    )
+  || Object.keys(state.fetches.productReleases).some(
+    (f) => fetchIsInStatus(state.fetches.productReleases[f], status),
+  )
+  || Object.keys(state.fetches.bundleParents).some(
+    (f) => fetchIsInStatus(state.fetches.bundleParents[f], status),
+  )
+  || Object.keys(state.fetches.bundleParentReleases).some(
+    (bundleParent) => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
+      (f) => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
+    ),
+  )
+  // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
+  // triggered. Otherwise it should never affect app-level status.
+  || (
+    status === FETCH_STATUS.AWAITING_CALL && fetchIsInStatus(state.fetches.aopVizProducts, status)
+  )
 );
+
+const getLatestReleaseObjectFromState = (state = DEFAULT_STATE) => {
+  const {
+    data: { releases },
+  } = state;
+  const releaseTag = releases && releases.length ? releases[0].release : null;
+  console.log('latestReleaseObject', releaseTag);
+  return releases.find((r) => r.release === releaseTag) || null;
+};
+
+const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
+  const {
+    route: { release: currentRelease },
+    data: { releases },
+  } = state;
+  return releases.find((r) => r.release === currentRelease) || null;
+};
 
 const calculateFetches = (state) => {
   const newState = { ...state };
@@ -226,7 +243,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
     if (!currentRelease) { return bundleParents[firstParentCode]; }
     if (
       !bundleParentReleases[firstParentCode]
-        || !bundleParentReleases[firstParentCode][currentRelease]
+      || !bundleParentReleases[firstParentCode][currentRelease]
     ) { return null; }
     return bundleParentReleases[firstParentCode][currentRelease];
   }
@@ -234,14 +251,6 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   if (!currentRelease) { return generalProduct; }
   if (!productReleases[currentRelease]) { return null; }
   return productReleases[currentRelease];
-};
-
-const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
-  const {
-    route: { release: currentRelease },
-    data: { releases },
-  } = state;
-  return releases.find((r) => r.release === currentRelease) || null;
 };
 
 /**
@@ -255,7 +264,7 @@ const Context = createContext(DEFAULT_STATE);
 const useDataProductContextState = () => {
   const hookResponse = useContext(Context);
   if (hookResponse.length !== 2) {
-    return [cloneDeep(DEFAULT_STATE), () => {}];
+    return [cloneDeep(DEFAULT_STATE), () => { }];
   }
   return hookResponse;
 };
@@ -322,7 +331,6 @@ const reducer = (state, action) => {
       return calculateAppStatus(newState);
 
     case 'fetchBundleParentFailed':
-      /* eslint-disable max-len */
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParents[action.bundleParent].error = action.error;
       newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}`;
@@ -330,13 +338,14 @@ const reducer = (state, action) => {
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
+      // eslint-disable-next-line max-len
       newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
       return calculateAppStatus(
         calculateFetches(
+          // eslint-disable-next-line max-len
           applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
         ),
       );
-      /* eslint-enable max-len */
 
     case 'fetchBundleParentReleaseFailed':
       /* eslint-disable max-len */
@@ -391,7 +400,6 @@ const Provider = (props) => {
     process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
     initialState,
   );
-  // const [state, dispatch] = useReducer(reducer, initialState);
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const { bundles } = neonContextData;
@@ -425,7 +433,7 @@ const Provider = (props) => {
       bundleForwardAvailabilityFromParent = false;
       if (
         bundleParentCodes.length === 1
-          && bundles.parents[bundleParentCodes[0]].forwardAvailability
+        && bundles.parents[bundleParentCodes[0]].forwardAvailability
       ) {
         bundleForwardAvailabilityFromParent = true;
       }
@@ -600,6 +608,7 @@ const DataProductContext = {
   getProductCodeAndReleaseFromURL,
   getCurrentProductFromState,
   getCurrentReleaseObjectFromState,
+  getLatestReleaseObjectFromState,
 };
 
 export default DataProductContext;

@@ -212,7 +212,7 @@ const DataProductPage = () => {
     `https://www.neonscience.org/data-samples/data-management/data-revisions-releases/${currentRelease}`
   );
   const releaseInfoTooltip = !currentRelease ? null : (
-    `Click to view general inforamtion about all data products in the ${currentRelease} release`
+    `Click to view general information about all data products in the ${currentRelease} release`
   );
 
   return (

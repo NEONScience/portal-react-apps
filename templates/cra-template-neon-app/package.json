@@ -1,0 +1,28 @@
+{
+  "name": "cra-template-neon-app",
+  "version": "1.0.0",
+  "keywords": [
+    "react",
+    "create-react-app",
+    "template",
+    "typescript",
+    "NEON"
+  ],
+  "description": "The base TypeScript NEON app template for Create React App.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NEONScience/portal-react-apps.git",
+    "directory": "templates/cra-template-neon-app"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=10"
+  },
+  "bugs": {
+    "url": "https://github.com/NEONScience/portal-react-apps/issues"
+  },
+  "files": [
+    "template",
+    "template.json"
+  ]
+}

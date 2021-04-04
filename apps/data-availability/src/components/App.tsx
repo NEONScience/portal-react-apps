@@ -4,8 +4,8 @@ import { batch, useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
+import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
+import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { Nullable } from 'portal-core-components/lib/types/core';
@@ -94,8 +94,8 @@ const App: React.FC = (): JSX.Element => {
       component: AvailabilitySection,
     },
     {
-      name: 'Locations',
-      hash: '#locations',
+      name: 'Available Sites',
+      hash: '#sites',
       component: LocationsSection,
     },
   ];

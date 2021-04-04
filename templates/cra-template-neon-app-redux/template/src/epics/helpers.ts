@@ -18,15 +18,6 @@ export const handleSuccess = (
   cascadeAction?: CascadeActionFunction,
 ): Observable<unknown> => {
   const resolved: UnknownRecord = resolveAny(response as never, 'response');
-  if (exists(resolved) && exists(resolved.accessToken)) {
-    if (exists(cascadeAction)) {
-      return of((cascadeAction as CascadeActionFunction)({
-        accessToken: resolved.accessToken,
-        oAuthProxyAccessToken: resolved.oAuthProxyAccessToken,
-      }));
-    }
-    return of(completed(resolved));
-  }
   if (exists(resolved)
       && exists(resolved.data)
       && ((resolved.data as UnknownRecord).successful === true)) {
@@ -45,15 +36,6 @@ export const handleSuccessObservable = (
   cascadeAction?: CascadeActionFunction,
 ): Observable<unknown> => {
   const resolved: UnknownRecord = resolveAny(response as never, 'response');
-  if (exists(resolved) && exists(resolved.accessToken)) {
-    if (exists(cascadeAction)) {
-      return of((cascadeAction as CascadeActionFunction)({
-        accessToken: resolved.accessToken,
-        oAuthProxyAccessToken: resolved.oAuthProxyAccessToken,
-      }));
-    }
-    return completed(resolved);
-  }
   if (exists(resolved)
       && exists(resolved.data)
       && ((resolved.data as UnknownRecord).successful === true)) {

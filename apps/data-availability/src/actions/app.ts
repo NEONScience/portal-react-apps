@@ -1,5 +1,10 @@
 import { Nullable } from 'portal-core-components/lib/types/core';
-import { DataProduct, Release, Site } from '../types/store';
+import {
+  DataProduct,
+  Release,
+  SelectOption,
+  Site,
+} from '../types/store';
 
 enum AppActions {
   FETCH_PRODUCTS = 'FETCH_PRODUCTS',
@@ -32,11 +37,21 @@ enum AppActions {
   FETCH_FOCAL_SITE_ERROR = 'FETCH_FOCAL_SITE_ERROR',
   RESET_FETCH_FOCAL_SITE = 'RESET_FETCH_FOCAL_SITE',
 
+  SET_SELECTED_VIEW_MODE = 'SET_SELECTED_VIEW_MODE',
   SET_SELECTED_PRODUCT = 'SET_SELECTED_PRODUCT',
   SET_SELECTED_RELEASE = 'SET_SELECTED_RELEASE',
   SET_SELECTED_SITE = 'SET_SELECTED_SITE',
+
+  RESET_VIEW_MODE_SWITCHING = 'RESET_VIEW_MODE_SWITCHING',
 }
 
+export interface SetSelectedViewModeAction {
+  type: typeof AppActions.SET_SELECTED_VIEW_MODE;
+  viewMode: SelectOption;
+}
+export interface ResetViewModeSwitchingAction {
+  type: typeof AppActions.RESET_VIEW_MODE_SWITCHING;
+}
 export interface SetSelectedProductAction {
   type: typeof AppActions.SET_SELECTED_PRODUCT;
   product: DataProduct;
@@ -51,12 +66,21 @@ export interface SetSelectedSiteAction {
 }
 
 export type AppActionTypes = (
-  SetSelectedProductAction
+  SetSelectedViewModeAction
+  | ResetViewModeSwitchingAction
+  | SetSelectedProductAction
   | SetSelectedReleaseAction
   | SetSelectedSiteAction
 );
 
 export const AppActionCreator = {
+  resetViewModeSwitching: (): ResetViewModeSwitchingAction => ({
+    type: AppActions.RESET_VIEW_MODE_SWITCHING,
+  }),
+  setSelectedViewMode: (viewMode: SelectOption): SetSelectedViewModeAction => ({
+    type: AppActions.SET_SELECTED_VIEW_MODE,
+    viewMode,
+  }),
   setSelectedProduct: (product: DataProduct): SetSelectedProductAction => ({
     type: AppActions.SET_SELECTED_PRODUCT,
     product,

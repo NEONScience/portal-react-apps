@@ -5,6 +5,7 @@ import {
 } from 'reselect';
 import isEqual from 'lodash/isEqual';
 
+import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import {
@@ -59,6 +60,8 @@ const AppStateSelector = {
       selectedRelease: state.selectedRelease,
       selectedSite: state.selectedSite,
       sitesFetchState: state.sitesFetchState.asyncState,
+      selectedViewMode: state.selectedViewMode,
+      viewModes: state.viewModes,
     }),
   ),
   dataProductSelect: createDeepEqualSelector(
@@ -124,12 +127,37 @@ const AppStateSelector = {
   ),
   locations: createDeepEqualSelector(
     [appStateSelector],
-    (state: BaseStoreAppState): LocationsSectionState => ({
-      focalProductFetchState: state.focalProductFetchState.asyncState,
-      focalProduct: state.focalProduct,
-      sitesFetchState: state.sitesFetchState.asyncState,
-      sites: state.sites,
-    }),
+    (state: BaseStoreAppState): LocationsSectionState => {
+      let fetchState: AsyncStateType;
+      let siteCodes: string[];
+      switch (state.selectedViewMode.value) {
+        case 'Site':
+          fetchState = state.focalSiteFetchState.asyncState;
+          siteCodes = !exists(state.focalSite)
+            ? []
+            : [(state.focalSite as Site).siteCode];
+          break;
+        case 'DataProduct':
+        default:
+          fetchState = state.focalProductFetchState.asyncState;
+          // eslint-disable-next-line no-case-declarations
+          const productSiteCodes: Record<string, unknown>[] = !exists(state.focalProduct)
+            ? new Array<Record<string, unknown>>()
+            : (state.focalProduct as DataProduct).siteCodes;
+          siteCodes = productSiteCodes
+            .map((value: Record<string, unknown>): string => (
+              value.siteCode as string
+            ));
+          break;
+      }
+      return {
+        sitesFetchState: state.sitesFetchState.asyncState,
+        sites: state.sites,
+        viewModeSwitching: state.viewModeSwitching,
+        fetchState,
+        siteCodes,
+      };
+    },
   ),
   siteAvailability: createDeepEqualSelector(
     [appStateSelector],

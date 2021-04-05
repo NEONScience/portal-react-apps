@@ -5,6 +5,7 @@ import AppActions, {
   SetSelectedProductAction,
   SetSelectedReleaseAction,
   SetSelectedSiteAction,
+  SetSelectedViewModeAction,
 } from '../actions/app';
 import AppFlow from '../actions/flows/app';
 import { AppActionType } from '../actions/actionTypes';
@@ -16,6 +17,17 @@ export const appReducer = (
 ): BaseStoreAppState => {
   const update: BaseStoreAppState = flowReducer(state, action);
   switch (action.type) {
+    case AppActions.SET_SELECTED_VIEW_MODE:
+      return {
+        ...update,
+        selectedViewMode: (action as SetSelectedViewModeAction).viewMode,
+        viewModeSwitching: true,
+      };
+    case AppActions.RESET_VIEW_MODE_SWITCHING:
+      return {
+        ...update,
+        viewModeSwitching: false,
+      };
     case AppActions.SET_SELECTED_PRODUCT:
       return {
         ...update,

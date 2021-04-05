@@ -5,6 +5,11 @@ export interface StoreRootState {
   app: BaseStoreAppState;
 }
 
+export interface SelectOption {
+  value: string;
+  title: string;
+}
+
 export interface BaseStoreAppState {
   productsFetchState: AsyncState<DataProduct[]>;
   products: DataProduct[];
@@ -21,6 +26,10 @@ export interface BaseStoreAppState {
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
   selectedSite: Nullable<Site>;
+
+  selectedViewMode: SelectOption;
+  viewModes: SelectOption[];
+  viewModeSwitching: boolean;
 }
 
 export interface DataProduct {

@@ -5,6 +5,7 @@ import {
   DataProduct,
   Release,
   Site,
+  SelectOption,
 } from '../../types/store';
 
 export interface AppComponentState {
@@ -17,6 +18,8 @@ export interface AppComponentState {
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
   selectedSite: Nullable<Site>;
+  selectedViewMode: SelectOption;
+  viewModes: SelectOption[];
 }
 
 export interface DataProductSelectOption extends DataProduct {
@@ -45,10 +48,11 @@ export interface AvailabilitySectionState {
 }
 
 export interface LocationsSectionState {
-  focalProductFetchState: AsyncStateType;
-  focalProduct: Nullable<DataProduct>;
+  fetchState: AsyncStateType;
+  siteCodes: string[];
   sitesFetchState: AsyncStateType;
   sites: Site[];
+  viewModeSwitching: boolean;
 }
 
 export interface SiteAvailabilitySectionState {

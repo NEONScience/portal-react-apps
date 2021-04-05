@@ -28,8 +28,16 @@ const appState: BaseStoreAppState = {
     error: null,
   },
   focalProduct: null,
+  focalSiteFetchState: {
+    asyncState: AsyncStateType.IDLE,
+    data: null,
+    error: null,
+  },
+  focalSite: null,
+
   selectedRelease: null,
   selectedProduct: null,
+  selectedSite: null,
 };
 
 const getAppState = (): BaseStoreAppState => (

@@ -4,6 +4,7 @@ import AppState from '../store/appState';
 import AppActions, {
   SetSelectedProductAction,
   SetSelectedReleaseAction,
+  SetSelectedSiteAction,
 } from '../actions/app';
 import AppFlow from '../actions/flows/app';
 import { AppActionType } from '../actions/actionTypes';
@@ -24,6 +25,11 @@ export const appReducer = (
       return {
         ...update,
         selectedRelease: (action as SetSelectedReleaseAction).release,
+      };
+    case AppActions.SET_SELECTED_SITE:
+      return {
+        ...update,
+        selectedSite: (action as SetSelectedSiteAction).site,
       };
     default:
       return update;
@@ -65,6 +71,14 @@ const flowReducer = (
     'focalProductFetchState',
     AppActions.FETCH_FOCAL_PRODUCT_COMPLETED,
     'focalProduct',
+  );
+  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+    AppFlow.fetchFocalSite.reducer,
+    update,
+    action,
+    'focalSiteFetchState',
+    AppActions.FETCH_FOCAL_SITE_COMPLETED,
+    'focalSite',
   );
   return update;
 };

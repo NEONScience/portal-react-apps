@@ -6,14 +6,17 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
+import Skeleton from '@material-ui/lab/Skeleton';
 import {
   makeStyles,
   createStyles,
   Theme as MuiTheme,
 } from '@material-ui/core/styles';
 
+import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -34,6 +37,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     sectionTitle: {
       fontWeight: 500,
       marginBottom: muiTheme.spacing(2),
+    },
+    infoCallout: {
+      marginTop: muiTheme.spacing(3),
     },
     skeleton: {
       marginBottom: '16px',
@@ -118,6 +124,28 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
   };
 
+  const renderCallout = (): JSX.Element => {
+    if ((products.length <= 0) || isLoading) {
+      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+    }
+    return (
+      <InfoCard
+        titleContent={(
+          <Typography variant="subtitle2" component="div">
+            Learn more or download data for this product by viewing product details:&nbsp;
+            <Link
+              target="_blank"
+              rel="noreferrer noopener"
+              href={`${NeonEnvironment.getHost() || ''}/data-products/${initialProduct.productCode}`}
+            >
+              {initialProduct.productName}
+            </Link>
+          </Typography>
+        )}
+      />
+    );
+  };
+
   return (
     <div id="data-product-select" className={classes.section}>
       <FormControl fullWidth>
@@ -126,6 +154,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         </Typography>
         {renderDataProductSelect()}
       </FormControl>
+      <div className={classes.infoCallout}>
+        {renderCallout()}
+      </div>
     </div>
   );
 };

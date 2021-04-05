@@ -13,11 +13,13 @@ import { Nullable } from 'portal-core-components/lib/types/core';
 import DataProductSelect from './controls/DataProductSelect';
 import AvailabilitySection from './availability/AvailabilitySection';
 import LocationsSection from './availability/LocationsSection';
+import SiteSelect from './controls/SiteSelect';
+import SiteAvailabilitySection from './availability/SiteAvailabilitySection';
 
 import AppStateSelector from '../selectors/app';
 import AppFlow from '../actions/flows/app';
 import { AppComponentState } from './states/AppStates';
-import { DataProduct, Release } from '../types/store';
+import { DataProduct, Release, Site } from '../types/store';
 import { AppActionCreator } from '../actions/app';
 
 const useAppSelector = (): AppComponentState => useSelector(
@@ -34,6 +36,7 @@ const App: React.FC = (): JSX.Element => {
     releases,
     selectedProduct,
     selectedRelease,
+    selectedSite,
   }: AppComponentState = state;
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
@@ -52,12 +55,18 @@ const App: React.FC = (): JSX.Element => {
   );
 
   const handleChangeCb = useCallback(
-    (productCb: Nullable<DataProduct>, releaseCb: Nullable<Release>) => (
+    (productCb: Nullable<DataProduct>, siteCb: Nullable<Site>, releaseCb: Nullable<Release>) => (
       batch(() => {
         dispatch(AppActionCreator.setSelectedRelease(releaseCb));
         if (exists(productCb)) {
           dispatch(AppFlow.fetchFocalProduct.asyncAction({
             productCode: (productCb as DataProduct).productCode,
+            release: releaseCb?.release,
+          }));
+        }
+        if (exists(siteCb)) {
+          dispatch(AppFlow.fetchFocalSite.asyncAction({
+            siteCode: (siteCb as Site).siteCode,
             release: releaseCb?.release,
           }));
         }
@@ -83,7 +92,7 @@ const App: React.FC = (): JSX.Element => {
         const nextRelease: Nullable<Release> = !isStringNonEmpty(selected)
           ? null
           : releases.find((value: Release): boolean => (value.release === selected));
-        handleChangeCb(selectedProduct, nextRelease);
+        handleChangeCb(selectedProduct, selectedSite, nextRelease);
       }}
     />
   );
@@ -97,6 +106,11 @@ const App: React.FC = (): JSX.Element => {
       name: 'Available Sites',
       hash: '#sites',
       component: LocationsSection,
+    },
+    {
+      name: 'Site Availability View',
+      hash: '#site-availability-view',
+      component: SiteAvailabilitySection,
     },
   ];
 
@@ -118,6 +132,12 @@ const App: React.FC = (): JSX.Element => {
         </Grid>
         <Grid item xs={12}>
           <LocationsSection />
+        </Grid>
+        <Grid item xs={12}>
+          <SiteSelect />
+        </Grid>
+        <Grid item xs={12}>
+          <SiteAvailabilitySection />
         </Grid>
       </Grid>
     </NeonPage>

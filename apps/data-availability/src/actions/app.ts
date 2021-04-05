@@ -1,5 +1,5 @@
 import { Nullable } from 'portal-core-components/lib/types/core';
-import { DataProduct, Release } from '../types/store';
+import { DataProduct, Release, Site } from '../types/store';
 
 enum AppActions {
   FETCH_PRODUCTS = 'FETCH_PRODUCTS',
@@ -26,8 +26,15 @@ enum AppActions {
   FETCH_FOCAL_PRODUCT_ERROR = 'FETCH_FOCAL_PRODUCT_ERROR',
   RESET_FETCH_FOCAL_PRODUCT = 'RESET_FETCH_FOCAL_PRODUCT',
 
+  FETCH_FOCAL_SITE = 'FETCH_FOCAL_SITE',
+  FETCH_FOCAL_SITE_WORKING = 'FETCH_FOCAL_SITE_WORKING',
+  FETCH_FOCAL_SITE_COMPLETED = 'FETCH_FOCAL_SITE_COMPLETED',
+  FETCH_FOCAL_SITE_ERROR = 'FETCH_FOCAL_SITE_ERROR',
+  RESET_FETCH_FOCAL_SITE = 'RESET_FETCH_FOCAL_SITE',
+
   SET_SELECTED_PRODUCT = 'SET_SELECTED_PRODUCT',
   SET_SELECTED_RELEASE = 'SET_SELECTED_RELEASE',
+  SET_SELECTED_SITE = 'SET_SELECTED_SITE',
 }
 
 export interface SetSelectedProductAction {
@@ -38,10 +45,15 @@ export interface SetSelectedReleaseAction {
   type: typeof AppActions.SET_SELECTED_RELEASE;
   release: Nullable<Release>;
 }
+export interface SetSelectedSiteAction {
+  type: typeof AppActions.SET_SELECTED_SITE;
+  site: Site;
+}
 
 export type AppActionTypes = (
   SetSelectedProductAction
   | SetSelectedReleaseAction
+  | SetSelectedSiteAction
 );
 
 export const AppActionCreator = {
@@ -52,6 +64,10 @@ export const AppActionCreator = {
   setSelectedRelease: (release: Nullable<Release>): SetSelectedReleaseAction => ({
     type: AppActions.SET_SELECTED_RELEASE,
     release,
+  }),
+  setSelectedSite: (site: Site): SetSelectedSiteAction => ({
+    type: AppActions.SET_SELECTED_SITE,
+    site,
   }),
 };
 

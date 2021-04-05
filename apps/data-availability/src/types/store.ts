@@ -15,9 +15,12 @@ export interface BaseStoreAppState {
 
   focalProductFetchState: AsyncState<Nullable<DataProduct>>;
   focalProduct: Nullable<DataProduct>;
+  focalSiteFetchState: AsyncState<Nullable<Site>>;
+  focalSite: Nullable<Site>;
 
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
+  selectedSite: Nullable<Site>;
 }
 
 export interface DataProduct {
@@ -39,4 +42,5 @@ export interface Site {
   siteLongitude: number;
   domainCode: string;
   stateCode: string;
+  dataProducts: Record<string, unknown>[];
 }

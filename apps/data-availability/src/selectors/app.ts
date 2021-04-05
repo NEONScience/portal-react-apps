@@ -1,4 +1,8 @@
-import { createSelector, createSelectorCreator, defaultMemoize } from 'reselect';
+import {
+  createSelector,
+  createSelectorCreator,
+  defaultMemoize,
+} from 'reselect';
 import isEqual from 'lodash/isEqual';
 
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -8,6 +12,7 @@ import {
   DataProduct,
   Release,
   StoreRootState,
+  Site,
 } from '../types/store';
 import {
   AppComponentState,
@@ -15,6 +20,9 @@ import {
   DataProductSelectOption,
   DataProductSelectState,
   LocationsSectionState,
+  SiteAvailabilitySectionState,
+  SiteSelectOption,
+  SiteSelectState,
 } from '../components/states/AppStates';
 
 const appState = (state: StoreRootState): BaseStoreAppState => (
@@ -31,6 +39,13 @@ const createDeepEqualSelector = createSelectorCreator(
   isEqual,
 );
 
+const productSorter = (a: DataProduct, b: DataProduct): number => (
+  a.productName.localeCompare(b.productName)
+);
+const siteSorter = (a: Site, b: Site): number => (
+  a.siteDescription.localeCompare(b.siteDescription)
+);
+
 const AppStateSelector = {
   app: createDeepEqualSelector(
     [appStateSelector],
@@ -42,6 +57,7 @@ const AppStateSelector = {
       focalProductFetchState: state.focalProductFetchState.asyncState,
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
+      selectedSite: state.selectedSite,
       sitesFetchState: state.sitesFetchState.asyncState,
     }),
   ),
@@ -51,25 +67,51 @@ const AppStateSelector = {
       productsFetchState: state.productsFetchState.asyncState,
       products: !existsNonEmpty(state.products)
         ? new Array<DataProductSelectOption>()
-        : state.products.map((value: DataProduct): DataProductSelectOption => {
-          if (!exists(state.selectedRelease)) {
+        : state.products
+          .sort(productSorter)
+          .map((value: DataProduct): DataProductSelectOption => {
+            if (!exists(state.selectedRelease)) {
+              return {
+                ...value,
+                hasData: existsNonEmpty(value.siteCodes),
+              };
+            }
+            const release: Release = state.selectedRelease as Release;
+            const hasData: boolean|undefined = !existsNonEmpty(release.dataProducts)
+              ? false
+              : release.dataProducts.some((product: DataProduct): boolean => (
+                product.productCode === value.productCode
+              ));
             return {
               ...value,
-              hasData: existsNonEmpty(value.siteCodes),
+              hasData,
             };
-          }
-          const release: Release = state.selectedRelease as Release;
-          const hasData: boolean|undefined = !existsNonEmpty(release.dataProducts)
-            ? false
-            : release.dataProducts.some((product: DataProduct): boolean => (
-              product.productCode === value.productCode
-            ));
-          return {
-            ...value,
-            hasData,
-          };
-        }),
+          }),
       selectedProduct: state.selectedProduct,
+      selectedRelease: state.selectedRelease,
+    }),
+  ),
+  siteSelect: createDeepEqualSelector(
+    [appStateSelector],
+    (state: BaseStoreAppState): SiteSelectState => ({
+      sitesFetchState: state.sitesFetchState.asyncState,
+      sites: !existsNonEmpty(state.sites)
+        ? new Array<SiteSelectOption>()
+        : state.sites
+          .sort(siteSorter)
+          .map((value: Site): SiteSelectOption => {
+            if (!exists(state.selectedRelease)) {
+              return {
+                ...value,
+                hasData: existsNonEmpty(value.dataProducts),
+              };
+            }
+            return {
+              ...value,
+              hasData: true,
+            };
+          }),
+      selectedSite: state.selectedSite,
       selectedRelease: state.selectedRelease,
     }),
   ),
@@ -87,6 +129,13 @@ const AppStateSelector = {
       focalProduct: state.focalProduct,
       sitesFetchState: state.sitesFetchState.asyncState,
       sites: state.sites,
+    }),
+  ),
+  siteAvailability: createDeepEqualSelector(
+    [appStateSelector],
+    (state: BaseStoreAppState): SiteAvailabilitySectionState => ({
+      focalSiteFetchState: state.focalSiteFetchState.asyncState,
+      focalSite: state.focalSite,
     }),
   ),
 };

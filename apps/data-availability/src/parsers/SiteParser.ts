@@ -1,4 +1,4 @@
-import { UnknownRecord } from 'portal-core-components/lib/types/core';
+import { Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import { AjaxResponse } from 'rxjs/ajax';
@@ -21,6 +21,13 @@ const SiteParser = {
       SiteParser.parseSite(site)
     ));
   },
+  parseSiteResponse: (response: AjaxResponse): Nullable<Site> => {
+    const resolved: UnknownRecord = resolveAny(response as never, 'data');
+    if (!exists(resolved.site)) {
+      return null;
+    }
+    return SiteParser.parseSite(resolved.site as UnknownRecord);
+  },
   parseSite: (site: UnknownRecord): Site => ({
     siteCode: site.siteCode as string,
     siteDescription: site.siteDescription as string,
@@ -28,6 +35,9 @@ const SiteParser = {
     siteLongitude: site.siteLongitude as number,
     domainCode: site.domainCode as string,
     stateCode: site.stateCode as string,
+    dataProducts: exists(site.dataProducts)
+      ? site.dataProducts as Record<string, unknown>[]
+      : [],
   }),
 };
 

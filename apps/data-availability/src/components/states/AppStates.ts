@@ -16,9 +16,13 @@ export interface AppComponentState {
   focalProductFetchState: AsyncStateType;
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
+  selectedSite: Nullable<Site>;
 }
 
 export interface DataProductSelectOption extends DataProduct {
+  hasData: boolean;
+}
+export interface SiteSelectOption extends Site {
   hasData: boolean;
 }
 
@@ -27,6 +31,12 @@ export interface DataProductSelectState {
   products: DataProductSelectOption[];
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
+}
+export interface SiteSelectState {
+  sitesFetchState: AsyncStateType;
+  sites: SiteSelectOption[];
+  selectedRelease: Nullable<Release>;
+  selectedSite: Nullable<Site>;
 }
 
 export interface AvailabilitySectionState {
@@ -39,4 +49,9 @@ export interface LocationsSectionState {
   focalProduct: Nullable<DataProduct>;
   sitesFetchState: AsyncStateType;
   sites: Site[];
+}
+
+export interface SiteAvailabilitySectionState {
+  focalSiteFetchState: AsyncStateType;
+  focalSite: Nullable<Site>;
 }

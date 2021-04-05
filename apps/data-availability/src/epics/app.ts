@@ -34,6 +34,9 @@ const sitesQuery = `query Sites {
     siteLongitude
     domainCode
     stateCode
+    dataProducts {
+      dataProductCode
+    }
   }
 }`;
 const buildProductQuery = (productCode: string, release?: string): string => {
@@ -51,6 +54,32 @@ const buildProductQuery = (productCode: string, release?: string): string => {
       productName
       siteCodes {
         siteCode
+        availableMonths
+        ${availableReleases}
+      }
+    }
+  }`;
+};
+const buildSiteQuery = (siteCode: string, release?: string): string => {
+  const hasRelease = isStringNonEmpty(release);
+  const releaseArgument = !hasRelease ? '' : `, release: "${release as string}"`;
+  const availableReleases = hasRelease
+    ? ''
+    : `availableReleases {
+      release
+      availableMonths
+    }`;
+  return `query Site {
+    site (siteCode: "${siteCode}"${releaseArgument}) {
+      siteCode
+      siteDescription
+      siteLatitude
+      siteLongitude
+      domainCode
+      stateCode
+      dataProducts {
+        dataProductCode
+        dataProductTitle
         availableMonths
         ${availableReleases}
       }
@@ -191,9 +220,51 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   },
 });
 
+const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+  ofTypeFilter: AppActions.FETCH_FOCAL_SITE,
+  takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_SITE,
+  request: {
+    method: 'POST',
+    crossDomain: true,
+    headers: { 'Content-Type': 'application/json' },
+    responseType: 'json',
+  },
+  workingAction: AppFlow.fetchFocalSite.asyncWorkingAction,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  successAction: (
+    response: AjaxResponse | AjaxResponse[],
+    action?: AppActionType,
+  ): Observable<unknown> => {
+    const singleResponse: AjaxResponse = (response as AjaxResponse);
+    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    if (exists(resolved) && exists(resolved.data)) {
+      return of(AppFlow.fetchFocalSite.asyncCompletedAction(resolved));
+    }
+    return of(AppFlow.fetchFocalSite.asyncErrorAction(null, 'Fetching site error'));
+  },
+  errorAction: (error: AjaxResponse): Observable<unknown> => (
+    handleError(error, AppFlow.fetchFocalSite.asyncErrorAction)
+  ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
+    const asyncAction: AsyncParamAction = (action as AsyncParamAction);
+    const params: UnknownRecord = (asyncAction.param as UnknownRecord);
+    const siteCode: string = params.siteCode as string;
+    let release: string|undefined;
+    if (isStringNonEmpty(params.release)) {
+      release = params.release as string;
+    }
+    return {
+      ...request,
+      ...NeonGraphQL.getGraphqlAjaxRequest(buildSiteQuery(siteCode, release)),
+    };
+  },
+});
+
 export {
   fetchProductsEpic,
   fetchReleasesEpic,
   fetchSitesEpic,
   fetchFocalProductEpic,
+  fetchFocalSiteEpic,
 };

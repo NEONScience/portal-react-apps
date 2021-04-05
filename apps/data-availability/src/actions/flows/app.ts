@@ -20,6 +20,7 @@ interface AppAsyncFlowTypes {
   fetchSites: AsyncFlowHandler<AsyncState<Site[]>, AsyncActionType, Site[]>;
   fetchReleases: AsyncFlowHandler<AsyncState<Release[]>, AsyncActionType, Release[]>;
   fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct>>, AsyncActionType, Nullable<DataProduct>>;
+  fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
 }
 
 const AppFlowActionTypes: FlowActionTypes = {
@@ -51,6 +52,13 @@ const AppFlowActionTypes: FlowActionTypes = {
     error: AppActions.FETCH_FOCAL_PRODUCT_ERROR,
     reset: AppActions.RESET_FETCH_FOCAL_PRODUCT,
   },
+  fetchFocalSite: {
+    fetch: AppActions.FETCH_FOCAL_SITE,
+    working: AppActions.FETCH_FOCAL_SITE_WORKING,
+    completed: AppActions.FETCH_FOCAL_SITE_COMPLETED,
+    error: AppActions.FETCH_FOCAL_SITE_ERROR,
+    reset: AppActions.RESET_FETCH_FOCAL_SITE,
+  },
 };
 
 const AppFlow: AppAsyncFlowTypes = {
@@ -69,6 +77,10 @@ const AppFlow: AppAsyncFlowTypes = {
   fetchFocalProduct: AsyncFlow.create<AsyncState<Nullable<DataProduct>>, AsyncActionType, Nullable<DataProduct>>(
     AppFlowActionTypes.fetchFocalProduct,
     ProductParser.parseProductResponse,
+  ),
+  fetchFocalSite: AsyncFlow.create<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>(
+    AppFlowActionTypes.fetchFocalSite,
+    SiteParser.parseSiteResponse,
   ),
 };
 

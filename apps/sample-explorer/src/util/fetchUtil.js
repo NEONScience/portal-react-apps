@@ -211,7 +211,6 @@ export const querySupportedSampleClasses = (url, query, download) => {
     cache: "default",
   }
 
-  //do we need to perform a fetch?
   if (query) {
     let fetchFunc = getFetch();
     return (dispatch) => {

@@ -380,29 +380,3 @@ export const createCsv = (samples) => {
 
   return csvResult;
 }
-
-export const smsFields = new Map([
-  ['analysis_type', 'Type of analysis at external lab'],
-  ['container_id', 'Identifier of the multi-well storage box or plate containing the sample'],
-  ['container_mass', 'Mass of the sample within the container in grams'],
-  ['fate', 'Fate of a sample'],
-  ['filter_volume', 'Volume of material passed through filter'],
-  ['sample_mass', 'Mass of the sample in grams'],
-  ['num_containers', 'Number of vials or containers associated with a sampleID'],
-  ['preservative_concentration', 'Concentration of preservative used in the sample'],
-  ['preservative_type', 'Type of preservative used in the sample'],
-  ['preservative_volume', 'Volume of preservative used in the sample'],
-  ['remarks', 'Associated remarks field'],
-  ['sample_code', 'Barcode of a sample'],
-  ['sample_condition', 'Condition of a sample'],
-  ['sample_tag', 'Identifier for sample'],
-  ['sample_type', 'Type of sample'],
-  ['sample_volume', 'Volume of the sample'],
-  ['shipment_condition', 'The condition in which the shipment was received'],
-  ['specimen_count', 'Number of individuals in the container'],
-  ['temperature', 'Temperature of the cooler when the sample arrived at the external lab'],
-  ['well_coordinate', 'Location of sample in multi-well storage box or plate'],
-  ['guid', 'Global Unique Identifier'],
-  ['fate_date', 'Transaction date of a fate update for a sample'],
-  ['fate_location', 'Transaction location of a fate location update for a sample'],
-]);

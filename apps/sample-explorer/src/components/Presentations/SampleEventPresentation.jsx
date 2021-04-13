@@ -9,8 +9,6 @@ import DownloadSamplesPresentation from './DownloadSamplesPresentation';
 import DataGrid from '../DataGrid/DataGrid';
 import SampleSmsFieldsDialog from './SampleSmsFieldsDialog';
 
-import 'font-awesome/css/font-awesome.min.css';
-
 const SampleEventPresentation = (props) => {
   return (
     <div style={{ marginBottom: Theme.spacing(3) }} data-selenium="sample-events-section">

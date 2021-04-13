@@ -19,8 +19,6 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import { getFullSamplesApiPath } from "../../util/envUtil";
 
-import 'font-awesome/css/font-awesome.min.css';
-
 const fileDownload = require("js-file-download");
 const { Parser } = require("json2csv");
 

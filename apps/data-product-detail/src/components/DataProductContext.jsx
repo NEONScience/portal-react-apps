@@ -105,7 +105,6 @@ const getLatestReleaseObjectFromState = (state = DEFAULT_STATE) => {
     data: { releases },
   } = state;
   const releaseTag = releases && releases.length ? releases[0].release : null;
-  console.log('latestReleaseObject', releaseTag);
   return releases.find((r) => r.release === releaseTag) || null;
 };
 

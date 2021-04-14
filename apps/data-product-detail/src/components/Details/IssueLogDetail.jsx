@@ -109,8 +109,10 @@ const IssueLogDetail = () => {
   const latestReleaseObject = getLatestReleaseObjectFromState(state);
   const rowGetsUnresolvedStyling = (row) => (
     !row.resolvedDate
-    || (currentReleaseObject && currentReleaseObject.generationDate < row.resolvedDate)
-    || (!currentReleaseObject && latestReleaseObject?.generationDate < row.resolvedDate)
+    || (currentReleaseObject
+      && currentReleaseObject.generationDate < row.resolvedDate)
+    || (!currentReleaseObject
+      && latestReleaseObject?.generationDate < row.resolvedDate)
   );
   const currentRelease = currentReleaseObject ? currentReleaseObject.release : null;
 
@@ -203,7 +205,7 @@ const IssueLogDetail = () => {
     customSort: getDateSortWithNulls('resolvedDate', 'issueDate'),
     render: (row) => {
       if (rowGetsUnresolvedStyling(row)) {
-        if (row.resolvedDate && currentRelease) {
+        if (row.resolvedDate && currentRelease && row.issueDate < currentRelease.generationDate) {
           return (
             <>
               <div>
@@ -215,7 +217,8 @@ const IssueLogDetail = () => {
             </>
           );
         }
-        if (row.resolvedDate && !currentRelease) {
+        if (row.resolvedDate && !currentRelease
+          && row.resolvedDate > latestReleaseObject.generationDate) {
           return 'Resolved for next release';
         }
         return 'unresolved';

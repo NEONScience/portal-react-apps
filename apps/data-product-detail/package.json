@@ -21,7 +21,8 @@
     "react-router-dom": "^5.2.0",
     "rxjs": "^6.3.3",
     "stickyfilljs": "^2.1.0",
-    "use-reducer-logger": "^1.0.2"
+    "use-reducer-logger": "^1.0.2",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "customize-cra": "^1.0.0",
@@ -37,8 +38,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test - env=jsdom",
-    "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
-    "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
+    "lint": "(node_modules/eslint/bin/eslint.js src/ --ext .js,.jsx || true) && exit 0",
+    "lint:fix": "(node_modules/eslint/bin/eslint.js --fix src/ --ext .js,.jsx || true) && exit 0",
     "eject": "react-app-rewired eject"
   },
   "browserslist": [

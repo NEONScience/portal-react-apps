@@ -154,6 +154,7 @@ const AppStateSelector = {
         sitesFetchState: state.sitesFetchState.asyncState,
         sites: state.sites,
         viewModeSwitching: state.viewModeSwitching,
+        selectedViewMode: state.selectedViewMode,
         fetchState,
         siteCodes,
       };

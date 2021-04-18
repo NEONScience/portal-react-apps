@@ -38,6 +38,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       fontWeight: 500,
       marginBottom: muiTheme.spacing(2),
     },
+    sectionSubtitle: {
+      marginBottom: muiTheme.spacing(2),
+    },
     infoCallout: {
       marginTop: muiTheme.spacing(3),
     },
@@ -151,6 +154,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       <FormControl fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Data Product
+        </Typography>
+        <Typography variant="subtitle1" className={classes.sectionSubtitle}>
+          Choose a data product to view availability
         </Typography>
         {renderDataProductSelect()}
       </FormControl>

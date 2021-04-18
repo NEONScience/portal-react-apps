@@ -3,6 +3,8 @@ import { Dispatch, AnyAction } from 'redux';
 import { batch, useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Link from '@material-ui/core/Link';
 import Divider from '@material-ui/core/Divider';
 import {
   makeStyles,
@@ -11,6 +13,7 @@ import {
 } from '@material-ui/core/styles';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
+import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
 import SidebarFilter from 'portal-core-components/lib/components/SidebarFilter/SidebarFilter';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
@@ -43,6 +46,12 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
   createStyles({
     sidebarDivider: {
       margin: muiTheme.spacing(3, 0),
+    },
+    introTextContainer: {
+      margin: muiTheme.spacing(0, 0, 3, 0),
+    },
+    infoContainer: {
+      margin: muiTheme.spacing(0, 0, 4, 0),
     },
   })) as StylesHook;
 
@@ -223,6 +232,32 @@ const App: React.FC = (): JSX.Element => {
       sidebarLinks={sidebarLinks}
       sidebarLinksAdditionalContent={sidebarContent}
     >
+      <Grid container className={classes.infoContainer}>
+        <Grid item xs={12} className={classes.introTextContainer}>
+          <Typography variant="subtitle1">
+            The availability chart and site map below show the combination of
+            product, site, and month where data are currently available and where
+            those data are collected as well as distinguish between provisional
+            and release data availability.
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <InfoCard
+            titleContent={(
+              <Typography variant="subtitle2" component="div">
+                Learn more about&nbsp;
+                <Link
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  href="https://www.neonscience.org/data-samples/data-management/data-availability"
+                >
+                  NEON Data Availability
+                </Link>
+              </Typography>
+            )}
+          />
+        </Grid>
+      </Grid>
       {renderContent()}
     </NeonPage>
   );

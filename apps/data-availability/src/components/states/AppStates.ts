@@ -53,6 +53,7 @@ export interface LocationsSectionState {
   sitesFetchState: AsyncStateType;
   sites: Site[];
   viewModeSwitching: boolean;
+  selectedViewMode: SelectOption;
 }
 
 export interface SiteAvailabilitySectionState {

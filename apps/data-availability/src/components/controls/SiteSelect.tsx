@@ -6,6 +6,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
@@ -14,6 +15,7 @@ import {
   Theme as MuiTheme,
 } from '@material-ui/core/styles';
 
+import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -33,6 +35,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     },
     sectionTitle: {
       fontWeight: 500,
+      marginBottom: muiTheme.spacing(2),
+    },
+    sectionSubtitle: {
       marginBottom: muiTheme.spacing(2),
     },
     infoCallout: {
@@ -121,14 +126,42 @@ const SiteSelect: React.FC = (): JSX.Element => {
     );
   };
 
+  const renderCallout = (): JSX.Element => {
+    if ((sites.length <= 0) || isLoading) {
+      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+    }
+    return (
+      <InfoCard
+        titleContent={(
+          <Typography variant="subtitle2" component="div">
+            Learn more about this field site by viewing the field site page:&nbsp;
+            <Link
+              target="_blank"
+              rel="noreferrer noopener"
+              href={`https://www.neonscience.org/field-sites/${initialSite.siteCode}`}
+            >
+              {initialSite.siteCode}
+            </Link>
+          </Typography>
+        )}
+      />
+    );
+  };
+
   return (
     <div id="site-select" className={classes.section}>
       <FormControl fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Site
         </Typography>
+        <Typography variant="subtitle1" className={classes.sectionSubtitle}>
+          Choose a field site to view availability
+        </Typography>
         {renderSiteSelect()}
       </FormControl>
+      <div className={classes.infoCallout}>
+        {renderCallout()}
+      </div>
     </div>
   );
 };

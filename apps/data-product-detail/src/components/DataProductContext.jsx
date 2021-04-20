@@ -252,6 +252,54 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
+const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) => {
+  const product = getCurrentProductFromState(state, true);
+  if (!product || !Array.isArray(product.siteCodes)) { return null; }
+  let latestAvailableMonth = null;
+  if (!release) {
+    latestAvailableMonth = product.siteCodes
+      .reduce((acc, value) => {
+        if (!Array.isArray(value.availableMonths) || (value.availableMonths.length <= 0)) {
+          return acc;
+        }
+        const latest = value.availableMonths[value.availableMonths.length - 1];
+        if (!acc) { return latest; }
+        const compare = acc.localeCompare(latest);
+        return (compare > 0)
+          ? acc
+          : latest;
+      }, latestAvailableMonth);
+  } else {
+    latestAvailableMonth = product.siteCodes
+      .reduce((acc, value) => {
+        if (!Array.isArray(value.availableMonths) || (value.availableMonths.length <= 0)) {
+          return acc;
+        }
+        if (!Array.isArray(value.availableReleases) || (value.availableReleases.length <= 0)) {
+          return acc;
+        }
+        const matchedRelease = value.availableReleases.find((availRelease) => (
+          release.localeCompare(availRelease.release) === 0
+        ));
+        if (!matchedRelease) { return acc; }
+        const latest = matchedRelease.availableMonths[matchedRelease.availableMonths.length - 1];
+        if (!acc) { return latest; }
+        const compare = acc.localeCompare(latest);
+        return (compare > 0)
+          ? acc
+          : latest;
+      }, latestAvailableMonth);
+  }
+  if (!latestAvailableMonth) {
+    return null;
+  }
+  const date = new Date(latestAvailableMonth);
+  return new Date(Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+  )).toISOString();
+};
+
 /**
    CONTEXT
 */
@@ -606,6 +654,7 @@ const DataProductContext = {
   DEFAULT_STATE,
   getProductCodeAndReleaseFromURL,
   getCurrentProductFromState,
+  getCurrentProductLatestAvailableDate,
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
 };

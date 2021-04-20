@@ -1,6 +1,6 @@
 {
   "name": "portal-data-products",
-  "version": "1.7.6",
+  "version": "1.7.7",
   "private": true,
   "homepage": "http://localhost/data-products/",
   "dependencies": {
@@ -13,7 +13,7 @@
     "markdown-to-jsx": "^6.10.3",
     "material-table": "^1.40.0",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.6.5",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.6.7",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-copy-to-clipboard": "^5.0.1",
@@ -21,7 +21,8 @@
     "react-router-dom": "^5.2.0",
     "rxjs": "^6.3.3",
     "stickyfilljs": "^2.1.0",
-    "use-reducer-logger": "^1.0.2"
+    "use-reducer-logger": "^1.0.2",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
     "customize-cra": "^1.0.0",
@@ -37,8 +38,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test - env=jsdom",
-    "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
-    "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
+    "lint": "(node_modules/eslint/bin/eslint.js src/ --ext .js,.jsx || true) && exit 0",
+    "lint:fix": "(node_modules/eslint/bin/eslint.js --fix src/ --ext .js,.jsx || true) && exit 0",
     "eject": "react-app-rewired eject"
   },
   "browserslist": [

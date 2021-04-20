@@ -23,8 +23,8 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import MaterialTable, { MTableToolbar } from 'material-table';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-import SiteChip from 'portal-core-components/lib/components/SiteChip';
+import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
@@ -32,6 +32,7 @@ import Detail from './Detail';
 const {
   useDataProductContextState,
   getCurrentProductFromState,
+  getCurrentProductLatestAvailableDate,
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
 } = DataProductContext;
@@ -100,21 +101,29 @@ const IssueLogDetail = () => {
   const [state] = useDataProductContextState();
   const product = getCurrentProductFromState(state);
 
+  const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  const latestReleaseObject = getLatestReleaseObjectFromState(state);
+  const currentRelease = currentReleaseObject ? currentReleaseObject.release : null;
+  const latestAvailableMonth = getCurrentProductLatestAvailableDate(state, currentRelease);
+  const latestReleaseAvailableMonth = getCurrentProductLatestAvailableDate(
+    state,
+    latestReleaseObject ? latestReleaseObject.release : null,
+  );
+
   const [xsSortColumn, setXsSortColumn] = useState('resolvedDate');
   const [xsSortDirection, setXsSortDirection] = useState('desc');
   const [xsSearch, setXsSearch] = useState('');
 
   const changeLogs = product.changeLogs || [];
-  const currentReleaseObject = getCurrentReleaseObjectFromState(state);
-  const latestReleaseObject = getLatestReleaseObjectFromState(state);
   const rowGetsUnresolvedStyling = (row) => (
     !row.resolvedDate
     || (currentReleaseObject
-      && currentReleaseObject.generationDate < row.resolvedDate)
+      && (row.resolvedDate >= currentReleaseObject.generationDate)
+      && (row.dateRangeStart <= latestAvailableMonth))
     || (!currentReleaseObject
-      && latestReleaseObject?.generationDate < row.resolvedDate)
+      && (row.resolvedDate >= latestReleaseObject?.generationDate)
+      && (row.dateRangeStart <= latestReleaseAvailableMonth))
   );
-  const currentRelease = currentReleaseObject ? currentReleaseObject.release : null;
 
   if (!changeLogs.length) {
     return (
@@ -126,6 +135,16 @@ const IssueLogDetail = () => {
       />
     );
   }
+
+  // If we're viewing a specific release, show only applicable change logs
+  // based on the latest available data atom and the start date of the entry
+  const appliedChangeLogs = product.changeLogs
+    .filter((value) => {
+      if (!value || !value.dateRangeStart || !latestAvailableMonth || !currentRelease) {
+        return true;
+      }
+      return value.dateRangeStart <= latestAvailableMonth;
+    });
 
   const components = {
     Container: Box,
@@ -205,28 +224,57 @@ const IssueLogDetail = () => {
     customSort: getDateSortWithNulls('resolvedDate', 'issueDate'),
     render: (row) => {
       if (rowGetsUnresolvedStyling(row)) {
-        if (row.resolvedDate && currentRelease && row.issueDate < currentRelease.generationDate) {
-          return (
-            <>
-              <div>
-                {formatDate(row.resolvedDate)}
-              </div>
-              <div style={{ fontSize: '0.65rem' }}>
-                {`unresolved in ${currentRelease} release`}
-              </div>
-            </>
-          );
+        if (row.resolvedDate) {
+          // If we're viewing a resolved entry, not viewing a specific release
+          // Show unresolved in the latest release when the resolved date
+          // is after the latest release generation date and when
+          // the start date of the entry is before the latest available data
+          // atom of the latest release
+          // This means it is resolved in some portion of the provisional data
+          // and unresolved in some portion of the latest release data
+          if (!currentRelease
+              && latestAvailableMonth
+              && latestReleaseObject
+              && latestReleaseObject.release
+              && (row.resolvedDate > latestReleaseObject.generationDate)
+              && (row.dateRangeStart < latestReleaseAvailableMonth)) {
+            return (
+              <>
+                <div>
+                  {formatDate(row.resolvedDate)}
+                </div>
+                <div style={{ fontSize: '0.65rem' }}>
+                  {`Resolved in provisional, unresolved in ${latestReleaseObject.release} release`}
+                </div>
+              </>
+            );
+          }
+          // If we're viewing a resolved entry, viewing a specific release
+          // Show resolved for next release, unresolved in current
+          // This means that it is unresolved for some portion of the release data
+          // and resolved after the generation date of the release
+          if (currentRelease
+              && (row.resolvedDate > currentReleaseObject.generationDate)
+              && (row.dateRangeStart < latestAvailableMonth)) {
+            return (
+              <>
+                <div>
+                  {formatDate(row.resolvedDate)}
+                </div>
+                <div style={{ fontSize: '0.65rem' }}>
+                  {`Resolved for next release, unresolved in ${currentRelease} release`}
+                </div>
+              </>
+            );
+          }
         }
-        if (row.resolvedDate && !currentRelease
-          && row.resolvedDate > latestReleaseObject.generationDate) {
-          return 'Resolved for next release';
-        }
+        // If the issue is unresolved, indicate as such
         return 'unresolved';
       }
       return formatDate(row.resolvedDate);
     },
-    cellStyle: (fieldData) => (
-      rowGetsUnresolvedStyling({ resolvedDate: fieldData }) ? unresolvedStyle : {}
+    cellStyle: (fieldData, rowData) => (
+      rowGetsUnresolvedStyling(rowData) ? unresolvedStyle : {}
     ),
   }, {
     title: 'Locations Affected',
@@ -263,45 +311,52 @@ const IssueLogDetail = () => {
       icon: 'unfold_more',
       openIcon: 'unfold_less',
       tooltip: 'View Issue Details',
-      render: (row) => (
-        <>
-          <Container className={classes.container}>
-            <Grid container spacing={1}>
-              <Grid item xs={12} sm={3} md={2}>
-                <Typography variant="subtitle2">Issue Details</Typography>
-              </Grid>
-              <Grid item xs={12} sm={9} md={10}>
-                <Typography variant="body2">
-                  <Markdown>{row.issue}</Markdown>
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={3} md={2}>
-                <Typography variant="subtitle2">Resolution</Typography>
-              </Grid>
-              <Grid item xs={12} sm={9} md={10}>
-                {row.resolution ? (
-                  <Typography variant="body2">
-                    <Markdown>{row.resolution}</Markdown>
+      render: (row) => {
+        const {
+          issue,
+          resolution,
+          dateRangeEnd,
+        } = row;
+        return (
+          <>
+            <Container className={classes.container}>
+              <Grid container spacing={1}>
+                <Grid item xs={12} sm={3} md={2}>
+                  <Typography variant="subtitle2">Issue Details</Typography>
+                </Grid>
+                <Grid item xs={12} sm={9} md={10}>
+                  <Typography variant="body2" component="div">
+                    <Markdown>{issue}</Markdown>
                   </Typography>
-                ) : (
-                  <Typography variant="body2" className={classes.unresolved}>Unresolved</Typography>
-                )}
+                </Grid>
+                <Grid item xs={12} sm={3} md={2}>
+                  <Typography variant="subtitle2">Resolution</Typography>
+                </Grid>
+                <Grid item xs={12} sm={9} md={10}>
+                  {resolution ? (
+                    <Typography variant="body2" component="div">
+                      <Markdown>{resolution}</Markdown>
+                    </Typography>
+                  ) : (
+                    <Typography variant="body2" className={classes.unresolved}>Unresolved</Typography>
+                  )}
+                </Grid>
+                {dateRangeEnd ? (
+                  <>
+                    <Grid item xs={12} sm={3} md={2}>
+                      <Typography variant="subtitle2">Duration</Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={9} md={10}>
+                      <Typography variant="body2">{formatDuration(row)}</Typography>
+                    </Grid>
+                  </>
+                ) : null}
               </Grid>
-              {row.dateRangeEnd ? (
-                <>
-                  <Grid item xs={12} sm={3} md={2}>
-                    <Typography variant="subtitle2">Duration</Typography>
-                  </Grid>
-                  <Grid item xs={12} sm={9} md={10}>
-                    <Typography variant="body2">{formatDuration(row)}</Typography>
-                  </Grid>
-                </>
-              ) : null}
-            </Grid>
-          </Container>
-          <Divider className={classes.rowDivider} />
-        </>
-      ),
+            </Container>
+            <Divider className={classes.rowDivider} />
+          </>
+        );
+      },
     },
   ];
 
@@ -384,17 +439,17 @@ const IssueLogDetail = () => {
     return ((fieldA > fieldB ? 1 : -1) * dir);
   };
 
-  const renderIssueXsRows = () => changeLogs
+  const renderIssueXsRows = () => appliedChangeLogs
     .filter(xsFilterOutChildIssues)
     .filter(xsSearchIssues)
     .sort(xsSortIssues)
     .map((issue) => renderIssueXsRow(issue));
 
-  const totalIssues = changeLogs
+  const totalIssues = appliedChangeLogs
     .filter(xsFilterOutChildIssues)
     .length;
 
-  const visibleIssues = changeLogs
+  const visibleIssues = appliedChangeLogs
     .filter(xsFilterOutChildIssues)
     .filter(xsSearchIssues)
     .length;
@@ -409,7 +464,7 @@ const IssueLogDetail = () => {
             title="Issue Log"
             components={components}
             columns={columns}
-            data={changeLogs}
+            data={appliedChangeLogs}
             parentChildData={(row, rows) => rows.find((a) => a.id === row.parentIssueID)}
             detailPanel={detailPanel}
             onRowClick={(event, rowData, togglePanel) => togglePanel()}

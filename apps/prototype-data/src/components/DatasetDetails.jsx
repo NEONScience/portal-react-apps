@@ -108,15 +108,40 @@ const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(4),
   },
+  sidebarSection: {
+    marginBottom: theme.spacing(2),
+  },
   sectionSubtitle: {
     marginBottom: theme.spacing(1),
   },
   sectionTitle: {
     marginBottom: theme.spacing(1.5),
+    fontSize: '1.4118rem',
+    fontWeight: 'normal',
+    color: '#000',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.3118rem',
+    },
+  },
+  sectionContent: {
+    fontSize: '1.1rem',
+    color: 'rgba(0, 0, 0, 0.70)',
+    lineHeight: '1.6',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1rem',
+    },
+  },
+  sidebarSectionTitle: {
+    marginBottom: theme.spacing(1.5),
+    fontWeight: 600,
+  },
+  sidebarContentFont: {
+    color: 'rgba(0, 0, 0, 0.70)',
   },
   scienceTeamsUl: {
     paddingLeft: theme.spacing(2),
     margin: '0px',
+    color: 'rgba(0, 0, 0, 0.70)',
   },
   startFlex: {
     display: 'flex',
@@ -196,6 +221,11 @@ const DatasetDetails = (props) => {
   */
   const getSectionTitle = (title) => (
     <Typography variant="h5" component="h3" className={classes.sectionTitle}>
+      {title}
+    </Typography>
+  );
+  const getSidebarSectionTitle = (title) => (
+    <Typography variant="h6" component="h2" className={classes.sidebarSectionTitle}>
       {title}
     </Typography>
   );
@@ -415,7 +445,7 @@ const DatasetDetails = (props) => {
   */
   return (
     <div>
-      <Grid container spacing={4}>
+      <Grid container spacing={8}>
 
         {/* Left Column */}
         <Grid item xs={12} sm={12} md={8} lg={9} xl={10}>
@@ -439,21 +469,21 @@ const DatasetDetails = (props) => {
           {/* Dataset Abstract */}
           <div className={classes.section}>
             {getSectionTitle('Dataset Abstract')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {datasetAbstract}
             </Typography>
           </div>
           {/* Project Decription */}
           <div className={classes.section}>
             {getSectionTitle('Project Description')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {projectDescription}
             </Typography>
           </div>
           {/* Design Decription */}
           <div className={classes.section}>
             {getSectionTitle('Design Description')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {designDescription}
             </Typography>
           </div>
@@ -465,7 +495,7 @@ const DatasetDetails = (props) => {
           {/* Locations and Study Area */}
           <div className={classes.section}>
             {getSectionTitle('Locations and Study Area')}
-            <Typography variant="body2" gutterBottom>
+            <Typography gutterBottom variant="body2" className={classes.sectionContent}>
               {studyAreaDescription}
             </Typography>
             {!manualLocationData.length ? (
@@ -481,58 +511,58 @@ const DatasetDetails = (props) => {
         {/* Right Column */}
         <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
           {/* Version */}
-          <div className={classes.section}>
-            {getSectionTitle('Version')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Version')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {version || '--'}
             </Typography>
           </div>
           {/* Time Range */}
-          <div className={classes.section}>
-            {getSectionTitle('Time Range')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Time Range')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {startYear === endYear ? startYear : `${startYear} – ${endYear}`}
             </Typography>
           </div>
           {/* Date Uploaded */}
-          <div className={classes.section}>
-            {getSectionTitle('Uploaded')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Uploaded')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {!uploadedMoment.isValid() ? getNA() : uploadedMoment.format('MMMM D, YYYY')}
             </Typography>
           </div>
           {/* Data Themes */}
-          <div className={classes.section}>
-            {getSectionTitle('Data Themes')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Data Themes')}
             <div className={classes.startFlex}>
               {themeIcons}
             </div>
           </div>
           {/* Science Teams */}
-          <div className={classes.section}>
-            {getSectionTitle(`Science Team${scienceTeams.length > 1 ? 's' : ''}`)}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle(`Science Team${scienceTeams.length > 1 ? 's' : ''}`)}
             {scienceTeamsFormatted}
           </div>
           {/* Keywords */}
-          <div className={classes.section}>
-            {getSectionTitle('Scientific Keywords')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Scientific Keywords')}
             <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
               {keywordChips}
             </div>
           </div>
           {/* Related Versions */}
-          <div className={classes.section}>
-            {getSectionTitle('Related Versions')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Related Versions')}
             {relatedVersionsLinks}
           </div>
           {/* Related Data Products */}
-          <div className={classes.section}>
-            {getSectionTitle('Related Data Products')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Related Data Products')}
             {relatedDataProductsLinks}
           </div>
           {/* Publication Citations */}
-          <div className={classes.section}>
-            {getSectionTitle('Publication Citations')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Publication Citations')}
             {publicationCitationsList}
           </div>
         </Grid>

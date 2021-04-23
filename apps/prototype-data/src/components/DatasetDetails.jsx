@@ -111,6 +111,10 @@ const useStyles = makeStyles((theme) => ({
     '& p': {
       marginTop: theme.spacing(0.5),
     },
+    '&:hover': {
+      border: `0.5px solid ${theme.palette.primary.main}`,
+      cursor: 'pointer',
+    },
   },
   listItemFileDivider: {
     margin: '10px 20px 10px 0px',

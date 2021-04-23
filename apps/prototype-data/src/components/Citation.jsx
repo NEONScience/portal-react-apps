@@ -113,7 +113,6 @@ const getCitationText = (dataset) => {
 const useStyles = makeStyles(() => ({
   citationText: {
     fontFamily: 'monospace',
-    fontSize: '1.05rem',
   },
 }));
 

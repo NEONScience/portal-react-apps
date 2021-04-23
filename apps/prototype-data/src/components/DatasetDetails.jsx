@@ -5,7 +5,9 @@ import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
@@ -59,6 +61,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: theme.spacing(4),
     marginRight: theme.spacing(1),
   },
+  listItemFileIcon: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    marginRight: theme.spacing(1),
+  },
   listItemCitation: {
     display: 'block',
     '& span': {
@@ -101,10 +107,17 @@ const useStyles = makeStyles((theme) => ({
     '& p': {
       marginTop: theme.spacing(0.5),
     },
-    '&:hover': {
-      border: `0.5px solid ${theme.palette.primary.main}`,
-      cursor: 'pointer',
-    },
+  },
+  listItemFileDivider: {
+    margin: '10px 20px 10px 0px',
+  },
+  listItemFileTypeIcon: {
+    verticalAlign: 'middle',
+  },
+  listItemFilePrimaryText: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(1),
   },
   listItemFileDetails: {
     overflow: 'hidden',
@@ -222,6 +235,11 @@ const DatasetDetails = (props) => {
     studyAreaDescription,
     version,
   } = dataset;
+
+  const allowDownload = manifestRollup
+    && (manifestRollup.totalBytes > 0)
+    && Array.isArray(files)
+    && (files.length > 0);
 
   /**
      Helper functions
@@ -388,27 +406,43 @@ const DatasetDetails = (props) => {
         if (type === 'DATA') { TypeIcon = ZipIcon; }
         if (type === 'EML') { TypeIcon = XmlIcon; }
         return (
-          <Tooltip
-            style={{ flex: 0 }}
-            placement="bottom"
-            title={`Click to download ${fileName} (${formattedSize})`}
+          <ListItem
+            key={fileName}
+            className={classes.listItemFile}
           >
-            <ListItem
-              button
-              key={fileName}
-              className={classes.listItemFile}
-              onClick={() => {
-                const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                const filePath = `${dataRoot}/${uuid}/${fileName}?download=true`;
-                window.location.href = filePath;
-              }}
-            >
-              <ListItemIcon className={classes.listItemIcon}>
-                <TypeIcon />
-              </ListItemIcon>
-              <ListItemText primary={description} secondary={secondary} />
-            </ListItem>
-          </Tooltip>
+            <ListItemIcon className={classes.listItemIcon}>
+              <Tooltip
+                style={{ flex: 0 }}
+                placement="right"
+                title={`Download ${fileName} (${formattedSize})`}
+              >
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                    const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
+                    window.location.href = filePath;
+                  }}
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+            </ListItemIcon>
+            <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
+            <ListItemText
+              primary={(
+                <div className={classes.listItemFilePrimaryText}>
+                  <div className={classes.listItemFileIcon}>
+                    <TypeIcon size="small" className={classes.listItemFileTypeIcon} />
+                  </div>
+                  <div>
+                    {description}
+                  </div>
+                </div>
+              )}
+              secondary={secondary}
+            />
+          </ListItem>
         );
       })}
     </List>
@@ -421,21 +455,26 @@ const DatasetDetails = (props) => {
         color="primary"
         variant="contained"
         onClick={() => { downloadUuid(uuid); }}
-        startIcon={<DownloadIcon />}
+        endIcon={<DownloadIcon />}
         data-selenium="prototype-dataset-download-button"
-        disabled={!manifestRollup}
+        disabled={!allowDownload}
       >
         {(
-          manifestRollup
+          allowDownload
             ? 'Download Package'
             : 'Download not available'
         )}
       </Button>
-      <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
-        <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
-          {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
-        </Typography>
-      </div>
+      {(!allowDownload
+        ? <div style={{ margin: Theme.spacing(1, 0, 2, 0) }} />
+        : (
+          <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
+            <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
+              {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
+            </Typography>
+          </div>
+        )
+      )}
     </>
   );
 
@@ -484,6 +523,8 @@ const DatasetDetails = (props) => {
             {downloadButton}
             {getSectionSubtitle(`Files in this Package (${files.length})`)}
             {downloadFileList}
+            {allowDownload ? null : <br />}
+            {getSectionSubtitle('Metadata Description')}
             {!metadataDescription ? null : (
               <Typography variant="body2">
                 {metadataDescription}
@@ -522,6 +563,7 @@ const DatasetDetails = (props) => {
             <Typography gutterBottom variant="body2" className={classes.sectionContent}>
               {studyAreaDescription}
             </Typography>
+            <br />
             {!manualLocationData.length ? (
               <Typography variant="body2" className={classes.NA}>
                 No valid associated locations found

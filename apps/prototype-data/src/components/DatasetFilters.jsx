@@ -19,6 +19,9 @@ import FilterScienceTeam from './FilterScienceTeam';
 import FilterSearch from './FilterSearch';
 import FilterTheme from './FilterTheme';
 import FilterTimeRange from './FilterTimeRange';
+import FilterSite from './FilterSite';
+import FilterState from './FilterState';
+import FilterDomain from './FilterDomain';
 
 import { FILTER_LABELS } from '../filterUtil';
 
@@ -134,6 +137,9 @@ const DatasetFilters = () => {
       {filterSearch}
       <FilterTimeRange skeleton={skeleton} />
       <FilterScienceTeam skeleton={skeleton} />
+      <FilterSite skeleton={skeleton} />
+      <FilterState skeleton={skeleton} />
+      <FilterDomain skeleton={skeleton} />
       <FilterTheme skeleton={skeleton} />
     </div>
   );

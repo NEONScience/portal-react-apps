@@ -6,12 +6,18 @@ export const FILTER_KEYS = {
   THEMES: 'THEMES',
   SCIENCE_TEAM: 'SCIENCE_TEAM',
   TIME_RANGE: 'TIME_RANGE',
+  SITES: 'SITES',
+  STATES: 'STATES',
+  DOMAINS: 'DOMAINS',
 };
 
 // Filter keys that have a discrete list of filter items (for validating updates)
 const LIST_BASED_FILTER_KEYS = [
   FILTER_KEYS.THEMES,
   FILTER_KEYS.SCIENCE_TEAM,
+  FILTER_KEYS.SITES,
+  FILTER_KEYS.STATES,
+  FILTER_KEYS.DOMAINS,
 ];
 
 export const FILTER_LABELS = {
@@ -19,12 +25,18 @@ export const FILTER_LABELS = {
   THEMES: 'Themes',
   SCIENCE_TEAM: 'Science Team',
   TIME_RANGE: 'Time Range',
+  SITES: 'Sites',
+  STATES: 'States',
+  DOMAINS: 'Domains',
 };
 
 // Array of filter keys that have discrete and countable items
 export const COUNTABLE_FILTER_KEYS = [
   FILTER_KEYS.THEMES,
   FILTER_KEYS.SCIENCE_TEAM,
+  FILTER_KEYS.SITES,
+  FILTER_KEYS.STATES,
+  FILTER_KEYS.DOMAINS,
 ];
 
 const filterValuesIntersect = (filterValue, datasetFilterableValues) => (
@@ -104,12 +116,30 @@ export const INITIAL_FILTER_VALUES = {
   THEMES: [],
   SCIENCE_TEAM: [],
   TIME_RANGE: [null, null],
+  SITES: [],
+  STATES: [],
+  DOMAINS: [],
 };
 
 export const INITIAL_FILTER_ITEMS = {
   THEMES: [],
   SCIENCE_TEAM: [],
   TIME_RANGE: [],
+  SITES: [],
+  STATES: [],
+  DOMAINS: [],
+};
+
+export const FILTER_ITEM_VISIBILITY_STATES = {
+  COLLAPSED: 'COLLAPSED',
+  EXPANDED: 'EXPANDED',
+  SELECTED: 'SELECTED',
+};
+
+export const INITIAL_FILTER_ITEM_VISIBILITY = {
+  SITES: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
+  STATES: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
+  DOMAINS: FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
 };
 
 export const INITIAL_DATASET_VISIBILITY = {
@@ -365,6 +395,9 @@ export const resetFilter = (state, filterKey) => {
       [filterKey]: INITIAL_FILTER_VALUES[filterKey],
     },
   };
+  if (updated.filterItemVisibility[filterKey]) {
+    updated.filterItemVisibility[filterKey] = FILTER_ITEM_VISIBILITY_STATES.COLLAPSED;
+  }
   Object.keys(updated.currentDatasets.visibility).forEach((uuid) => {
     updated.currentDatasets.visibility[uuid][filterKey] = null;
     const isVisible = datasetIsVisibleByFilters(updated.currentDatasets.visibility[uuid]);
@@ -395,6 +428,30 @@ export const resetAllFilters = (state) => {
 };
 
 /**
+ * In state: change the current item visibility setting for a filter (expand/collapse/show selected)
+ * @param {object} state - current whole state object
+ * @param {string} filterKey - identifier for filter as it appears in FILTER_KEYS
+ * @param {string} visibility - one of the FILTER_ITEM_VISIBILITY_STATES to apply to the filter
+ * @return {object} updated whole state object
+ */
+export const changeFilterItemVisibility = (state, filterKey, visibility) => {
+  if (
+    !Object.keys(state.filterItemVisibility).includes(filterKey)
+      || !Object.keys(FILTER_ITEM_VISIBILITY_STATES).includes(visibility)
+  ) { return state; }
+  const updated = {
+    ...state,
+    filterItemVisibility: {
+      ...state.filterItemVisibility,
+      [filterKey]: FILTER_ITEM_VISIBILITY_STATES[visibility],
+    },
+  };
+  // Persist updates to localStorage
+  localStorage.setItem('filterItemVisibility', JSON.stringify(updated.filterItemVisibility));
+  return updated;
+};
+
+/**
  * Parse an input search string into discrete terms.
  * Supports quoting words together as a single term.
  * Example: '"foo bar" baz' => ['foo bar', 'baz']
@@ -408,8 +465,8 @@ export const parseSearchTerms = (input) => {
     .map((term) => term.replace(/"/g, '').toLowerCase());
 };
 
-export const generateSearchFilterableValue = (dataset) => {
-  // const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextState;
+export const generateSearchFilterableValue = (dataset, neonContextState) => {
+  const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextState;
   // Add various dataset meta-data fields
   const search = [
     'uuid',
@@ -422,6 +479,9 @@ export const generateSearchFilterableValue = (dataset) => {
   ].map((field) => (dataset[field] || ''));
   // Add generated filterable values
   [
+    'SITES',
+    'STATES',
+    'DOMAINS',
     'SCIENCE_TEAMS',
     'TIME_RANGE',
     'THEMES',
@@ -432,10 +492,9 @@ export const generateSearchFilterableValue = (dataset) => {
   search.push((dataset.keywords || []).join(' '));
   // For sites, states, and domains also add additional meta-data
   // (e.g. site description, full state name, etc.)
-  /*
   search.push(
     dataset.filterableValues[FILTER_KEYS.SITES]
-      .map((site) => sitesJSON[site].description)
+      .map((site) => `${sitesJSON[site]?.siteName} ${sitesJSON[site]?.siteCode}`)
       .join(' '),
   );
   search.push(
@@ -448,7 +507,6 @@ export const generateSearchFilterableValue = (dataset) => {
       .map((domain) => domainsJSON[domain].name)
       .join(' '),
   );
-  */
   // Flatten everything into a single string, cast to lower case, and strip out special characters
   return search.join(' ').toLowerCase().replace(/[^\w\-. ]/g, ' ').replace(/[ ]{2,}/g, ' ');
 };
@@ -457,6 +515,7 @@ export const generateSearchFilterableValue = (dataset) => {
    parseDataset
 */
 const parseDataset = (rawDataset, neonContextData = {}) => {
+  const { sites: sitesJSON } = neonContextData;
   const newDataset = cloneDeep({ ...rawDataset, filterableValues: {} });
   // Filterable value for SCIENCE_TEAM
   newDataset.filterableValues[FILTER_KEYS.SCIENCE_TEAM] = rawDataset.scienceTeams || [];
@@ -467,6 +526,36 @@ const parseDataset = (rawDataset, neonContextData = {}) => {
         ? 'Land Cover & Processes'
         : theme
     ));
+  newDataset.filterableValues[FILTER_KEYS.SITES] = (rawDataset.locations || [])
+    .map((location) => {
+      let siteCode;
+      const regex = new RegExp(/^[A-Z]{4}$/);
+      if (regex) {
+        const matches = regex.exec(location.siteCode);
+        const valid = (matches && (matches.length > 0)) || false;
+        if (valid) {
+          siteCode = location.siteCode;
+        }
+      }
+      if (!siteCode || !sitesJSON[siteCode]) {
+        return null;
+      }
+      return siteCode;
+    })
+    .filter((siteCode) => siteCode !== null);
+  // Filterable values for STATES (requires sites filterable value)
+  newDataset.filterableValues[FILTER_KEYS.STATES] = [...(new Set(
+    newDataset.filterableValues[FILTER_KEYS.SITES]
+      .map((siteCode) => (sitesJSON[siteCode] ? sitesJSON[siteCode].stateCode : null))
+      .filter((stateCode) => stateCode !== null),
+  ))];
+
+  // Filterable values for DOMAINS (requires sites filterable value)
+  newDataset.filterableValues[FILTER_KEYS.DOMAINS] = [...(new Set(
+    newDataset.filterableValues[FILTER_KEYS.SITES]
+      .map((siteCode) => (sitesJSON[siteCode] ? sitesJSON[siteCode].domainCode : null))
+      .filter((domainCode) => domainCode !== null),
+  ))];
   // Filterable value for TIME_RANGE
   newDataset.timeRange = [
     Number.parseInt(rawDataset.startYear, 10) || null,
@@ -494,6 +583,7 @@ export const parseAllDatasets = (state) => {
 
   const { neonContextState: { data: neonContextData } } = state;
   const newState = { ...state };
+  const { sites: sitesJSON, states: statesJSON, domains: domainsJSON } = neonContextData;
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -547,6 +637,8 @@ export const parseAllDatasets = (state) => {
   COUNTABLE_FILTER_KEYS.forEach((key) => {
     const getName = (item) => {
       switch (key) {
+        case FILTER_KEYS.STATES:
+          return statesJSON[item].name;
         case FILTER_KEYS.SCIENCE_TEAM:
           return item.substring(0, item.indexOf('(') - 1);
         default:
@@ -557,6 +649,12 @@ export const parseAllDatasets = (state) => {
       switch (key) {
         case FILTER_KEYS.SCIENCE_TEAM:
           return item.substring(item.indexOf('('));
+        case FILTER_KEYS.SITES:
+          return sitesJSON[item]
+            ? `${sitesJSON[item].description}, ${sitesJSON[item].stateCode}`
+            : 'Not Available';
+        case FILTER_KEYS.DOMAINS:
+          return domainsJSON[item].name;
         default:
           return null;
       }
@@ -578,6 +676,15 @@ export const parseAllDatasets = (state) => {
     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   ));
   newState.filterItems[FILTER_KEYS.THEMES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.SITES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.STATES].sort((a, b) => (
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+  ));
+  newState.filterItems[FILTER_KEYS.DOMAINS].sort((a, b) => (
     a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   ));
 

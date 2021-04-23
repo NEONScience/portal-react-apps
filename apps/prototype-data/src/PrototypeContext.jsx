@@ -106,6 +106,8 @@ const DEFAULT_STATE = {
   filterValues: cloneDeep(INITIAL_FILTER_VALUES),
   // List of filter keys that have been applied / are not in a cleared state
   filtersApplied: [],
+  // Whether filter section is expanded (for xs/sm vieports only)
+  filtersVisible: false,
 };
 
 /**
@@ -264,6 +266,9 @@ const reducer = (state, action) => {
       return resetAllFilters(newState);
     case 'applyFilter':
       return applyFilter(state, action.filterKey, action.filterValue);
+
+    case 'toggleFilterVisiblity':
+      return { ...newState, filtersVisible: !state.filtersVisible };
 
     // Scrolling
     case 'incrementScrollCutoff':

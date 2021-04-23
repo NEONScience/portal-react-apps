@@ -12,6 +12,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import DownloadIcon from '@material-ui/icons/SaveAlt';
@@ -94,9 +95,15 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   listItemFile: {
+    borderRadius: theme.spacing(0.5),
     paddingLeft: theme.spacing(1),
+    border: '0.5px solid #ffffff00',
     '& p': {
       marginTop: theme.spacing(0.5),
+    },
+    '&:hover': {
+      border: `0.5px solid ${theme.palette.primary.main}`,
+      cursor: 'pointer',
     },
   },
   listItemFileDetails: {
@@ -124,11 +131,11 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   sectionContent: {
-    fontSize: '1.1rem',
-    color: 'rgba(0, 0, 0, 0.70)',
-    lineHeight: '1.6',
+    // fontSize: '1.1rem',
+    // color: 'rgba(0, 0, 0, 0.70)',
+    // lineHeight: '1.6',
     [theme.breakpoints.down('sm')]: {
-      fontSize: '1rem',
+      // fontSize: '1rem',
     },
   },
   sidebarSectionTitle: {
@@ -381,16 +388,27 @@ const DatasetDetails = (props) => {
         if (type === 'DATA') { TypeIcon = ZipIcon; }
         if (type === 'EML') { TypeIcon = XmlIcon; }
         return (
-          <ListItem
-            key={fileName}
-            className={classes.listItemFile}
+          <Tooltip
+            style={{ flex: 0 }}
+            placement="bottom"
             title={`Click to download ${fileName} (${formattedSize})`}
           >
-            <ListItemIcon className={classes.listItemIcon}>
-              <TypeIcon />
-            </ListItemIcon>
-            <ListItemText primary={description} secondary={secondary} />
-          </ListItem>
+            <ListItem
+              button
+              key={fileName}
+              className={classes.listItemFile}
+              onClick={() => {
+                const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                const filePath = `${dataRoot}/${uuid}/${fileName}?download=true`;
+                window.location.href = filePath;
+              }}
+            >
+              <ListItemIcon className={classes.listItemIcon}>
+                <TypeIcon />
+              </ListItemIcon>
+              <ListItemText primary={description} secondary={secondary} />
+            </ListItem>
+          </Tooltip>
         );
       })}
     </List>
@@ -398,21 +416,27 @@ const DatasetDetails = (props) => {
 
   // Download Button
   const downloadButton = (
-    <Button
-      color="primary"
-      variant="contained"
-      onClick={() => { downloadUuid(uuid); }}
-      startIcon={<DownloadIcon />}
-      data-selenium="prototype-dataset-download-button"
-      style={{ marginBottom: Theme.spacing(2) }}
-      disabled={!manifestRollup}
-    >
-      {(
-        manifestRollup
-          ? `Download Package (Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)})`
-          : 'Download not available'
-      )}
-    </Button>
+    <>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={() => { downloadUuid(uuid); }}
+        startIcon={<DownloadIcon />}
+        data-selenium="prototype-dataset-download-button"
+        disabled={!manifestRollup}
+      >
+        {(
+          manifestRollup
+            ? 'Download Package'
+            : 'Download not available'
+        )}
+      </Button>
+      <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
+        <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
+          {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
+        </Typography>
+      </div>
+    </>
   );
 
   // Manual Location Data

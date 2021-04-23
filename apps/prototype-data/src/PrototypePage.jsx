@@ -3,6 +3,7 @@ import React from 'react';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
 import PrototypeContext from './PrototypeContext';
+import DatasetFilters from './components/DatasetFilters';
 import DatasetDetails from './components/DatasetDetails';
 import DatasetDetailsSkeleton from './components/DatasetDetailsSkeleton';
 import ExploreDatasets from './components/ExploreDatasets';
@@ -55,15 +56,23 @@ const PrototypePage = () => {
     title = (typeof dataset === 'undefined' ? 'Prototype Dataset' : dataset.projectTitle);
   }
 
+  let showSidebar = true;
   let pageContent = null;
   if (skeleton) {
-    pageContent = routeUuid ? (
-      <DatasetDetailsSkeleton />
-    ) : (
-      <ExploreDatasetsSkeleton />
-    );
+    if (routeUuid) {
+      showSidebar = false;
+      pageContent = <DatasetDetailsSkeleton />;
+    } else {
+      pageContent = <ExploreDatasetsSkeleton />;
+    }
   } else {
-    pageContent = routeUuid ? <DatasetDetails uuid={routeUuid} /> : <ExploreDatasets />;
+    // eslint-disable-next-line no-lonely-if
+    if (routeUuid) {
+      showSidebar = false;
+      pageContent = <DatasetDetails uuid={routeUuid} />;
+    } else {
+      pageContent = <ExploreDatasets />;
+    }
   }
 
   return (
@@ -73,6 +82,9 @@ const PrototypePage = () => {
       breadcrumbs={breadcrumbs}
       loading={loading}
       error={error}
+      sidebarWidth={showSidebar ? 340 : undefined}
+      sidebarContent={showSidebar ? <DatasetFilters /> : undefined}
+      sidebarUnsticky={showSidebar ? true : undefined}
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });

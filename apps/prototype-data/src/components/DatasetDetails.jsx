@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
@@ -21,6 +23,8 @@ import DownloadIcon from '@material-ui/icons/SaveAlt';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
 import ZipIcon from '@material-ui/icons/Archive';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
+import CopyIcon from '@material-ui/icons/Assignment';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
@@ -155,8 +159,19 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1.5),
     fontWeight: 600,
   },
+  sidebarSectionTitleDoi: {
+    marginBottom: theme.spacing(1.5),
+    fontWeight: 600,
+    display: 'inline-flex',
+    verticalAlign: 'middle',
+  },
   sidebarContentFont: {
     color: 'rgba(0, 0, 0, 0.70)',
+  },
+  doiTitleIcon: {
+    marginLeft: theme.spacing(1),
+    marginBottom: '13px',
+    verticalAlign: 'middle',
   },
   scienceTeamsUl: {
     paddingLeft: theme.spacing(2),
@@ -234,6 +249,7 @@ const DatasetDetails = (props) => {
     startYear,
     studyAreaDescription,
     version,
+    doi,
   } = dataset;
 
   const allowDownload = manifestRollup
@@ -503,6 +519,54 @@ const DatasetDetails = (props) => {
     });
   }
 
+  const renderDoi = () => {
+    const hasDoi = doi && doi.url;
+    if (!hasDoi) {
+      return (
+        <Typography variant="body1" className={classes.NA}>
+          Not Available
+        </Typography>
+      );
+    }
+    const doiId = hasDoi
+      ? doi.url.split('/').slice(-2).join('/')
+      : uuid;
+    return (
+      <List dense style={{ margin: 0, padding: 0 }}>
+        <ListItem key="DOI" style={{ padding: 0, margin: 0 }}>
+          <ListItemText
+            style={{ margin: 0 }}
+            primary={(
+              <Typography variant="body1" className={classes.sidebarContentFont}>
+                {doiId}
+              </Typography>
+            )}
+          />
+        </ListItem>
+      </List>
+    );
+  };
+
+  const renderDoiCopyIcon = () => {
+    const hasDoi = doi && doi.url;
+    if (!hasDoi) {
+      return null;
+    }
+    return (
+      <Tooltip
+        style={{ flex: 0 }}
+        placement="left"
+        title={`Copy DOI URL (${doi.url})`}
+      >
+        <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
+          <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+            Copy
+          </Button>
+        </CopyToClipboard>
+      </Tooltip>
+    );
+  };
+
   /**
      Main render
   */
@@ -576,6 +640,23 @@ const DatasetDetails = (props) => {
 
         {/* Right Column */}
         <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
+          {/* DOI */}
+          <div className={classes.sidebarSection}>
+            <Typography variant="h6" component="h2" className={classes.sidebarSectionTitleDoi}>
+              DOI
+            </Typography>
+            <Tooltip
+              style={{ flex: 0 }}
+              placement="left"
+              title="Digital Object Identifier (DOI) - A citable, permanent link to this dataset"
+            >
+              <IconButton size="small" className={classes.doiTitleIcon}>
+                <InfoIcon fontSize="small" color="primary" />
+              </IconButton>
+            </Tooltip>
+            {renderDoiCopyIcon()}
+            {renderDoi()}
+          </div>
           {/* Version */}
           <div className={classes.sidebarSection}>
             {getSidebarSectionTitle('Version')}

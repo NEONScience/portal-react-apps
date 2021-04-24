@@ -7,6 +7,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
@@ -36,6 +37,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     height: '28px',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.67rem',
+    },
   },
   title: {
     fontWeight: 500,
@@ -59,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
   },
   chipMoz: {
     maxWidth: '-moz-available',
+  },
+  siteChipToolip: {
+    width: '280px',
   },
   NA: {
     fontStyle: 'italic',
@@ -113,13 +120,58 @@ const Dataset = (props) => {
         if (!siteCode) {
           return null;
         }
+        const renderTitle = (titleLoc) => ((
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Typography variant="subtitle2">Site Name</Typography>
+              {titleLoc.siteName
+                ? <Typography variant="body2">{titleLoc.siteName}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">State</Typography>
+              {titleLoc.state
+                ? <Typography variant="body2">{titleLoc.state}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Domain</Typography>
+              {titleLoc.domain
+                ? <Typography variant="body2">{titleLoc.domain}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Latitude</Typography>
+              {titleLoc.latitude
+                ? <Typography variant="body2">{titleLoc.latitude}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Longitude</Typography>
+              {titleLoc.longitude
+                ? <Typography variant="body2">{titleLoc.longitude}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+          </Grid>
+        ));
         return (
-          <SiteChip
+          <Tooltip
+            arrow
             key={siteCode}
-            color="primary"
-            label={siteCode}
-            className={`${classes.chip} ${classes.chipMoz}`}
-          />
+            style={{ flex: 0 }}
+            classes={{ tooltip: classes.siteChipToolip }}
+            placement="top"
+            title={renderTitle(location)}
+          >
+            <div>
+              <SiteChip
+                key={siteCode}
+                color="primary"
+                label={siteCode}
+                className={`${classes.chip} ${classes.chipMoz}`}
+              />
+            </div>
+          </Tooltip>
         );
       })
       .filter((chip) => chip !== null);

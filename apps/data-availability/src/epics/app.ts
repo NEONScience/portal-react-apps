@@ -39,7 +39,7 @@ const sitesQuery = `query Sites {
     }
   }
 }`;
-const buildProductQuery = (productCode: string, release?: string): string => {
+const buildProductQuery = (productCodes: string[], release?: string): string => {
   const hasRelease = isStringNonEmpty(release);
   const releaseArgument = !hasRelease ? '' : `, release: "${release as string}"`;
   const availableReleases = hasRelease
@@ -48,8 +48,10 @@ const buildProductQuery = (productCode: string, release?: string): string => {
       release
       availableMonths
     }`;
-  return `query Products {
-    product (productCode: "${productCode}"${releaseArgument}) {
+  return `query filterProducts {
+    products: filterProducts(filter: {
+      productCodes: ["${productCodes.join('", "')}"]${releaseArgument}
+    }) {
       productCode
       productName
       siteCodes {
@@ -179,6 +181,34 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   ),
 });
 
+const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+  ofTypeFilter: AppActions.FETCH_PRODUCT_BUNDLES,
+  takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCT_BUNDLES,
+  request: {
+    method: 'GET',
+    crossDomain: true,
+    responseType: 'json',
+    url: `${NeonEnvironment.getFullApiPath('products')}/bundles`,
+  },
+  workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  successAction: (
+    response: AjaxResponse | AjaxResponse[],
+    action?: AppActionType,
+  ): Observable<unknown> => {
+    const singleResponse: AjaxResponse = (response as AjaxResponse);
+    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    if (exists(resolved) && exists(resolved.children)) {
+      return of(AppFlow.fetchProductBundles.asyncCompletedAction(resolved));
+    }
+    return of(AppFlow.fetchProductBundles.asyncErrorAction(null, 'Fetching bundles error'));
+  },
+  errorAction: (error: AjaxResponse): Observable<unknown> => (
+    handleError(error, AppFlow.fetchProductBundles.asyncErrorAction)
+  ),
+});
+
 const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT,
@@ -208,14 +238,14 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
     const asyncAction: AsyncParamAction = (action as AsyncParamAction);
     const params: UnknownRecord = (asyncAction.param as UnknownRecord);
-    const productCode: string = params.productCode as string;
+    const productCodes: string[] = params.productCodes as string[];
     let release: string|undefined;
     if (isStringNonEmpty(params.release)) {
       release = params.release as string;
     }
     return {
       ...request,
-      ...NeonGraphQL.getGraphqlAjaxRequest(buildProductQuery(productCode, release)),
+      ...NeonGraphQL.getGraphqlAjaxRequest(buildProductQuery(productCodes, release)),
     };
   },
 });
@@ -265,6 +295,7 @@ export {
   fetchProductsEpic,
   fetchReleasesEpic,
   fetchSitesEpic,
+  fetchBundlesEpic,
   fetchFocalProductEpic,
   fetchFocalSiteEpic,
 };

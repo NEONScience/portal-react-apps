@@ -6,6 +6,7 @@ import {
   Release,
   Site,
   SelectOption,
+  DataProductBundle,
 } from '../../types/store';
 
 export interface AppComponentState {
@@ -14,6 +15,8 @@ export interface AppComponentState {
   releaseFetchState: AsyncStateType;
   releases: Release[];
   sitesFetchState: AsyncStateType;
+  bundlesFetchState: AsyncStateType;
+  bundles: DataProductBundle[];
   focalProductFetchState: AsyncStateType;
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
@@ -30,6 +33,8 @@ export interface SiteSelectOption extends Site {
 }
 
 export interface DataProductSelectState {
+  bundlesFetchState: AsyncStateType;
+  bundles: DataProductBundle[];
   productsFetchState: AsyncStateType;
   products: DataProductSelectOption[];
   selectedRelease: Nullable<Release>;

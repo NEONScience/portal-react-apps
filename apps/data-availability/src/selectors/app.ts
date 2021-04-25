@@ -6,7 +6,8 @@ import {
 import isEqual from 'lodash/isEqual';
 
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { Nullable } from 'portal-core-components/lib/types/core';
 
 import {
   BaseStoreAppState,
@@ -14,6 +15,8 @@ import {
   Release,
   StoreRootState,
   Site,
+  DataProductParent,
+  DataProductBundle,
 } from '../types/store';
 import {
   AppComponentState,
@@ -25,6 +28,7 @@ import {
   SiteSelectOption,
   SiteSelectState,
 } from '../components/states/AppStates';
+import { findForwardChildren } from '../util/bundleUtil';
 
 const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
@@ -34,6 +38,97 @@ const appStateSelector = createSelector(
   [appState],
   (state: BaseStoreAppState): BaseStoreAppState => state,
 );
+
+const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
+  let parentCodeForwardAvail: string|undefined;
+  state.bundles.some((checkBundle: DataProductBundle): boolean => {
+    const parent = checkBundle.parentProducts
+      .find((checkParent: DataProductParent): boolean => (
+        checkParent.forwardAvailability
+      ));
+    if (parent && parent.forwardAvailability) {
+      parentCodeForwardAvail = parent.parentProductCode;
+    }
+    return (parent && parent.forwardAvailability) || false;
+  });
+  const { selectedProduct }: BaseStoreAppState = state;
+  let appliedProduct: Nullable<DataProduct> = null;
+  const appliedProducts: Nullable<DataProduct[]> = state.focalProduct;
+  if (existsNonEmpty(appliedProducts)) {
+    if (!selectedProduct) {
+      [appliedProduct] = (appliedProducts as DataProduct[]);
+    } else {
+      appliedProduct = (appliedProducts as DataProduct[])
+        .find((value: DataProduct): boolean => (
+          selectedProduct.productCode.localeCompare(value.productCode) === 0
+        ));
+      if (!appliedProduct) {
+        [appliedProduct] = (appliedProducts as DataProduct[]);
+      }
+    }
+    if (isStringNonEmpty(parentCodeForwardAvail)) {
+      const appliedAvail: DataProduct|undefined = (appliedProducts as DataProduct[])
+        .find((product: DataProduct): boolean => (
+          product.productCode.localeCompare(parentCodeForwardAvail as string) === 0
+        ));
+      if (appliedAvail) {
+        appliedProduct = {
+          ...appliedProduct,
+          siteCodes: appliedAvail.siteCodes,
+        };
+      }
+    }
+  }
+  return appliedProduct;
+};
+const bundleProductSelector = createSelector(
+  [appState],
+  (state: BaseStoreAppState): Nullable<DataProduct> => findFocalProduct(state),
+);
+
+const transformSiteForBundles = (
+  focalSite: Nullable<Site>,
+  products: DataProduct[],
+  bundles: DataProductBundle[],
+): Nullable<Site> => {
+  if (!exists(focalSite)) {
+    return focalSite;
+  }
+  const appliedProducts: Record<string, unknown>[] = (focalSite as Site).dataProducts;
+  const forwardCodeMap: { [key: string]: string } = findForwardChildren(bundles);
+  const bundledProducts: Record<string, unknown>[] = [];
+  Object.keys(forwardCodeMap).forEach((childCode: string): void => {
+    const parentAvail: Record<string, unknown>|undefined = appliedProducts
+      .find((value: Record<string, unknown>): boolean => (
+        (value.dataProductCode as string).localeCompare(forwardCodeMap[childCode]) === 0
+      ));
+    if (parentAvail) {
+      const childProduct: DataProduct|undefined = products
+        .find((product: DataProduct): boolean => (
+          product.productCode.localeCompare(childCode) === 0
+        ));
+      if (childProduct) {
+        const appliedTitle = `${childProduct.productName}. `
+          + `Showing availability for parent bundle product: ${parentAvail.dataProductCode as string}`;
+        bundledProducts.push({
+          ...parentAvail,
+          dataProductCode: childCode,
+          dataProductTitle: appliedTitle,
+        });
+      }
+    }
+  });
+  bundledProducts.forEach((bundleAvail: Record<string, unknown>): void => {
+    appliedProducts.push(bundleAvail);
+  });
+  bundledProducts.sort((a, b): number => (
+    (a.dataProductCode as string).localeCompare(b.dataProductCode as string)
+  ));
+  return {
+    ...focalSite as Site,
+    dataProducts: appliedProducts,
+  };
+};
 
 const createDeepEqualSelector = createSelectorCreator(
   defaultMemoize,
@@ -55,6 +150,8 @@ const AppStateSelector = {
       products: state.products,
       releaseFetchState: state.releasesFetchState.asyncState,
       releases: state.releases,
+      bundlesFetchState: state.bundlesFetchState.asyncState,
+      bundles: state.bundles,
       focalProductFetchState: state.focalProductFetchState.asyncState,
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
@@ -67,6 +164,8 @@ const AppStateSelector = {
   dataProductSelect: createDeepEqualSelector(
     [appStateSelector],
     (state: BaseStoreAppState): DataProductSelectState => ({
+      bundlesFetchState: state.bundlesFetchState.asyncState,
+      bundles: state.bundles,
       productsFetchState: state.productsFetchState.asyncState,
       products: !existsNonEmpty(state.products)
         ? new Array<DataProductSelectOption>()
@@ -119,10 +218,13 @@ const AppStateSelector = {
     }),
   ),
   availability: createDeepEqualSelector(
-    [appStateSelector],
-    (state: BaseStoreAppState): AvailabilitySectionState => ({
+    [appStateSelector, bundleProductSelector],
+    (
+      state: BaseStoreAppState,
+      bundledProduct: Nullable<DataProduct>,
+    ): AvailabilitySectionState => ({
       focalProductFetchState: state.focalProductFetchState.asyncState,
-      focalProduct: state.focalProduct,
+      focalProduct: bundledProduct,
     }),
   ),
   locations: createDeepEqualSelector(
@@ -130,6 +232,7 @@ const AppStateSelector = {
     (state: BaseStoreAppState): LocationsSectionState => {
       let fetchState: AsyncStateType;
       let siteCodes: string[];
+      let focalProduct: Nullable<DataProduct> = null;
       switch (state.selectedViewMode.value) {
         case 'Site':
           fetchState = state.focalSiteFetchState.asyncState;
@@ -140,10 +243,11 @@ const AppStateSelector = {
         case 'DataProduct':
         default:
           fetchState = state.focalProductFetchState.asyncState;
+          focalProduct = findFocalProduct(state);
           // eslint-disable-next-line no-case-declarations
-          const productSiteCodes: Record<string, unknown>[] = !exists(state.focalProduct)
+          const productSiteCodes: Record<string, unknown>[] = !exists(focalProduct)
             ? new Array<Record<string, unknown>>()
-            : (state.focalProduct as DataProduct).siteCodes;
+            : (focalProduct as DataProduct).siteCodes;
           siteCodes = productSiteCodes
             .map((value: Record<string, unknown>): string => (
               value.siteCode as string
@@ -164,7 +268,7 @@ const AppStateSelector = {
     [appStateSelector],
     (state: BaseStoreAppState): SiteAvailabilitySectionState => ({
       focalSiteFetchState: state.focalSiteFetchState.asyncState,
-      focalSite: state.focalSite,
+      focalSite: transformSiteForBundles(state.focalSite, state.products, state.bundles),
     }),
   ),
 };

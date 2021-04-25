@@ -19,6 +19,7 @@ import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
@@ -45,6 +46,15 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     },
     skeleton: {
       marginBottom: '16px',
+    },
+    callout: {
+      margin: muiTheme.spacing(0.5, 0, 3, 0),
+      backgroundColor: '#ffffff',
+      borderColor: '#d7d9d9',
+    },
+    calloutIcon: {
+      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
+      marginRight: muiTheme.spacing(2),
     },
   })) as StylesHook;
 
@@ -132,6 +142,10 @@ const SiteSelect: React.FC = (): JSX.Element => {
     }
     return (
       <InfoCard
+        classes={{
+          callout: classes.callout,
+          calloutIcon: classes.calloutIcon,
+        }}
         titleContent={(
           <Typography variant="subtitle2" component="div">
             Learn more about this field site by viewing the field site page:&nbsp;

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { UnknownRecord, NullableRecord } from 'portal-core-components/lib/types/core';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -30,6 +31,15 @@ export const resolveAny = (
     next as never,
     ...drillProps.slice(1, drillProps.length),
   );
+};
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+export const isEmptyObject = (o: any): boolean => {
+  if (!exists(o)) return false;
+  // eslint-disable-next-line guard-for-in
+  for (const i in o) return false;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return (o.constructor === Object);
 };
 
 const TypeUtil = {

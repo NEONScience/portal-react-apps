@@ -13,13 +13,19 @@ import AppActions from '../app';
 import ProductParser from '../../parsers/ProductParser';
 import ReleaseParser from '../../parsers/ReleaseParser';
 import SiteParser from '../../parsers/SiteParser';
-import { DataProduct, Release, Site } from '../../types/store';
+import {
+  DataProduct,
+  DataProductBundle,
+  Release,
+  Site,
+} from '../../types/store';
 
 interface AppAsyncFlowTypes {
   fetchProducts: AsyncFlowHandler<AsyncState<DataProduct[]>, AsyncActionType, DataProduct[]>;
   fetchSites: AsyncFlowHandler<AsyncState<Site[]>, AsyncActionType, Site[]>;
   fetchReleases: AsyncFlowHandler<AsyncState<Release[]>, AsyncActionType, Release[]>;
-  fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct>>, AsyncActionType, Nullable<DataProduct>>;
+  fetchProductBundles: AsyncFlowHandler<AsyncState<DataProductBundle[]>, AsyncActionType, DataProductBundle[]>;
+  fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>;
   fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
 }
 
@@ -44,6 +50,13 @@ const AppFlowActionTypes: FlowActionTypes = {
     completed: AppActions.FETCH_RELEASES_COMPLETED,
     error: AppActions.FETCH_RELEASES_ERROR,
     reset: AppActions.RESET_FETCH_RELEASES,
+  },
+  fetchProductBundles: {
+    fetch: AppActions.FETCH_PRODUCT_BUNDLES,
+    working: AppActions.FETCH_PRODUCT_BUNDLES_WORKING,
+    completed: AppActions.FETCH_PRODUCT_BUNDLES_COMPLETED,
+    error: AppActions.FETCH_PRODUCT_BUNDLES_ERROR,
+    reset: AppActions.RESET_FETCH_PRODUCT_BUNDLES,
   },
   fetchFocalProduct: {
     fetch: AppActions.FETCH_FOCAL_PRODUCT,
@@ -74,7 +87,11 @@ const AppFlow: AppAsyncFlowTypes = {
     AppFlowActionTypes.fetchReleases,
     ReleaseParser.parseReleases,
   ),
-  fetchFocalProduct: AsyncFlow.create<AsyncState<Nullable<DataProduct>>, AsyncActionType, Nullable<DataProduct>>(
+  fetchProductBundles: AsyncFlow.create<AsyncState<DataProductBundle[]>, AsyncActionType, DataProductBundle[]>(
+    AppFlowActionTypes.fetchProductBundles,
+    ProductParser.parseBundles,
+  ),
+  fetchFocalProduct: AsyncFlow.create<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>(
     AppFlowActionTypes.fetchFocalProduct,
     ProductParser.parseProductResponse,
   ),

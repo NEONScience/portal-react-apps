@@ -77,6 +77,14 @@ const flowReducer = (
     'sites',
   );
   update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+    AppFlow.fetchProductBundles.reducer,
+    update,
+    action,
+    'bundlesFetchState',
+    AppActions.FETCH_PRODUCT_BUNDLES_COMPLETED,
+    'bundles',
+  );
+  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
     AppFlow.fetchFocalProduct.reducer,
     update,
     action,

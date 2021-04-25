@@ -13,6 +13,7 @@ import {
   fetchProductsEpic,
   fetchReleasesEpic,
   fetchSitesEpic,
+  fetchBundlesEpic,
   fetchFocalProductEpic,
   fetchFocalSiteEpic,
 } from './app';
@@ -22,6 +23,7 @@ export const getCombinedEpics = (): unknown => (
     fetchProductsEpic,
     fetchReleasesEpic,
     fetchSitesEpic,
+    fetchBundlesEpic,
     fetchFocalProductEpic,
     fetchFocalSiteEpic,
   )

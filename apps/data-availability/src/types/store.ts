@@ -17,9 +17,11 @@ export interface BaseStoreAppState {
   sites: Site[];
   releasesFetchState: AsyncState<Release[]>;
   releases: Release[];
+  bundlesFetchState: AsyncState<DataProductBundle[]>;
+  bundles: DataProductBundle[];
 
-  focalProductFetchState: AsyncState<Nullable<DataProduct>>;
-  focalProduct: Nullable<DataProduct>;
+  focalProductFetchState: AsyncState<Nullable<DataProduct[]>>;
+  focalProduct: Nullable<DataProduct[]>;
   focalSiteFetchState: AsyncState<Nullable<Site>>;
   focalSite: Nullable<Site>;
 
@@ -30,6 +32,16 @@ export interface BaseStoreAppState {
   selectedViewMode: SelectOption;
   viewModes: SelectOption[];
   viewModeSwitching: boolean;
+}
+
+export interface DataProductParent {
+  parentProductCode: string;
+  forwardAvailability: boolean;
+}
+
+export interface DataProductBundle {
+  productCode: string;
+  parentProducts: DataProductParent[];
 }
 
 export interface DataProduct {

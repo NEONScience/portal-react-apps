@@ -20,6 +20,7 @@ import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { Nullable } from 'portal-core-components/lib/types/core';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import DataProductSelect from './controls/DataProductSelect';
 import AvailabilitySection from './availability/AvailabilitySection';
@@ -35,9 +36,12 @@ import {
   Release,
   Site,
   SelectOption,
+  DataProductBundle,
+  DataProductParent,
 } from '../types/store';
 import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
+import { findBundle, findForwardParent } from '../util/bundleUtil';
 
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
 
@@ -53,6 +57,15 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     infoContainer: {
       margin: muiTheme.spacing(0, 0, 4, 0),
     },
+    callout: {
+      margin: muiTheme.spacing(0.5, 0, 3, 0),
+      backgroundColor: '#ffffff',
+      borderColor: '#d7d9d9',
+    },
+    calloutIcon: {
+      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
+      marginRight: muiTheme.spacing(2),
+    },
   })) as StylesHook;
 
 const useAppSelector = (): AppComponentState => useSelector(
@@ -66,6 +79,8 @@ const App: React.FC = (): JSX.Element => {
   const {
     productsFetchState,
     sitesFetchState,
+    bundlesFetchState,
+    bundles,
     releaseFetchState,
     releases,
     selectedProduct,
@@ -77,7 +92,8 @@ const App: React.FC = (): JSX.Element => {
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
     || (sitesFetchState === AsyncStateType.WORKING)
-    || (releaseFetchState === AsyncStateType.WORKING);
+    || (releaseFetchState === AsyncStateType.WORKING)
+    || (bundlesFetchState === AsyncStateType.WORKING);
 
   useEffect(
     () => {
@@ -85,6 +101,7 @@ const App: React.FC = (): JSX.Element => {
         dispatch(AppFlow.fetchProducts.asyncAction());
         dispatch(AppFlow.fetchSites.asyncAction());
         dispatch(AppFlow.fetchReleases.asyncAction());
+        dispatch(AppFlow.fetchProductBundles.asyncAction());
       });
     },
     [dispatch],
@@ -98,12 +115,27 @@ const App: React.FC = (): JSX.Element => {
   );
 
   const handleChangeCb = useCallback(
-    (productCb: Nullable<DataProduct>, siteCb: Nullable<Site>, releaseCb: Nullable<Release>) => (
+    (
+      productCb: Nullable<DataProduct>,
+      siteCb: Nullable<Site>,
+      releaseCb: Nullable<Release>,
+      bundlesCb: DataProductBundle[],
+    ) => (
       batch(() => {
         dispatch(AppActionCreator.setSelectedRelease(releaseCb));
         if (exists(productCb)) {
+          let parentBundle: DataProductParent|undefined;
+          const bundle: DataProductBundle|undefined = findBundle(
+            bundlesCb,
+            (productCb as DataProduct).productCode,
+          );
+          if (bundle) {
+            parentBundle = findForwardParent(bundle);
+          }
           dispatch(AppFlow.fetchFocalProduct.asyncAction({
-            productCode: (productCb as DataProduct).productCode,
+            productCodes: parentBundle
+              ? [(productCb as DataProduct).productCode, parentBundle.parentProductCode]
+              : [(productCb as DataProduct).productCode],
             release: releaseCb?.release,
           }));
         }
@@ -151,7 +183,7 @@ const App: React.FC = (): JSX.Element => {
           const nextRelease: Nullable<Release> = !isStringNonEmpty(selected)
             ? null
             : releases.find((value: Release): boolean => (value.release === selected));
-          handleChangeCb(selectedProduct, selectedSite, nextRelease);
+          handleChangeCb(selectedProduct, selectedSite, nextRelease, bundles);
         }}
       />
     </React.Fragment>
@@ -237,12 +269,16 @@ const App: React.FC = (): JSX.Element => {
           <Typography variant="subtitle1">
             The availability chart and site map below show the combination of
             product, site, and month where data are currently available and where
-            those data are collected as well as distinguish between provisional
-            and release data availability.
+            those data are collected, respectively. The availability chart
+            distinguishes between provisional data availability and release data availability.
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <InfoCard
+            classes={{
+              callout: classes.callout,
+              calloutIcon: classes.calloutIcon,
+            }}
             titleContent={(
               <Typography variant="subtitle2" component="div">
                 Learn more about&nbsp;

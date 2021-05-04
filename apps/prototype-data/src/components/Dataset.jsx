@@ -4,13 +4,15 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
+import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import DetailsIcon from '@material-ui/icons/InfoOutlined';
@@ -29,9 +31,18 @@ const useStyles = makeStyles((theme) => ({
   datasetCard: {
     marginBottom: theme.spacing(3),
   },
+  datasetIdChip: {
+    color: theme.palette.grey[500],
+    border: `1px solid ${theme.palette.grey[500]}`,
+    backgroundColor: theme.palette.grey[100],
+    fontWeight: 600,
+    height: '28px',
+    [theme.breakpoints.down('xs')]: {
+      fontSize: '0.67rem',
+    },
+  },
   title: {
     fontWeight: 500,
-    marginBottom: theme.spacing(2),
   },
   startFlex: {
     display: 'flex',
@@ -53,11 +64,21 @@ const useStyles = makeStyles((theme) => ({
   chipMoz: {
     maxWidth: '-moz-available',
   },
+  siteChipToolip: {
+    width: '280px',
+  },
+  NA: {
+    fontStyle: 'italic',
+    color: theme.palette.grey[400],
+  },
 }));
 
 const Dataset = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
+  const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
+  const atMd = useMediaQuery(Theme.breakpoints.only('md'));
+  const showDetailIconOnly = atSm || atMd;
 
   const [state, dispatch] = usePrototypeContextState();
   const { datasets: { [uuid]: dataset } } = state;
@@ -67,6 +88,7 @@ const Dataset = (props) => {
   const {
     dataThemes,
     endYear,
+    locations,
     keywords,
     projectDescription,
     projectTitle,
@@ -80,6 +102,80 @@ const Dataset = (props) => {
     </div>
   ));
 
+  const siteChips = (!locations || []).length
+    ? null
+    : locations
+      .filter((location) => location && location.siteCode)
+      .sort((a, b) => a.siteCode.localeCompare(b.siteCode))
+      .map((location) => {
+        let siteCode;
+        const regex = new RegExp(/^[A-Z]{4}$/);
+        if (regex) {
+          const matches = regex.exec(location.siteCode);
+          const valid = (matches && (matches.length > 0)) || false;
+          if (valid) {
+            siteCode = location.siteCode;
+          }
+        }
+        if (!siteCode) {
+          return null;
+        }
+        const renderTitle = (titleLoc) => ((
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <Typography variant="subtitle2">Site Name</Typography>
+              {titleLoc.siteName
+                ? <Typography variant="body2">{titleLoc.siteName}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">State</Typography>
+              {titleLoc.state
+                ? <Typography variant="body2">{titleLoc.state}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Domain</Typography>
+              {titleLoc.domain
+                ? <Typography variant="body2">{titleLoc.domain}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Latitude</Typography>
+              {titleLoc.latitude
+                ? <Typography variant="body2">{titleLoc.latitude}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+            <Grid item xs={6}>
+              <Typography variant="subtitle2">Longitude</Typography>
+              {titleLoc.longitude
+                ? <Typography variant="body2">{titleLoc.longitude}</Typography>
+                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+            </Grid>
+          </Grid>
+        ));
+        return (
+          <Tooltip
+            arrow
+            key={siteCode}
+            style={{ flex: 0 }}
+            classes={{ tooltip: classes.siteChipToolip }}
+            placement="top"
+            title={renderTitle(location)}
+          >
+            <div>
+              <SiteChip
+                key={siteCode}
+                color="primary"
+                label={siteCode}
+                className={`${classes.chip} ${classes.chipMoz}`}
+              />
+            </div>
+          </Tooltip>
+        );
+      })
+      .filter((chip) => chip !== null);
+
   const keywordChips = !(keywords || []).length ? null : keywords.map((keyword) => (
     <Chip
       label={keyword}
@@ -89,14 +185,77 @@ const Dataset = (props) => {
     />
   ));
 
+  const renderSites = () => {
+    if (!siteChips || (siteChips.length <= 0)) {
+      return (<Typography variant="body2" className={classes.NA}>None specified</Typography>);
+    }
+    return siteChips;
+  };
+
+  const renderDetailButton = () => {
+    let buttonText = 'Details and Data';
+    if (showDetailIconOnly) {
+      buttonText = 'Details';
+    }
+    return (
+      <Button
+        variant="contained"
+        color="primary"
+        style={{ width: '100%' }}
+        endIcon={<DetailsIcon />}
+        onClick={() => dispatch({ type: 'setNextUuid', uuid })}
+      >
+        {buttonText}
+      </Button>
+    );
+  };
+
   return (
     <Card className={classes.datasetCard}>
       <CardContent className={classes.content}>
-        <Typography variant="h6" className={classes.title}>
-          {projectTitle}
-        </Typography>
+        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
+          <Grid item xs={12} sm={9} md={8} lg={8}>
+            <Typography variant="h6" className={classes.title}>
+              {projectTitle}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={3} md={4} lg={4}>
+            {renderDetailButton()}
+          </Grid>
+        </Grid>
 
         <Grid container spacing={2}>
+          <Grid item xs={12} sm={10}>
+            <Typography variant="subtitle2" className={classes.sectionTitle}>
+              Prototype Dataset ID
+            </Typography>
+            <div style={{ marginBottom: Theme.spacing(3) }}>
+              <Chip label={uuid} className={classes.datasetIdChip} />
+            </div>
+            <Typography variant="subtitle2" className={classes.sectionTitle}>
+              Project Description
+            </Typography>
+            <Typography variant="body2" style={{ marginBottom: Theme.spacing(3) }}>
+              {projectDescription}
+            </Typography>
+            <div>
+              <Typography variant="subtitle2" className={classes.sectionTitle}>
+                Locations / Sites
+              </Typography>
+              <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
+                {renderSites()}
+              </div>
+            </div>
+            <br />
+            <div>
+              <Typography variant="subtitle2" className={classes.sectionTitle}>
+                Scientific Keywords
+              </Typography>
+              <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
+                {keywordChips}
+              </div>
+            </div>
+          </Grid>
           <Grid item xs={12} sm={2}>
             <div className={classes.cardFirstColumnSection}>
               <Typography variant="subtitle2" className={classes.sectionTitle}>
@@ -123,31 +282,8 @@ const Dataset = (props) => {
               </Typography>
             </div>
           </Grid>
-          <Grid item xs={12} sm={10}>
-            <Typography variant="body2" style={{ marginBottom: Theme.spacing(3) }}>
-              {projectDescription}
-            </Typography>
-            <div>
-              <Typography variant="subtitle2" className={classes.sectionTitle}>
-                Scientific Keywords
-              </Typography>
-              <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
-                {keywordChips}
-              </div>
-            </div>
-          </Grid>
         </Grid>
       </CardContent>
-      <CardActions className={classes.actions}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<DetailsIcon />}
-          onClick={() => dispatch({ type: 'setNextUuid', uuid })}
-        >
-          Dataset Details and Download
-        </Button>
-      </CardActions>
     </Card>
   );
 };

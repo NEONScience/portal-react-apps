@@ -21,13 +21,16 @@ import {
   /* constants */
   DEFAULT_SORT_METHOD,
   DEFAULT_SORT_DIRECTION,
+  FILTER_ITEM_VISIBILITY_STATES,
   FILTER_KEYS,
+  INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
   /* functions */
   applySort,
   applyFilter,
   getUuidFromURL,
+  changeFilterItemVisibility,
   parseAllDatasets,
   resetAllFilters,
   resetFilter,
@@ -104,8 +107,12 @@ const DEFAULT_STATE = {
   filterItems: cloneDeep(INITIAL_FILTER_ITEMS),
   // Store for current values applied for all filters
   filterValues: cloneDeep(INITIAL_FILTER_VALUES),
+  // Expanded / collapsed / selected states for filters with >5 options visibility buttons
+  filterItemVisibility: cloneDeep(INITIAL_FILTER_ITEM_VISIBILITY),
   // List of filter keys that have been applied / are not in a cleared state
   filtersApplied: [],
+  // Whether filter section is expanded (for xs/sm vieports only)
+  filtersVisible: false,
 };
 
 /**
@@ -185,6 +192,7 @@ const reducer = (state, action) => {
     }
   };
 
+  let tempState = null;
   switch (action.type) {
     // Initialization
     case 'reinitialize':
@@ -263,7 +271,37 @@ const reducer = (state, action) => {
     case 'resetAllFilters':
       return resetAllFilters(newState);
     case 'applyFilter':
-      return applyFilter(state, action.filterKey, action.filterValue);
+      tempState = calculateAppStatus(
+        applyFilter(state, action.filterKey, action.filterValue),
+      );
+      return !action.showOnlySelected
+        ? tempState
+        : changeFilterItemVisibility(
+          tempState,
+          action.filterKey,
+          FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+        );
+    case 'expandFilterItems':
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.EXPANDED,
+      );
+    case 'collapseFilterItems':
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.COLLAPSED,
+      );
+    case 'showSelectedFilterItems':
+      return changeFilterItemVisibility(
+        state,
+        action.filterKey,
+        FILTER_ITEM_VISIBILITY_STATES.SELECTED,
+      );
+
+    case 'toggleFilterVisiblity':
+      return { ...newState, filtersVisible: !state.filtersVisible };
 
     // Scrolling
     case 'incrementScrollCutoff':

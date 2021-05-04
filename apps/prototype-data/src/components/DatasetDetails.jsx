@@ -3,21 +3,28 @@ import PropTypes from 'prop-types';
 
 import moment from 'moment';
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
 import ZipIcon from '@material-ui/icons/Archive';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
+import CopyIcon from '@material-ui/icons/Assignment';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
@@ -58,6 +65,10 @@ const useStyles = makeStyles((theme) => ({
     minWidth: theme.spacing(4),
     marginRight: theme.spacing(1),
   },
+  listItemFileIcon: {
+    color: 'rgba(0, 0, 0, 0.54)',
+    marginRight: theme.spacing(1),
+  },
   listItemCitation: {
     display: 'block',
     '& span': {
@@ -94,10 +105,23 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   listItemFile: {
+    borderRadius: theme.spacing(0.5),
     paddingLeft: theme.spacing(1),
+    border: '0.5px solid #ffffff00',
     '& p': {
       marginTop: theme.spacing(0.5),
     },
+  },
+  listItemFileDivider: {
+    margin: '10px 20px 10px 0px',
+  },
+  listItemFileTypeIcon: {
+    verticalAlign: 'middle',
+  },
+  listItemFilePrimaryText: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(1),
   },
   listItemFileDetails: {
     overflow: 'hidden',
@@ -108,15 +132,51 @@ const useStyles = makeStyles((theme) => ({
   section: {
     marginBottom: theme.spacing(4),
   },
+  sidebarSection: {
+    marginBottom: theme.spacing(2),
+  },
   sectionSubtitle: {
     marginBottom: theme.spacing(1),
   },
   sectionTitle: {
     marginBottom: theme.spacing(1.5),
+    fontSize: '1.4118rem',
+    fontWeight: 'normal',
+    color: '#000',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '1.3118rem',
+    },
+  },
+  sectionContent: {
+    // fontSize: '1.1rem',
+    // color: 'rgba(0, 0, 0, 0.70)',
+    // lineHeight: '1.6',
+    [theme.breakpoints.down('sm')]: {
+      // fontSize: '1rem',
+    },
+  },
+  sidebarSectionTitle: {
+    marginBottom: theme.spacing(1.5),
+    fontWeight: 600,
+  },
+  sidebarSectionTitleDoi: {
+    marginBottom: theme.spacing(1.5),
+    fontWeight: 600,
+    display: 'inline-flex',
+    verticalAlign: 'middle',
+  },
+  sidebarContentFont: {
+    color: 'rgba(0, 0, 0, 0.70)',
+  },
+  doiTitleIcon: {
+    marginLeft: theme.spacing(1),
+    marginBottom: '13px',
+    verticalAlign: 'middle',
   },
   scienceTeamsUl: {
     paddingLeft: theme.spacing(2),
     margin: '0px',
+    color: 'rgba(0, 0, 0, 0.70)',
   },
   startFlex: {
     display: 'flex',
@@ -189,13 +249,24 @@ const DatasetDetails = (props) => {
     startYear,
     studyAreaDescription,
     version,
+    doi,
   } = dataset;
+
+  const allowDownload = manifestRollup
+    && (manifestRollup.totalBytes > 0)
+    && Array.isArray(files)
+    && (files.length > 0);
 
   /**
      Helper functions
   */
   const getSectionTitle = (title) => (
     <Typography variant="h5" component="h3" className={classes.sectionTitle}>
+      {title}
+    </Typography>
+  );
+  const getSidebarSectionTitle = (title) => (
+    <Typography variant="h6" component="h2" className={classes.sidebarSectionTitle}>
       {title}
     </Typography>
   );
@@ -354,12 +425,39 @@ const DatasetDetails = (props) => {
           <ListItem
             key={fileName}
             className={classes.listItemFile}
-            title={`Click to download ${fileName} (${formattedSize})`}
           >
             <ListItemIcon className={classes.listItemIcon}>
-              <TypeIcon />
+              <Tooltip
+                style={{ flex: 0 }}
+                placement="right"
+                title={`Download ${fileName} (${formattedSize})`}
+              >
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                    const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
+                    window.location.href = filePath;
+                  }}
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
             </ListItemIcon>
-            <ListItemText primary={description} secondary={secondary} />
+            <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
+            <ListItemText
+              primary={(
+                <div className={classes.listItemFilePrimaryText}>
+                  <div className={classes.listItemFileIcon}>
+                    <TypeIcon size="small" className={classes.listItemFileTypeIcon} />
+                  </div>
+                  <div>
+                    {description}
+                  </div>
+                </div>
+              )}
+              secondary={secondary}
+            />
           </ListItem>
         );
       })}
@@ -368,21 +466,32 @@ const DatasetDetails = (props) => {
 
   // Download Button
   const downloadButton = (
-    <Button
-      color="primary"
-      variant="contained"
-      onClick={() => { downloadUuid(uuid); }}
-      startIcon={<DownloadIcon />}
-      data-selenium="prototype-dataset-download-button"
-      style={{ marginBottom: Theme.spacing(2) }}
-      disabled={!manifestRollup}
-    >
-      {(
-        manifestRollup
-          ? `Download Package (Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)})`
-          : 'Download not available'
+    <>
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={() => { downloadUuid(uuid); }}
+        endIcon={<DownloadIcon />}
+        data-selenium="prototype-dataset-download-button"
+        disabled={!allowDownload}
+      >
+        {(
+          allowDownload
+            ? 'Download Package'
+            : 'Download not available'
+        )}
+      </Button>
+      {(!allowDownload
+        ? <div style={{ margin: Theme.spacing(1, 0, 2, 0) }} />
+        : (
+          <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
+            <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
+              {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
+            </Typography>
+          </div>
+        )
       )}
-    </Button>
+    </>
   );
 
   // Manual Location Data
@@ -410,12 +519,60 @@ const DatasetDetails = (props) => {
     });
   }
 
+  const renderDoi = () => {
+    const hasDoi = doi && doi.url;
+    if (!hasDoi) {
+      return (
+        <Typography variant="body1" className={classes.NA}>
+          Not Available
+        </Typography>
+      );
+    }
+    const doiId = hasDoi
+      ? doi.url.split('/').slice(-2).join('/')
+      : uuid;
+    return (
+      <List dense style={{ margin: 0, padding: 0 }}>
+        <ListItem key="DOI" style={{ padding: 0, margin: 0 }}>
+          <ListItemText
+            style={{ margin: 0 }}
+            primary={(
+              <Typography variant="body1" className={classes.sidebarContentFont}>
+                {doiId}
+              </Typography>
+            )}
+          />
+        </ListItem>
+      </List>
+    );
+  };
+
+  const renderDoiCopyIcon = () => {
+    const hasDoi = doi && doi.url;
+    if (!hasDoi) {
+      return null;
+    }
+    return (
+      <Tooltip
+        style={{ flex: 0 }}
+        placement="left"
+        title={`Copy DOI URL (${doi.url})`}
+      >
+        <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
+          <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+            Copy
+          </Button>
+        </CopyToClipboard>
+      </Tooltip>
+    );
+  };
+
   /**
      Main render
   */
   return (
     <div>
-      <Grid container spacing={4}>
+      <Grid container spacing={8}>
 
         {/* Left Column */}
         <Grid item xs={12} sm={12} md={8} lg={9} xl={10}>
@@ -430,6 +587,8 @@ const DatasetDetails = (props) => {
             {downloadButton}
             {getSectionSubtitle(`Files in this Package (${files.length})`)}
             {downloadFileList}
+            {allowDownload ? null : <br />}
+            {getSectionSubtitle('Metadata Description')}
             {!metadataDescription ? null : (
               <Typography variant="body2">
                 {metadataDescription}
@@ -439,21 +598,21 @@ const DatasetDetails = (props) => {
           {/* Dataset Abstract */}
           <div className={classes.section}>
             {getSectionTitle('Dataset Abstract')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {datasetAbstract}
             </Typography>
           </div>
           {/* Project Decription */}
           <div className={classes.section}>
             {getSectionTitle('Project Description')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {projectDescription}
             </Typography>
           </div>
           {/* Design Decription */}
           <div className={classes.section}>
             {getSectionTitle('Design Description')}
-            <Typography variant="body2">
+            <Typography variant="body2" className={classes.sectionContent}>
               {designDescription}
             </Typography>
           </div>
@@ -465,9 +624,10 @@ const DatasetDetails = (props) => {
           {/* Locations and Study Area */}
           <div className={classes.section}>
             {getSectionTitle('Locations and Study Area')}
-            <Typography variant="body2" gutterBottom>
+            <Typography gutterBottom variant="body2" className={classes.sectionContent}>
               {studyAreaDescription}
             </Typography>
+            <br />
             {!manualLocationData.length ? (
               <Typography variant="body2" className={classes.NA}>
                 No valid associated locations found
@@ -480,59 +640,76 @@ const DatasetDetails = (props) => {
 
         {/* Right Column */}
         <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
+          {/* DOI */}
+          <div className={classes.sidebarSection}>
+            <Typography variant="h6" component="h2" className={classes.sidebarSectionTitleDoi}>
+              DOI
+            </Typography>
+            <Tooltip
+              style={{ flex: 0 }}
+              placement="left"
+              title="Digital Object Identifier (DOI) - A citable, permanent link to this dataset"
+            >
+              <IconButton size="small" className={classes.doiTitleIcon}>
+                <InfoIcon fontSize="small" color="primary" />
+              </IconButton>
+            </Tooltip>
+            {renderDoiCopyIcon()}
+            {renderDoi()}
+          </div>
           {/* Version */}
-          <div className={classes.section}>
-            {getSectionTitle('Version')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Version')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {version || '--'}
             </Typography>
           </div>
           {/* Time Range */}
-          <div className={classes.section}>
-            {getSectionTitle('Time Range')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Time Range')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {startYear === endYear ? startYear : `${startYear} – ${endYear}`}
             </Typography>
           </div>
           {/* Date Uploaded */}
-          <div className={classes.section}>
-            {getSectionTitle('Uploaded')}
-            <Typography variant="body1">
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Uploaded')}
+            <Typography variant="body1" className={classes.sidebarContentFont}>
               {!uploadedMoment.isValid() ? getNA() : uploadedMoment.format('MMMM D, YYYY')}
             </Typography>
           </div>
           {/* Data Themes */}
-          <div className={classes.section}>
-            {getSectionTitle('Data Themes')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Data Themes')}
             <div className={classes.startFlex}>
               {themeIcons}
             </div>
           </div>
           {/* Science Teams */}
-          <div className={classes.section}>
-            {getSectionTitle(`Science Team${scienceTeams.length > 1 ? 's' : ''}`)}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle(`Science Team${scienceTeams.length > 1 ? 's' : ''}`)}
             {scienceTeamsFormatted}
           </div>
           {/* Keywords */}
-          <div className={classes.section}>
-            {getSectionTitle('Scientific Keywords')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Scientific Keywords')}
             <div className={classes.startFlex} style={{ flexWrap: 'wrap' }}>
               {keywordChips}
             </div>
           </div>
           {/* Related Versions */}
-          <div className={classes.section}>
-            {getSectionTitle('Related Versions')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Related Versions')}
             {relatedVersionsLinks}
           </div>
           {/* Related Data Products */}
-          <div className={classes.section}>
-            {getSectionTitle('Related Data Products')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Related Data Products')}
             {relatedDataProductsLinks}
           </div>
           {/* Publication Citations */}
-          <div className={classes.section}>
-            {getSectionTitle('Publication Citations')}
+          <div className={classes.sidebarSection}>
+            {getSidebarSectionTitle('Publication Citations')}
             {publicationCitationsList}
           </div>
         </Grid>

@@ -95,6 +95,9 @@ const getCitationText = (dataset) => {
   const now = new Date();
   const today = dateFormat(now, 'mmmm d, yyyy');
   const neon = 'NEON (National Ecological Observatory Network)';
+  const doiId = hasDoi
+    ? doi.url.split('/').slice(-2).join('/')
+    : uuid;
   const url = hasDoi
     ? `${doi.url}.`
     : `https://data.neonscience.org/prototype-datasets/${uuid}`;
@@ -104,13 +107,12 @@ const getCitationText = (dataset) => {
   const title = version
     ? `${projectTitle}, ${version}`
     : projectTitle;
-  return `${neon}. ${title} (${uuid}). ${url} ${accessed}`;
+  return `${neon}. ${title} (${doiId}). ${url} ${accessed}`;
 };
 
 const useStyles = makeStyles(() => ({
   citationText: {
     fontFamily: 'monospace',
-    fontSize: '1.05rem',
   },
 }));
 

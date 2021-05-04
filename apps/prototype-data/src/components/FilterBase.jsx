@@ -46,6 +46,7 @@ const FilterBase = (props) => {
   const classes = useStyles(Theme);
   const {
     title,
+    titleNote,
     subtitle,
     children,
     skeleton,
@@ -74,7 +75,7 @@ const FilterBase = (props) => {
     <div className={classes.filter} data-selenium={dataSeleniumTag}>
       <div className={classes.titleContainer}>
         {typeof title !== 'string' ? title : (
-          <Typography variant="h6" component="h4" className={classes.title}>
+          <Typography variant="h5" component="h3" className={classes.title}>
             {title}
           </Typography>
         )}
@@ -95,6 +96,9 @@ const FilterBase = (props) => {
           ) : null}
         </div>
       </div>
+      {titleNote ? (
+        <Typography variant="body2" className={classes.subtitle}>{titleNote}</Typography>
+      ) : null}
       {subtitle ? (
         <Typography variant="body2" className={classes.subtitle}>{subtitle}</Typography>
       ) : null}
@@ -108,6 +112,7 @@ FilterBase.propTypes = {
     PropTypes.node,
     PropTypes.string,
   ]).isRequired,
+  titleNote: PropTypes.string,
   subtitle: PropTypes.string,
   skeleton: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   showResetButton: PropTypes.bool,
@@ -125,6 +130,7 @@ FilterBase.propTypes = {
 };
 
 FilterBase.defaultProps = {
+  titleNote: null,
   subtitle: null,
   skeleton: false,
   showResetButton: false,

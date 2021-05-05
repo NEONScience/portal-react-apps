@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { Component } from "react";
 import NeonApi from "portal-core-components/lib/components/NeonApi";
 

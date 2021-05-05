@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { ReplaySubject } from 'rxjs';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';

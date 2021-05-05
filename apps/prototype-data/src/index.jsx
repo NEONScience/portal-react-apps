@@ -18,8 +18,19 @@ import 'core-js/es/string/starts-with';
 import 'core-js/modules/esnext.string.match-all';
 import 'whatwg-fetch';
 
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-ReactDOM.render(<App />, document.getElementById("root"));
+import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
+
+import App from './App';
+import { getUuidFromURL } from './filterUtil';
+
+const uuid = getUuidFromURL();
+if (uuid) {
+  NeonJsonLd.injectPrototypeDataset(uuid);
+} else {
+  NeonJsonLd.removeAllMetadata();
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));

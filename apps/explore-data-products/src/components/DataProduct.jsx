@@ -388,7 +388,7 @@ const DataProduct = React.memo((props) => {
 
         {bundleInfo}
 
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
           {!timeRange ? null : (
             <Grid item xs={12} sm={4}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>

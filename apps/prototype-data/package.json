@@ -1,6 +1,6 @@
 {
   "name": "prototype-data",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "homepage": "https://localhost/prototype-datasets",
   "dependencies": {
@@ -9,34 +9,34 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "@material-ui/pickers": "^3.2.10",
+    "core-js": "^3.6.5",
     "dateformat": "^3.0.3",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.6.7",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.7.0",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.2.0",
-    "use-reducer-logger": "^1.0.2"
+    "use-reducer-logger": "^1.0.2",
+    "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
-    "customize-cra": "^1.0.0",
     "eslint": "^7.15.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.12.4",
-    "react-app-rewired": "^2.1.7",
-    "react-scripts": "^3.3.0"
+    "react-scripts": "4.0.3"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test - env=jsdom",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test - env=jsdom",
     "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
     "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
-    "eject": "react-app-rewired eject"
+    "eject": "react-scripts eject"
   },
   "browserslist": [
     ">0.2%",

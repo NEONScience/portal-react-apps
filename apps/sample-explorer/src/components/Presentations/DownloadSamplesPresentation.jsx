@@ -213,7 +213,11 @@ const DownloadSamplesPresentation = (props) => {
                   data-selenium="download-samples-dialog.relationship-extent-radiogroup"
                 >
                   <FormControlLabel value="chosen" control={<Radio />} label="The chosen sample only" />
-                  <FormControlLabel value="degree" control={<Radio />} label="The chosen sample plus samples related to degree (1-n)" />
+                  <FormControlLabel
+                    value="degree"
+                    control={<Radio />}
+                    label="The chosen sample plus samples related to degree (1-n)"
+                  />
                 </RadioGroup>
               </FormControl>
               <FormControl component="fieldset">
@@ -245,7 +249,7 @@ const DownloadSamplesPresentation = (props) => {
             >
               <AlertTitle style={{ marginBottom: 0 }}>{downloadErrorStr}</AlertTitle>
             </Alert>
-          )}      
+          )}
         </DialogContent>
         <DialogActions>
           <Button

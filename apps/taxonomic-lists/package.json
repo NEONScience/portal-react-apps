@@ -1,6 +1,6 @@
 {
   "name": "taxonomic-lists",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "private": true,
   "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {
@@ -14,13 +14,13 @@
     "datatables.net-responsive-bs": "^2.2.5",
     "jquery": "^3.5.1",
     "lodash": "^4.17.19",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.6.7",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.7.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-dom-factories": "^1.0.2",
     "react-fontawesome": "^1.7.1",
     "react-redux": "^7.2.1",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "4.0.3",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "whatwg-fetch": "^3.4.0"
@@ -32,7 +32,8 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "eslint-plugin-react": "^7.12.4"
+    "eslint": "^7.23.0",
+    "eslint-plugin-react": "^7.23.1"
   },
   "browserslist": [
     ">0.2%",

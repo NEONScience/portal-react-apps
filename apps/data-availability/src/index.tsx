@@ -13,13 +13,22 @@ import 'core-js/es/object/from-entries';
 import 'core-js/es/object/values';
 import 'core-js/es/string/includes';
 import 'core-js/es/string/pad-start';
-import 'core-js/es/string/repeat';
 import 'core-js/es/string/starts-with';
-import 'core-js/modules/esnext.string.match-all';
-import 'whatwg-fetch';
 
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-ReactDOM.render(<App />, document.getElementById("root"));
+import Root from './components/Root';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Root />
+  </React.StrictMode>,
+  document.getElementById('root'),
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+// eslint-disable-next-line no-console
+// reportWebVitals(console.log);

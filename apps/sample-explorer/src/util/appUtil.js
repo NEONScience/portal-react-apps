@@ -223,7 +223,7 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
     increment = increment * -1;
     let yC = yF + (vIdx * increment);
     if (i % 2 === 1) {
-      vIdx++;
+      vIdx += 1;
     }
     let displayName = childSamples[i].sampleTag;// + "-" + childSamples[i].sampleClass;
     newNodes.push({
@@ -248,7 +248,7 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
     increment = increment * -1;
     let yP = yF + (vIdx * increment);
     if (i % 2 === 1) {
-      vIdx++;
+      vIdx += 1;
     }
     let displayName = parentSamples[i].sampleTag;// + "-" + parentSamples[i].sampleClass;
     newNodes.push({

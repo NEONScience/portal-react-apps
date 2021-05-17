@@ -25,6 +25,7 @@ import XmlIcon from '@material-ui/icons/DescriptionOutlined';
 import ZipIcon from '@material-ui/icons/Archive';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import CopyIcon from '@material-ui/icons/Assignment';
+import LinkIcon from '@material-ui/icons/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
@@ -77,14 +78,14 @@ const useStyles = makeStyles((theme) => ({
       lineHeight: 1.5,
     },
   },
-  listItemRelated: {
+  listItemLink: {
     borderRadius: theme.spacing(0.5),
     border: '0.5px solid #ffffff00',
     '&:hover': {
       border: `0.5px solid ${theme.palette.primary.main}`,
     },
   },
-  listItemRelatedDataProduct: {
+  listItemLinkSecondary: {
     '& p': {
       color: theme.palette.primary.main,
       textDecoration: 'underline',
@@ -232,7 +233,7 @@ const DatasetDetails = (props) => {
   if (typeof dataset === 'undefined') { return null; }
 
   const {
-    data: { files }, // url: dataUrl
+    data: { files, dataLocations }, // url: dataUrl
     datasetAbstract,
     dataThemes,
     dateUploaded,
@@ -355,7 +356,7 @@ const DatasetDetails = (props) => {
         return (
           <ListItem
             key={dataProductCode}
-            className={`${classes.listItemRelated} ${classes.listItemRelatedDataProduct}`}
+            className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
             component="a"
             href={href}
             button
@@ -462,6 +463,42 @@ const DatasetDetails = (props) => {
         );
       })}
     </List>
+  );
+
+  // External Data Locations List
+  const dataLocationsList = !Array.isArray(dataLocations) || !dataLocations.length ? null : (
+    <>
+      {getSectionSubtitle('Additional Data Locations')}
+      <List className={classes.list}>
+        {dataLocations
+          .filter((dataLocation) => (
+            dataLocation
+              && dataLocation.path
+              && dataLocation.description))
+          .map((dataLocation) => {
+            const {
+              path,
+              description,
+            } = dataLocation;
+            return (
+              <ListItem
+                key={path}
+                className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
+                component="a"
+                href={path}
+                target="_blank"
+                rel="noopener noreferrer"
+                button
+              >
+                <ListItemIcon className={classes.listItemIcon}>
+                  <LinkIcon />
+                </ListItemIcon>
+                <ListItemText primary={description} secondary={path} />
+              </ListItem>
+            );
+          })}
+      </List>
+    </>
   );
 
   // Download Button
@@ -588,6 +625,8 @@ const DatasetDetails = (props) => {
             {getSectionSubtitle(`Files in this Package (${files.length})`)}
             {downloadFileList}
             {allowDownload ? null : <br />}
+            {dataLocationsList}
+            {dataLocationsList ? <br /> : null}
             {getSectionSubtitle('Metadata Description')}
             {!metadataDescription ? null : (
               <Typography variant="body2">

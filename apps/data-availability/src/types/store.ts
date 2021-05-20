@@ -47,6 +47,7 @@ export interface DataProductBundle {
 export interface DataProduct {
   productCode: string;
   productName: string;
+  productDescription: string;
   siteCodes: Record<string, unknown>[];
 }
 

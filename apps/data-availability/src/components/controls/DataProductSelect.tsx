@@ -3,14 +3,21 @@ import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector, batch } from 'react-redux';
 
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
 import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Autocomplete, {
+  createFilterOptions,
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
+  AutocompleteRenderInputParams,
+  AutocompleteRenderOptionState,
+} from '@material-ui/lab/Autocomplete';
 import Skeleton from '@material-ui/lab/Skeleton';
 import {
   makeStyles,
@@ -19,12 +26,12 @@ import {
 } from '@material-ui/core/styles';
 
 import BundleIcon from '@material-ui/icons/Archive';
+import SearchIcon from '@material-ui/icons/Search';
 
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
@@ -68,7 +75,7 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       whiteSpace: 'normal',
     },
     card: {
-      marginBottom: muiTheme.spacing(2),
+      marginTop: muiTheme.spacing(3),
       backgroundColor: (Theme as NeonTheme).colors.GOLD[50],
       borderColor: (Theme as NeonTheme).colors.GOLD[300],
     },
@@ -80,6 +87,35 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     cardIcon: {
       color: (Theme as NeonTheme).colors.GOLD[700],
       marginRight: muiTheme.spacing(2),
+    },
+    cardSelectedProduct: {
+      marginBottom: muiTheme.spacing(2),
+      border: '1px solid #d7d9d9',
+    },
+    cardContentSelectedProduct: {
+      padding: muiTheme.spacing(2),
+    },
+    autocompleteInput: {
+      padding: `${muiTheme.spacing(2)}px !important`,
+    },
+    autocompletePopupOpen: {
+      transform: 'rotate(0) !important',
+    },
+    autocompleteLabel: {
+      paddingLeft: `${muiTheme.spacing(1)}px !important`,
+      paddingTop: '6px !important',
+    },
+    autocompleteLabelShrink: {
+      transform: 'translate(6px, -9px) scale(0.75) !important',
+    },
+    productName: {
+      fontWeight: 600,
+    },
+    productCodeChip: {
+      color: muiTheme.palette.grey[400],
+      border: `1px solid ${muiTheme.palette.grey[400]}`,
+      backgroundColor: muiTheme.palette.grey[100],
+      fontWeight: 600,
     },
   })) as StylesHook;
 
@@ -141,78 +177,140 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     [dispatch, isComplete],
   );
 
+  const getOptionsDisabled = (value: DataProductSelectOption): boolean => {
+    const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
+    let disabled = !value.hasData;
+    if (bundle) {
+      const parent: DataProductParent|undefined = findForwardParent(bundle);
+      disabled = !parent || !parent.forwardAvailability;
+    }
+    return disabled;
+  };
+  const getProductSecondaryMessage = (
+    value: DataProduct,
+    paramBundle?: DataProductBundle,
+  ): string|undefined => {
+    const bundle: DataProductBundle|undefined = paramBundle
+      || findBundle(bundles, value.productCode);
+    let bundleMessage: string|undefined;
+    if (bundle) {
+      const parent: DataProductParent|undefined = findForwardParent(bundle);
+      if (parent) {
+        bundleMessage = `This data product (${value.productCode}) is
+          bundled into ${parent.parentProductCode}`;
+      } else {
+        const parentCodes = bundle.parentProducts
+          .map((mapParent: DataProductParent): string => mapParent.parentProductCode);
+        if (parentCodes.length <= 0) {
+          bundleMessage = `This data product (${value.productCode}) is bundled.`;
+        } else {
+          const parentCodeMessage = `${parentCodes.length > 1
+            ? parentCodes.join(', ')
+            : parentCodes[0]}`;
+          bundleMessage = `This data product (${value.productCode}) is
+            bundled into ${parentCodeMessage}`;
+          bundleMessage = `${bundleMessage}. See ${parentCodeMessage} for availability.`;
+        }
+      }
+    }
+    return !bundle
+      ? value.productCode
+      : bundleMessage;
+  };
+  const renderOption = (value: DataProductSelectOption): JSX.Element => {
+    const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
+    return (
+      <div key={value.productCode}>
+        {!bundle ? <React.Fragment /> : (
+          <ListItemIcon>
+            <BundleIcon />
+          </ListItemIcon>
+        )}
+        <ListItemText
+          className={classes.listItemTextProduct}
+          primary={value.productName}
+          secondary={getProductSecondaryMessage(value as DataProduct, bundle)}
+        />
+      </div>
+    );
+  };
+
   const renderDataProductSelect = (): JSX.Element => {
     if ((products.length <= 0) || isLoading) {
-      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+      return (
+        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
-      <Select
+      <Autocomplete
         fullWidth
-        variant="outlined"
-        value={initialProduct.productCode}
-        onChange={(event: React.ChangeEvent<{ value: unknown }>): void => {
-          const nextProduct: DataProduct = !isStringNonEmpty(event.target.value)
+        openOnFocus
+        blurOnSelect
+        id="select-data-products"
+        options={products}
+        value={{ ...initialProduct, hasData: true }}
+        popupIcon={(<SearchIcon />)}
+        classes={{
+          input: classes.autocompleteInput,
+          popupIndicatorOpen: classes.autocompletePopupOpen,
+        }}
+        getOptionSelected={(
+          option: DataProductSelectOption,
+          value: DataProductSelectOption,
+        ): boolean => (option.productCode.localeCompare(value.productCode) === 0)}
+        getOptionDisabled={(option: DataProductSelectOption): boolean => (
+          getOptionsDisabled(option)
+        )}
+        getOptionLabel={(option: DataProductSelectOption): string => ''}
+        filterOptions={createFilterOptions({
+          trim: true,
+          stringify: (option: DataProductSelectOption) => (
+            `${option.productName} ${option.productCode}`
+          ),
+        })}
+        renderOption={(
+          value: DataProductSelectOption,
+          renderOptionState: AutocompleteRenderOptionState,
+        ): JSX.Element => renderOption(value)}
+        renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
+          <TextField
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...params}
+            variant="outlined"
+            label="Search Data Products"
+            InputLabelProps={{
+              ...params.InputLabelProps,
+              className: classes.autocompleteLabel,
+              classes: {
+                shrink: classes.autocompleteLabelShrink,
+              },
+            }}
+          />
+        )}
+        onChange={(
+          event: React.ChangeEvent<unknown>,
+          nextValue: DataProductSelectOption | null,
+          reason: AutocompleteChangeReason,
+          details?: AutocompleteChangeDetails<DataProductSelectOption>,
+        ): void => {
+          if (!exists(nextValue)) return;
+          const nextProduct: DataProduct = !exists(nextValue)
             ? products.find((value: DataProduct): boolean => true) as DataProduct
-            : products.find((value: DataProduct): boolean => (
-              value.productCode === event.target.value
-            )) as DataProduct;
+            : products.find((value: DataProduct): boolean => {
+              const coerced = (nextValue as DataProduct);
+              return value.productCode.localeCompare(coerced.productCode) === 0;
+            }) as DataProduct;
           let parentBundle: DataProductParent|undefined;
-          const bundle: DataProductBundle|undefined = findBundle(bundles, nextProduct.productCode);
+          const bundle: DataProductBundle|undefined = findBundle(
+            bundles,
+            nextProduct.productCode,
+          );
           if (bundle) {
             parentBundle = findForwardParent(bundle);
           }
           handleChangeCb(nextProduct, parentBundle, selectedRelease?.release);
         }}
-      >
-        {products.map((value: DataProductSelectOption): JSX.Element => {
-          const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
-          let disabled = !value.hasData;
-          let bundleMessage: string|undefined;
-          if (bundle) {
-            const parent: DataProductParent|undefined = findForwardParent(bundle);
-            disabled = !parent || !parent.forwardAvailability;
-            if (parent) {
-              bundleMessage = `This data product (${value.productCode}) is
-                bundled into ${parent.parentProductCode}`;
-            } else {
-              const parentCodes = bundle.parentProducts
-                .map((mapParent: DataProductParent): string => mapParent.parentProductCode);
-              if (parentCodes.length <= 0) {
-                bundleMessage = `This data product (${value.productCode}) is bundled.`;
-              } else {
-                const parentCodeMessage = `${parentCodes.length > 1
-                  ? parentCodes.join(', ')
-                  : parentCodes[0]}`;
-                bundleMessage = `This data product (${value.productCode}) is
-                  bundled into ${parentCodeMessage}`;
-                bundleMessage = `${bundleMessage}. See ${parentCodeMessage} for availability.`;
-              }
-            }
-          }
-          return (
-            <MenuItem
-              key={value.productCode}
-              value={value.productCode}
-              disabled={disabled}
-            >
-              {!bundle ? <React.Fragment /> : (
-                <ListItemIcon>
-                  <BundleIcon />
-                </ListItemIcon>
-              )}
-              <ListItemText
-                className={classes.listItemTextProduct}
-                primary={value.productName}
-                secondary={
-                  !bundle
-                    ? value.productCode
-                    : bundleMessage
-                }
-              />
-            </MenuItem>
-          );
-        })}
-      </Select>
+      />
     );
   };
 
@@ -248,29 +346,39 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderCallout = (): JSX.Element => {
-    if ((products.length <= 0) || isLoading) {
-      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+  const renderSelectedProduct = (): JSX.Element => {
+    if ((products.length <= 0) || isLoading || !initialProduct) {
+      return (
+        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
-      <InfoCard
-        classes={{
-          callout: classes.callout,
-          calloutIcon: classes.calloutIcon,
-        }}
-        titleContent={(
-          <Typography variant="subtitle2" component="div">
-            Learn more or download data for this product by viewing product details:&nbsp;
-            <Link
-              target="_blank"
-              rel="noreferrer noopener"
-              href={`${NeonEnvironment.getHost() || ''}/data-products/${initialProduct.productCode}`}
-            >
-              {initialProduct.productName}
-            </Link>
-          </Typography>
-        )}
-      />
+      <Card className={classes.cardSelectedProduct}>
+        <CardContent className={classes.cardContentSelectedProduct}>
+          <div>
+            <Typography variant="h6" className={classes.productName}>
+              <Link
+                target="_blank"
+                rel="noreferrer noopener"
+                href={`${NeonEnvironment.getHost() || ''}/data-products/${initialProduct.productCode}`}
+              >
+                {initialProduct.productName}
+              </Link>
+            </Typography>
+            <div style={{ margin: Theme.spacing(1.5, 0) }}>
+              <Chip
+                size="small"
+                label={initialProduct.productCode}
+                className={classes.productCodeChip}
+              />
+            </div>
+            <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
+              {initialProduct.productDescription}
+            </Typography>
+          </div>
+          {renderBundle()}
+        </CardContent>
+      </Card>
     );
   };
 
@@ -280,16 +388,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Data Product
         </Typography>
-        <Typography variant="subtitle1" className={classes.sectionSubtitle}>
-          Choose a data product to view availability
-        </Typography>
         {renderDataProductSelect()}
       </FormControl>
       <div className={classes.infoCallout}>
-        {renderBundle()}
-      </div>
-      <div className={classes.infoCallout}>
-        {renderCallout()}
+        {renderSelectedProduct()}
       </div>
     </div>
   );

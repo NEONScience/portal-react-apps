@@ -33,6 +33,7 @@ const ProductParser = {
   parseProduct: (product: UnknownRecord): DataProduct => ({
     productCode: product.productCode as string,
     productName: product.productName as string,
+    productDescription: product.productDescription as string,
     siteCodes: exists(product.siteCodes)
       ? product.siteCodes as Record<string, unknown>[]
       : [],

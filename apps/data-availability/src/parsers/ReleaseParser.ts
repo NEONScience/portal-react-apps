@@ -30,6 +30,7 @@ const ReleaseParser = {
         .map((dataProduct: UnknownRecord): DataProduct => ({
           productCode: dataProduct.productCode as string,
           productName: dataProduct.productName as string,
+          productDescription: dataProduct.productDescription as string,
           siteCodes: [],
         })),
   }),

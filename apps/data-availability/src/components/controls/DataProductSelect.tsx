@@ -41,6 +41,7 @@ import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
 import { findBundle, findForwardParent } from '../../util/bundleUtil';
+import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
 const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -117,6 +118,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       backgroundColor: muiTheme.palette.grey[100],
       fontWeight: 600,
     },
+    searchHighlight: {
+      fontWeight: 700,
+    },
   })) as StylesHook;
 
 const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
@@ -142,9 +146,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     && (bundlesFetchState === AsyncStateType.FULLFILLED);
   const hasProduct: boolean = exists(selectedProduct);
   const initialProduct: DataProduct = !hasProduct
-    ? products.find((value: DataProduct): boolean => (
-      existsNonEmpty(value.siteCodes)
-    )) as DataProduct
+    ? products
+      .sort((a: DataProduct, b: DataProduct): number => a.productName.localeCompare(b.productName))
+      .find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
     : selectedProduct as DataProduct;
 
   const handleChangeCb = useCallback(
@@ -189,10 +193,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const getProductSecondaryMessage = (
     value: DataProduct,
     paramBundle?: DataProductBundle,
-  ): string|undefined => {
+  ): string => {
     const bundle: DataProductBundle|undefined = paramBundle
       || findBundle(bundles, value.productCode);
-    let bundleMessage: string|undefined;
+    let bundleMessage = '';
     if (bundle) {
       const parent: DataProductParent|undefined = findForwardParent(bundle);
       if (parent) {
@@ -217,8 +221,27 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       ? value.productCode
       : bundleMessage;
   };
-  const renderOption = (value: DataProductSelectOption): JSX.Element => {
+  const renderOption = (
+    value: DataProductSelectOption,
+    renderOptionState: AutocompleteRenderOptionState,
+  ): JSX.Element => {
     const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
+    const secondaryMessage: string = getProductSecondaryMessage(value as DataProduct, bundle);
+    const nameSlice: SearchSlice[] = calcSearchSlice(
+      value.productName,
+      renderOptionState.inputValue,
+    );
+    const secondarySlice: SearchSlice[] = calcSearchSlice(
+      secondaryMessage,
+      renderOptionState.inputValue,
+    );
+    const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
+      slices.map((slice: SearchSlice): JSX.Element => ((
+        <span className={slice.found ? classes.searchHighlight : undefined}>
+          {slice.text}
+        </span>
+      )))
+    ));
     return (
       <div key={value.productCode}>
         {!bundle ? <React.Fragment /> : (
@@ -228,8 +251,8 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         )}
         <ListItemText
           className={classes.listItemTextProduct}
-          primary={value.productName}
-          secondary={getProductSecondaryMessage(value as DataProduct, bundle)}
+          primary={(<div>{renderSlices(nameSlice)}</div>)}
+          secondary={(<div>{renderSlices(secondarySlice)}</div>)}
         />
       </div>
     );
@@ -254,6 +277,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
           input: classes.autocompleteInput,
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
+        groupBy={(option: DataProductSelectOption): string => option.productScienceTeam}
         getOptionSelected={(
           option: DataProductSelectOption,
           value: DataProductSelectOption,
@@ -264,14 +288,19 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         getOptionLabel={(option: DataProductSelectOption): string => ''}
         filterOptions={createFilterOptions({
           trim: true,
-          stringify: (option: DataProductSelectOption) => (
-            `${option.productName} ${option.productCode}`
-          ),
+          stringify: (option: DataProductSelectOption): string => {
+            const bundle: DataProductBundle|undefined = findBundle(bundles, option.productCode);
+            const secondaryMessage: string = getProductSecondaryMessage(
+              option as DataProduct,
+              bundle,
+            );
+            return `${option.productName} ${secondaryMessage} ${option.productScienceTeam}`;
+          },
         })}
         renderOption={(
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value)}
+        ): JSX.Element => renderOption(value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading

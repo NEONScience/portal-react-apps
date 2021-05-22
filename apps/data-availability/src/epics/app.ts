@@ -22,6 +22,7 @@ const productsQuery = `query Products {
     productCode
     productName
     productDescription
+    productScienceTeam
     siteCodes {
       siteCode
     }
@@ -56,6 +57,7 @@ const buildProductQuery = (productCodes: string[], release?: string): string => 
       productCode
       productName
       productDescription
+      productScienceTeam
       siteCodes {
         siteCode
         availableMonths

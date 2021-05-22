@@ -38,6 +38,7 @@ import { Site } from '../../types/store';
 import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { SiteSelectOption, SiteSelectState } from '../states/AppStates';
+import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
 const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -105,6 +106,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       display: 'flex',
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
+    },
+    searchHighlight: {
+      fontWeight: 700,
     },
   })) as StylesHook;
 
@@ -204,24 +208,55 @@ const SiteSelect: React.FC = (): JSX.Element => {
     [dispatch, isComplete],
   );
 
-  const renderOption = (value: SiteSelectDataOption): JSX.Element => ((
-    <div key={value.siteCode}>
-      <ListItemText
-        primary={`${value.siteDescription}, ${value.stateCode}`}
-        secondary={(
-          <React.Fragment>
-            <Typography variant="caption">
-              {`${value.siteCode} - Domain ${value.domainCode} (${value.domainName})`}
-            </Typography>
-            <br />
-            <Typography variant="caption">
-              {`Lat/Lon: ${value.siteLatitude}, ${value.siteLongitude}`}
-            </Typography>
-          </React.Fragment>
-        )}
-      />
-    </div>
-  ));
+  const renderOption = (
+    value: SiteSelectDataOption,
+    renderOptionState: AutocompleteRenderOptionState,
+  ): JSX.Element => {
+    const primarySlice: SearchSlice[] = calcSearchSlice(
+      `${value.siteDescription}, ${value.stateCode}`,
+      renderOptionState.inputValue,
+    );
+    const codeSlice: SearchSlice[] = calcSearchSlice(
+      value.siteCode,
+      renderOptionState.inputValue,
+    );
+    const domainSlice: SearchSlice[] = calcSearchSlice(
+      `${value.domainCode} (${value.domainName})`,
+      renderOptionState.inputValue,
+    );
+    const locSlice: SearchSlice[] = calcSearchSlice(
+      `${value.siteLatitude}, ${value.siteLongitude}`,
+      renderOptionState.inputValue,
+    );
+    const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
+      slices.map((slice: SearchSlice): JSX.Element => ((
+        <span className={slice.found ? classes.searchHighlight : undefined}>
+          {slice.text}
+        </span>
+      )))
+    ));
+    return (
+      <div key={value.siteCode}>
+        <ListItemText
+          primary={(<div>{renderSlices(primarySlice)}</div>)}
+          secondary={(
+            <React.Fragment>
+              <Typography variant="caption">
+                {renderSlices(codeSlice)}
+                {' - Domain '}
+                {renderSlices(domainSlice)}
+              </Typography>
+              <br />
+              <Typography variant="caption">
+                {'Lat/Lon: '}
+                {renderSlices(locSlice)}
+              </Typography>
+            </React.Fragment>
+          )}
+        />
+      </div>
+    );
+  };
   const renderSiteSelect = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading) {
       return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
@@ -251,15 +286,16 @@ const SiteSelect: React.FC = (): JSX.Element => {
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: SiteSelectDataOption) => (
-            `${option.siteDescription} ${option.siteCode} `
-              + `${option.domainCode} ${option.domainName} `
-              + `${option.stateName} ${option.stateCode}`
+            `${option.siteDescription}, ${option.stateCode} ${option.siteCode} `
+              + `${option.domainCode} (${option.domainName}) `
+              + `${option.stateName}`
+              + `${option.siteLatitude}, ${option.siteLongitude}`
           ),
         })}
         renderOption={(
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value)}
+        ): JSX.Element => renderOption(value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading

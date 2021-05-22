@@ -135,9 +135,12 @@ const createDeepEqualSelector = createSelectorCreator(
   isEqual,
 );
 
-const productSorter = (a: DataProduct, b: DataProduct): number => (
-  a.productName.localeCompare(b.productName)
-);
+const productSorter = (a: DataProduct, b: DataProduct): number => {
+  const scienceTeamSort: number = a.productScienceTeam.localeCompare(b.productScienceTeam);
+  return (scienceTeamSort === 0)
+    ? a.productName.localeCompare(b.productName)
+    : scienceTeamSort;
+};
 const siteSorter = (a: Site, b: Site): number => (
   a.siteDescription.localeCompare(b.siteDescription)
 );

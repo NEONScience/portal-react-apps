@@ -130,7 +130,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
           <Typography variant="subtitle1">
             The chart shows the available data products and months where data are available as
             well as distinguishes beween release data and provisional data. When viewing
-            a specific release, only those data that area available for that release are
+            a specific release, only those data that are available for that release are
             displayed. See&nbsp;
             <Link
               target="_blank"

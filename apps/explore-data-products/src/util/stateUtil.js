@@ -140,15 +140,19 @@ export const parseProductsByReleaseData = (state, release) => {
   // Main productsByRelease object map that we'll build using the source data
   const productsByRelease = {};
 
-  // Sort the unparsed products array by bundle parents first so that when we parse bundle children
-  // that pull availability data from parents we know it'll be there
-  const unparsedProductsBundleParentsFirst = ((unparsedData || {}).products || []).sort((a) => (
-    Object.keys(bundlesJSON.parents).includes(a.productCode) ? -1 : 0
-  ));
+  // Identify parent bundle indexes for availability lookup
+  const bundleParentKeys = Object.keys(bundlesJSON.parents);
+  const bundleParentIdxLookup = {};
+  const appliedProducts = ((unparsedData || {}).products || []);
+  appliedProducts.forEach((product, idx) => {
+    if (bundleParentKeys.includes(product.productCode)) {
+      bundleParentIdxLookup[product.productCode] = idx;
+    }
+  });
 
   // MAIN PRODUCTS LOOP
   // Build the products dictionary that we'll ultimately freeze
-  unparsedProductsBundleParentsFirst.forEach((rawProduct) => {
+  appliedProducts.forEach((rawProduct) => {
     const product = { ...rawProduct };
     const { productCode } = product;
 
@@ -170,7 +174,8 @@ export const parseProductsByReleaseData = (state, release) => {
       availabilityParentCode = hasManyParents
         ? bundlesJSON.children[productCode][0]
         : bundlesJSON.children[productCode];
-      availabilitySiteCodes = (productsByRelease[availabilityParentCode] || {}).siteCodes || [];
+      const parentIdx = bundleParentIdxLookup[availabilityParentCode];
+      availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
     }
     product.bundle = {
       isChild: isBundleChild,
@@ -186,7 +191,8 @@ export const parseProductsByReleaseData = (state, release) => {
 
     if (product.bundle.isChild) {
       // Bundle children with forwarded availability should have releases identical to the parent
-      product.releases = [...((productsByRelease[availabilityParentCode] || {}).releases || [])];
+      const parentIdx = bundleParentIdxLookup[availabilityParentCode];
+      product.releases = [...((appliedProducts[parentIdx] || {}).releases || [])];
       // Remove bundle blurb from description if this is a bundle child
       EXCISE_BUNDLE_BLURBS.forEach((blurb) => {
         if (product.productDescription.includes(blurb)) {

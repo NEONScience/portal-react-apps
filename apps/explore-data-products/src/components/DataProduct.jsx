@@ -316,7 +316,7 @@ const DataProduct = React.memo((props) => {
     productCode,
   });
 
-  const aopViewerButton = hasData && isAopViewerProduct && currentRelease === LATEST_AND_PROVISIONAL
+  const aopViewerButton = hasData && isAopViewerProduct
     ? (
       <Button
         data-gtm="explore-data-products.aop-data-viewer-button"
@@ -332,7 +332,7 @@ const DataProduct = React.memo((props) => {
       </Button>
     ) : null;
 
-  const viewTimeSeriesDataButton = hasTimeSeriesData && currentRelease === LATEST_AND_PROVISIONAL
+  const viewTimeSeriesDataButton = hasTimeSeriesData
     ? (
       <Button
         data-gtm="explore-data-products.view-time-series-button"
@@ -409,7 +409,7 @@ const DataProduct = React.memo((props) => {
               </div>
             </Grid>
           )}
-          {!hasData || !hasVisualization || currentRelease !== LATEST_AND_PROVISIONAL ? null : (
+          {!hasData || !hasVisualization ? null : (
             <Grid item xs={12} sm={4}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data

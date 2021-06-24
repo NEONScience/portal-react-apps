@@ -61,7 +61,7 @@ const CITATION_FORMATS = {
     generateProvisionalCitation: (product) => (`TY  - DATA
 T1  - ${product.productName} (${product.productCode})
 AU  - National Ecological Observatory Network (NEON)
-DO  - 
+DO  -
 UR  - ${window.location.href}
 PY  - ${(new Date()).getFullYear()}
 PB  - National Ecological Observatory Network (NEON)
@@ -133,7 +133,9 @@ const CitationDetail = () => {
     },
   } = state;
 
-  const latestRelease = releases && releases.length ? releases[0] : null;
+  const latestRelease = (releases && releases.length)
+    ? releases.find((r) => r.showCitation)
+    : null;
 
   const bundleParentCode = bundle.parentCodes.length ? bundle.parentCodes[0] : null;
 
@@ -174,6 +176,9 @@ const CitationDetail = () => {
       releases.find((r) => r.release === release)
     )
   );
+
+  const currentReleaseObject = getReleaseObject(currentReleaseTag);
+  const hideCitation = currentReleaseObject && !currentReleaseObject.showCitation;
 
   const getReleaseDoi = (release) => {
     const releaseObject = getReleaseObject(release);
@@ -256,6 +261,7 @@ const CitationDetail = () => {
   };
 
   const renderCitationCard = (release, conditional = false) => {
+    if (hideCitation) { return null; }
     const provisional = release === 'provisional';
     const citationProduct = provisional ? citableBaseProduct : citableReleaseProduct;
     if (!citationProduct) { return null; }

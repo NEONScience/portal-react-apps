@@ -98,6 +98,10 @@ const applyUserRelease = (current, userReleases) => {
   });
 };
 
+const withContextReleases = (neonContextState) => (
+  neonContextState?.auth?.userData?.data?.releases || []
+);
+
 /**
    parseProductsData
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
@@ -126,7 +130,7 @@ export const parseProductsByReleaseData = (state, release) => {
   let newState = { ...state };
 
   // Get the applicable user releases to apply
-  const userReleases = newState.neonContextState?.auth?.userData?.data?.releases || [];
+  const userReleases = withContextReleases(newState.neonContextState);
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)

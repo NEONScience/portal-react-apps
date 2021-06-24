@@ -107,6 +107,7 @@ const DataProductPage = () => {
 
   // Get the current release object if appropriate to do so
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  const hideDoi = currentReleaseObject && !currentReleaseObject.showDoi;
   let currentReleaseGenDate = null;
   if (currentReleaseObject) {
     const generationMoment = moment(currentReleaseObject.generationDate);
@@ -226,6 +227,11 @@ const DataProductPage = () => {
       data-currentRelease={currentRelease}
       loading={loading}
       error={error}
+      NeonContextProviderProps={{
+        whenFinal: (neonContextState) => {
+          dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
+      }}
     >
       {skeleton ? renderPageContents() : (
         <DownloadDataContext.Provider
@@ -234,7 +240,7 @@ const DataProductPage = () => {
           release={currentRelease}
           key={currentRelease || ''}
         >
-          {!currentReleaseObject ? null : (
+          {!currentReleaseObject || hideDoi ? null : (
             <Card className={classes.card}>
               <CardContent>
                 <div className={classes.flex}>

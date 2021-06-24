@@ -30,6 +30,8 @@ const VisualizationsSection = (props) => {
     data: { aopVizProducts },
   } = state;
 
+  const currentReleaseObject = DataProductContext.getCurrentReleaseObjectFromState(state);
+
   if (!product) {
     return <SkeletonSection {...props} />;
   }
@@ -39,7 +41,13 @@ const VisualizationsSection = (props) => {
   if (timeSeriesProductCodes.includes(productCode)) {
     viz.TIME_SERIES = {
       name: 'Time Series Viewer',
-      node: <TimeSeriesViewer key="timeSeriesViewer" productCode={productCode} />,
+      node: (
+        <TimeSeriesViewer
+          key="timeSeriesViewer"
+          productCode={productCode}
+          release={currentRelease}
+        />
+      ),
     };
   }
   if (aopVizProducts.includes(productCode)) {
@@ -49,7 +57,7 @@ const VisualizationsSection = (props) => {
     };
   }
 
-  if (currentRelease && Object.keys(viz).length) {
+  if (currentRelease && !currentReleaseObject.showViz && Object.keys(viz).length) {
     const releaseTag = <b>{currentRelease}</b>;
     const handleOnClick = () => {
       dispatch({ type: 'setNextRelease', release: null, hash: 'visualizations' });

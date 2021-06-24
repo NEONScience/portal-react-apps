@@ -187,7 +187,7 @@ const AppStateSelector = {
               hasData = Array.isArray(value.siteCodes)
                 && (value.siteCodes.length > 0);
             } else {
-              release.dataProducts.some((product: DataProduct): boolean => (
+              hasData = release.dataProducts.some((product: DataProduct): boolean => (
                 product.productCode === value.productCode
               ));
             }

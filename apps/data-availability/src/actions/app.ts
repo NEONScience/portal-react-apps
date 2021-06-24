@@ -43,6 +43,8 @@ enum AppActions {
   FETCH_FOCAL_SITE_ERROR = 'FETCH_FOCAL_SITE_ERROR',
   RESET_FETCH_FOCAL_SITE = 'RESET_FETCH_FOCAL_SITE',
 
+  SET_RELEASES = 'SET_RELEASES',
+
   SET_SELECTED_VIEW_MODE = 'SET_SELECTED_VIEW_MODE',
   SET_SELECTED_PRODUCT = 'SET_SELECTED_PRODUCT',
   SET_SELECTED_RELEASE = 'SET_SELECTED_RELEASE',
@@ -57,6 +59,10 @@ export interface SetSelectedViewModeAction {
 }
 export interface ResetViewModeSwitchingAction {
   type: typeof AppActions.RESET_VIEW_MODE_SWITCHING;
+}
+export interface SetReleasesAction {
+  type: typeof AppActions.SET_RELEASES;
+  releases: Release[];
 }
 export interface SetSelectedProductAction {
   type: typeof AppActions.SET_SELECTED_PRODUCT;
@@ -74,6 +80,7 @@ export interface SetSelectedSiteAction {
 export type AppActionTypes = (
   SetSelectedViewModeAction
   | ResetViewModeSwitchingAction
+  | SetReleasesAction
   | SetSelectedProductAction
   | SetSelectedReleaseAction
   | SetSelectedSiteAction
@@ -86,6 +93,10 @@ export const AppActionCreator = {
   setSelectedViewMode: (viewMode: SelectOption): SetSelectedViewModeAction => ({
     type: AppActions.SET_SELECTED_VIEW_MODE,
     viewMode,
+  }),
+  setReleases: (releases: Release[]): SetReleasesAction => ({
+    type: AppActions.SET_RELEASES,
+    releases,
   }),
   setSelectedProduct: (product: DataProduct): SetSelectedProductAction => ({
     type: AppActions.SET_SELECTED_PRODUCT,

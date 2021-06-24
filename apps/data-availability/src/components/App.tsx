@@ -41,6 +41,7 @@ import {
 } from '../types/store';
 import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
+import { useContextReleases } from '../hooks/useContextReleases';
 import { findBundle, findForwardParent } from '../util/bundleUtil';
 
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
@@ -90,6 +91,9 @@ const App: React.FC = (): JSX.Element => {
     viewModes,
   }: AppComponentState = state;
 
+  // Hook into NeonContext to pull authenticated user data
+  const appliedReleases: Release[] = useContextReleases(releases);
+
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
     || (sitesFetchState === AsyncStateType.WORKING)
     || (releaseFetchState === AsyncStateType.WORKING)
@@ -105,6 +109,13 @@ const App: React.FC = (): JSX.Element => {
       });
     },
     [dispatch],
+  );
+  useEffect(
+    () => {
+      // Synchronize NeonContext state with redux store
+      dispatch(AppActionCreator.setReleases(appliedReleases));
+    },
+    [dispatch, appliedReleases],
   );
 
   const handleChangeViewModeCb = useCallback(

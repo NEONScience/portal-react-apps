@@ -236,8 +236,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       renderOptionState.inputValue,
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
-      slices.map((slice: SearchSlice): JSX.Element => ((
-        <span className={slice.found ? classes.searchHighlight : undefined}>
+      slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
           {slice.text}
         </span>
       )))
@@ -252,7 +253,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
-          secondary={(<div>{renderSlices(secondarySlice)}</div>)}
+          secondary={(<>{renderSlices(secondarySlice)}</>)}
         />
       </div>
     );

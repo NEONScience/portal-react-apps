@@ -2,6 +2,8 @@ import React from 'react';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import PrototypeContext from './PrototypeContext';
 import DatasetFilters from './components/DatasetFilters';
 import DatasetDetails from './components/DatasetDetails';
@@ -39,11 +41,11 @@ const PrototypePage = () => {
 
   // Breadcrumbs
   const breadcrumbs = [
-    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
-    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
   ];
   if (routeUuid) {
-    breadcrumbs.push({ name: 'Prototype Datasets', href: '/prototype-datasets/' });
+    breadcrumbs.push({ name: 'Prototype Datasets', href: RouteService.getPrototypeDatasetsPath() });
     breadcrumbs.push({ name: routeUuid });
   } else {
     breadcrumbs.push({ name: 'Prototype Datasets' });
@@ -78,7 +80,7 @@ const PrototypePage = () => {
   return (
     <NeonPage
       title={title}
-      breadcrumbHomeHref="https://www.neonscience.org/"
+      breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}
       loading={loading}
       error={error}

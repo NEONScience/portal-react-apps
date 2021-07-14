@@ -17,9 +17,8 @@ import TextField from '@material-ui/core/TextField';
 import CancelIcon from '@material-ui/icons/Close';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const DownloadSamplesPresentation = (props) => {
   const {
@@ -113,7 +112,7 @@ const DownloadSamplesPresentation = (props) => {
       if (state.degreeType === 'chosen') {
         return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
       } else {
-        const url = `${getFullSamplesApiPath()}/download?`
+        const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
           + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
           + `&sampleClass=${sampleList[0].sampleClass}`
           + `&degree=${state.degree}`;

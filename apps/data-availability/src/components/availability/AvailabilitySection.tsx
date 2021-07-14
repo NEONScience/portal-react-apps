@@ -14,6 +14,8 @@ import {
 
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { AnyObject } from 'portal-core-components/lib/types/core';
@@ -138,7 +140,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
             <Link
               target="_blank"
               rel="noreferrer noopener"
-              href="https://www.neonscience.org/data-samples/data-management/data-revisions-releases"
+              href={RouteService.getDataRevisionsReleasePath()}
             >
               Data Product Revisions and Releases
             </Link>

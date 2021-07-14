@@ -32,6 +32,8 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import SiteMap from 'portal-core-components/lib/components/SiteMap';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
 
@@ -328,7 +330,7 @@ const DatasetDetails = (props) => {
     <List dense className={classes.list}>
       {relatedVersions.sort(relatedVersionsSort).map((relatedVersion) => {
         const { datasetUuid, datasetVersion, datasetVersionDescription } = relatedVersion;
-        const href = `../${datasetUuid}`;
+        const href = RouteService.getPrototypeDatasetDetailPath(datasetUuid);
         return (
           <ListItem
             key={datasetUuid}
@@ -352,7 +354,7 @@ const DatasetDetails = (props) => {
     <List dense className={classes.list}>
       {relatedDataProducts.map((dataProduct) => {
         const { dataProductCode, dataProductName } = dataProduct;
-        const href = `../../data-products/${dataProductCode}`;
+        const href = RouteService.getProductDetailPath(dataProductCode);
         return (
           <ListItem
             key={dataProductCode}

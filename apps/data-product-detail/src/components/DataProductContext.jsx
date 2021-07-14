@@ -485,9 +485,6 @@ const Provider = (props) => {
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const { bundles } = neonContextData;
 
-  // Get the applicable user releases to apply
-  // const userReleases = withContextReleases(neonContextAuth);
-
   const {
     app: { status },
     route: {

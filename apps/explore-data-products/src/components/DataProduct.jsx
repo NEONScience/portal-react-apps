@@ -24,8 +24,9 @@ import DataProductAvailability from 'portal-core-components/lib/components/DataP
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import ExploreContext from '../ExploreContext';
 
@@ -163,8 +164,8 @@ const DataProduct = React.memo((props) => {
   const productDateRange = productData.filterableValues[FILTER_KEYS.DATE_RANGE];
 
   const productHref = currentRelease === LATEST_AND_PROVISIONAL
-    ? `${NeonEnvironment.getHost()}/data-products/${productCode}`
-    : `${NeonEnvironment.getHost()}/data-products/${productCode}/${currentRelease}`;
+    ? RouteService.getProductDetailPath(productCode)
+    : RouteService.getProductDetailPath(productCode, currentRelease);
 
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
@@ -240,7 +241,7 @@ const DataProduct = React.memo((props) => {
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link
-      href={`${NeonEnvironment.getHost()}/data-products/${parentProductData.productCode}`}
+      href={RouteService.getProductDetailPath(parentProductData.productCode)}
       target="_blank"
     >
       {`${parentProductData.productName} (${parentProductData.productCode})`}

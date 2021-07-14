@@ -6,15 +6,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import { QUERY_TYPE } from "../../util/queryUtil";
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     [theme.breakpoints.down('xs')]: {
-      width: '100%',      
+      width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
       minWidth: '400px'
@@ -62,7 +62,7 @@ const QueryBySampleTagAndClass = (props) => {
           const appliedSampleClass = event.target.value;
           onSetQuerySampleClass(appliedSampleClass);
           const appliedSampleTag = sampleTag ? sampleTag.trim() : '';
-          const url = `${getFullSamplesApiPath()}/view`
+          const url = `${NeonEnvironment.getFullApiPath('samples')}/view`
             + `?sampleTag=${encodeURIComponent(appliedSampleTag)}`
             + `&sampleClass=${encodeURIComponent(appliedSampleClass)}`;
           onQueryClick(url, cacheControl);

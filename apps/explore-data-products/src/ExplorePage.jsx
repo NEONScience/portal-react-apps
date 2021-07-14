@@ -9,6 +9,8 @@ import debounce from 'lodash/debounce';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import ExploreContext from './ExploreContext';
 
 import DataHeader from './components/DataHeader';
@@ -67,8 +69,8 @@ const ExplorePage = (props) => {
 
   // Breadcrumbs
   const breadcrumbs = [
-    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
-    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
     { name: 'Explore Data Products' },
   ];
 
@@ -109,7 +111,7 @@ const ExplorePage = (props) => {
       loading={loading}
       error={error}
       title="Explore Data Products"
-      breadcrumbHomeHref="https://www.neonscience.org/"
+      breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}
       sidebarWidth={340}
       sidebarContent={<PresentationFilter {...drillProps} />}

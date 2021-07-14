@@ -6,14 +6,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     [theme.breakpoints.down('xs')]: {
-      width: '100%',      
+      width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
       minWidth: '240px'
@@ -45,7 +44,7 @@ const SelectSampleIdentifier = (props) => {
         onChange={(event) => {
           onSetQueryType(event.target.value);
           if (sampleClassDesc.size === 0) {
-            const url = `${getFullSamplesApiPath()}/supportedClasses`;
+            const url = `${NeonEnvironment.getFullApiPath('samples')}/supportedClasses`;
             onDownloadSupportedClassesClick(url, true, false);
           }
         }}

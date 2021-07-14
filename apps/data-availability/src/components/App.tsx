@@ -17,6 +17,8 @@ import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
 import SidebarFilter from 'portal-core-components/lib/components/SidebarFilter/SidebarFilter';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { Nullable } from 'portal-core-components/lib/types/core';
@@ -163,8 +165,8 @@ const App: React.FC = (): JSX.Element => {
 
   const title = 'Data Availability';
   const breadcrumbs = [
-    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
-    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
+    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
     { name: title },
   ];
   const sidebarContent: JSX.Element = (
@@ -270,7 +272,7 @@ const App: React.FC = (): JSX.Element => {
     <NeonPage
       title={title}
       loading={isLoading ? 'Loading Availability...' : undefined}
-      breadcrumbHomeHref="https://www.neonscience.org/"
+      breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarLinksAdditionalContent={sidebarContent}
@@ -296,7 +298,7 @@ const App: React.FC = (): JSX.Element => {
                 <Link
                   target="_blank"
                   rel="noreferrer noopener"
-                  href="https://www.neonscience.org/data-samples/data-management/data-availability"
+                  href={RouteService.getDataAvailabilityPath()}
                 >
                   NEON Data Availability
                 </Link>

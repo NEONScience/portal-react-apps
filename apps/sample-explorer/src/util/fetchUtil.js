@@ -2,6 +2,7 @@ import { handleError } from "./actionUtil";
 import { fetch as fetchPolyfill } from "whatwg-fetch";
 
 import NeonApi from "portal-core-components/lib/components/NeonApi";
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import { exists } from "portal-core-components/lib/util/typeUtil";
 
 import {
@@ -16,7 +17,6 @@ import {
 } from "../actions/actions";
 import { buildViewUrl } from "./appUtil";
 import { QUERY_TYPE } from "./queryUtil";
-import { getFullSamplesApiPath } from "./envUtil";
 
 const checkStatus = (response) => {
   if (typeof response === "undefined") {
@@ -45,7 +45,7 @@ export const querySampleFromUrlDispatch = (urlParams) => {
   let viewUrl = null;
   switch (urlParams.idType) {
     case QUERY_TYPE.SAMPLE_TAG:
-      let url = getFullSamplesApiPath();
+      let url = NeonEnvironment.getFullApiPath('samples');
       let classUrl = url + "/classes?sampleTag=" + encodeURIComponent(urlParams.sampleTag.trim());
       viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
       return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass);

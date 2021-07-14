@@ -12,6 +12,8 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
 
@@ -29,8 +31,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const INFO_URL = 'https://www.neonscience.org/data-samples/data-management/data-revisions-releases';
-
 const FilterRelease = (props) => {
   const classes = useStyles(Theme);
   const { skeleton } = props;
@@ -47,7 +47,7 @@ const FilterRelease = (props) => {
   const selected = filterValues[filterKey];
 
   const releasesLink = (
-    <Link href={INFO_URL} target="_blank">
+    <Link href={RouteService.getDataRevisionsReleasePath()} target="_blank">
       Data Product Revisions and Releases
     </Link>
   );

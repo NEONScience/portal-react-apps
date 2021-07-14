@@ -1,10 +1,10 @@
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import { QUERY_TYPE } from "./queryUtil";
-import { getFullSamplesApiPath } from "./envUtil";
 
 export const buildViewUrl = (queryType, param) => {
-  let url = getFullSamplesApiPath();
+  let url = NeonEnvironment.getFullApiPath('samples');
   switch (queryType) {
     case QUERY_TYPE.SAMPLE_TAG:
       url = url + "/view?sampleTag=" + encodeURIComponent(param.trim());

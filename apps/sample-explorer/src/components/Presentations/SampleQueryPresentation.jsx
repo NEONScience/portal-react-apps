@@ -10,6 +10,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from "@material-ui/core/Typography";
 import SearchIcon from '@material-ui/icons/Search';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from "portal-core-components/lib/util/typeUtil";
 
@@ -20,7 +21,6 @@ import QueryBySampleTagAndClass from "../Queries/QueryBySampleTagAndClass";
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
 
 import { QUERY_TYPE } from "../../util/queryUtil";
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const useStyles = makeStyles(theme => ({
   row: {
@@ -61,7 +61,7 @@ const SampleQueryPresentation = (props) => {
   const classes = useStyles(Theme);
 
   const submitQuery = () => {
-    let url = getFullSamplesApiPath();
+    let url = NeonEnvironment.getFullApiPath('samples');
     switch (queryType) {
       case QUERY_TYPE.SAMPLE_TAG:
         const appliedSampleTag = exists(sampleTag) ? sampleTag.trim() : null;
@@ -139,7 +139,7 @@ const SampleQueryPresentation = (props) => {
                 Searching...
                 <CircularProgress size={24} className={classes.searchIcon} />
               </React.Fragment>
-            ) : (          
+            ) : (
               <React.Fragment>
                 Search
                 <SearchIcon fontSize="small" className={classes.searchIcon} />

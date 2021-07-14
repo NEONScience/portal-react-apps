@@ -14,11 +14,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import CopyIcon from '@material-ui/icons/Assignment';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import DataProductContext from './DataProductContext';
 
@@ -129,7 +130,7 @@ const DataProductPage = () => {
     const { productName: bundleParentName } = bundleParentData;
     bundleParentLink = !Object.keys(bundleParentData).length ? null : (
       <Link
-        href={`${NeonEnvironment.getHost()}/data-products/${bundleParentCode}/${currentRelease}`}
+        href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
       >
         {`${bundleParentName} (${bundleParentCode})`}
       </Link>
@@ -140,13 +141,13 @@ const DataProductPage = () => {
   let title = 'Data Product';
 
   const breadcrumbs = [
-    { name: 'Data & Samples', href: 'https://www.neonscience.org/data-samples/' },
-    { name: 'Data Portal', href: 'https://www.neonscience.org/data-samples/data' },
-    { name: 'Explore Data Products', href: '/data-products/explore' },
+    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Explore Data Products', href: RouteService.getDataProductExplorePath() },
   ];
   if (productCode) {
     if (currentRelease) {
-      breadcrumbs.push({ name: productCode, href: `/data-products/${productCode}` });
+      breadcrumbs.push({ name: productCode, href: RouteService.getProductDetailPath(productCode) });
       breadcrumbs.push({ name: currentRelease });
     } else {
       breadcrumbs.push({ name: productCode });
@@ -209,9 +210,9 @@ const DataProductPage = () => {
   });
 
   const downloadProductData = DataProductContext.getCurrentProductFromState(state, true);
-  const releaseInfoHref = !currentRelease ? null : (
-    `https://www.neonscience.org/data-samples/data-management/data-revisions-releases/${currentRelease}`
-  );
+  const releaseInfoHref = !currentRelease
+    ? null
+    : RouteService.getReleaseDetailPath(currentRelease);
   const releaseInfoTooltip = !currentRelease ? null : (
     `Click to view general information about all data products in the ${currentRelease} release`
   );
@@ -219,7 +220,7 @@ const DataProductPage = () => {
   return (
     <NeonPage
       title={title}
-      breadcrumbHomeHref="https://www.neonscience.org/"
+      breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarSubtitle={productCode || '--'}

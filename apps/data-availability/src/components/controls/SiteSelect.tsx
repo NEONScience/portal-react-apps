@@ -29,6 +29,8 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -344,7 +346,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
               <Link
                 target="_blank"
                 rel="noreferrer noopener"
-                href={`https://www.neonscience.org/field-sites/${selectedSiteOption.siteCode}`}
+                href={RouteService.getFieldSiteDetailPath(selectedSiteOption.siteCode)}
               >
                 {selectedSiteOption.siteDescription}
               </Link>

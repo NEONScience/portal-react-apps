@@ -207,7 +207,7 @@ export const downloadUuid = (uuid) => {
   if (!uuid) { return null; }
   const form = document.createElement('form');
   form.style.display = 'none';
-  form.action = `${NeonEnvironment.getFullApiPath('download')}/prototype/stream`;
+  form.action = NeonEnvironment.getFullDownloadApiPath('prototypeDownloadStream');
   form.method = 'POST';
 
   const input = document.createElement('input');

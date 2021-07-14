@@ -3,30 +3,17 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import { taxonTypes } from "./taxonTypes";
 
 /**
- * Getter for the taxon API path environment constant
- */
-export const getTaxonPath = () => {
-  return process.env.REACT_APP_NEON_API_TAXON_PATH;
-}
-/**
- * Getter for the taxon download API path environment constant
- */
-export const getTaxonDownloadPath = () => {
-  return process.env.REACT_APP_NEON_API_TAXON_DOWNLOAD_PATH_NAME;
-}
-
-/**
  * Gets the taxon API endpoint path
  */
 export const getTaxonApiPath = () => {
-  return `${NeonEnvironment.getFullApiPath()}/${getTaxonPath()}`;
+  return NeonEnvironment.getFullApiPath('taxonomy');
 }
 
 /**
  * Gets the taxon download API endpoint path
  */
 export const getTaxonDownloadApiPath = () => {
-  return `${NeonEnvironment.getFullApiPath()}/${getTaxonDownloadPath()}`;
+  return NeonEnvironment.getFullApiPath('taxonomyDownload');
 }
 
 /**

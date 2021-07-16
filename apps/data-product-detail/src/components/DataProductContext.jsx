@@ -187,6 +187,29 @@ const sortReleases = (unsortedReleases) => {
   return releases;
 };
 
+const withContextReleases = (neonContextState) => (
+  neonContextState?.auth?.userData?.data?.releases || []
+);
+
+const applyUserRelease = (current, userReleases) => {
+  if (!Array.isArray(current) || !Array.isArray(userReleases)) {
+    return;
+  }
+  userReleases.forEach((userRelease) => {
+    current.push({
+      ...userRelease,
+      showCitation: false,
+      showDoi: false,
+      showViz: true,
+      release: userRelease.releaseTag,
+      description: userRelease.description,
+      generationDate: userRelease.generationDate
+        ? new Date(userRelease.generationDate).toISOString()
+        : new Date().toISOString(),
+    });
+  });
+};
+
 // Idempotent function to apply releases to state.data.releases. This is the global lookup for
 // all releases applicable to this product. It's separate, and must be populated in this way,
 // because the backend currently has no concept of bundles or metadata inheritance. As such a bundle
@@ -204,12 +227,20 @@ const applyReleasesGlobally = (state, releases) => {
     .filter((r) => (
       updatedState.data.releases.every((existingR) => r.release !== existingR.release)
     ))
-    .forEach((r) => { updatedState.data.releases.push(r); });
+    .forEach((r) => {
+      updatedState.data.releases.push({
+        ...r,
+        showCitation: true,
+        showDoi: true,
+        showViz: true,
+      });
+    });
   return updatedState;
 };
 
 const getProductCodeAndReleaseFromURL = (pathname = window.location.pathname) => {
-  const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([\w-]+)?/g;
+  const base = NeonEnvironment.getRouterBaseHomePath();
+  const regex = new RegExp(`${base}\\/(DP[0-9]{1}\\.[0-9]{5}\\.[0-9]{3})\\/?([\\w-]+)?`, 'g');
   const urlParts = regex.exec(pathname);
   return !urlParts ? [null, null] : [urlParts[1], urlParts[2] || null];
 };
@@ -331,6 +362,10 @@ const reducer = (state, action) => {
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
       newState.app.error = action.error;
+      return newState;
+
+    case 'storeFinalizedNeonContextState':
+      applyUserRelease(newState.data.releases, withContextReleases(action.neonContextState));
       return newState;
 
     // Route parsing from initialization only.
@@ -512,9 +547,10 @@ const Provider = (props) => {
     }
     // Next release differs from location: navigate to next release and apply to state
     if (nextRelease !== undefined && nextRelease !== locationRelease) {
+      const baseRoute = NeonEnvironment.getRouterBaseHomePath();
       let nextLocation = nextRelease === null
-        ? `/data-products/${productCode}`
-        : `/data-products/${productCode}/${nextRelease}`;
+        ? `${baseRoute}/${productCode}`
+        : `${baseRoute}/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
       history.push(nextLocation);
       NeonJsonLd.injectProduct(productCode, nextRelease);

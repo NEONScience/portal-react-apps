@@ -24,8 +24,9 @@ import DataProductAvailability from 'portal-core-components/lib/components/DataP
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import ExploreContext from '../ExploreContext';
 
@@ -163,8 +164,8 @@ const DataProduct = React.memo((props) => {
   const productDateRange = productData.filterableValues[FILTER_KEYS.DATE_RANGE];
 
   const productHref = currentRelease === LATEST_AND_PROVISIONAL
-    ? `${NeonEnvironment.getHost()}/data-products/${productCode}`
-    : `${NeonEnvironment.getHost()}/data-products/${productCode}/${currentRelease}`;
+    ? RouteService.getProductDetailPath(productCode)
+    : RouteService.getProductDetailPath(productCode, currentRelease);
 
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
@@ -240,7 +241,7 @@ const DataProduct = React.memo((props) => {
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link
-      href={`${NeonEnvironment.getHost()}/data-products/${parentProductData.productCode}`}
+      href={RouteService.getProductDetailPath(parentProductData.productCode)}
       target="_blank"
     >
       {`${parentProductData.productName} (${parentProductData.productCode})`}
@@ -316,7 +317,7 @@ const DataProduct = React.memo((props) => {
     productCode,
   });
 
-  const aopViewerButton = hasData && isAopViewerProduct && currentRelease === LATEST_AND_PROVISIONAL
+  const aopViewerButton = hasData && isAopViewerProduct
     ? (
       <Button
         data-gtm="explore-data-products.aop-data-viewer-button"
@@ -332,7 +333,7 @@ const DataProduct = React.memo((props) => {
       </Button>
     ) : null;
 
-  const viewTimeSeriesDataButton = hasTimeSeriesData && currentRelease === LATEST_AND_PROVISIONAL
+  const viewTimeSeriesDataButton = hasTimeSeriesData
     ? (
       <Button
         data-gtm="explore-data-products.view-time-series-button"
@@ -409,7 +410,7 @@ const DataProduct = React.memo((props) => {
               </div>
             </Grid>
           )}
-          {!hasData || !hasVisualization || currentRelease !== LATEST_AND_PROVISIONAL ? null : (
+          {!hasData || !hasVisualization ? null : (
             <Grid item xs={12} sm={4}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data

@@ -3,8 +3,9 @@ import JSPDF from 'jspdf';
 import moment from 'moment';
 import camelCase from 'lodash/camelCase';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import {
   FILTER_KEYS,
@@ -56,7 +57,7 @@ const payloadColumns = [
   },
   {
     label: 'URL',
-    value: (product) => `${NeonEnvironment.getHost()}/data-products/${product.productCode}`,
+    value: (product) => RouteService.getProductDetailPath(product.productCode),
     formats: ['csv', 'json'],
   },
   {
@@ -295,7 +296,7 @@ const generatePdf = (
     pdf.text('ID:', margin, y + offset);
     pdf.setFont('helvetica', 'normal');
     pdf.text(productCode, margin + 0.25, y + offset);
-    const url = `${NeonEnvironment.getHost()}/data-products/${productCode}`;
+    const url = RouteService.getProductDetailPath(productCode);
     pdf.setFont('helvetica', 'bold');
     pdf.text('URL:', margin + 1.5, y + offset);
     pdf.setFont('helvetica', 'normal');

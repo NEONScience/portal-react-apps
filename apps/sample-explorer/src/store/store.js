@@ -4,9 +4,10 @@ import {
 } from "redux";
 import thunk from "redux-thunk";
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+
 import dataApp from "../reducers/reducers";
 import { QUERY_TYPE, getQueryTypeNameOptions } from "../util/queryUtil";
-import { isDevEnv } from "../util/envUtil";
 
 let dataStore = {
   urlParams: {
@@ -81,7 +82,7 @@ export const configureStore = (state) => {
   let middlewares = [
     thunk
   ];
-  if (isDevEnv()) {
+  if (NeonEnvironment.isDevEnv) {
     const { logger } = require("redux-logger");
     middlewares.push(logger);
   }

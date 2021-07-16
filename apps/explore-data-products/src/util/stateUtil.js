@@ -82,6 +82,26 @@ export const parseURLParam = (paramName) => {
   return decodeURIComponent(match[1]);
 };
 
+const applyUserRelease = (current, userReleases) => {
+  if (!Array.isArray(current) || !Array.isArray(userReleases)) {
+    return;
+  }
+  userReleases.forEach((userRelease) => {
+    current.push({
+      ...userRelease,
+      release: userRelease.releaseTag,
+      description: userRelease.description,
+      generationDate: userRelease.generationDate
+        ? new Date(userRelease.generationDate).toISOString()
+        : new Date().toISOString(),
+    });
+  });
+};
+
+const withContextReleases = (neonContextState) => (
+  neonContextState?.auth?.userData?.data?.releases || []
+);
+
 /**
    parseProductsData
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
@@ -108,6 +128,9 @@ export const parseProductsByReleaseData = (state, release) => {
 
   // State object that we'll update and ultimately return
   let newState = { ...state };
+
+  // Get the applicable user releases to apply
+  const userReleases = withContextReleases(newState.neonContextState);
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -156,6 +179,9 @@ export const parseProductsByReleaseData = (state, release) => {
     const product = { ...rawProduct };
     const { productCode } = product;
 
+    product.releases = product.releases ? [...product.releases] : [];
+    applyUserRelease(product.releases, userReleases);
+
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly. Note that some bundle
     // children may have more than one parent, and forwarding availability will never work for them.
@@ -193,6 +219,7 @@ export const parseProductsByReleaseData = (state, release) => {
       // Bundle children with forwarded availability should have releases identical to the parent
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
       product.releases = [...((appliedProducts[parentIdx] || {}).releases || [])];
+      applyUserRelease(product.releases, userReleases);
       // Remove bundle blurb from description if this is a bundle child
       EXCISE_BUNDLE_BLURBS.forEach((blurb) => {
         if (product.productDescription.includes(blurb)) {

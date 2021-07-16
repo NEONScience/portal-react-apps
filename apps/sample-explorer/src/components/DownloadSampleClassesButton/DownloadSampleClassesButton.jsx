@@ -3,19 +3,18 @@ import React from "react";
 import Button from '@material-ui/core/Button';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const DownloadSampleClassesButton = (props) => {
   const {
     sampleClassDesc,
     onDownloadSupportedClassesClick,
   } = props;
-  
+
   const downloadSupportedSampleClasses = () => {
     if (sampleClassDesc.size === 0) {
-      const url = `${getFullSamplesApiPath()}/supportedClasses`;
+      const url = `${NeonEnvironment.getFullApiPath('samples')}/supportedClasses`;
       onDownloadSupportedClassesClick(url, true, true);
     } else {
       onDownloadSupportedClassesClick(null, false, true);

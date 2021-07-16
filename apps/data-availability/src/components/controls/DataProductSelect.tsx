@@ -28,8 +28,9 @@ import {
 import BundleIcon from '@material-ui/icons/Archive';
 import SearchIcon from '@material-ui/icons/Search';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
@@ -236,8 +237,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       renderOptionState.inputValue,
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
-      slices.map((slice: SearchSlice): JSX.Element => ((
-        <span className={slice.found ? classes.searchHighlight : undefined}>
+      slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
+        // eslint-disable-next-line react/no-array-index-key
+        <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
           {slice.text}
         </span>
       )))
@@ -252,7 +254,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
-          secondary={(<div>{renderSlices(secondarySlice)}</div>)}
+          secondary={(<>{renderSlices(secondarySlice)}</>)}
         />
       </div>
     );
@@ -389,7 +391,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               <Link
                 target="_blank"
                 rel="noreferrer noopener"
-                href={`${NeonEnvironment.getHost() || ''}/data-products/${initialProduct.productCode}`}
+                href={RouteService.getProductDetailPath(initialProduct.productCode)}
               >
                 {initialProduct.productName}
               </Link>

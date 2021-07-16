@@ -2,6 +2,7 @@ import AsyncFlow from 'portal-core-components/lib/flow/AsyncFlow';
 
 import AppState from '../store/appState';
 import AppActions, {
+  SetReleasesAction,
   SetSelectedProductAction,
   SetSelectedReleaseAction,
   SetSelectedSiteAction,
@@ -9,24 +10,37 @@ import AppActions, {
 } from '../actions/app';
 import AppFlow from '../actions/flows/app';
 import { AppActionType } from '../actions/actionTypes';
-import { BaseStoreAppState } from '../types/store';
+import { BaseStoreAppState, SelectOption } from '../types/store';
 
 export const appReducer = (
   state = AppState.getAppState(),
   action: AppActionType,
 ): BaseStoreAppState => {
   const update: BaseStoreAppState = flowReducer(state, action);
+  let viewMode: SelectOption;
   switch (action.type) {
     case AppActions.SET_SELECTED_VIEW_MODE:
+      viewMode = (action as SetSelectedViewModeAction).viewMode;
       return {
         ...update,
-        selectedViewMode: (action as SetSelectedViewModeAction).viewMode,
+        selectedViewMode: viewMode,
         viewModeSwitching: true,
+        selectedProduct: (viewMode.value === 'Site')
+          ? null
+          : update.selectedProduct,
+        selectedSite: (viewMode.value === 'DataProduct')
+          ? null
+          : update.selectedSite,
       };
     case AppActions.RESET_VIEW_MODE_SWITCHING:
       return {
         ...update,
         viewModeSwitching: false,
+      };
+    case AppActions.SET_RELEASES:
+      return {
+        ...update,
+        releases: (action as SetReleasesAction).releases,
       };
     case AppActions.SET_SELECTED_PRODUCT:
       return {

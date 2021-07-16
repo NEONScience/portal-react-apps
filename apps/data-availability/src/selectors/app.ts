@@ -182,11 +182,15 @@ const AppStateSelector = {
               };
             }
             const release: Release = state.selectedRelease as Release;
-            const hasData: boolean|undefined = !existsNonEmpty(release.dataProducts)
-              ? false
-              : release.dataProducts.some((product: DataProduct): boolean => (
+            let hasData: boolean|undefined = false;
+            if (!existsNonEmpty(release.dataProducts)) {
+              hasData = Array.isArray(value.siteCodes)
+                && (value.siteCodes.length > 0);
+            } else {
+              hasData = release.dataProducts.some((product: DataProduct): boolean => (
                 product.productCode === value.productCode
               ));
+            }
             return {
               ...value,
               hasData,

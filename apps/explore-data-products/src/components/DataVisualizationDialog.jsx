@@ -12,8 +12,6 @@ import {
 
 const AopDataViewer = React.lazy(() => import('portal-core-components/lib/components/AopDataViewer'));
 const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
-// import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
-// import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 
 const DataVisualizationDialog = () => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -22,7 +20,9 @@ const DataVisualizationDialog = () => {
     activeDataVisualization: { component, productCode },
   } = state;
 
-  if (currentRelease !== LATEST_AND_PROVISIONAL) { return null; }
+  const appliedRelease = currentRelease && (currentRelease !== LATEST_AND_PROVISIONAL)
+    ? currentRelease
+    : null;
 
   const products = getCurrentProductsByRelease(state);
   const product = products[productCode];
@@ -49,7 +49,7 @@ const DataVisualizationDialog = () => {
         title = `Time Series Viewer - ${productCode} - ${product.productName}`;
         dialogBaseProps.nopaper = true;
         contents = (
-          <TimeSeriesViewer productCode={productCode} />
+          <TimeSeriesViewer productCode={productCode} release={appliedRelease} />
         );
         break;
 

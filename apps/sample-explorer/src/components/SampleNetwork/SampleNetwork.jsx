@@ -10,10 +10,10 @@ import { Graph } from "react-d3-graph";
 
 import { makeStyles } from "@material-ui/core/styles";
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from "portal-core-components/lib/util/typeUtil";
 
-import { getFullSamplesApiPath } from "../../util/envUtil";
 import { GRAPH_COLORS } from "../../util/appUtil";
 
 const useStyles = makeStyles(theme => ({
@@ -53,7 +53,7 @@ const SampleNetwork = (props) => {
     const containerHeight = Math.ceil(containerRef.current.clientHeight - 5);
     if (height !== containerHeight) {
       setHeight(containerHeight);
-    }    
+    }
   }, [height, setHeight, containerRef, containerMouseDown, containerMouseMoving]);
 
   const handleMouseDown = useCallback(() => {
@@ -64,7 +64,7 @@ const SampleNetwork = (props) => {
     setContainerMouseDown(false);
     setContainerMouseMoving(false);
   }, [setContainerMouseDown, setContainerMouseMoving]);
-  
+
   const handleMouseMove = useCallback(() => {
     if (!containerMouseDown) { return; }
     setContainerMouseMoving(true);
@@ -122,7 +122,7 @@ const SampleNetwork = (props) => {
         data={graphData}
         config={graphConfig}
         onClickNode={(nodeId) => {
-          const url = `${getFullSamplesApiPath()}/view?sampleUuid=${nodeId}`;
+          const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${nodeId}`;
           return onNodeClick(url);
         }}
       />

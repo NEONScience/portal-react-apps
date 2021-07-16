@@ -5,11 +5,10 @@ import Link from '@material-ui/core/Link';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
-
-// TODO: get this from a canonical location?
-const dataThemeBaseUrl = 'http://www.neonscience.org/data/data-themes/';
 
 const dataThemeHrefs = {
   Atmosphere: 'atmosphere',
@@ -30,7 +29,7 @@ const ThemesDetail = () => {
       key={theme}
       title={theme}
       style={{ marginRight: Theme.spacing(1) }}
-      href={`${dataThemeBaseUrl}${dataThemeHrefs[theme]}`}
+      href={RouteService.getThemeDetailPath(dataThemeHrefs[theme])}
     >
       <DataThemeIcon
         theme={theme}

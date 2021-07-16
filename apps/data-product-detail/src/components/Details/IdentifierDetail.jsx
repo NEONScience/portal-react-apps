@@ -6,6 +6,8 @@ import Chip from '@material-ui/core/Chip';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
@@ -26,7 +28,7 @@ const IdentifierDetail = () => {
   const product = DataProductContext.getCurrentProductFromState(state);
 
   const fileNamingConventionsLink = (
-    <a href="https://data.neonscience.org/file-naming-conventions">
+    <a href={RouteService.getFileNamingConventionsPath()}>
       File Naming Conventions
     </a>
   );

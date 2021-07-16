@@ -20,68 +20,14 @@ import DownloadIcon from '@material-ui/icons/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import DataCiteService, {
+  CitationDownloadType,
+} from 'portal-core-components/lib/service/DataCiteService';
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import PrototypeContext from '../PrototypeContext';
 
 const { usePrototypeContextState } = PrototypeContext;
-
-const DATA_POLICIES_URL = 'https://www.neonscience.org/data-samples/data-policies-citation';
-
-const CITATION_FORMATS = {
-  BIBTEX: {
-    shortName: 'BibTex',
-    longName: 'BibTex',
-    mime: 'application/x-bibtex',
-    extension: 'bib',
-    generateProvisionalCitation: (dataset) => {
-      let id = `${dataset.uuid}/prototype`;
-      let doiId = '';
-      let version = '';
-      if (dataset.doi && dataset.doi.url) {
-        id = dataset.doi.url;
-        doiId = dataset.doi.url.split('/').slice(-2).join('/');
-      }
-      if (dataset.version) {
-        version = `, ${dataset.version}`;
-      }
-      return `@misc{${id},
-  doi = {${doiId}},
-  url = {${window.location.href}},
-  author = {National Ecological Observatory Network (NEON)},
-  language = {en},
-  title = {${dataset.projectTitle}${version} (${dataset.uuid})},
-  publisher = {National Ecological Observatory Network (NEON)},
-  year = {${(new Date()).getFullYear()}}
-}`;
-    },
-  },
-  RIS: {
-    shortName: 'RIS',
-    longName: 'Research Information Systems (RIS)',
-    mime: 'application/x-research-info-systems',
-    extension: 'ris',
-    generateProvisionalCitation: (dataset) => {
-      let doiId = '';
-      let version = '';
-      if (dataset.doi && dataset.doi.url) {
-        doiId = dataset.doi.url.split('/').slice(-2).join('/');
-      }
-      if (dataset.version) {
-        version = `, ${dataset.version}`;
-      }
-      return `TY  - DATA
-T1  - ${dataset.projectTitle}${version} (${dataset.uuid})
-AU  - National Ecological Observatory Network (NEON)
-DO  - ${doiId}
-UR  - ${window.location.href}
-AB  - ${dataset.datasetAbstract}
-PY  - ${(new Date()).getFullYear()}
-PB  - National Ecological Observatory Network (NEON)
-LA  - en
-ER  - `;
-    },
-  },
-};
-Object.keys(CITATION_FORMATS).forEach((key) => { CITATION_FORMATS[key].KEY = key; });
 
 const getCitationText = (dataset) => {
   if (!dataset) { return null; }
@@ -100,9 +46,9 @@ const getCitationText = (dataset) => {
     : uuid;
   const url = hasDoi
     ? `${doi.url}.`
-    : `https://data.neonscience.org/prototype-datasets/${uuid}`;
+    : `${RouteService.getPrototypeDatasetDetailPath(uuid)}`;
   const accessed = hasDoi
-    ? `Dataset accessed from https://data.neonscience.org on ${today}`
+    ? `Dataset accessed from ${RouteService.getDataProductCitationDownloadUrl()} on ${today}`
     : `(accessed ${today})`;
   const title = version
     ? `${projectTitle}, ${version}`
@@ -128,37 +74,26 @@ const Citation = (props) => {
   if (typeof dataset === 'undefined') { return null; }
 
   const dataPolicyLink = (
-    <Link href={DATA_POLICIES_URL}>Data Policies &amp; Citation Guidelines</Link>
+    <Link href={RouteService.getDataPoliciesCitationPath()}>
+      Data Policies &amp; Citation Guidelines
+    </Link>
   );
   const citationText = getCitationText(dataset);
 
-  // Actual function that makes the download happen with payload passed as an argument.
-  // We don't hit the DataCite API directly with a link as, while this will download a valid file,
-  // we have no control over the file name. As such we fetch the content with ajax (see
-  // handleDownloadCitation) and pass it here the same as we do a provisional citation (which
-  // requires no fetch) and execute the download in this way allowing full file name control.
-  const executeDownload = (fileName, mimeType, payload) => {
-    const link = document.createElement('a');
-    if (URL) {
-      link.href = URL.createObjectURL(new Blob([payload], { type: mimeType }));
-    } else {
-      link.setAttribute('href', `data:${mimeType},${encodeURI(payload)}`);
-    }
-    link.setAttribute('download', fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // Click handler for initiating a citation download
   const handleDownloadCitation = (format) => {
-    if (!CITATION_FORMATS[format]) { return; }
-    const { mime, extension, generateProvisionalCitation } = CITATION_FORMATS[format];
-    const fileName = `NEON-Prototype-Dataset-${uuid}.${extension}`;
-    // Generate client-side and immediately download
-    const provisionalCitation = generateProvisionalCitation(dataset);
-    if (!provisionalCitation) { return; }
-    executeDownload(fileName, mime, provisionalCitation);
+    const { doi } = dataset;
+    const hasDoi = doi && doi.url;
+    const doiId = hasDoi
+      ? doi.url.split('/').slice(-2).join('/')
+      : uuid;
+    DataCiteService.downloadCitation(
+      format,
+      CitationDownloadType.PROTOTYPE_DATASET,
+      dataset,
+      doiId,
+      hasDoi ? undefined : 'provisional',
+    );
   };
 
   // Render
@@ -184,11 +119,11 @@ const Citation = (props) => {
               </Button>
             </CopyToClipboard>
           </Tooltip>
-          {Object.keys(CITATION_FORMATS).map((key) => (
+          {DataCiteService.getPrototypeDatasetFormats().map((format) => (
             <Tooltip
-              key={key}
+              key={format.shortName}
               placement="bottom-start"
-              title={`Click to download this citation as a file in ${CITATION_FORMATS[key].longName} format`}
+              title={`Click to download this citation as a file in ${format.longName} format`}
             >
               <span>
                 <Button
@@ -197,9 +132,9 @@ const Citation = (props) => {
                   variant="outlined"
                   startIcon={<DownloadIcon />}
                   className={classes.cardButton}
-                  onClick={() => { handleDownloadCitation(key); }}
+                  onClick={() => { handleDownloadCitation(format.shortName); }}
                 >
-                  {`Download (${CITATION_FORMATS[key].shortName})`}
+                  {`Download (${format.shortName})`}
                 </Button>
               </span>
             </Tooltip>

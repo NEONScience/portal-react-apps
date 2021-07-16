@@ -14,6 +14,8 @@ import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 const InfoPresentation = (props) => {
   const classes = useStyles(Theme);
   const exploreDataProductsLink = (
-    <Link href="/data-products/explore">
+    <Link href={RouteService.getDataProductExplorePath()}>
       Explore Data Products
     </Link>
   );
@@ -98,7 +100,7 @@ const InfoPresentation = (props) => {
                   these relationships, e.g. to find all the leaf samples (child samples) collected
                   from a given tree (parent sample).
                 </Typography>
-                
+
                 <Typography variant="h5" gutterBottom>
                   Sample Classes
                 </Typography>
@@ -109,7 +111,7 @@ const InfoPresentation = (props) => {
                   levels in a sample hierarchy have different classes.
                 </Typography>
               </Grid>
-              
+
               <Grid item xs={12}>
                 <Typography variant="h5" gutterBottom>
                   Searching by Sample Identifier and Class

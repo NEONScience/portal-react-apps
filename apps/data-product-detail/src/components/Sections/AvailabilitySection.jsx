@@ -14,8 +14,9 @@ import DownloadDataButton from 'portal-core-components/lib/components/DownloadDa
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -59,7 +60,6 @@ const AvailabilitySection = (props) => {
   const classes = useStyles(Theme);
 
   const [state] = DataProductContext.useDataProductContextState();
-  // const product = DataProductContext.getCurrentProductFromState(state, true);
 
   const [{
     productData,
@@ -97,7 +97,7 @@ const AvailabilitySection = (props) => {
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link
-      href={`${NeonEnvironment.getHost()}/data-products/${parentProductData.productCode}`}
+      href={RouteService.getProductDetailPath(parentProductData.productCode)}
       target="_blank"
     >
       {`${parentProductData.productName} (${parentProductData.productCode})`}

@@ -1,6 +1,8 @@
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
+
 export const FILTER_KEYS = {
   SEARCH: 'SEARCH',
   THEMES: 'THEMES',
@@ -47,7 +49,7 @@ const filterValuesIntersect = (filterValue, datasetFilterableValues) => (
 
 export const getUuidFromURL = (pathname = window.location.pathname) => {
   const uuid = String.raw`[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}`;
-  const regex = RegExp(`prototype-datasets/(${uuid})`, 'g');
+  const regex = RegExp(`${NeonEnvironment.getRouterBaseHomePath()}/(${uuid})`, 'g');
   const urlParts = regex.exec(pathname);
   return !urlParts ? null : urlParts[1] || null;
 };

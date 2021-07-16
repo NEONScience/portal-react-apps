@@ -15,41 +15,40 @@ import CancelIcon from '@material-ui/icons/Close';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 
 import NeonApi from "portal-core-components/lib/components/NeonApi";
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-
-import { getFullSamplesApiPath } from "../../util/envUtil";
 
 const fileDownload = require("js-file-download");
 const { Parser } = require("json2csv");
 
 const COLUMN_DEFS = [
-  { 
-    headerName: "SMS Field Name", 
-    field: "name", 
-    sortable: true, 
-    resizable: true, 
-    filter: true 
+  {
+    headerName: "SMS Field Name",
+    field: "name",
+    sortable: true,
+    resizable: true,
+    filter: true
   },
-  { 
-    headerName: "SMS Field Description", 
-    field: "description", 
-    sortable: true, 
-    resizable: true, 
-    filter: true 
+  {
+    headerName: "SMS Field Description",
+    field: "description",
+    sortable: true,
+    resizable: true,
+    filter: true
   },
-  { 
-    headerName: "SMS Field Ontology Mapping", 
-    field: "ontologyMapping", 
-    sortable: true, 
-    resizable: true, 
-    filter: true 
+  {
+    headerName: "SMS Field Ontology Mapping",
+    field: "ontologyMapping",
+    sortable: true,
+    resizable: true,
+    filter: true
   },
 ];
 
 const downloadFields = (fields, dispatch) => {
   let smsFieldHeaders = [
-    "SMS Field Name", 
-    "SMS Field Description", 
+    "SMS Field Name",
+    "SMS Field Description",
     "SMS Field Ontology Mapping",
   ];
   dispatch({ type: 'downloading' });
@@ -103,7 +102,7 @@ const fetchFields = (dispatch) => {
       ...NeonApi.getApiTokenHeader()
     },
   };
-  const url = `${getFullSamplesApiPath()}/supported-sms-fields`;
+  const url = `${NeonEnvironment.getFullApiPath('samples')}/supported-sms-fields`;
   let fetchFunc = getFetch();
   dispatch({ type: 'fetchingFields' });
   fetchFunc(url, fetchInit)
@@ -119,7 +118,7 @@ const fetchFields = (dispatch) => {
     .then((response) => response.json())
     .then((json) => {
       let fields = [];
-      if ((json !== null) && (json.data !== null) 
+      if ((json !== null) && (json.data !== null)
           && Array.isArray(json.data.smsFields)) {
         fields = json.data.smsFields;
       }
@@ -183,8 +182,8 @@ const SampleSmsFieldsDialog = () => {
     return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             style={{ margin: Theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
             data-selenium="download-sms-fields-dialog.error"
           >

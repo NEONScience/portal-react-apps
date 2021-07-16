@@ -239,7 +239,8 @@ const applyReleasesGlobally = (state, releases) => {
 };
 
 const getProductCodeAndReleaseFromURL = (pathname = window.location.pathname) => {
-  const regex = /data-products\/(DP[0-9]{1}\.[0-9]{5}\.[0-9]{3})\/?([\w-]+)?/g;
+  const base = NeonEnvironment.getRouterBaseHomePath();
+  const regex = new RegExp(`${base}\\/(DP[0-9]{1}\\.[0-9]{5}\\.[0-9]{3})\\/?([\\w-]+)?`, 'g');
   const urlParts = regex.exec(pathname);
   return !urlParts ? [null, null] : [urlParts[1], urlParts[2] || null];
 };
@@ -546,9 +547,10 @@ const Provider = (props) => {
     }
     // Next release differs from location: navigate to next release and apply to state
     if (nextRelease !== undefined && nextRelease !== locationRelease) {
+      const baseRoute = NeonEnvironment.getRouterBaseHomePath();
       let nextLocation = nextRelease === null
-        ? `/data-products/${productCode}`
-        : `/data-products/${productCode}/${nextRelease}`;
+        ? `${baseRoute}/${productCode}`
+        : `${baseRoute}/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
       history.push(nextLocation);
       NeonJsonLd.injectProduct(productCode, nextRelease);

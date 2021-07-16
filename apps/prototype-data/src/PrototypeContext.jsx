@@ -15,6 +15,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import {
@@ -348,11 +349,12 @@ const Provider = (props) => {
   // URL with the cleaned-up base URL (explore)
   useEffect(() => {
     if (appStatus !== APP_STATUS.INITIALIZING) { return; }
-    const urlHasArg = /^\/prototype-datasets\/(.+)/.test(pathname);
+    const regex = new RegExp(`^${NeonEnvironment.getRouterBaseHomePath()}\\/(.+)`);
+    const urlHasArg = regex.test(pathname);
     const uuid = getUuidFromURL();
     if (!uuid) {
       NeonJsonLd.removeAllMetadata();
-      if (urlHasArg) { history.replace('/prototype-datasets/'); }
+      if (urlHasArg) { history.replace(`${NeonEnvironment.getRouterBaseHomePath()}`); }
       return;
     }
     dispatch({ type: 'setInitialRouteToUuid', uuid });
@@ -403,9 +405,10 @@ const Provider = (props) => {
     // Next uuid differs from location: navigate to next uuid and apply to state
     if (routeNextUuid !== undefined && routeNextUuid !== locationUuid) {
       const missingNextUuid = routeNextUuid === null;
+      const baseRoute = NeonEnvironment.getRouterBaseHomePath();
       const nextLocation = missingNextUuid
-        ? '/prototype-datasets/'
-        : `/prototype-datasets/${routeNextUuid}/`;
+        ? baseRoute
+        : `${baseRoute}/${routeNextUuid}`;
       history.push(nextLocation);
       if (missingNextUuid) {
         NeonJsonLd.removeAllMetadata();

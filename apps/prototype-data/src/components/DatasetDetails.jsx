@@ -60,6 +60,13 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-1),
     marginBottom: theme.spacing(1),
   },
+  listScroll: {
+    padding: theme.spacing(0),
+    marginTop: theme.spacing(-1),
+    marginBottom: theme.spacing(1),
+    maxHeight: '216px',
+    overflow: 'auto',
+  },
   listItemSecondarySpacer: {
     margin: theme.spacing(0, 2),
     color: theme.palette.grey[200],
@@ -405,7 +412,7 @@ const DatasetDetails = (props) => {
 
   // Download File List
   const downloadFileList = !files.length ? getNA('none available') : (
-    <List dense className={classes.list}>
+    <List dense className={classes.listScroll}>
       {files.map((file) => {
         const {
           description,

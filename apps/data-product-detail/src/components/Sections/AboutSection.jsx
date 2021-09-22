@@ -14,6 +14,7 @@ import ThemesDetail from '../Details/ThemesDetail';
 import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
+import TaxonDetail from '../Details/TaxonDetail';
 
 const AboutSection = (props) => {
   const [state] = DataProductContext.useDataProductContextState();
@@ -32,6 +33,7 @@ const AboutSection = (props) => {
           />
           <DataRangeDetail />
           <KeywordsDetail />
+          <TaxonDetail dataProductCode={product.productCode} />
         </Grid>
 
         <Grid item xs={12} md={7} lg={8}>

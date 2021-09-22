@@ -10,14 +10,14 @@ import DownloadContainer from "../containers/DownloadContainer";
 
 const useStyles = makeStyles(theme => ({
   outerContainer: {
-    marginBottom: "20px",
+    marginBottom: '20px',
     '@media (min-width:968px)': {
-      marginBottom: "-38px",      
+      marginBottom: '-38px',
     },
   },
   innerContainer: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'top',
     justifyContent: 'flex-start',
   },
   downloadContainer: {

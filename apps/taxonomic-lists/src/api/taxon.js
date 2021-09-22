@@ -17,6 +17,15 @@ export const getTaxonDownloadApiPath = () => {
 }
 
 /**
+ * Gets the path for querying data products associated to a taxon type
+ * @returns The path
+ */
+export const getTaxonTypeDataProductsApiPath = () => {
+  const taxonApiPath = getTaxonApiPath();
+  return `${taxonApiPath}/products`;
+}
+
+/**
  * Gets the set of taxon types for selection
  */
 export const getTaxonTypes = () => {

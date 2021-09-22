@@ -98,12 +98,12 @@ const columnDefs = [
     columnDisplayGroup: DISPLAY_GROUP_TAXON_HIERARCHY_0
   },
   {
-      title: "Superdivision",
-      queryName: "superdivision",
-      data: "gbif:superdivision",
-      visible: false,
-      defaultContent: defaultContent,
-      columnDisplayGroup: DISPLAY_GROUP_TAXON_HIERARCHY_0
+    title: "Superdivision",
+    queryName: "superdivision",
+    data: "gbif:superdivision",
+    visible: false,
+    defaultContent: defaultContent,
+    columnDisplayGroup: DISPLAY_GROUP_TAXON_HIERARCHY_0
   },
   {
     title: "Division",

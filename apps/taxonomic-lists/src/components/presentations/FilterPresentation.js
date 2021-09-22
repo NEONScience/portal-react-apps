@@ -9,14 +9,16 @@ const FilterPresentation = (props) => {
     onFilterValueChanged,
   } = props;
   return (
-    <div>
-      <FilterTaxonType
-        taxonTypes={taxonTypes}
-        selectedValue={taxonQuery.taxonTypeCode}
-        onSetTaxonTypes={onSetTaxonTypes}
-        onFilterValueChanged={onFilterValueChanged}
-      />
-    </div>
+    <>
+      <div>
+        <FilterTaxonType
+          taxonTypes={taxonTypes}
+          selectedValue={taxonQuery.taxonTypeCode}
+          onSetTaxonTypes={onSetTaxonTypes}
+          onFilterValueChanged={onFilterValueChanged}
+        />
+      </div>
+    </>
   );
 }
 

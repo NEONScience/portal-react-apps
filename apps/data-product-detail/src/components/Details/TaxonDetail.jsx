@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 
-// import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -15,6 +15,12 @@ const useStyles = makeStyles(() => ({
   linkList: {
     listStyleType: 'none',
     padding: 0,
+  },
+  taxonTypes: {
+    textTransform: 'lowercase',
+    '&:first-letter': {
+      textTransform: 'uppercase',
+    },
   },
 }));
 
@@ -29,9 +35,8 @@ const TaxonDetail = ({ dataProductCode }) => {
 
   /* Get the taxon types from the API service */
   const getTaxonTypes = (productCode) => {
-    // const url = NeonEnvironment.getDataProductsTaxonTypesPath();
-    const url = 'http://localhost:8888/api/v0/taxonomy/types';
-    const fullUrl = `${url}/NEON.DOM.SITE.${productCode}`;
+    const url = NeonEnvironment.getDataProductsTaxonTypesPath();
+    const fullUrl = `${url}/${productCode}`;
     const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
     fetch(fullUrl, { headers })
       .then((res) => {
@@ -46,7 +51,7 @@ const TaxonDetail = ({ dataProductCode }) => {
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.log(`Could not retrieve data products from fetch: ${error.message}.`);
+        console.log(`Could not fetch data products: '${error.message}'.`);
       });
   };
 
@@ -67,8 +72,8 @@ const TaxonDetail = ({ dataProductCode }) => {
         <ul className={classes.linkList}>
           {taxonTypes.map((taxonType) => (
             <li key={taxonType}>
-              <Link href={`${RouteService.getTaxonomicListsPath()}?${taxonType}`}>
-                {taxonType}
+              <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
+                <p className={classes.taxonTypes}>{taxonType}</p>
               </Link>
             </li>
           ))}

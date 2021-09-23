@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import DataProductLinks from "./DataProductLinks";
 
 import { taxonTypes } from "../../api/taxonTypes";
-// import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
 class FilterTaxonType extends Component {
 
@@ -25,14 +25,10 @@ class FilterTaxonType extends Component {
     console.log('Component mounted.');
     const queryParams = new URLSearchParams(window.location.search);
     const queryTaxonTypeCode = queryParams.get('taxonTypeCode') ?? '';
-    console.log(`Query taxon type code: '${queryTaxonTypeCode}'.`);
     if (queryTaxonTypeCode !== '') {
-      console.log(`Setting taxonTypeCode = ${queryTaxonTypeCode}`)
       this.setTaxonTypeCode(queryTaxonTypeCode);
-      console.log(`Getting data for query code: '${queryTaxonTypeCode}'.`);
       this.getDataProducts(queryTaxonTypeCode);
     } else {
-      console.log(`Getting data for: '${this.state.taxonTypeCode}'.`);
       this.getDataProducts(this.state.taxonTypeCode);
     }
     this.setTaxonTypes(taxonTypes);
@@ -54,9 +50,7 @@ class FilterTaxonType extends Component {
   }
 
   getDataProducts(taxonTypeCode) {
-    // const url = NeonEnvironment.getTaxonTypeDataProductsPath();
-    // console.log(`Querying data products for '${taxonTypeCode}'.`);
-    const url = 'http://localhost:8888/api/v0/taxonomy/products';
+    const url = NeonEnvironment.getTaxonTypeDataProductsPath();
     const fullUrl = `${url}/${taxonTypeCode}`;
     const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
     fetch(fullUrl, { headers })
@@ -75,7 +69,6 @@ class FilterTaxonType extends Component {
   }
 
   render() {
-    console.log(`Render code = ${this.state.taxonTypeCode}`);
     return (
       <>
         <Select
@@ -83,7 +76,7 @@ class FilterTaxonType extends Component {
           value={this.props.selectedValue}
           onChange={event => {
             this.props.onFilterValueChanged(this.FILTER_PROP, event.target.value);
-            this.getDataProducts(event.target.value); // the select value is the taxon type code
+            this.getDataProducts(event.target.value); // the selected value is the taxon type code
           }}
           style={{ minWidth: '180px', marginBottom: '16px' }}
           SelectDisplayProps={{ style: { padding: '10.5px 16px' }}}
@@ -101,7 +94,11 @@ class FilterTaxonType extends Component {
         {(this.state.dataProductData?.data?.dataProducts) ?
           <DataProductLinks props={this.state.dataProductData.data} /> :
           <div>
-            <Button variant="contained" disabled style={{ minWidth: '183px' }}>
+            <Button
+              variant="contained"
+              disabled
+              style={{ minWidth: '183px' }}
+            >
               View Data Products
             </Button>
           </div>}

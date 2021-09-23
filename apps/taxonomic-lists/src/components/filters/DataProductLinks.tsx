@@ -42,7 +42,7 @@ const DataProductLinks = (props: any) => {
 
     /* Return the component */
     const open = Boolean(anchorElement);
-    const id = open ? 'popover' : undefined;
+    const id = open ? 'view-data-products-popover' : undefined;
     if (typeof dataProducts === 'object' && Array.isArray(dataProducts) && dataProducts.length > 0) {
         return (
             <div>

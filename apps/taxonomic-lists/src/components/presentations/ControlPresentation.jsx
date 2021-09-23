@@ -23,13 +23,16 @@ const useStyles = makeStyles(theme => ({
   downloadContainer: {
     marginLeft: theme.spacing(2),
   },
+  taxonTypeTitle: {
+    marginBottom: theme.spacing(2),
+  },
 }));
 
 const ControlPresentation = () => {
   const classes = useStyles(Theme);
   return (
     <div className={classes.outerContainer} >
-      <Typography variant="h5" id="taxon-type-title" style={{ marginBottom: '16px' }}>
+      <Typography variant="h5" id="taxon-type-title" className={classes.taxonTypeTitle}>
         Taxon Type
       </Typography>
       <div className={classes.innerContainer}>

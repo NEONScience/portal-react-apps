@@ -51,7 +51,7 @@ const TaxonDetail = ({ dataProductCode }) => {
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
-        console.log(`Could not fetch data products: '${error.message}'.`);
+        console.log(`Could not fetch data products: ${error.message}.`);
       });
   };
 

@@ -43,11 +43,16 @@ const DataProductLinks = (props: any) => {
     /* Return the component */
     const open = Boolean(anchorElement);
     const id = open ? 'popover' : undefined;
-    if (typeof dataProducts === 'object') {
+    if (typeof dataProducts === 'object' && Array.isArray(dataProducts) && dataProducts.length > 0) {
         return (
             <div>
-                <Button aria-describedby={id} variant="contained" onClick={handleClick}>
-                    View Associated Data Products
+                <Button
+                    aria-describedby={id}
+                    variant="contained"
+                    onClick={handleClick}
+                    style={{ minWidth: '183px' }}
+                >
+                    View Data Products
                 </Button>
                 <Popover
                     id={id}
@@ -71,9 +76,8 @@ const DataProductLinks = (props: any) => {
                 </Popover>
             </div>
         );
-    } else {
-        return null;
     }
+    return null;
 }
 
 /* Export the component */

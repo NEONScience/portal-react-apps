@@ -50,8 +50,8 @@ class FilterTaxonType extends Component {
   }
 
   getDataProducts(taxonTypeCode) {
-    const url = NeonEnvironment.getTaxonTypeDataProductsPath();
-    const fullUrl = `${url}/${taxonTypeCode}`;
+    const baseUrl = NeonEnvironment.getTaxonTypeDataProductsPath();
+    const fullUrl = `${baseUrl}/${taxonTypeCode}`;
     const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
     fetch(fullUrl, { headers })
       .then((res) => {

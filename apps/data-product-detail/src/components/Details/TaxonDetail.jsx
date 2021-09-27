@@ -35,8 +35,8 @@ const TaxonDetail = ({ dataProductCode }) => {
 
   /* Get the taxon types from the API service */
   const getTaxonTypes = (productCode) => {
-    const url = NeonEnvironment.getDataProductTaxonTypesPath();
-    const fullUrl = `${url}/${productCode}`;
+    const baseUrl = NeonEnvironment.getDataProductTaxonTypesPath();
+    const fullUrl = `${baseUrl}/${productCode}`;
     const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
     fetch(fullUrl, { headers })
       .then((res) => {

@@ -73,7 +73,7 @@ const TaxonDetail = ({ dataProductCode }) => {
           {taxonTypes.map((taxonType) => (
             <li key={taxonType}>
               <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
-                <p className={classes.taxonTypes}>{taxonType}</p>
+                <p className={classes.taxonTypes}>{taxonType.split('_').join(' ')}</p>
               </Link>
             </li>
           ))}

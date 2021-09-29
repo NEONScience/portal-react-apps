@@ -16,12 +16,6 @@ const useStyles = makeStyles(() => ({
     listStyleType: 'none',
     padding: 0,
   },
-  taxonTypes: {
-    textTransform: 'lowercase',
-    '&:first-letter': {
-      textTransform: 'uppercase',
-    },
-  },
 }));
 
 /**
@@ -64,6 +58,28 @@ const TaxonDetail = ({ dataProductCode }) => {
 
   const classes = useStyles(Theme);
 
+  /**
+  * Capitalize the first letter of a string.
+  * @param s the string
+  * @returns the string with the first letter capitalized
+  */
+  const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1);
+
+  /**
+   * Parse the taxon type code into a more readable format.
+   * @param s the string
+   * @returns the string with the first letter capitalized
+   */
+  const parseTaxonType = (s) => {
+    if (s.includes('_')) {
+      const spaceDelimited = s.split('_').join(' ');
+      const words = spaceDelimited.split(' ');
+      const capitalized = words.map((word) => capitalize(word.toLowerCase()));
+      return capitalized.join(' ');
+    }
+    return capitalize(s.toLowerCase());
+  };
+
   /* Return the component */
   if (taxonTypes !== null) {
     return (
@@ -73,7 +89,7 @@ const TaxonDetail = ({ dataProductCode }) => {
           {taxonTypes.map((taxonType) => (
             <li key={taxonType}>
               <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
-                <p className={classes.taxonTypes}>{taxonType.split('_').join(' ')}</p>
+                <p>{parseTaxonType(taxonType)}</p>
               </Link>
             </li>
           ))}

@@ -14,7 +14,10 @@ import Theme from 'portal-core-components/lib/components/Theme';
 const useStyles = makeStyles(() => ({
   linkList: {
     listStyleType: 'none',
-    padding: 0,
+    paddingLeft: 0,
+  },
+  link: {
+    marginBottom: Theme.spacing(1),
   },
 }));
 
@@ -87,9 +90,9 @@ const TaxonDetail = ({ dataProductCode }) => {
         <Typography variant="h6" component="div">Associated Taxon Types</Typography>
         <ul className={classes.linkList}>
           {taxonTypes.map((taxonType) => (
-            <li key={taxonType}>
+            <li key={taxonType} className={classes.link}>
               <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
-                <p>{parseTaxonType(taxonType)}</p>
+                {parseTaxonType(taxonType)}
               </Link>
             </li>
           ))}

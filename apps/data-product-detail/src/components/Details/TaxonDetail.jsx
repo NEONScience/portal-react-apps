@@ -68,7 +68,7 @@ const TaxonDetail = ({ dataProductCode }) => {
   /**
    * Parse the taxon type code into a more readable format.
    * @param s the string
-   * @returns the string with the first letter capitalized
+   * @returns the string with each embedded word capitalized
    */
   const parseTaxonType = (s) => {
     if (s.includes('_')) {

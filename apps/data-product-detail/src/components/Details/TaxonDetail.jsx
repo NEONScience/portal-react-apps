@@ -34,8 +34,14 @@ const TaxonDetail = ({ dataProductCode }) => {
   const getTaxonTypes = (productCode) => {
     const baseUrl = NeonEnvironment.getDataProductTaxonTypesPath();
     const fullUrl = `${baseUrl}/${productCode}`;
-    const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
-    fetch(fullUrl, { headers })
+    const init = {
+      mode: 'cors',
+      credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+    };
+    fetch(fullUrl, init)
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.statusText);

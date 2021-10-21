@@ -97,6 +97,8 @@ const getFetch = () => {
 const fetchFields = (dispatch) => {
   const fetchInit = {
     method: "GET",
+    mode: 'cors',
+    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     headers: {
       Accept: "application/json",
       ...NeonApi.getApiTokenHeader()

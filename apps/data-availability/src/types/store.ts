@@ -18,7 +18,7 @@ export interface BaseStoreAppState {
   releasesFetchState: AsyncState<Release[]>;
   releases: Release[];
   bundlesFetchState: AsyncState<DataProductBundle[]>;
-  bundles: DataProductBundle[];
+  bundles: Record<string, DataProductBundle[]>;
 
   focalProductFetchState: AsyncState<Nullable<DataProduct[]>>;
   focalProduct: Nullable<DataProduct[]>;

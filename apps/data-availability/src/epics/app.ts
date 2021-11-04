@@ -207,7 +207,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   ): Observable<unknown> => {
     const singleResponse: AjaxResponse = (response as AjaxResponse);
     const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
-    if (exists(resolved) && exists(resolved.children)) {
+    if (exists(resolved)) {
       return of(AppFlow.fetchProductBundles.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchProductBundles.asyncErrorAction(null, 'Fetching bundles error'));

@@ -39,9 +39,29 @@ const appStateSelector = createSelector(
   (state: BaseStoreAppState): BaseStoreAppState => state,
 );
 
+const getProvReleaseRegex = (): RegExp => new RegExp(/^[A-Z]+$/);
+
+const determineBundle = (state: BaseStoreAppState): DataProductBundle[] => {
+  const defaultBundle = (state.bundles.PROVISIONAL ? state.bundles.PROVISIONAL : []);
+  const regex = getProvReleaseRegex();
+  let isLatestProv = false;
+  if (state.selectedRelease && regex) {
+    const matches = regex.exec(state.selectedRelease.release);
+    isLatestProv = exists(matches) && ((matches as RegExpExecArray).length > 0);
+  }
+  let appliedRelease = state.selectedRelease?.release;
+  if (isLatestProv) {
+    appliedRelease = 'PROVISIONAL';
+  }
+  return state.selectedRelease
+    ? state.bundles[appliedRelease as string]
+    : defaultBundle;
+};
+
 const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
   let parentCodeForwardAvail: string|undefined;
-  state.bundles.some((checkBundle: DataProductBundle): boolean => {
+  const appliedBundles: DataProductBundle[] = determineBundle(state);
+  appliedBundles.some((checkBundle: DataProductBundle): boolean => {
     const parent = checkBundle.parentProducts
       .find((checkParent: DataProductParent): boolean => (
         checkParent.forwardAvailability
@@ -154,7 +174,7 @@ const AppStateSelector = {
       releaseFetchState: state.releasesFetchState.asyncState,
       releases: state.releases,
       bundlesFetchState: state.bundlesFetchState.asyncState,
-      bundles: state.bundles,
+      bundles: determineBundle(state),
       focalProductFetchState: state.focalProductFetchState.asyncState,
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
@@ -168,7 +188,7 @@ const AppStateSelector = {
     [appStateSelector],
     (state: BaseStoreAppState): DataProductSelectState => ({
       bundlesFetchState: state.bundlesFetchState.asyncState,
-      bundles: state.bundles,
+      bundles: determineBundle(state),
       productsFetchState: state.productsFetchState.asyncState,
       products: !existsNonEmpty(state.products)
         ? new Array<DataProductSelectOption>()
@@ -275,7 +295,11 @@ const AppStateSelector = {
     [appStateSelector],
     (state: BaseStoreAppState): SiteAvailabilitySectionState => ({
       focalSiteFetchState: state.focalSiteFetchState.asyncState,
-      focalSite: transformSiteForBundles(state.focalSite, state.products, state.bundles),
+      focalSite: transformSiteForBundles(
+        state.focalSite,
+        state.products,
+        determineBundle(state),
+      ),
     }),
   ),
 };

@@ -1,5 +1,7 @@
 import isEqual from 'lodash/isEqual';
 
+import BundleService from 'portal-core-components/lib/service/BundleService';
+
 import {
   /* constants */
   COUNTABLE_FILTER_KEYS,
@@ -122,7 +124,7 @@ export const parseProductsByReleaseData = (state, release) => {
     sites: sitesJSON,
     states: statesJSON,
     domains: domainsJSON,
-    bundles: bundlesJSON,
+    bundles: bundlesCtx,
     timeSeriesDataProducts: timeSeriesDataProductsJSON,
   } = state.neonContextState.data;
 
@@ -164,7 +166,8 @@ export const parseProductsByReleaseData = (state, release) => {
   const productsByRelease = {};
 
   // Identify parent bundle indexes for availability lookup
-  const bundleParentKeys = Object.keys(bundlesJSON.parents);
+  const bundleRelease = BundleService.determineBundleRelease(release);
+  const bundleParentKeys = BundleService.getBundledProductCodes(bundlesCtx, bundleRelease);
   const bundleParentIdxLookup = {};
   const appliedProducts = ((unparsedData || {}).products || []);
   appliedProducts.forEach((product, idx) => {
@@ -185,34 +188,43 @@ export const parseProductsByReleaseData = (state, release) => {
     // Set bundle values now so we can use them downstream. A bundle child may take on
     // several attributes of its parent so as to be presented properly. Note that some bundle
     // children may have more than one parent, and forwarding availability will never work for them.
-    const isBundleChild = !!bundlesJSON.children[productCode];
-    const isBundleParent = Object.keys(bundlesJSON.parents).includes(productCode);
-    const hasManyParents = isBundleChild && Array.isArray(bundlesJSON.children[productCode]);
+    const isBundleChild = BundleService.isProductInBundle(bundlesCtx, bundleRelease, productCode);
+    const isBundleParent = BundleService.isBundledProduct(bundlesCtx, bundleRelease, productCode);
+    const hasManyParents = isBundleChild
+      && BundleService.isSplitProduct(bundlesCtx, bundleRelease, productCode);
     let forwardAvailability = null;
     let availabilityParentCode = null;
     let availabilitySiteCodes = product.siteCodes || [];
     if (isBundleChild) {
-      forwardAvailability = !hasManyParents
-        ? bundlesJSON.parents[bundlesJSON.children[productCode]].forwardAvailability
-        : bundlesJSON.children[productCode].every(
-          (parent) => bundlesJSON.parents[parent].forwardAvailability,
-        );
-      availabilityParentCode = hasManyParents
-        ? bundlesJSON.children[productCode][0]
-        : bundlesJSON.children[productCode];
+      availabilityParentCode = BundleService.getBundleProductCode(
+        bundlesCtx,
+        bundleRelease,
+        productCode,
+      );
+      forwardAvailability = BundleService.shouldForwardAvailability(
+        bundlesCtx,
+        bundleRelease,
+        productCode,
+        availabilityParentCode,
+      );
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
       availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
+    }
+    let appliedBundleParent = null;
+    if (isBundleChild) {
+      appliedBundleParent = hasManyParents
+        ? BundleService.getSplitProductBundles(bundlesCtx, bundleRelease, productCode)
+        : BundleService.getBundleProductCode(bundlesCtx, bundleRelease, productCode);
     }
     product.bundle = {
       isChild: isBundleChild,
       isParent: isBundleParent,
       hasManyParents,
       forwardAvailability,
-      parent: isBundleChild ? bundlesJSON.children[productCode] : null,
-      children: isBundleParent ? (
-        Object.keys(bundlesJSON.children)
-          .filter((childCode) => bundlesJSON.children[childCode] === productCode)
-      ) : null,
+      parent: appliedBundleParent,
+      children: isBundleParent
+        ? BundleService.getBundledProducts(bundlesCtx, bundleRelease, productCode)
+        : null,
     };
 
     if (product.bundle.isChild) {

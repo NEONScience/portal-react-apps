@@ -16,7 +16,7 @@ export interface AppComponentState {
   releases: Release[];
   sitesFetchState: AsyncStateType;
   bundlesFetchState: AsyncStateType;
-  bundles: DataProductBundle[];
+  bundles: Record<string, DataProductBundle[]>;
   focalProductFetchState: AsyncStateType;
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
@@ -34,7 +34,7 @@ export interface SiteSelectOption extends Site {
 
 export interface DataProductSelectState {
   bundlesFetchState: AsyncStateType;
-  bundles: DataProductBundle[];
+  bundles: Record<string, DataProductBundle[]>;
   productsFetchState: AsyncStateType;
   products: DataProductSelectOption[];
   selectedRelease: Nullable<Release>;

@@ -20,6 +20,7 @@ import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from './DataProductContext';
 
@@ -123,9 +124,9 @@ const DataProductPage = () => {
   // Special handling for bundle children
   let doiUrlIsFromBundleParent = false;
   let bundleParentLink = null;
-  if (currentDoiUrl && bundle.parentCodes.length) {
+  if (currentDoiUrl && (bundle.parentCodes.length > 0) && isStringNonEmpty(bundle.doiProductCode)) {
     doiUrlIsFromBundleParent = true;
-    const bundleParentCode = bundle.parentCodes[0];
+    const bundleParentCode = bundle.doiProductCode;
     const bundleParentData = (bundleParentReleases[bundleParentCode] || {})[currentRelease] || {};
     const { productName: bundleParentName } = bundleParentData;
     bundleParentLink = !Object.keys(bundleParentData).length ? null : (

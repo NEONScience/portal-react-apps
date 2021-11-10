@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 /**
  * Style the component using the imported theme
@@ -49,8 +50,11 @@ const TaxonDetail = ({ dataProductCode }) => {
         return res.json();
       })
       .then((json) => {
+        if (!exists(json) || !exists(json.data)) {
+          return;
+        }
         const { taxonTypeCodes } = json.data;
-        setTaxonTypes(taxonTypeCodes);
+        setTaxonTypes(taxonTypeCodes || null);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console

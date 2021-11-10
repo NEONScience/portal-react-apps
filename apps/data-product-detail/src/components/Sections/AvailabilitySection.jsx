@@ -97,8 +97,12 @@ const AvailabilitySection = (props) => {
   const availableSites = (productData.siteCodes || []).length;
   const availableSiteCodes = (productData.siteCodes || []).map((site) => site.siteCode);
   const availableDates = useMemo(computeAvailableDateRange, [productData.siteCodes]);
-  const availableDatesFormatted = availableDates
-    .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
+  let availableDatesFormatted = ['n/a', 'n/a'];
+  if (dataAvailable) {
+    availableDatesFormatted = availableDates
+      .filter((month) => isStringNonEmpty(month))
+      .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
+  }
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link

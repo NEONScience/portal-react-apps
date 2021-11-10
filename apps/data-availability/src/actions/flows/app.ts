@@ -24,7 +24,7 @@ interface AppAsyncFlowTypes {
   fetchProducts: AsyncFlowHandler<AsyncState<DataProduct[]>, AsyncActionType, DataProduct[]>;
   fetchSites: AsyncFlowHandler<AsyncState<Site[]>, AsyncActionType, Site[]>;
   fetchReleases: AsyncFlowHandler<AsyncState<Release[]>, AsyncActionType, Release[]>;
-  fetchProductBundles: AsyncFlowHandler<AsyncState<DataProductBundle[]>, AsyncActionType, DataProductBundle[]>;
+  fetchProductBundles: AsyncFlowHandler<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>;
   fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>;
   fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
 }
@@ -87,7 +87,7 @@ const AppFlow: AppAsyncFlowTypes = {
     AppFlowActionTypes.fetchReleases,
     ReleaseParser.parseReleases,
   ),
-  fetchProductBundles: AsyncFlow.create<AsyncState<DataProductBundle[]>, AsyncActionType, DataProductBundle[]>(
+  fetchProductBundles: AsyncFlow.create<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>(
     AppFlowActionTypes.fetchProductBundles,
     ProductParser.parseBundles,
   ),

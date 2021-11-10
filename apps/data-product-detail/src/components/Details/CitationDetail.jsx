@@ -22,6 +22,7 @@ import DataCiteService, {
   CitationDownloadType,
 } from 'portal-core-components/lib/service/DataCiteService';
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
@@ -94,9 +95,12 @@ const CitationDetail = () => {
     ? releases.find((r) => r.showCitation)
     : null;
 
-  const bundleParentCode = bundle.parentCodes.length ? bundle.parentCodes[0] : null;
+  const hasBundleCode = (bundle.parentCodes.length > 0) && isStringNonEmpty(bundle.doiProductCode);
+  const bundleParentCode = hasBundleCode
+    ? bundle.doiProductCode
+    : null;
 
-  const citableBaseProduct = bundle.parentCodes.length
+  const citableBaseProduct = hasBundleCode
     ? bundleParents[bundleParentCode] || baseProduct
     : baseProduct;
 

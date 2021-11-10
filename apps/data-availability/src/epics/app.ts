@@ -99,6 +99,7 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   request: {
     method: 'POST',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -131,6 +132,7 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   request: {
     method: 'POST',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -163,6 +165,7 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   request: {
     method: 'GET',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: NeonEnvironment.getFullApiPath('releases'),
   },
@@ -191,6 +194,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   request: {
     method: 'GET',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: `${NeonEnvironment.getFullApiPath('products')}/bundles`,
   },
@@ -203,7 +207,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   ): Observable<unknown> => {
     const singleResponse: AjaxResponse = (response as AjaxResponse);
     const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
-    if (exists(resolved) && exists(resolved.children)) {
+    if (exists(resolved)) {
       return of(AppFlow.fetchProductBundles.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchProductBundles.asyncErrorAction(null, 'Fetching bundles error'));
@@ -219,6 +223,7 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   request: {
     method: 'POST',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -260,6 +265,7 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   request: {
     method: 'POST',
     crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },

@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 import React, { Component } from "react";
+
+import NeonEnvironment from "portal-core-components/lib/components/NeonEnvironment/NeonEnvironment";
 import NeonApi from "portal-core-components/lib/components/NeonApi";
 
 import "./DataTable.css";
@@ -187,6 +189,10 @@ class DataTable extends Component {
       contentType: "text/plain",
 
       headers: NeonApi.getApiTokenHeader(),
+
+      xhrFields: {
+        withCredentials: NeonEnvironment.requireCors(),
+      },
 
       data: function () {
         that.updateTaxonQuery();

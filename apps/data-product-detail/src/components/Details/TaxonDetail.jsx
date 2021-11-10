@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 /**
  * Style the component using the imported theme
@@ -34,8 +35,14 @@ const TaxonDetail = ({ dataProductCode }) => {
   const getTaxonTypes = (productCode) => {
     const baseUrl = NeonEnvironment.getDataProductTaxonTypesPath();
     const fullUrl = `${baseUrl}/${productCode}`;
-    const headers = { 'Content-Type': 'application/json;charset=UTF-8' };
-    fetch(fullUrl, { headers })
+    const init = {
+      mode: 'cors',
+      credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+      },
+    };
+    fetch(fullUrl, init)
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.statusText);
@@ -43,8 +50,11 @@ const TaxonDetail = ({ dataProductCode }) => {
         return res.json();
       })
       .then((json) => {
+        if (!exists(json) || !exists(json.data)) {
+          return;
+        }
         const { taxonTypeCodes } = json.data;
-        setTaxonTypes(taxonTypeCodes);
+        setTaxonTypes(taxonTypeCodes || null);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console

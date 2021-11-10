@@ -44,7 +44,7 @@ import {
 import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
 import { useContextReleases } from '../hooks/useContextReleases';
-import { findBundle, findForwardParent } from '../util/bundleUtil';
+import { determineBundle, findBundle, findForwardParent } from '../util/bundleUtil';
 
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
 
@@ -196,7 +196,11 @@ const App: React.FC = (): JSX.Element => {
           const nextRelease: Nullable<Release> = !isStringNonEmpty(selected)
             ? null
             : releases.find((value: Release): boolean => (value.release === selected));
-          handleChangeCb(selectedProduct, selectedSite, nextRelease, bundles);
+          const releaseBundles: DataProductBundle[] = determineBundle(
+            bundles,
+            nextRelease?.release,
+          );
+          handleChangeCb(selectedProduct, selectedSite, nextRelease, releaseBundles);
         }}
       />
     </React.Fragment>

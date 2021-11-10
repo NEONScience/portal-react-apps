@@ -31,7 +31,7 @@ const appState: BaseStoreAppState = {
     data: [],
     error: null,
   },
-  bundles: [],
+  bundles: {},
 
   focalProductFetchState: {
     asyncState: AsyncStateType.IDLE,

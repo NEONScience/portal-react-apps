@@ -22,6 +22,10 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
+import BundleService from 'portal-core-components/lib/service/BundleService';
+
+import { exists } from 'portal-core-components/lib/util/typeUtil';
+
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
   FETCHING: 'FETCHING',
@@ -50,6 +54,7 @@ const DEFAULT_STATE = {
     release: null,
     bundle: {
       parentCodes: [],
+      doiProductCode: null,
       forwardAvailabilityFromParent: null,
     },
     nextRelease: undefined,
@@ -70,6 +75,8 @@ const DEFAULT_STATE = {
     releases: [], // List of release objects; fed from base product or bundle inheritance
     aopVizProducts: [],
   },
+
+  neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 };
 
 const fetchIsInStatus = (fetchObject, status) => (
@@ -147,7 +154,7 @@ const calculateFetches = (state) => {
   });
   // Fetch all release-specific bundle parent products
   if (fetchRelease) {
-    parentCodes.forEach((parentCode) => {
+    (parentCodes || []).forEach((parentCode) => {
       if (!newState.fetches.bundleParentReleases[parentCode]) {
         newState.fetches.bundleParentReleases[parentCode] = {};
       }
@@ -171,7 +178,7 @@ const calculateAppStatus = (state) => {
     updatedState.app.status = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING)) {
+  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
     updatedState.app.status = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -196,17 +203,22 @@ const applyUserRelease = (current, userReleases) => {
     return;
   }
   userReleases.forEach((userRelease) => {
-    current.push({
-      ...userRelease,
-      showCitation: false,
-      showDoi: false,
-      showViz: true,
-      release: userRelease.releaseTag,
-      description: userRelease.description,
-      generationDate: userRelease.generationDate
-        ? new Date(userRelease.generationDate).toISOString()
-        : new Date().toISOString(),
-    });
+    const hasRelease = current.some((value) => (
+      (value?.release?.localeCompare(userRelease.releaseTag) === 0) || false
+    ));
+    if (!hasRelease) {
+      current.push({
+        ...userRelease,
+        showCitation: false,
+        showDoi: false,
+        showViz: true,
+        release: userRelease.releaseTag,
+        description: userRelease.description,
+        generationDate: userRelease.generationDate
+          ? new Date(userRelease.generationDate).toISOString()
+          : new Date().toISOString(),
+      });
+    }
   });
 };
 
@@ -252,7 +264,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
     route: {
       productCode,
       release: currentRelease,
-      bundle: { forwardAvailabilityFromParent },
+      bundle: { doiProductCode, forwardAvailabilityFromParent },
     },
     data: {
       product: generalProduct,
@@ -268,7 +280,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
     // both, so here we can safely just take the first parent code as the one from which to forward
     // availability. If we ever need to forward availability from more than one bundle parent this
     // logic will need to be refactored.
-    const firstParentCode = Object.keys(bundleParents)[0] || null;
+    const firstParentCode = doiProductCode;
     if (!firstParentCode) { return null; }
     if (!currentRelease) { return bundleParents[firstParentCode]; }
     if (
@@ -332,6 +344,97 @@ const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) =>
 };
 
 /**
+ * Calculates the bundle state for DataProductContext based on the bundle context
+ * state stored in NeonContext.
+ * @param bundlesCtx The NeonContext bundle state.
+ * @param release The release derive bundles for.
+ * @param productCode The product code to derive bundles for.
+ * @return The new DataProductContext bundle state.
+ */
+const calculateBundles = (bundlesCtx, release, productCode) => {
+  let bundleParentCode = null;
+  let bundleParentCodes = [];
+  let bundleForwardAvailabilityFromParent = null;
+  const bundleRelease = BundleService.determineBundleRelease(release);
+  const isBundleChild = BundleService.isProductInBundle(
+    bundlesCtx,
+    bundleRelease,
+    productCode,
+  );
+  if (isBundleChild) {
+    bundleParentCode = BundleService.getBundleProductCode(
+      bundlesCtx,
+      bundleRelease,
+      productCode,
+    );
+    bundleForwardAvailabilityFromParent = BundleService.shouldForwardAvailability(
+      bundlesCtx,
+      bundleRelease,
+      productCode,
+      bundleParentCode,
+    );
+    const hasManyParents = isBundleChild
+      && BundleService.isSplitProduct(bundlesCtx, bundleRelease, productCode);
+    if (hasManyParents) {
+      bundleParentCodes = BundleService.getSplitProductBundles(
+        bundlesCtx,
+        bundleRelease,
+        productCode,
+      );
+    } else {
+      const bundleCode = BundleService.getBundleProductCode(
+        bundlesCtx,
+        bundleRelease,
+        productCode,
+      );
+      if (exists(bundleCode)) {
+        bundleParentCodes = [bundleCode];
+      }
+    }
+  }
+  return {
+    parentCodes: bundleParentCodes,
+    doiProductCode: bundleParentCode,
+    forwardAvailabilityFromParent: bundleForwardAvailabilityFromParent,
+  };
+};
+
+/**
+ * Calculates the current context state based on the NeonContext state,
+ * derivation of bundles, and the resulting fetch and app status.
+ * @param newState The DataProductContext state to build on.
+ * @param neonContextState The new NeonContext state to integrate.
+ * @param release The release to work from.
+ * @param productCode The product code to work from.
+ * @return The next DataProductContext state.
+ */
+const calculateContextState = (newState, neonContextState, release, productCode) => {
+  const isErrorState = (newState.app.status === APP_STATUS.ERROR);
+  const routeBundles = calculateBundles(
+    neonContextState.data.bundles,
+    release,
+    productCode,
+  );
+  const newFetchState = calculateFetches({
+    ...newState,
+    route: {
+      ...newState.route,
+      bundle: routeBundles,
+    },
+  });
+  const newAppStatusState = calculateAppStatus({
+    ...newFetchState,
+    neonContextState,
+  });
+  // If the existing app state was errored due to initialization,
+  // keep the current error state.
+  if (isErrorState) {
+    newAppStatusState.app.status = APP_STATUS.ERROR;
+  }
+  return newAppStatusState;
+};
+
+/**
    CONTEXT
 */
 const Context = createContext(DEFAULT_STATE);
@@ -358,7 +461,12 @@ const reducer = (state, action) => {
   );
   switch (action.type) {
     case 'reinitialize':
-      return cloneDeep(DEFAULT_STATE);
+      // Reset the context state to default state, but keep the
+      // finalized NeonContext state.
+      return {
+        ...cloneDeep(DEFAULT_STATE),
+        neonContextState: state.neonContextState,
+      };
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
       newState.app.error = action.error;
@@ -366,7 +474,12 @@ const reducer = (state, action) => {
 
     case 'storeFinalizedNeonContextState':
       applyUserRelease(newState.data.releases, withContextReleases(action.neonContextState));
-      return newState;
+      return calculateContextState(
+        newState,
+        action.neonContextState,
+        newState.route.release,
+        newState.route.productCode,
+      );
 
     // Route parsing from initialization only.
     // See 'setNextRelease' when route changes with respect to release after initialization
@@ -374,18 +487,11 @@ const reducer = (state, action) => {
       // Fill in state.route from action
       newState.route.productCode = action.productCode;
       newState.route.release = action.release;
-      if (action.bundleParentCodes) {
-        newState.route.bundle.parentCodes = action.bundleParentCodes;
-        // eslint-disable-next-line max-len
-        newState.route.bundle.forwardAvailabilityFromParent = action.bundleForwardAvailabilityFromParent;
-      }
-      // Initialize fetches, set app status, and return
-      return calculateAppStatus(calculateFetches(newState));
+      return newState;
 
-    case 'fetchesStarted':
-      newState.fetches = { ...action.fetches };
+    case 'fetchProductStarted':
+      newState.fetches.product.status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
-
     case 'fetchProductFailed':
       newState.fetches.product.status = FETCH_STATUS.ERROR;
       newState.fetches.product.error = action.error;
@@ -401,6 +507,9 @@ const reducer = (state, action) => {
         ),
       );
 
+    case 'fetchProductReleaseStarted':
+      newState.fetches.productReleases[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
     case 'fetchProductReleaseFailed':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleases[action.release].error = action.error;
@@ -412,6 +521,9 @@ const reducer = (state, action) => {
       newState.data.productReleases[action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchBundleParentStarted':
+      newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
     case 'fetchBundleParentFailed':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParents[action.bundleParent].error = action.error;
@@ -429,6 +541,11 @@ const reducer = (state, action) => {
         ),
       );
 
+    case 'fetchBundleParentReleaseStarted':
+      /* eslint-disable max-len */
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.FETCHING;
+      /* eslint-enable max-len */
+      return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseFailed':
       /* eslint-disable max-len */
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
@@ -446,6 +563,9 @@ const reducer = (state, action) => {
       newState.data.bundleParentReleases[action.bundleParent][action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchAOPVizProductsStarted':
+      newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
     case 'fetchAOPVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
       newState.fetches.aopVizProducts.error = action.error;
@@ -463,7 +583,12 @@ const reducer = (state, action) => {
       newState.route.release = newState.route.nextRelease;
       newState.route.nextRelease = undefined;
       newState.route.nextHash = undefined;
-      return calculateAppStatus(calculateFetches(newState));
+      return calculateContextState(
+        newState,
+        newState.neonContextState,
+        newState.route.release,
+        newState.route.productCode,
+      );
 
     // Default
     default:
@@ -483,9 +608,6 @@ const Provider = (props) => {
     initialState,
   );
 
-  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  const { bundles } = neonContextData;
-
   const {
     app: { status },
     route: {
@@ -495,12 +617,15 @@ const Provider = (props) => {
       nextHash,
     },
     fetches,
+    neonContextState: {
+      isFinal: neonContextIsFinal,
+    },
   } = state;
 
   /**
      Effects
   */
-  // Parse productCode and release out of the route (URL). Also pull bundle data out of NeonContext
+  // Parse productCode and release out of the route (URL).
   useEffect(() => {
     if (status !== APP_STATUS.INITIALIZING) { return; }
     const [routeProductCode, routeRelease] = getProductCodeAndReleaseFromURL();
@@ -508,26 +633,12 @@ const Provider = (props) => {
       dispatch({ type: 'error', error: 'Data product not found' });
       return;
     }
-    let bundleParentCodes = null;
-    let bundleForwardAvailabilityFromParent = null;
-    if (bundles.children && bundles.children[routeProductCode]) {
-      bundleParentCodes = [bundles.children[routeProductCode]].flat();
-      bundleForwardAvailabilityFromParent = false;
-      if (
-        bundleParentCodes.length === 1
-        && bundles.parents[bundleParentCodes[0]].forwardAvailability
-      ) {
-        bundleForwardAvailabilityFromParent = true;
-      }
-    }
     dispatch({
       type: 'parseRoute',
       productCode: routeProductCode,
       release: routeRelease,
-      bundleParentCodes,
-      bundleForwardAvailabilityFromParent,
     });
-  }, [status, bundles]);
+  }, [status]);
 
   // HISTORY
   // Ensure route release and history are always in sync. The main route.release ALWAYS FOLLOWS
@@ -570,11 +681,12 @@ const Provider = (props) => {
 
   // Trigger any fetches that are awaiting call
   useEffect(() => {
+    // NeonContext is required to fetch data for the app due to bundles.
+    if (!neonContextIsFinal) { return; }
     if (status !== APP_STATUS.HAS_FETCHES_TO_TRIGGER) { return; }
-    const newFetches = cloneDeep(fetches);
     // Base product fetch
     if (fetchIsAwaitingCall(fetches.product)) {
-      newFetches.product.status = FETCH_STATUS.FETCHING;
+      dispatch({ type: 'fetchProductStarted' });
       NeonApi.getProductObservable(productCode).subscribe(
         (response) => {
           dispatch({ type: 'fetchProductSucceeded', data: response.data });
@@ -588,7 +700,7 @@ const Provider = (props) => {
     Object.keys(fetches.productReleases)
       .filter((release) => fetchIsAwaitingCall(fetches.productReleases[release]))
       .forEach((release) => {
-        newFetches.productReleases[release].status = FETCH_STATUS.FETCHING;
+        dispatch({ type: 'fetchProductReleaseStarted', release });
         NeonApi.getProductObservable(productCode, release).subscribe(
           (response) => {
             dispatch({ type: 'fetchProductReleaseSucceeded', release, data: response.data });
@@ -602,7 +714,7 @@ const Provider = (props) => {
     Object.keys(fetches.bundleParents)
       .filter((bundleParent) => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
       .forEach((bundleParent) => {
-        newFetches.bundleParents[bundleParent].status = FETCH_STATUS.FETCHING;
+        dispatch({ type: 'fetchBundleParentStarted', bundleParent });
         NeonApi.getProductObservable(bundleParent).subscribe(
           (response) => {
             dispatch({ type: 'fetchBundleParentSucceeded', bundleParent, data: response.data });
@@ -620,8 +732,8 @@ const Provider = (props) => {
             fetchIsAwaitingCall(fetches.bundleParentReleases[bundleParent][release])
           ))
           .forEach((release) => {
-            newFetches.bundleParentReleases[bundleParent][release].status = FETCH_STATUS.FETCHING;
-            NeonApi.getProductObservable(bundleParent).subscribe(
+            dispatch({ type: 'fetchBundleParentReleaseStarted', bundleParent, release });
+            NeonApi.getProductObservable(bundleParent, release).subscribe(
               (response) => {
                 dispatch({
                   type: 'fetchBundleParentReleaseSucceeded',
@@ -643,7 +755,7 @@ const Provider = (props) => {
       });
     // AOP products fetch
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
-      newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      dispatch({ type: 'fetchAOPVizProductsStarted' });
       ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
         map((response) => {
           dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.data });
@@ -654,8 +766,7 @@ const Provider = (props) => {
         }),
       ).subscribe();
     }
-    dispatch({ type: 'fetchesStarted', fetches: newFetches });
-  }, [status, productCode, fetches]);
+  }, [status, productCode, fetches, neonContextIsFinal]);
 
   /**
      Render

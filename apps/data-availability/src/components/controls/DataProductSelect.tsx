@@ -41,7 +41,7 @@ import { DataProduct, DataProductBundle, DataProductParent } from '../../types/s
 import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
-import { findBundle, findForwardParent } from '../../util/bundleUtil';
+import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
 const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
@@ -151,6 +151,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       .sort((a: DataProduct, b: DataProduct): number => a.productName.localeCompare(b.productName))
       .find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
     : selectedProduct as DataProduct;
+  const releaseBundles: DataProductBundle[] = determineBundle(bundles, selectedRelease?.release);
 
   const handleChangeCb = useCallback(
     (productCb: DataProduct, parentCb?: DataProductParent, releaseCb?: string) => (
@@ -171,7 +172,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     () => {
       if (!hasProduct && isComplete) {
         let parentBundle: DataProductParent|undefined;
-        const bundle: DataProductBundle|undefined = findBundle(bundles, initialProduct.productCode);
+        const bundle: DataProductBundle|undefined = findBundle(
+          releaseBundles,
+          initialProduct.productCode,
+        );
         if (bundle) {
           parentBundle = findForwardParent(bundle);
         }
@@ -183,7 +187,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   );
 
   const getOptionsDisabled = (value: DataProductSelectOption): boolean => {
-    const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
+    const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     let disabled = !value.hasData;
     if (bundle) {
       const parent: DataProductParent|undefined = findForwardParent(bundle);
@@ -196,7 +200,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     paramBundle?: DataProductBundle,
   ): string => {
     const bundle: DataProductBundle|undefined = paramBundle
-      || findBundle(bundles, value.productCode);
+      || findBundle(releaseBundles, value.productCode);
     let bundleMessage = '';
     if (bundle) {
       const parent: DataProductParent|undefined = findForwardParent(bundle);
@@ -226,7 +230,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
   ): JSX.Element => {
-    const bundle: DataProductBundle|undefined = findBundle(bundles, value.productCode);
+    const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     const secondaryMessage: string = getProductSecondaryMessage(value as DataProduct, bundle);
     const nameSlice: SearchSlice[] = calcSearchSlice(
       value.productName,
@@ -291,7 +295,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: DataProductSelectOption): string => {
-            const bundle: DataProductBundle|undefined = findBundle(bundles, option.productCode);
+            const bundle: DataProductBundle|undefined = findBundle(
+              releaseBundles,
+              option.productCode,
+            );
             const secondaryMessage: string = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
@@ -333,7 +340,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
             }) as DataProduct;
           let parentBundle: DataProductParent|undefined;
           const bundle: DataProductBundle|undefined = findBundle(
-            bundles,
+            releaseBundles,
             nextProduct.productCode,
           );
           if (bundle) {
@@ -349,7 +356,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
       return (<React.Fragment />);
     }
-    const bundle = findBundle(bundles, initialProduct.productCode);
+    const bundle = findBundle(releaseBundles, initialProduct.productCode);
     if (!bundle) {
       return (<React.Fragment />);
     }

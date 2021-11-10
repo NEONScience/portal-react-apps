@@ -28,7 +28,7 @@ import {
   SiteSelectOption,
   SiteSelectState,
 } from '../components/states/AppStates';
-import { findForwardChildren } from '../util/bundleUtil';
+import { determineBundle, findForwardChildren } from '../util/bundleUtil';
 
 const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
@@ -39,18 +39,11 @@ const appStateSelector = createSelector(
   (state: BaseStoreAppState): BaseStoreAppState => state,
 );
 
+const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] => (
+  determineBundle(state.bundles, state.selectedRelease?.release)
+);
+
 const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
-  let parentCodeForwardAvail: string|undefined;
-  state.bundles.some((checkBundle: DataProductBundle): boolean => {
-    const parent = checkBundle.parentProducts
-      .find((checkParent: DataProductParent): boolean => (
-        checkParent.forwardAvailability
-      ));
-    if (parent && parent.forwardAvailability) {
-      parentCodeForwardAvail = parent.parentProductCode;
-    }
-    return (parent && parent.forwardAvailability) || false;
-  });
   const { selectedProduct }: BaseStoreAppState = state;
   let appliedProduct: Nullable<DataProduct> = null;
   const appliedProducts: Nullable<DataProduct[]> = state.focalProduct;
@@ -66,6 +59,21 @@ const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
         [appliedProduct] = (appliedProducts as DataProduct[]);
       }
     }
+    let parentCodeForwardAvail: string|undefined;
+    const appliedBundles: DataProductBundle[] = determineBundleHelper(state);
+    appliedBundles.some((checkBundle: DataProductBundle): boolean => {
+      if (checkBundle.productCode.localeCompare(appliedProduct?.productCode || '') !== 0) {
+        return false;
+      }
+      const parent = checkBundle.parentProducts
+        .find((checkParent: DataProductParent): boolean => (
+          checkParent.forwardAvailability
+        ));
+      if (parent && parent.forwardAvailability) {
+        parentCodeForwardAvail = parent.parentProductCode;
+      }
+      return (parent && parent.forwardAvailability) || false;
+    });
     if (isStringNonEmpty(parentCodeForwardAvail)) {
       const appliedAvail: DataProduct|undefined = (appliedProducts as DataProduct[])
         .find((product: DataProduct): boolean => (
@@ -275,7 +283,11 @@ const AppStateSelector = {
     [appStateSelector],
     (state: BaseStoreAppState): SiteAvailabilitySectionState => ({
       focalSiteFetchState: state.focalSiteFetchState.asyncState,
-      focalSite: transformSiteForBundles(state.focalSite, state.products, state.bundles),
+      focalSite: transformSiteForBundles(
+        state.focalSite,
+        state.products,
+        determineBundleHelper(state),
+      ),
     }),
   ),
 };

@@ -17,6 +17,7 @@ import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHost
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -71,13 +72,17 @@ const AvailabilitySection = (props) => {
 
   const {
     route: {
-      bundle: { parentCodes, forwardAvailabilityFromParent },
+      bundle: {
+        doiProductCode,
+        parentCodes,
+        forwardAvailabilityFromParent,
+      },
     },
     data: {
       bundleParents,
     },
   } = state;
-  const isBundleChild = parentCodes.length;
+  const isBundleChild = (parentCodes.length > 0) && isStringNonEmpty(doiProductCode);
 
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
@@ -92,8 +97,12 @@ const AvailabilitySection = (props) => {
   const availableSites = (productData.siteCodes || []).length;
   const availableSiteCodes = (productData.siteCodes || []).map((site) => site.siteCode);
   const availableDates = useMemo(computeAvailableDateRange, [productData.siteCodes]);
-  const availableDatesFormatted = availableDates
-    .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
+  let availableDatesFormatted = ['n/a', 'n/a'];
+  if (dataAvailable) {
+    availableDatesFormatted = availableDates
+      .filter((month) => isStringNonEmpty(month))
+      .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
+  }
 
   const getParentProductLink = (parentProductData = {}) => (
     <Link
@@ -110,7 +119,7 @@ const AvailabilitySection = (props) => {
       ? (
         <Typography variant="subtitle2">
           {/* eslint-disable react/jsx-one-expression-per-line */}
-          This data product is bundled into {getParentProductLink(bundleParents[parentCodes[0]])}
+          This data product is bundled into {getParentProductLink(bundleParents[doiProductCode])}
           {/* eslint-enable react/jsx-one-expression-per-line */}
         </Typography>
       ) : (

@@ -203,17 +203,22 @@ const applyUserRelease = (current, userReleases) => {
     return;
   }
   userReleases.forEach((userRelease) => {
-    current.push({
-      ...userRelease,
-      showCitation: false,
-      showDoi: false,
-      showViz: true,
-      release: userRelease.releaseTag,
-      description: userRelease.description,
-      generationDate: userRelease.generationDate
-        ? new Date(userRelease.generationDate).toISOString()
-        : new Date().toISOString(),
-    });
+    const hasRelease = current.some((value) => (
+      (value?.release?.localeCompare(userRelease.releaseTag) === 0) || false
+    ));
+    if (!hasRelease) {
+      current.push({
+        ...userRelease,
+        showCitation: false,
+        showDoi: false,
+        showViz: true,
+        release: userRelease.releaseTag,
+        description: userRelease.description,
+        generationDate: userRelease.generationDate
+          ? new Date(userRelease.generationDate).toISOString()
+          : new Date().toISOString(),
+      });
+    }
   });
 };
 
@@ -404,7 +409,6 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
  * @return The next DataProductContext state.
  */
 const calculateContextState = (newState, neonContextState, release, productCode) => {
-  applyUserRelease(newState.data.releases, withContextReleases(neonContextState));
   const isErrorState = (newState.app.status === APP_STATUS.ERROR);
   const routeBundles = calculateBundles(
     neonContextState.data.bundles,
@@ -469,6 +473,7 @@ const reducer = (state, action) => {
       return newState;
 
     case 'storeFinalizedNeonContextState':
+      applyUserRelease(newState.data.releases, withContextReleases(action.neonContextState));
       return calculateContextState(
         newState,
         action.neonContextState,

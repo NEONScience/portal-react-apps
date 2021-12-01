@@ -79,6 +79,8 @@ const DEFAULT_STATE = {
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 };
 
+const getProvReleaseRegex = () => new RegExp(/^[A-Z]+$/);
+
 const fetchIsInStatus = (fetchObject, status) => (
   typeof fetchObject === 'object' && fetchObject !== null && fetchObject.status === status
 );
@@ -132,8 +134,15 @@ const calculateFetches = (state) => {
   } = state.route;
   const { releases } = state.data;
   if (!productCode) { return state; }
-  const latestRelease = releases && releases.length ? releases[0].release : null;
-  const fetchRelease = routeRelease || latestRelease;
+  // Find the latest non-prov release definition
+  const latestRelease = (releases && releases.length)
+    ? releases.find((r) => {
+      const matches = getProvReleaseRegex().exec(r.release);
+      const isLatestProv = exists(matches) && (matches.length > 0);
+      return !isLatestProv;
+    })
+    : null;
+  const fetchRelease = routeRelease || (latestRelease || {}).release;
   // Fetch the base product
   if (!state.fetches.product) {
     newState.fetches.product = { status: FETCH_STATUS.AWAITING_CALL };

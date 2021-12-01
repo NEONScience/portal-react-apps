@@ -18,6 +18,7 @@ import DownloadIcon from '@material-ui/icons/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import BundleService from 'portal-core-components/lib/service/BundleService';
 import DataCiteService, {
   CitationDownloadType,
 } from 'portal-core-components/lib/service/DataCiteService';
@@ -89,6 +90,11 @@ const CitationDetail = () => {
       bundleParentReleases,
       releases,
     },
+    neonContextState: {
+      data: {
+        bundles: bundlesCtx,
+      },
+    },
   } = state;
 
   const latestRelease = (releases && releases.length)
@@ -104,12 +110,41 @@ const CitationDetail = () => {
     ? bundleParents[bundleParentCode] || baseProduct
     : baseProduct;
 
+  /**
+   * Determines if the latest release has a bundle defined for this product
+   * @returns True if the latest release has a bundle defined for this product
+   */
+  const hasLatestBundleRelease = () => {
+    if (!bundleParentReleases || !bundleParentCode) {
+      return null;
+    }
+    const latestReleaseTag = (latestRelease || {}).release;
+    if (!latestReleaseTag) {
+      return null;
+    }
+    return BundleService.isProductInBundle(
+      bundlesCtx,
+      latestReleaseTag,
+      baseProduct.productCode,
+    );
+  };
+
   let citableReleaseProduct = null;
   const citationReleaseTag = currentReleaseTag || (latestRelease || {}).release || null;
   if (citationReleaseTag) {
-    citableReleaseProduct = bundleParentCode
-      ? (bundleParentReleases[bundleParentCode] || {})[citationReleaseTag] || null
-      : productReleases[citationReleaseTag] || null;
+    // If we're referencing latest release and provisional, and there isn't a bundle
+    // defined for the latest release, use base product for release citation
+    if (!currentReleaseTag && !hasLatestBundleRelease()) {
+      citableReleaseProduct = baseProduct;
+    } else {
+      // When a bundled product code is available for the given release,
+      // get the product for the parent code and release.
+      // Otherwise, the citable product is the current product for the specified
+      // release when available.
+      citableReleaseProduct = bundleParentCode
+        ? (bundleParentReleases[bundleParentCode] || {})[citationReleaseTag] || null
+        : productReleases[citationReleaseTag] || null;
+    }
   }
 
   let bundleParentLink = null;
@@ -174,12 +209,14 @@ const CitationDetail = () => {
 
   // Click handler for initiating a citation download
   const handleDownloadCitation = (release, format) => {
+    const provisional = release === 'provisional';
+    const citationProduct = provisional ? citableBaseProduct : citableReleaseProduct;
     // Release: fetch content from DataCite API to pipe into download
     const fullDoi = getReleaseDoi(release);
     DataCiteService.downloadCitation(
       format,
       CitationDownloadType.DATA_PRODUCT,
-      citableBaseProduct,
+      citationProduct,
       fullDoi,
       release,
     );
@@ -237,7 +274,7 @@ const CitationDetail = () => {
               placement="bottom-start"
               title={(
                 downloadEnabled
-                  ? `Click to download the ${citableBaseProduct.productCode}/${release} citation as a file in ${format.longName} format`
+                  ? `Click to download the ${citationProduct.productCode}/${release} citation as a file in ${format.longName} format`
                   : 'Citation format downloads are not available because this product release has no DOI'
               )}
             >

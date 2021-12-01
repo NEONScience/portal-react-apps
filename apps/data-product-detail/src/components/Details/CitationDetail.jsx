@@ -116,11 +116,11 @@ const CitationDetail = () => {
    */
   const hasLatestBundleRelease = () => {
     if (!bundleParentReleases || !bundleParentCode) {
-      return null;
+      return false;
     }
     const latestReleaseTag = (latestRelease || {}).release;
     if (!latestReleaseTag) {
-      return null;
+      return false;
     }
     return BundleService.isProductInBundle(
       bundlesCtx,

@@ -9,12 +9,12 @@ import AppActions, {
   SetSelectedViewModeAction,
 } from '../actions/app';
 import AppFlow from '../actions/flows/app';
-import { AppActionType } from '../actions/actionTypes';
+import { AnyActionType } from '../actions/actionTypes';
 import { BaseStoreAppState, SelectOption } from '../types/store';
 
 export const appReducer = (
   state = AppState.getAppState(),
-  action: AppActionType,
+  action: AnyActionType,
 ): BaseStoreAppState => {
   const update: BaseStoreAppState = flowReducer(state, action);
   let viewMode: SelectOption;
@@ -64,9 +64,9 @@ export const appReducer = (
 
 const flowReducer = (
   state = AppState.getAppState(),
-  action: AppActionType,
+  action: AnyActionType,
 ): BaseStoreAppState => {
-  let update: BaseStoreAppState = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  let update: BaseStoreAppState = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchProducts.reducer,
     state,
     action,
@@ -74,7 +74,7 @@ const flowReducer = (
     AppActions.FETCH_PRODUCTS_COMPLETED,
     'products',
   );
-  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchReleases.reducer,
     update,
     action,
@@ -82,7 +82,7 @@ const flowReducer = (
     AppActions.FETCH_RELEASES_COMPLETED,
     'releases',
   );
-  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchSites.reducer,
     update,
     action,
@@ -90,7 +90,7 @@ const flowReducer = (
     AppActions.FETCH_SITES_COMPLETED,
     'sites',
   );
-  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchProductBundles.reducer,
     update,
     action,
@@ -98,7 +98,7 @@ const flowReducer = (
     AppActions.FETCH_PRODUCT_BUNDLES_COMPLETED,
     'bundles',
   );
-  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchFocalProduct.reducer,
     update,
     action,
@@ -106,7 +106,7 @@ const flowReducer = (
     AppActions.FETCH_FOCAL_PRODUCT_COMPLETED,
     'focalProduct',
   );
-  update = AsyncFlow.reduce<BaseStoreAppState, AppActionType>(
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
     AppFlow.fetchFocalSite.reducer,
     update,
     action,

@@ -559,7 +559,6 @@ const reducer = (state, action) => {
       /* eslint-disable max-len */
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
-      newState.app.error = errorDetail;
       newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}; release ${action.release}`;
       /* eslint-enable max-len */
       return calculateAppStatus(newState);

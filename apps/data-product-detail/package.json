@@ -13,7 +13,7 @@
     "markdown-to-jsx": "^6.10.3",
     "material-table": "^1.40.0",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#citation",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.11.0",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-copy-to-clipboard": "^5.0.1",

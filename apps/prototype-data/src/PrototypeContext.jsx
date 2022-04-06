@@ -170,6 +170,22 @@ const calculateAppStatus = (state) => {
   return newState;
 };
 
+const calculateManifestRollupFetches = (state) => {
+  const newState = { ...state };
+  const { datasets, route: { uuid, nextUuid } } = newState;
+  if (uuid && datasets[uuid] && !newState.manifestRollupFetches[uuid]) {
+    newState.manifestRollupFetches[uuid] = {
+      status: FETCH_STATUS.AWAITING_CALL, error: null,
+    };
+  }
+  if (nextUuid && datasets[nextUuid] && !newState.manifestRollupFetches[nextUuid]) {
+    newState.manifestRollupFetches[nextUuid] = {
+      status: FETCH_STATUS.AWAITING_CALL, error: null,
+    };
+  }
+  return newState;
+};
+
 /**
    REDUCER
 */
@@ -179,19 +195,6 @@ const reducer = (state, action) => {
     !action.error ? null
       : ((action.error.response || {}).error || {}).detail || action.error.message || null
   );
-  const calculateManifestRollupFetches = () => {
-    const { datasets, route: { uuid, nextUuid } } = newState;
-    if (uuid && datasets[uuid] && !newState.manifestRollupFetches[uuid]) {
-      newState.manifestRollupFetches[uuid] = {
-        status: FETCH_STATUS.AWAITING_CALL, error: null,
-      };
-    }
-    if (nextUuid && datasets[nextUuid] && !newState.manifestRollupFetches[nextUuid]) {
-      newState.manifestRollupFetches[nextUuid] = {
-        status: FETCH_STATUS.AWAITING_CALL, error: null,
-      };
-    }
-  };
 
   let tempState = null;
   switch (action.type) {
@@ -203,17 +206,14 @@ const reducer = (state, action) => {
     case 'setInitialRouteToUuid':
       newState.route.uuid = action.uuid || null;
       newState.route.nextUuid = undefined;
-      calculateManifestRollupFetches();
-      return newState;
+      return calculateManifestRollupFetches(newState);
     case 'setNextUuid':
       newState.route.nextUuid = action.uuid;
-      calculateManifestRollupFetches();
-      return newState;
+      return calculateManifestRollupFetches(newState);
     case 'applyNextUuid':
       newState.route.uuid = newState.route.nextUuid;
       newState.route.nextUuid = undefined;
-      calculateManifestRollupFetches();
-      return newState;
+      return calculateManifestRollupFetches(newState);
 
     // General failure
     case 'error':
@@ -243,7 +243,7 @@ const reducer = (state, action) => {
         newState.unparsedDatasets[dataset.uuid] = dataset;
       });
       newState = parseAllDatasets(newState);
-      calculateManifestRollupFetches();
+      newState = calculateManifestRollupFetches(newState);
       return calculateAppStatus(newState);
 
     // Fetch manifest rollups
@@ -331,6 +331,9 @@ const Provider = (props) => {
     datasetsFetch: { status: datasetsFetchStatus },
     route: { uuid: routeUuid, nextUuid: routeNextUuid },
     manifestRollupFetches,
+    neonContextState: {
+      isFinal: neonContextIsFinal,
+    },
   } = state;
 
   const awaitingManifestFetches = Object.keys(manifestRollupFetches).filter((uuid) => (
@@ -362,6 +365,7 @@ const Provider = (props) => {
 
   // Trigger initial prototype datasets fetch
   useEffect(() => {
+    if (!neonContextIsFinal) { return; }
     if (
       appStatus !== APP_STATUS.INITIALIZING
         || datasetsFetchStatus !== FETCH_STATUS.AWAITING_CALL
@@ -375,7 +379,7 @@ const Provider = (props) => {
       },
     );
     dispatch({ type: 'fetchDatasetsStarted' });
-  }, [appStatus, datasetsFetchStatus]);
+  }, [appStatus, datasetsFetchStatus, neonContextIsFinal]);
 
   // Trigger any awaiting manifest fetches
   useEffect(() => {

@@ -1,6 +1,6 @@
 {
   "name": "prototype-data",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "homepage": "https://localhost/prototype-datasets",
   "dependencies": {
@@ -13,7 +13,7 @@
     "dateformat": "^3.0.3",
     "lodash": "^4.17.15",
     "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.11.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#v1.12.0",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-copy-to-clipboard": "^5.0.1",

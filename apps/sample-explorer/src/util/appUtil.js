@@ -358,17 +358,19 @@ export const createCsv = (samples) => {
           if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
             console.log("We have an event with no SMS Field Entries.  This should not happen.")
           } else {
+            let event = {};
             for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
               let field = events[e].smsFieldEntries[sms].smsKey;
               if (!(headers.indexOf(field) > -1)) {
                 headers.push(field);
               }
               let fieldData = events[e].smsFieldEntries[sms].smsValue;
-              let csvEntry = { [field]: fieldData };
-              sampleInfoRow = Object.assign(sampleInfoRow, csvEntry);
-
+              event = {
+                ...event,
+                [field]: fieldData,
+              };
             }
-            csvData.push(sampleInfoRow);
+            csvData.push({ ...sampleInfoRow, ...event });
           }
         }
       }

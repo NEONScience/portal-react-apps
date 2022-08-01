@@ -21,8 +21,9 @@ const DocumentationDetail = () => {
     if (!existsNonEmpty(documents)) {
       return (<i>n/a</i>);
     }
-    const sortedDocs = DocumentService.applyDisplaySort(documents, false, true);
-    const displayableDocs = sortedDocs.filter((value) => (
+    const sortedDocs = DocumentService.applyDisplaySort(documents, false, false);
+    const qsgSortedDocs = DocumentService.applyDisplaySort(documents, false, true);
+    const displayableDocs = qsgSortedDocs.filter((value) => (
       DocumentService.isViewerSupported(value)
     ));
     return (

@@ -24,18 +24,6 @@ const AboutSection = (props) => {
     <Section {...props}>
       <Grid container spacing={3}>
 
-        <Grid item xs={12} md={5} lg={4}>
-          <IdentifierDetail />
-          <ThemesDetail />
-          <Detail
-            title="Responsible Science Team"
-            content={product.productScienceTeam}
-          />
-          <DataRangeDetail />
-          <KeywordsDetail />
-          <TaxonDetail dataProductCode={product.productCode} />
-        </Grid>
-
         <Grid item xs={12} md={7} lg={8}>
           <Detail
             title="Description"
@@ -58,6 +46,44 @@ const AboutSection = (props) => {
             />
           ) : null}
           <CitationDetail />
+        </Grid>
+
+        <Grid item xs={12} md={5} lg={4}>
+          <IdentifierDetail />
+          <ThemesDetail />
+          <Detail
+            title="Responsible Science Team"
+            content={product.productScienceTeam}
+          />
+          <DataRangeDetail />
+          <KeywordsDetail />
+          <TaxonDetail dataProductCode={product.productCode} />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Detail
+            title="Study Description"
+            content={(
+              <Markdown>{product.productStudyDescription || '_n/a_'}</Markdown>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Detail
+            title="Design Description"
+            tooltip="More information about the science design can be found in this data product's documentation."
+            content={(
+              <Markdown>{product.productDesignDescription || '_n/a_'}</Markdown>
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <Detail
+            title="Instrumentation"
+            content={product.productSensor}
+          />
         </Grid>
 
       </Grid>

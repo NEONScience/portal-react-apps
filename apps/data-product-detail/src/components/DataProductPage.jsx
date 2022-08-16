@@ -26,7 +26,8 @@ import DataProductContext from './DataProductContext';
 
 import SkeletonSection from './Sections/SkeletonSection';
 import AboutSection from './Sections/AboutSection';
-import CollectionAndProcessingSection from './Sections/CollectionAndProcessingSection';
+import DocumentationSection from './Sections/DocumentationSection';
+import IssueLogSection from './Sections/IssueLogSection';
 import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
 
@@ -188,9 +189,14 @@ const DataProductPage = () => {
       component: AboutSection,
     },
     {
-      name: 'Collection and Processing',
-      hash: '#collectionAndProcessing',
-      component: CollectionAndProcessingSection,
+      name: 'Documentation',
+      hash: '#documentation',
+      component: DocumentationSection,
+    },
+    {
+      name: 'Issue Log',
+      hash: '#issueLog',
+      component: IssueLogSection,
     },
     {
       name: 'Availability and Download',

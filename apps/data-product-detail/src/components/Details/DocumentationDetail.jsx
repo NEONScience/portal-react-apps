@@ -48,7 +48,7 @@ const DocumentationDetail = () => {
     );
   };
   return (
-    <Detail title="Documentation">
+    <Detail>
       {renderDocumentation()}
     </Detail>
   );

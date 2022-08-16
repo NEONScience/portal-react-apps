@@ -461,7 +461,7 @@ const IssueLogDetail = () => {
       <Hidden smDown>
         <Detail seleniumKey="issue-log">
           <MaterialTable
-            title="Issue Log"
+            title=""
             components={components}
             columns={columns}
             data={appliedChangeLogs}

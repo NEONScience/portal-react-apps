@@ -358,7 +358,11 @@ export const createCsv = (samples) => {
           if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
             console.log("We have an event with no SMS Field Entries.  This should not happen.")
           } else {
-            let event = {};
+            let tableName = events[e].ingestTableName;
+            if (!(headers.indexOf('table') > -1)) {
+              headers.push('table');
+            }
+            let event = { 'table': tableName };
             for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
               let field = events[e].smsFieldEntries[sms].smsKey;
               if (!(headers.indexOf(field) > -1)) {

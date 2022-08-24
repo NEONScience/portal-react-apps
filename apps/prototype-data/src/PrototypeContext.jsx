@@ -9,8 +9,6 @@ import PropTypes from 'prop-types';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import logger from 'use-reducer-logger';
-
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
@@ -321,10 +319,7 @@ const Provider = (props) => {
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
-  const [state, dispatch] = useReducer(
-    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
-    initialState,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     app: { status: appStatus },

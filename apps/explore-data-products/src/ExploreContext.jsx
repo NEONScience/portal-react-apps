@@ -7,8 +7,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import logger from 'use-reducer-logger';
-
 import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
@@ -338,10 +336,7 @@ const Provider = (props) => {
     initialState.urlParams[param] = parseURLParam(param);
   });
 
-  const [state, dispatch] = useReducer(
-    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
-    initialState,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     appStatus,

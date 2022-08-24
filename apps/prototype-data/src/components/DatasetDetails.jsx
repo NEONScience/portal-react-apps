@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
@@ -19,6 +19,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
+import Skeleton from '@material-ui/lab/Skeleton';
+
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 import FileIcon from '@material-ui/icons/InsertDriveFile';
 import XmlIcon from '@material-ui/icons/DescriptionOutlined';
@@ -29,13 +31,14 @@ import LinkIcon from '@material-ui/icons/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import SiteMap from 'portal-core-components/lib/components/SiteMap';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
+
+const SiteMap = React.lazy(() => import('portal-core-components/lib/components/SiteMap'));
 
 const { usePrototypeContextState } = PrototypeContext;
 
@@ -681,7 +684,9 @@ const DatasetDetails = (props) => {
                 No valid associated locations found
               </Typography>
             ) : (
-              <SiteMap manualLocationData={manualLocationData} />
+              <Suspense fallback={<Skeleton variant="rect" width="100%" height={400} />}>
+                <SiteMap manualLocationData={manualLocationData} />
+              </Suspense>
             )}
           </div>
         </Grid>

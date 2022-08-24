@@ -8,9 +8,13 @@
       "jsx": true
     }
   },
+  "ignorePatterns": [
+    "server.js"
+  ],
   "rules": {
     "linebreak-style": 0,
     "eslint linebreak-style": [0, "error", "windows"],
+    "react/function-component-definition": 0,
     "react/jsx-props-no-spreading": "off",
     "jsx-a11y/anchor-is-valid": ["error", {
       "components": ["Link"],

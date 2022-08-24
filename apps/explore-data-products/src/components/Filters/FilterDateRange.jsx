@@ -169,6 +169,7 @@ const FilterDateRange = () => {
           data-selenium="browse-data-products-page.filters.date-range.from-input"
           inputVariant="outlined"
           margin="dense"
+          orientation="portrait"
           value={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin])}
           onChange={(value) => handleChangeDatePicker(0, value)}
           views={['month', 'year']}
@@ -182,6 +183,7 @@ const FilterDateRange = () => {
           data-selenium="browse-data-products-page.filters.date-range.through-input"
           inputVariant="outlined"
           margin="dense"
+          orientation="portrait"
           value={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])}
           onChange={(value) => handleChangeDatePicker(1, value)}
           views={['month', 'year']}

@@ -4,46 +4,57 @@
   "private": true,
   "homepage": "http://localhost/data-products/",
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.56",
-    "core-js": "^3.6.5",
-    "dateformat": "^3.0.3",
-    "lodash": "^4.17.15",
-    "markdown-to-jsx": "^6.10.3",
-    "material-table": "^1.40.0",
-    "moment": "2.24.0",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.13.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.9.0",
-    "react-copy-to-clipboard": "^5.0.1",
-    "react-dom": "^16.8.6",
-    "react-router-dom": "^5.2.0",
-    "rxjs": "^6.3.3",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "~4.0.0-alpha.61",
+    "@material-ui/pickers": "^3.3.10",
+    "@material-ui/styles": "^4.11.5",
+    "core-js": "^3.24.1",
+    "dateformat": "^5.0.3",
+    "lodash": "^4.17.21",
+    "markdown-to-jsx": "^7.1.7",
+    "material-table": "^1.69.3",
+    "moment": "2.29.4",
+    "portal-core-components": "github:NEONScience/portal-core-components#ts-updates",
+    "prop-types": "^15.8.1",
+    "react": "^17.0.2",
+    "react-copy-to-clipboard": "^5.1.0",
+    "react-dom": "^17.0.2",
+    "react-router-dom": "^6.3.0",
+    "rxjs": "^6.6.7",
     "stickyfilljs": "^2.1.0",
     "use-reducer-logger": "^1.0.2",
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
-    "eslint": "^7.15.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.12.4",
-    "react-scripts": "4.0.3"
+    "eslint": "^8.22.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-react": "^7.30.1",
+    "express": "^4.18.1",
+    "react-scripts": "^5.0.1",
+    "worker-loader": "^3.0.8"
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:prod": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test - env=jsdom",
-    "lint": "(node_modules/eslint/bin/eslint.js src/ --ext .js,.jsx || true) && exit 0",
-    "lint:fix": "(node_modules/eslint/bin/eslint.js --fix src/ --ext .js,.jsx || true) && exit 0",
+    "lint": "(npx eslint src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
+    "lint:fix": "(npx eslint --fix src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
     "eject": "react-scripts eject"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all",
-    "ie 11"
-  ]
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

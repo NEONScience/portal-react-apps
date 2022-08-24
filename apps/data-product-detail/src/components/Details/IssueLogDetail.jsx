@@ -148,6 +148,7 @@ const IssueLogDetail = () => {
 
   const components = {
     Container: Box,
+    // eslint-disable-next-line react/no-unstable-nested-components
     Toolbar: (props) => (
       <div style={{ marginLeft: '-24px' }}>
         <MTableToolbar {...props} />

@@ -13,7 +13,7 @@ import { of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -79,6 +79,7 @@ const DEFAULT_STATE = {
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 };
 
+// eslint-disable-next-line prefer-regex-literals
 const getProvReleaseRegex = () => new RegExp(/^[A-Z]+$/);
 
 const fetchIsInStatus = (fetchObject, status) => (
@@ -304,6 +305,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
+// eslint-disable-next-line default-param-last
 const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) => {
   const product = getCurrentProductFromState(state, true);
   if (!product || !Array.isArray(product.siteCodes)) { return null; }
@@ -654,7 +656,7 @@ const Provider = (props) => {
   // 1. route.nextRelease - set by dispatch, gets pushed into history
   // 2. location.pathname - literally the URL, route.release follows this
   // 3. route.release - only ever set from URL parsing
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
   useEffect(() => {
@@ -671,7 +673,7 @@ const Provider = (props) => {
         ? `${baseRoute}/${productCode}`
         : `${baseRoute}/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
-      history.push(nextLocation);
+      navigate(nextLocation);
       NeonJsonLd.injectProduct(productCode, nextRelease);
       dispatch({ type: 'applyNextRelease' });
       return;
@@ -685,7 +687,7 @@ const Provider = (props) => {
     if (locationRelease !== currentRelease) {
       dispatch({ type: 'setNextRelease', release: locationRelease });
     }
-  }, [status, history, pathname, productCode, currentRelease, nextRelease, nextHash]);
+  }, [status, navigate, pathname, productCode, currentRelease, nextRelease, nextHash]);
 
   // Trigger any fetches that are awaiting call
   useEffect(() => {
@@ -780,6 +782,7 @@ const Provider = (props) => {
      Render
   */
   return (
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <Context.Provider value={[state, dispatch]}>
       {children}
     </Context.Provider>

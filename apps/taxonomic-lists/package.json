@@ -4,26 +4,28 @@
   "private": true,
   "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "bootstrap": "3.4.1",
-    "core-js": "^3.6.5",
-    "datatables.net": "^1.10.21",
-    "datatables.net-bs": "^1.10.21",
-    "datatables.net-responsive": "^2.2.5",
-    "datatables.net-responsive-bs": "^2.2.5",
-    "jquery": "^3.5.1",
-    "lodash": "^4.17.19",
-    "portal-core-components": "github:NEONScience/portal-core-components#v1.13.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-dom-factories": "^1.0.2",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "~4.0.0-alpha.61",
+    "@material-ui/pickers": "^3.3.10",
+    "@material-ui/styles": "^4.11.5",
+    "bootstrap": "^3.4.1",
+    "core-js": "^3.24.1",
+    "datatables.net": "^1.12.1",
+    "datatables.net-bs": "^1.12.1",
+    "datatables.net-responsive": "^2.3.0",
+    "datatables.net-responsive-bs": "^2.3.0",
+    "jquery": "^3.6.0",
+    "lodash": "^4.17.21",
+    "portal-core-components": "github:NEONScience/portal-core-components#ts-updates",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-fontawesome": "^1.7.1",
-    "react-redux": "^7.2.1",
-    "react-scripts": "4.0.3",
-    "redux": "^4.0.5",
+    "react-redux": "^8.0.2",
+    "react-scripts": "5.0.1",
+    "redux": "^4.2.0",
     "redux-logger": "^3.0.6",
-    "whatwg-fetch": "^3.4.0"
+    "whatwg-fetch": "^3.6.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -32,13 +34,19 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "eslint": "^7.23.0",
-    "eslint-plugin-react": "^7.23.1"
+    "eslint": "^8.22.0",
+    "eslint-plugin-react": "^7.30.1"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not op_mini all",
-    "ie 11"
-  ]
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

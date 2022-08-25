@@ -382,7 +382,7 @@ const Provider = (props) => {
         map((response) => {
           dispatch({
             type: 'fetchAopVizProductsSucceeded',
-            data: response.data,
+            data: response,
           });
         }),
         catchError((error) => {

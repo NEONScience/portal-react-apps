@@ -763,7 +763,7 @@ const Provider = (props) => {
       dispatch({ type: 'fetchAOPVizProductsStarted' });
       ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
         map((response) => {
-          dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.data });
+          dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response });
         }),
         catchError((error) => {
           dispatch({ type: 'fetchAOPVizProductsFailed', error });

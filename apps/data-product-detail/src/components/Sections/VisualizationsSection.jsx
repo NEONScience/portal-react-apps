@@ -53,7 +53,7 @@ const VisualizationsSection = (props) => {
   if (aopVizProducts.includes(productCode)) {
     viz.AOP = {
       name: 'AOP Data Viewer',
-      node: <AopDataViewer key="aopDataViewer" productCode={productCode} />,
+      node: <AopDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
     };
   }
   const hideViz = currentReleaseObject && !currentReleaseObject.showViz;

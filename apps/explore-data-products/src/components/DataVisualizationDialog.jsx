@@ -1,6 +1,9 @@
 import React, { Suspense } from 'react';
 
+import { makeStyles } from '@material-ui/core/styles';
+
 import DialogBase from 'portal-core-components/lib/components/DialogBase';
+import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../ExploreContext';
 
@@ -13,7 +16,23 @@ import {
 const AopDataViewer = React.lazy(() => import('portal-core-components/lib/components/AopDataViewer'));
 const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
 
+const useDialogBaseStyles = makeStyles((theme) => ({
+  contentPaper: {
+    margin: theme.spacing(10, 2, 2, 2),
+    padding: theme.spacing(3),
+    height: '100%',
+    position: 'relative',
+    width: `calc(100% - ${theme.spacing(2) * 2}px)`,
+    minWidth: '400px',
+    minHeight: '600px',
+    [Theme.breakpoints.down('xs')]: {
+      minHeight: '700px',
+    },
+  },
+}));
+
 const DataVisualizationDialog = () => {
+  const dialogBaseClasses = useDialogBaseStyles(Theme);
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     currentProducts: { release: currentRelease },
@@ -42,7 +61,7 @@ const DataVisualizationDialog = () => {
       case VISUALIZATIONS.AOP_DATA_VIEWER.key:
         title = `AOP Data Viewer - ${productCode} - ${product.productName}`;
         contents = (
-          <AopDataViewer productCode={productCode} showTitle={false} />
+          <AopDataViewer fillContainer productCode={productCode} showTitle={false} />
         );
         break;
 
@@ -64,6 +83,7 @@ const DataVisualizationDialog = () => {
       <DialogBase
         open={open}
         title={title}
+        customClasses={dialogBaseClasses}
         onClose={() => dispatch({ type: 'changeActiveDataVisualization' })}
         data-selenium="data-visualization-dialog"
         {...dialogBaseProps}

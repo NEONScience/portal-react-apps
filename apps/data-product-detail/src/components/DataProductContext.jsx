@@ -7,9 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { of } from 'rxjs';
+import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
 
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -761,9 +760,20 @@ const Provider = (props) => {
     // AOP products fetch
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
       dispatch({ type: 'fetchAOPVizProductsStarted' });
-      ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
+      ajax({
+        method: 'GET',
+        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
+        crossDomain: true,
+      }).pipe(
         map((response) => {
-          dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response });
+          if (exists(response)
+              && Array.isArray(response.response)
+              && (response.response.length > 0)) {
+            dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.response });
+            return of(true);
+          }
+          dispatch({ type: 'fetchAOPVizProductsFailed', error: 'AOP products fetch failed' });
+          return of('AOP visualization products fetch failed');
         }),
         catchError((error) => {
           dispatch({ type: 'fetchAOPVizProductsFailed', error });

@@ -7,15 +7,15 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { of } from 'rxjs';
+import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import {
   APP_STATUS,
@@ -378,12 +378,26 @@ const Provider = (props) => {
     // Fetch the list of product codes supported by Visus for the AOP Viewer Visualization
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
       newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
-      ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
+      ajax({
+        method: 'GET',
+        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
+        crossDomain: true,
+      }).pipe(
         map((response) => {
+          if (exists(response)
+              && Array.isArray(response.response)
+              && (response.response.length > 0)) {
+            dispatch({
+              type: 'fetchAopVizProductsSucceeded',
+              data: response.response,
+            });
+            return of(true);
+          }
           dispatch({
-            type: 'fetchAopVizProductsSucceeded',
-            data: response,
+            type: 'fetchAopVizProductsFailed',
+            error: 'AOP products fetch failed',
           });
+          return of('AOP visualization products fetch failed');
         }),
         catchError((error) => {
           dispatch({

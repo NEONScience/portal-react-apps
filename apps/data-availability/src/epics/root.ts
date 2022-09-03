@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { AnyAction } from 'redux';
 import { ajax } from 'rxjs/ajax';
 import {
@@ -31,12 +29,9 @@ export const getCombinedEpics = (): unknown => (
 
 export const getEpicMiddleware = (): EpicMiddleware<AnyAction> => {
   const dependencies: EpicDependencies = {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     ajax,
   };
   const epicMiddleware = createEpicMiddleware({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     dependencies,
   });
   return epicMiddleware;

@@ -1,5 +1,5 @@
 import { of, Observable } from 'rxjs';
-import { AjaxResponse } from 'rxjs/internal/observable/dom/AjaxObservable';
+import { AjaxResponse } from 'rxjs/ajax';
 
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import {
@@ -12,7 +12,7 @@ import { resolveAny } from '../util/typeUtil';
 export type CascadeActionFunction = (param?: unknown) => AnyObject;
 
 export const handleSuccess = (
-  response: AjaxResponse,
+  response: AjaxResponse<unknown>,
   completed: (response: AnyObject) => AnyObject,
   error: (response: Nullable<AnyObject>) => AnyObject,
 ): Observable<unknown> => {
@@ -25,11 +25,11 @@ export const handleSuccess = (
   if (exists(resolved) && exists(resolved.error)) {
     return of(error(resolved.error as Nullable<AnyObject>));
   }
-  return of(error(response));
+  return of(error(response as AnyObject));
 };
 
 export const handleSuccessObservable = (
-  response: AjaxResponse,
+  response: AjaxResponse<unknown>,
   completed: (response: AnyObject) => Observable<unknown>,
   error: (response: Nullable<AnyObject>) => Observable<unknown>,
 ): Observable<unknown> => {
@@ -42,11 +42,11 @@ export const handleSuccessObservable = (
   if (exists(resolved) && exists(resolved.error)) {
     return error(resolved.error as Nullable<AnyObject>);
   }
-  return error(response);
+  return error(response as AnyObject);
 };
 
 export const handleError = (
-  response: AjaxResponse,
+  response: AjaxResponse<unknown>,
   error: (response: Nullable<AnyObject>, message?: Nullable<string>) => AnyObject,
   cascadeAction?: CascadeActionFunction,
 ): Observable<unknown> => {
@@ -58,10 +58,10 @@ export const handleError = (
     if (exists(appliedError) && exists((appliedError as AnyObject).message)) {
       appliedMessage = (appliedError as AnyObject).message as Nullable<string>;
     } else {
-      appliedError = response;
+      appliedError = response as AnyObject;
     }
   } else {
-    appliedError = response;
+    appliedError = response as AnyObject;
   }
   if (exists(cascadeAction)) {
     return of(error(appliedError, appliedMessage), (cascadeAction as CascadeActionFunction)());

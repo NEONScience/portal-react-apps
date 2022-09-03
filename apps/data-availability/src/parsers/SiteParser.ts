@@ -6,7 +6,7 @@ import { Site } from '../types/store';
 import { resolveAny } from '../util/typeUtil';
 
 const SiteParser = {
-  parseSites: (response: AjaxResponse): Site[] => {
+  parseSites: (response: AjaxResponse<unknown>): Site[] => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!exists(resolved.sites)) {
       return [];
@@ -21,7 +21,7 @@ const SiteParser = {
       SiteParser.parseSite(site)
     ));
   },
-  parseSiteResponse: (response: AjaxResponse): Nullable<Site> => {
+  parseSiteResponse: (response: AjaxResponse<unknown>): Nullable<Site> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!exists(resolved.site)) {
       return null;

@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 
 import { Observable, of } from 'rxjs';
-import { AjaxResponse } from 'rxjs/internal/observable/dom/AjaxObservable';
+import { AjaxResponse } from 'rxjs/ajax';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL/NeonGraphQL';
@@ -98,26 +98,24 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCTS,
   request: {
     method: 'POST',
+    url: '',
     crossDomain: true,
     withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchProducts.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
       return of(AppFlow.fetchProducts.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchProducts.asyncErrorAction(null, 'Fetching products error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchProducts.asyncErrorAction)
   ),
   requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
@@ -131,26 +129,24 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   takeUntilTypeFilter: AppActions.RESET_FETCH_SITES,
   request: {
     method: 'POST',
+    url: '',
     crossDomain: true,
     withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchSites.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
       return of(AppFlow.fetchSites.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchSites.asyncErrorAction(null, 'Fetching sites error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchSites.asyncErrorAction)
   ),
   requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
@@ -170,20 +166,17 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
     url: NeonEnvironment.getFullApiPath('releases'),
   },
   workingAction: AppFlow.fetchReleases.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
       return of(AppFlow.fetchReleases.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchReleases.asyncErrorAction(null, 'Fetching releases error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchReleases.asyncErrorAction)
   ),
 });
@@ -199,20 +192,17 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
     url: `${NeonEnvironment.getFullApiPath('products')}/bundles`,
   },
   workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved)) {
       return of(AppFlow.fetchProductBundles.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchProductBundles.asyncErrorAction(null, 'Fetching bundles error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchProductBundles.asyncErrorAction)
   ),
 });
@@ -222,26 +212,24 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT,
   request: {
     method: 'POST',
+    url: '',
     crossDomain: true,
     withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchFocalProduct.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
       return of(AppFlow.fetchFocalProduct.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchFocalProduct.asyncErrorAction(null, 'Fetching products error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchFocalProduct.asyncErrorAction)
   ),
   requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
@@ -264,26 +252,24 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_SITE,
   request: {
     method: 'POST',
+    url: '',
     crossDomain: true,
     withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchFocalSite.asyncWorkingAction,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   successAction: (
-    response: AjaxResponse | AjaxResponse[],
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
     action?: AppActionType,
   ): Observable<unknown> => {
-    const singleResponse: AjaxResponse = (response as AjaxResponse);
-    const resolved: UnknownRecord = resolveAny(singleResponse as never, 'response');
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
       return of(AppFlow.fetchFocalSite.asyncCompletedAction(resolved));
     }
     return of(AppFlow.fetchFocalSite.asyncErrorAction(null, 'Fetching site error'));
   },
-  errorAction: (error: AjaxResponse): Observable<unknown> => (
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchFocalSite.asyncErrorAction)
   ),
   requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {

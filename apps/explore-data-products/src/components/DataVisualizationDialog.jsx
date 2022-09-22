@@ -23,7 +23,7 @@ const useDialogBaseStyles = makeStyles((theme) => ({
     height: '100%',
     position: 'relative',
     width: `calc(100% - ${theme.spacing(2) * 2}px)`,
-    minWidth: '400px',
+    minWidth: '340px',
     minHeight: '600px',
     [Theme.breakpoints.down('xs')]: {
       minHeight: '700px',
@@ -49,6 +49,7 @@ const DataVisualizationDialog = () => {
   let title = 'Data Visualization';
   // eslint-disable-next-line react/jsx-no-useless-fragment
   let contents = <></>;
+  let appliedDialogBaseClasses;
   const dialogBaseProps = {};
   const open = (
     typeof product !== 'undefined'
@@ -63,6 +64,7 @@ const DataVisualizationDialog = () => {
         contents = (
           <AopDataViewer fillContainer productCode={productCode} showTitle={false} />
         );
+        appliedDialogBaseClasses = dialogBaseClasses;
         break;
 
       case VISUALIZATIONS.TIME_SERIES_VIEWER.key:
@@ -83,7 +85,7 @@ const DataVisualizationDialog = () => {
       <DialogBase
         open={open}
         title={title}
-        customClasses={dialogBaseClasses}
+        customClasses={appliedDialogBaseClasses}
         onClose={() => dispatch({ type: 'changeActiveDataVisualization' })}
         data-selenium="data-visualization-dialog"
         {...dialogBaseProps}

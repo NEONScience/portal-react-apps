@@ -188,6 +188,7 @@ const App: React.FC = (): JSX.Element => {
       <Divider className={classes.sidebarDivider} />
       <ReleaseFilter
         showGenerationDate
+        showReleaseLink
         title="Release"
         skeleton={isLoading}
         releases={releases}

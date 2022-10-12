@@ -164,6 +164,7 @@ const DataProductPage = () => {
       releases,
       selected: currentRelease,
       showGenerationDate: true,
+      showReleaseLink: true,
       onChange: (value) => {
         const newRelease = value === 'n/a' ? null : value;
         dispatch({ type: 'setNextRelease', release: newRelease });

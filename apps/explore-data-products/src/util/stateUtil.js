@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import {
   /* constants */
@@ -229,8 +230,31 @@ export const parseProductsByReleaseData = (state, release) => {
 
     if (product.bundle.isChild) {
       // Bundle children with forwarded availability should have releases identical to the parent
+      // for the specified release.
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
-      product.releases = [...((appliedProducts[parentIdx] || {}).releases || [])];
+      const bundleCopiedReleases = [...((appliedProducts[parentIdx] || {}).releases || [])]
+        .filter((bundleParentRelease) => {
+          const bundleParentAppliedRelease = BundleService.determineBundleRelease(
+            bundleParentRelease.release,
+          );
+          return BundleService.isProductInBundle(
+            bundlesCtx,
+            bundleParentAppliedRelease,
+            productCode,
+          );
+        });
+      bundleCopiedReleases.forEach((bundleCopiedRelease) => {
+        if (exists(bundleCopiedRelease)) {
+          const hasRelease = (product.releases || []).some((productRelease) => (
+            exists(productRelease)
+            && isStringNonEmpty(productRelease.release)
+            && (productRelease.release.localeCompare(bundleCopiedRelease.release) === 0)
+          ));
+          if (!hasRelease) {
+            product.releases.push(bundleCopiedRelease);
+          }
+        }
+      });
       applyUserRelease(product.releases, userReleases);
       // Remove bundle blurb from description if this is a bundle child
       EXCISE_BUNDLE_BLURBS.forEach((blurb) => {

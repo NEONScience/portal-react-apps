@@ -90,7 +90,6 @@ const FilterRelease = (props) => {
         showProductCount
         showReleaseLink
         nullReleaseProductCount={catalogStats.totalProducts}
-        maxWidth={276}
         key={selected}
       />
     </FilterBase>

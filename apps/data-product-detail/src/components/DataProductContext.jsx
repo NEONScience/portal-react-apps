@@ -20,8 +20,9 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -62,6 +63,7 @@ const DEFAULT_STATE = {
     productReleases: {},
     bundleParents: {},
     bundleParentReleases: {},
+    productReleaseDois: {},
     aopVizProducts: null,
   },
   data: {
@@ -70,6 +72,7 @@ const DEFAULT_STATE = {
     bundleParents: {}, // Latest and provisional bundle parent product metadata
     bundleParentReleases: {}, // Bundle parent product metadata on a per-release basis
     releases: [], // List of release objects; fed from base product or bundle inheritance
+    productReleaseDois: {},
     aopVizProducts: [],
   },
 
@@ -91,6 +94,9 @@ const stateHasFetchesInStatus = (state, status) => (
   fetchIsInStatus(state.fetches.product, status)
   || Object.keys(state.fetches.productReleases).some(
     (f) => fetchIsInStatus(state.fetches.productReleases[f], status),
+  )
+  || Object.keys(state.fetches.productReleaseDois).some(
+    (f) => fetchIsInStatus(state.fetches.productReleaseDois[f], status),
   )
   || Object.keys(state.fetches.bundleParents).some(
     (f) => fetchIsInStatus(state.fetches.bundleParents[f], status),
@@ -123,6 +129,21 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
   return releases.find((r) => r.release === currentRelease) || null;
 };
 
+const getAppliedReleaseObjectFromState = (state = DEFAULT_STATE) => {
+  const {
+    route: { release: routeRelease },
+    data: { releases },
+  } = state;
+  const latestRelease = (releases && releases.length)
+    ? releases.find((r) => {
+      const matches = getProvReleaseRegex().exec(r.release);
+      const isLatestProv = exists(matches) && (matches.length > 0);
+      return !isLatestProv;
+    })
+    : null;
+  return routeRelease || (latestRelease || {}).release;
+};
+
 const calculateFetches = (state) => {
   const newState = { ...state };
   const {
@@ -152,6 +173,10 @@ const calculateFetches = (state) => {
   // Fetch the release-specific product
   if (fetchRelease && !state.fetches.productReleases[fetchRelease]) {
     newState.fetches.productReleases[fetchRelease] = { status: FETCH_STATUS.AWAITING_CALL };
+  }
+  // Fetch the release-specific DOI state
+  if (fetchRelease && !state.fetches.productReleaseDois[fetchRelease]) {
+    newState.fetches.productReleaseDois[fetchRelease] = { status: FETCH_STATUS.AWAITING_CALL };
   }
   // Fetch all base bundle parent products
   (parentCodes || []).forEach((bundleParentCode) => {
@@ -254,6 +279,26 @@ const applyReleasesGlobally = (state, releases) => {
         showViz: true,
       });
     });
+  updatedState.data.releases = ReleaseService.sortReleases(updatedState.data.releases);
+  return updatedState;
+};
+
+const applyDoiStatusReleaseGlobally = (state, doiStatus) => {
+  const updatedState = { ...state };
+  const transformedRelease = ReleaseService.transformDoiStatusRelease(doiStatus);
+  if (!exists(transformedRelease)) {
+    return updatedState;
+  }
+  const hasRelease = updatedState.data.releases.some((value) => (
+    exists(value)
+    && isStringNonEmpty(value.release)
+    && isStringNonEmpty(transformedRelease.release)
+    && (value.release.localeCompare(transformedRelease.release) === 0)
+  ));
+  if (!hasRelease) {
+    updatedState.data.releases.push(transformedRelease);
+  }
+  updatedState.data.releases = ReleaseService.sortReleases(updatedState.data.releases);
   return updatedState;
 };
 
@@ -529,6 +574,20 @@ const reducer = (state, action) => {
       newState.data.productReleases[action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchProductReleaseDoiStarted':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseDoiFailed':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.productReleaseDois[action.release].error = action.error;
+      // eslint-disable-next-line max-len
+      newState.app.error = `${errorDetail}: ${action.release}`;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseDoiSucceeded':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.SUCCESS;
+      newState.data.productReleaseDois[action.release] = action.data;
+      return calculateAppStatus(applyDoiStatusReleaseGlobally(newState, action.data));
+
     case 'fetchBundleParentStarted':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
@@ -714,6 +773,20 @@ const Provider = (props) => {
           },
         );
       });
+    // Product release DOI fetches
+    Object.keys(fetches.productReleaseDois)
+      .filter((release) => fetchIsAwaitingCall(fetches.productReleaseDois[release]))
+      .forEach((release) => {
+        dispatch({ type: 'fetchProductReleaseDoiStarted', release });
+        NeonApi.getProductDoisObservable(productCode, release).subscribe(
+          (response) => {
+            dispatch({ type: 'fetchProductReleaseDoiSucceeded', release, data: response.data });
+          },
+          (error) => {
+            dispatch({ type: 'fetchProductReleaseDoiFailed', release, error });
+          },
+        );
+      });
     // Bundle parent fetches
     Object.keys(fetches.bundleParents)
       .filter((bundleParent) => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
@@ -820,6 +893,7 @@ const DataProductContext = {
   getCurrentProductLatestAvailableDate,
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
+  getAppliedReleaseObjectFromState,
 };
 
 export default DataProductContext;

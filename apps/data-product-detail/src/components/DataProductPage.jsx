@@ -14,6 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import CopyIcon from '@material-ui/icons/Assignment';
 
+import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
@@ -21,6 +22,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import DataProductContext from './DataProductContext';
 
@@ -32,6 +34,7 @@ import AvailabilitySection from './Sections/AvailabilitySection';
 import VisualizationsSection from './Sections/VisualizationsSection';
 
 import DetailTooltip from './Details/DetailTooltip';
+import TombstoneNotice from './Release/TombstoneNotice';
 
 const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable, permanent link to this data product release';
 
@@ -77,12 +80,22 @@ const DataProductPage = () => {
   const classes = useStyles(Theme);
 
   const [state, dispatch] = useDataProductContextState();
+  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const product = getCurrentProductFromState(state);
   const {
     app: { status: appStatus, error: appError },
     route: { productCode, release: currentRelease, bundle },
-    data: { releases, bundleParentReleases },
+    data: {
+      releases,
+      bundleParentReleases,
+      aopVizProducts,
+      productReleaseDois,
+    },
   } = state;
+  const {
+    timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
+  } = neonContextData;
+  const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
 
   // Set loading and error page props
   let loading = null;
@@ -182,6 +195,12 @@ const DataProductPage = () => {
       : `NEON | ${title}`;
   }, [title, currentRelease]);
 
+  const isTombstoned = productReleaseDois
+    && productReleaseDois[currentRelease]
+    && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
+  const showVizSection = !isTombstoned
+    && (timeSeriesProductCodes.includes(productCode) || aopVizProducts.includes(productCode));
+
   // Establish sidebar links mapping to sections
   const sidebarLinks = [
     {
@@ -204,12 +223,14 @@ const DataProductPage = () => {
       hash: '#availabilityAndDownload',
       component: AvailabilitySection,
     },
-    {
+  ];
+  if (showVizSection) {
+    sidebarLinks.push({
       name: 'Visualizations',
       hash: '#visualizations',
       component: VisualizationsSection,
-    },
-  ];
+    });
+  }
   const renderPageContents = () => sidebarLinks.map((link) => {
     const Component = skeleton ? SkeletonSection : link.component;
     return (
@@ -224,6 +245,76 @@ const DataProductPage = () => {
   const releaseInfoTooltip = !currentRelease ? null : (
     `Click to view general information about all data products in the ${currentRelease} release`
   );
+
+  const renderTombstoneNotice = () => ((
+    <TombstoneNotice />
+  ));
+
+  const renderReleaseCard = () => {
+    if (!currentReleaseObject || hideDoi) return null;
+    return (
+      <Card className={classes.card}>
+        <CardContent>
+          <div className={classes.flex}>
+            <Typography variant="h5" component="h2">
+              Release:&nbsp;
+              <Tooltip
+                placement="right"
+                title={releaseInfoTooltip}
+                className={classes.tooltip}
+              >
+                <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                  {currentRelease}
+                </Link>
+              </Tooltip>
+            </Typography>
+            {!currentDoiUrl ? null : (
+              <CopyToClipboard text={currentDoiUrl}>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  size="small"
+                  className={classes.copyButton}
+                >
+                  <CopyIcon fontSize="small" />
+                  Copy DOI
+                </Button>
+              </CopyToClipboard>
+            )}
+          </div>
+          <Typography variant="body2" color="textSecondary" component="p">
+            <span className={classes.releaseAttribTitle}>Generated:</span>
+            <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
+          </Typography>
+          {!currentDoiUrl ? null : (
+            <>
+              <Typography variant="body2" color="textSecondary" component="p">
+                <span className={classes.releaseAttribTitle}>DOI:</span>
+                <span className={classes.releaseAttribValue}>
+                  {currentDoiUrl}
+                </span>
+                <DetailTooltip tooltip={DOI_TOOLTIP} />
+              </Typography>
+              {!doiUrlIsFromBundleParent ? null : (
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  component="p"
+                  className={classes.doiFromParentBlurb}
+                >
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
+                  <b>Note:</b> This product bundled into {bundleParentLink}. The above DOI
+                  refers to that product release and there is no DOI directly associated with
+                  this sub-product release.
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
+                </Typography>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <NeonPage
@@ -249,68 +340,8 @@ const DataProductPage = () => {
           release={currentRelease}
           key={currentRelease || ''}
         >
-          {!currentReleaseObject || hideDoi ? null : (
-            <Card className={classes.card}>
-              <CardContent>
-                <div className={classes.flex}>
-                  <Typography variant="h5" component="h2">
-                    Release:&nbsp;
-                    <Tooltip
-                      placement="right"
-                      title={releaseInfoTooltip}
-                      className={classes.tooltip}
-                    >
-                      <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
-                        {currentRelease}
-                      </Link>
-                    </Tooltip>
-                  </Typography>
-                  {!currentDoiUrl ? null : (
-                    <CopyToClipboard text={currentDoiUrl}>
-                      <Button
-                        color="primary"
-                        variant="outlined"
-                        size="small"
-                        className={classes.copyButton}
-                      >
-                        <CopyIcon fontSize="small" />
-                        Copy DOI
-                      </Button>
-                    </CopyToClipboard>
-                  )}
-                </div>
-                <Typography variant="body2" color="textSecondary" component="p">
-                  <span className={classes.releaseAttribTitle}>Generated:</span>
-                  <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
-                </Typography>
-                {!currentDoiUrl ? null : (
-                  <>
-                    <Typography variant="body2" color="textSecondary" component="p">
-                      <span className={classes.releaseAttribTitle}>DOI:</span>
-                      <span className={classes.releaseAttribValue}>
-                        {currentDoiUrl}
-                      </span>
-                      <DetailTooltip tooltip={DOI_TOOLTIP} />
-                    </Typography>
-                    {!doiUrlIsFromBundleParent ? null : (
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        className={classes.doiFromParentBlurb}
-                      >
-                        {/* eslint-disable react/jsx-one-expression-per-line */}
-                        <b>Note:</b> This product bundled into {bundleParentLink}. The above DOI
-                        refers to that product release and there is no DOI directly associated with
-                        this sub-product release.
-                        {/* eslint-enable react/jsx-one-expression-per-line */}
-                      </Typography>
-                    )}
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          {renderTombstoneNotice()}
+          {renderReleaseCard()}
           {renderPageContents()}
         </DownloadDataContext.Provider>
       )}

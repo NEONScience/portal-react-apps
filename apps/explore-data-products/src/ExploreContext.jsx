@@ -23,6 +23,7 @@ import {
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
+  applyAopProductFilter,
 } from './util/stateUtil';
 
 import {
@@ -79,6 +80,7 @@ const DEFAULT_STATE = {
   // We only want to pull this out when we initialize the page
   localStorageSearch: localStorage.getItem('search'),
   localStorageInitiallyParsed: false,
+  localStorageFilterValuesInitialLoad: null,
 
   currentProducts: {
     release: LATEST_AND_PROVISIONAL,
@@ -212,7 +214,10 @@ const reducer = (state, action) => {
       }));
 
     // Fetch Handling
-    case 'fetchProductsByReleaseReleaseFailed':
+    case 'fetchProductsByReleaseStarted':
+      newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductsByReleaseFailed':
       if (!newState.fetches.productsByRelease[action.release]) { return newState; }
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productsByRelease[action.release].error = action.error;
@@ -222,6 +227,9 @@ const reducer = (state, action) => {
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
       newState.fetches.productsByRelease[action.release].unparsedData = action.data;
       return calculateAppStatus(parseProductsByReleaseData(newState, action.release, action));
+    case 'fetchAOPVizProductsStarted':
+      newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
     case 'fetchAopVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
       newState.fetches.aopVizProducts.error = action.error;
@@ -229,10 +237,7 @@ const reducer = (state, action) => {
     case 'fetchAopVizProductsSucceeded':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
       newState.aopVizProducts = action.data;
-      return calculateAppStatus(newState);
-    case 'fetchesStarted':
-      newState.fetches = { ...action.fetches };
-      return calculateAppStatus(newState);
+      return calculateAppStatus(applyAopProductFilter(newState));
 
     // Filter
     case 'resetFilter':
@@ -349,12 +354,11 @@ const Provider = (props) => {
   // Trigger any fetches that are awaiting call
   useEffect(() => {
     if (appStatus !== APP_STATUS.HAS_FETCHES_TO_TRIGGER) { return; }
-    const newFetches = cloneDeep(fetches);
     // Product release fetches
     Object.keys(fetches.productsByRelease)
       .filter((release) => fetchIsAwaitingCall(fetches.productsByRelease[release]))
       .forEach((release) => {
-        newFetches.productsByRelease[release].status = FETCH_STATUS.FETCHING;
+        dispatch({ type: 'fetchProductsByReleaseStarted', release });
         const releaseArg = release === LATEST_AND_PROVISIONAL ? null : release;
         NeonGraphQL.getAllDataProducts(releaseArg).pipe(
           map((response) => {
@@ -367,7 +371,7 @@ const Provider = (props) => {
           }),
           catchError((error) => {
             dispatch({
-              type: 'fetchProductsByReleaseReleaseFailed',
+              type: 'fetchProductsByReleaseFailed',
               release,
               error,
             });
@@ -377,7 +381,7 @@ const Provider = (props) => {
       });
     // Fetch the list of product codes supported by Visus for the AOP Viewer Visualization
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
-      newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      dispatch({ type: 'fetchAOPVizProductsStarted' });
       ajax({
         method: 'GET',
         url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
@@ -408,7 +412,6 @@ const Provider = (props) => {
         }),
       ).subscribe();
     }
-    dispatch({ type: 'fetchesStarted', fetches: newFetches });
   }, [appStatus, fetches]);
 
   /**

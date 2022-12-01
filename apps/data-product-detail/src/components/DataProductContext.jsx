@@ -22,7 +22,7 @@ import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 import BundleService from 'portal-core-components/lib/service/BundleService';
 import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -79,9 +79,6 @@ const DEFAULT_STATE = {
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 };
 
-// eslint-disable-next-line prefer-regex-literals
-const getProvReleaseRegex = () => new RegExp(/^[A-Z]+$/);
-
 const fetchIsInStatus = (fetchObject, status) => (
   typeof fetchObject === 'object' && fetchObject !== null && fetchObject.status === status
 );
@@ -135,11 +132,7 @@ const getAppliedReleaseObjectFromState = (state = DEFAULT_STATE) => {
     data: { releases },
   } = state;
   const latestRelease = (releases && releases.length)
-    ? releases.find((r) => {
-      const matches = getProvReleaseRegex().exec(r.release);
-      const isLatestProv = exists(matches) && (matches.length > 0);
-      return !isLatestProv;
-    })
+    ? releases.find((r) => !ReleaseService.isLatestNonProv(r.release))
     : null;
   return routeRelease || (latestRelease || {}).release;
 };
@@ -155,11 +148,7 @@ const calculateFetches = (state) => {
   if (!productCode) { return state; }
   // Find the latest non-prov release definition
   const latestRelease = (releases && releases.length)
-    ? releases.find((r) => {
-      const matches = getProvReleaseRegex().exec(r.release);
-      const isLatestProv = exists(matches) && (matches.length > 0);
-      return !isLatestProv;
-    })
+    ? releases.find((r) => !ReleaseService.isLatestNonProv(r.release))
     : null;
   const fetchRelease = routeRelease || (latestRelease || {}).release;
   // Fetch the base product
@@ -254,6 +243,43 @@ const applyUserRelease = (current, userReleases) => {
   });
 };
 
+const applyReleaseBundleFilter = (state, release) => {
+  const isLatestNonProv = ReleaseService.isLatestNonProv(release.release);
+  if (isLatestNonProv) {
+    return true;
+  }
+  // Filter releases by bundle availability
+  const bundleRelease = BundleService.determineBundleRelease(release.release);
+  if (!exists(state.neonContextState)
+      || !exists(state.neonContextState.data)
+      || !exists(state.neonContextState.data.bundles)) {
+    return true;
+  }
+  const isProductDefined = BundleService.isProductDefined(
+    state.neonContextState.data.bundles,
+    state.route.productCode,
+  );
+  if (!isProductDefined) {
+    return true;
+  }
+  const isProductDefinedForRelease = BundleService.isProductDefinedForRelease(
+    state.neonContextState.data.bundles,
+    state.route.productCode,
+    bundleRelease,
+  );
+  if (!isProductDefinedForRelease) {
+    // If not defined within a release bundle, determine if standalone
+    // available for the release.
+    if (exists(state.data.product) && existsNonEmpty(state.data.product.releases)) {
+      return state.data.product.releases.find((productRelease) => (
+        productRelease.release.localeCompare(release.release) === 0
+      ));
+    }
+    return false;
+  }
+  return true;
+};
+
 // Idempotent function to apply releases to state.data.releases. This is the global lookup for
 // all releases applicable to this product. It's separate, and must be populated in this way,
 // because the backend currently has no concept of bundles or metadata inheritance. As such a bundle
@@ -271,6 +297,7 @@ const applyReleasesGlobally = (state, releases) => {
     .filter((r) => (
       updatedState.data.releases.every((existingR) => r.release !== existingR.release)
     ))
+    .filter((r) => applyReleaseBundleFilter(updatedState, r))
     .forEach((r) => {
       updatedState.data.releases.push({
         ...r,

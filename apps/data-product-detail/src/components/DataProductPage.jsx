@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -21,7 +22,7 @@ import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import DataProductContext from './DataProductContext';
@@ -50,6 +51,13 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: Theme.colors.BROWN[50],
     borderColor: Theme.colors.BROWN[300],
     marginBottom: theme.spacing(4),
+  },
+  cardHeader: {
+    padding: theme.spacing(3),
+    paddingBottom: 0,
+  },
+  cardContent: {
+    paddingTop: theme.spacing(2),
   },
   flex: {
     display: 'flex',
@@ -90,6 +98,7 @@ const DataProductPage = () => {
       bundleParentReleases,
       aopVizProducts,
       productReleaseDois,
+      product: baseProduct,
     },
   } = state;
   const {
@@ -122,8 +131,13 @@ const DataProductPage = () => {
   const skeleton = loading || error;
 
   // Get the current release object if appropriate to do so
+  const hasRouteRelease = isStringNonEmpty(currentRelease);
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
   const hideDoi = currentReleaseObject && !currentReleaseObject.showDoi;
+  const showNotInReleaseNotice = hasRouteRelease
+    && !loading
+    && !exists(currentReleaseObject)
+    && !hideDoi;
   let currentReleaseGenDate = null;
   if (currentReleaseObject) {
     const generationMoment = moment(currentReleaseObject.generationDate);
@@ -249,6 +263,30 @@ const DataProductPage = () => {
   const renderTombstoneNotice = () => ((
     <TombstoneNotice />
   ));
+  const renderNotInReleaseNotice = () => {
+    if (!showNotInReleaseNotice) return null;
+    const dataProductDetailLink = (
+      <Link href={RouteService.getProductDetailPath(baseProduct.productCode)}>
+        here
+      </Link>
+    );
+    return (
+      <Card className={classes.card}>
+        <CardHeader
+          className={classes.cardHeader}
+          title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
+        />
+        <CardContent className={classes.cardContent}>
+          <Typography variant="body2" color="textSecondary">
+            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+            {currentRelease} of this data product is not available.
+            The data product releases can be found {dataProductDetailLink}.
+            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          </Typography>
+        </CardContent>
+      </Card>
+    );
+  };
 
   const renderReleaseCard = () => {
     if (!currentReleaseObject || hideDoi) return null;
@@ -341,6 +379,7 @@ const DataProductPage = () => {
           key={currentRelease || ''}
         >
           {renderTombstoneNotice()}
+          {renderNotInReleaseNotice()}
           {renderReleaseCard()}
           {renderPageContents()}
         </DownloadDataContext.Provider>

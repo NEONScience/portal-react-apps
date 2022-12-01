@@ -134,10 +134,6 @@ const DataProductPage = () => {
   const hasRouteRelease = isStringNonEmpty(currentRelease);
   const currentReleaseObject = getCurrentReleaseObjectFromState(state);
   const hideDoi = currentReleaseObject && !currentReleaseObject.showDoi;
-  const showNotInReleaseNotice = hasRouteRelease
-    && !loading
-    && !exists(currentReleaseObject)
-    && !hideDoi;
   let currentReleaseGenDate = null;
   if (currentReleaseObject) {
     const generationMoment = moment(currentReleaseObject.generationDate);
@@ -212,6 +208,11 @@ const DataProductPage = () => {
   const isTombstoned = productReleaseDois
     && productReleaseDois[currentRelease]
     && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
+  const showNotInReleaseNotice = hasRouteRelease
+    && !loading
+    && !exists(currentReleaseObject)
+    && !hideDoi
+    && !isTombstoned;
   const showVizSection = !isTombstoned
     && (timeSeriesProductCodes.includes(productCode) || aopVizProducts.includes(productCode));
 

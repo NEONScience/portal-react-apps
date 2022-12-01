@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import DataProductContext from '../DataProductContext';
@@ -35,8 +36,8 @@ const TombstoneNotice = () => {
   const classes = useStyles(Theme);
   const [state] = useDataProductContextState();
   const {
-    route: { release: currentRelease },
-    data: { productReleaseDois, product: baseProduct },
+    route: { release: currentRelease, bundle },
+    data: { productReleaseDois, bundleParents, product: baseProduct },
   } = state;
   const isTombstoned = productReleaseDois
     && productReleaseDois[currentRelease]
@@ -51,12 +52,21 @@ const TombstoneNotice = () => {
     doiDisplay = ` (DOI:${doiId}) `;
   }
   let latestAvailableReleaseBlurb = null;
-  if (Array.isArray(baseProduct.releases) && (baseProduct.releases.length > 0)) {
-    const latestAvailableProductRelease = baseProduct.releases[0];
+  let appliedProduct = baseProduct;
+  let appliedReleases = baseProduct.releases;
+  if ((bundle.parentCodes.length > 0) && isStringNonEmpty(bundle.doiProductCode)) {
+    const bundleParentData = (bundleParents[bundle.doiProductCode] || {});
+    if (exists(bundleParentData.releases)) {
+      appliedProduct = bundleParentData;
+      appliedReleases = bundleParentData.releases;
+    }
+  }
+  if (Array.isArray(appliedReleases) && (appliedReleases.length > 0)) {
+    const latestAvailableProductRelease = appliedReleases[0];
     if (latestAvailableProductRelease && latestAvailableProductRelease.release) {
       if (latestAvailableProductRelease.release.localeCompare(citationRelease.release) !== 0) {
         const dataProductDetailLink = (
-          <Link href={RouteService.getProductDetailPath(baseProduct.productCode)}>
+          <Link href={RouteService.getProductDetailPath(appliedProduct.productCode)}>
             newer release
           </Link>
         );

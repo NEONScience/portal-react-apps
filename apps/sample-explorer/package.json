@@ -9,9 +9,9 @@
     "@material-ui/lab": "~4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.5",
-    "ag-grid-community": "^28.1.1",
-    "ag-grid-react": "^28.1.1",
-    "core-js": "^3.25.0",
+    "ag-grid-community": "^28.2.1",
+    "ag-grid-react": "^28.2.1",
+    "core-js": "^3.26.1",
     "d3": "^5.16.0",
     "js-file-download": "^0.4.12",
     "json2csv": "^5.0.7",
@@ -19,11 +19,11 @@
     "react": "^17.0.2",
     "react-d3-graph": "^2.6.0",
     "react-dom": "^17.0.2",
-    "react-redux": "^8.0.2",
+    "react-redux": "^8.0.5",
     "react-scripts": "5.0.1",
     "redux": "^4.2.0",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.4.1",
+    "redux-thunk": "^2.4.2",
     "url-search-params-polyfill": "^8.1.1",
     "whatwg-fetch": "^3.6.2"
   },
@@ -33,14 +33,15 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "esw webpack.config.* src tools --color",
+    "lint": "(npx eslint src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
+    "lint:fix": "(npx eslint --fix src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
     "lint:watch": "npm run lint -- --watch"
   },
   "devDependencies": {
-    "eslint": "^8.23.0",
-    "eslint-plugin-react": "^7.31.4",
-    "express": "^4.18.1",
-    "typescript": "~4.7.4"
+    "eslint": "^8.28.0",
+    "eslint-plugin-react": "^7.31.11",
+    "express": "^4.18.2",
+    "typescript": "~4.9.3"
   },
   "browserslist": {
     "production": [

@@ -1,8 +1,6 @@
 /* eslint-disable import/no-unresolved */
-import React from 'react';
+import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
-
-import MapSelectionButton from 'portal-core-components/lib/components/MapSelectionButton';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -10,6 +8,8 @@ import FilterCheckBox from '../FilterCheckBox';
 import FilterItemVisibilityButtons from '../FilterItemVisibilityButtons';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../../util/filterUtil';
+
+const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
 
 const FilterState = (props) => {
   const { skeleton } = props;
@@ -54,12 +54,14 @@ const FilterState = (props) => {
   };
 
   const mapSelectionButton = (
-    <MapSelectionButton
-      selection="STATES"
-      selectedItems={filterValues[filterKey]}
-      buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
-      onSave={(newStates) => { onApplyFilter(Array.from(newStates), true); }}
-    />
+    <Suspense fallback={null}>
+      <MapSelectionButton
+        selection="STATES"
+        selectedItems={filterValues[filterKey]}
+        buttonProps={{ variant: 'outlined', color: 'primary', size: 'small' }}
+        onSave={(newStates) => { onApplyFilter(Array.from(newStates), true); }}
+      />
+    </Suspense>
   );
 
   return (

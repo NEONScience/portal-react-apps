@@ -165,6 +165,7 @@ const FilterTimeRange = () => {
               data-selenium="browse-data-products-page.filters.time-range.from-input"
               inputVariant="outlined"
               margin="dense"
+              orientation="portrait"
               value={getYearMoment(currentRange[0] || selectableRange[sliderMin])}
               onChange={(value) => handleChangeDatePicker(0, value)}
               views={['year']}
@@ -179,6 +180,7 @@ const FilterTimeRange = () => {
               data-selenium="browse-data-products-page.filters.time-range.through-input"
               inputVariant="outlined"
               margin="dense"
+              orientation="portrait"
               value={getYearMoment(currentRange[1] || selectableRange[sliderMax])}
               onChange={(value) => handleChangeDatePicker(1, value)}
               views={['year']}

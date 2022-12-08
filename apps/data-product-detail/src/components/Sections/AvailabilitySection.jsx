@@ -18,10 +18,12 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
 import SkeletonSection from './SkeletonSection';
+import TombstoneNotice from '../Release/TombstoneNotice';
 
 const useStyles = makeStyles((theme) => ({
   summaryDivStyle: {
@@ -72,6 +74,7 @@ const AvailabilitySection = (props) => {
 
   const {
     route: {
+      release: currentRelease,
       bundle: {
         doiProductCode,
         parentCodes,
@@ -79,10 +82,14 @@ const AvailabilitySection = (props) => {
       },
     },
     data: {
+      productReleaseDois,
       bundleParents,
     },
   } = state;
   const isBundleChild = (parentCodes.length > 0) && isStringNonEmpty(doiProductCode);
+  const isTombstoned = productReleaseDois
+    && productReleaseDois[currentRelease]
+    && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
 
   const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
 
@@ -182,8 +189,14 @@ const AvailabilitySection = (props) => {
     />
   ) : null;
 
+  const renderNoDataDisplay = () => {
+    if (isTombstoned) return null;
+    return (<i>No data currently availabile for this product.</i>);
+  };
+
   return !productData ? <SkeletonSection {...props} /> : (
     <Section {...props}>
+      <TombstoneNotice />
       {!fromManifest && !fromAOPManifest && fromExternalHost ? (
         <>
           {!dataAvailable ? null : (
@@ -218,7 +231,7 @@ const AvailabilitySection = (props) => {
               <DataProductAvailability view="ungrouped" disableSelection />
             </>
           ) : (
-            <i>No data currently availabile for this product.</i>
+            renderNoDataDisplay()
           )}
           {!productData.productCode ? null : (
             <ExternalHostInfo

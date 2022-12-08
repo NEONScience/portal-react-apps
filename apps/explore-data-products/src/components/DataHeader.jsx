@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -431,6 +432,14 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
   }
 
   return catalogSummaryContents;
+};
+
+DataHeader.propTypes = {
+  skeleton: PropTypes.bool,
+};
+
+DataHeader.defaultProps = {
+  skeleton: false,
 };
 
 export default DataHeader;

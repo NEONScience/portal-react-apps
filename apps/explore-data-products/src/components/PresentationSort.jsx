@@ -159,59 +159,57 @@ const PresentationSort = (props) => {
   );
 
   const sortContent = (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <FormControl variant="outlined">
-          <Select
-            value={sortMethod}
-            aria-label="Sort Method"
-            className={classes.select}
-            onChange={(event) => dispatch({
-              type: 'applySort',
-              sortMethod: event.target.value,
-              sortDirection: null,
-            })}
-            data-selenium="browse-data-products-page.sort.method"
-          >
-            {Object.keys(SORT_METHODS).map((method) => (
-              <MenuItem
-                key={method}
-                value={method}
-                disabled={SORT_METHODS[method].isDisabled(filterValues)}
-              >
-                {SORT_METHODS[method].label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <ToggleButtonGroup
-          exclusive
-          value={sortDirection}
-          className={classes.toggleButtonGroup}
-          onChange={(event, value) => dispatch({
+    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+      <FormControl variant="outlined">
+        <Select
+          value={sortMethod}
+          aria-label="Sort Method"
+          className={classes.select}
+          onChange={(event) => dispatch({
             type: 'applySort',
-            sortMethod: null,
-            sortDirection: value,
+            sortMethod: event.target.value,
+            sortDirection: null,
           })}
-          data-selenium="browse-data-products-page.sort.direction"
+          data-selenium="browse-data-products-page.sort.method"
         >
-          <ToggleButton
-            value={SORT_DIRECTIONS[0]}
-            disabled={sortDirectionDisabled}
-            aria-label="Sort Ascending"
-          >
-            <AscIcon />
-          </ToggleButton>
-          <ToggleButton
-            value={SORT_DIRECTIONS[1]}
-            disabled={sortDirectionDisabled}
-            aria-label="Sort Descending"
-          >
-            <DescIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </div>
-    </>
+          {Object.keys(SORT_METHODS).map((method) => (
+            <MenuItem
+              key={method}
+              value={method}
+              disabled={SORT_METHODS[method].isDisabled(filterValues)}
+            >
+              {SORT_METHODS[method].label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <ToggleButtonGroup
+        exclusive
+        value={sortDirection}
+        className={classes.toggleButtonGroup}
+        onChange={(event, value) => dispatch({
+          type: 'applySort',
+          sortMethod: null,
+          sortDirection: value,
+        })}
+        data-selenium="browse-data-products-page.sort.direction"
+      >
+        <ToggleButton
+          value={SORT_DIRECTIONS[0]}
+          disabled={sortDirectionDisabled}
+          aria-label="Sort Ascending"
+        >
+          <AscIcon />
+        </ToggleButton>
+        <ToggleButton
+          value={SORT_DIRECTIONS[1]}
+          disabled={sortDirectionDisabled}
+          aria-label="Sort Descending"
+        >
+          <DescIcon />
+        </ToggleButton>
+      </ToggleButtonGroup>
+    </div>
   );
 
   return (

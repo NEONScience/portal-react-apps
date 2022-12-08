@@ -19,8 +19,12 @@
       "experimentalObjectRestSpread": true
     }
   },
+  "ignorePatterns": [
+    "server.js"
+  ],
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/space-infix-ops": "off",
     "react/jsx-fragments": "off"
   }
 }

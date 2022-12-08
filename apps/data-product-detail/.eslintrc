@@ -1,6 +1,6 @@
 {
   "extends": ["react-app", "airbnb", "plugin:jsx-a11y/recommended"],
-  "plugins": ["jsx-a11y"],
+  "plugins": ["react", "jsx-a11y"],
   "parserOptions": {
     "ecmaVersion": 6,
     "ecmaFeatures": {
@@ -8,9 +8,13 @@
       "jsx": true
     }
   },
+  "ignorePatterns": [
+    "server.js"
+  ],
   "rules": {
-    "linebreak-style": 0,
-    "react/jsx-props-no-spreading": 0,
-    "eslint linebreak-style": [0, "error", "windows"]
+    "import/no-relative-packages": 0,
+    "linebreak-style": ["error", "unix"],
+    "react/function-component-definition": 0,
+    "react/jsx-props-no-spreading": 0
   }
 }

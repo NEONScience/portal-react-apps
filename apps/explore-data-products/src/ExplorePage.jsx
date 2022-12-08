@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, Suspense } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
+
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import debounce from 'lodash/debounce';
 
@@ -13,7 +15,6 @@ import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import ExploreContext from './ExploreContext';
 
-import DataHeader from './components/DataHeader';
 import PresentationData from './components/PresentationData';
 import PresentationSort from './components/PresentationSort';
 import PresentationFilter from './components/PresentationFilter';
@@ -21,6 +22,8 @@ import DataVisualizationDialog from './components/DataVisualizationDialog';
 
 import { APP_STATUS } from './util/stateUtil';
 import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
+
+const DataHeader = React.lazy(() => import('./components/DataHeader'));
 
 const useStyles = makeStyles((theme) => ({
   lazyLoader: {
@@ -123,7 +126,9 @@ const ExplorePage = (props) => {
       }}
     >
       <DataVisualizationDialog />
-      <DataHeader {...drillProps} />
+      <Suspense fallback={<Skeleton variant="rect" width="100%" height={160} />}>
+        <DataHeader {...drillProps} />
+      </Suspense>
       <PresentationSort {...drillProps} />
       <PresentationData {...drillProps} />
       <div

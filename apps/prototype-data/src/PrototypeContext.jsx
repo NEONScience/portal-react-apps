@@ -7,9 +7,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useHistory, useLocation } from 'react-router-dom';
-
-import logger from 'use-reducer-logger';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -321,10 +319,7 @@ const Provider = (props) => {
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
-  const [state, dispatch] = useReducer(
-    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
-    initialState,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     app: { status: appStatus },
@@ -340,7 +335,7 @@ const Provider = (props) => {
     manifestRollupFetches[uuid].status === FETCH_STATUS.AWAITING_CALL
   ));
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
 
@@ -357,11 +352,11 @@ const Provider = (props) => {
     const uuid = getUuidFromURL();
     if (!uuid) {
       NeonJsonLd.removeAllMetadata();
-      if (urlHasArg) { history.replace(`${NeonEnvironment.getRouterBaseHomePath()}`); }
+      if (urlHasArg) { navigate(`${NeonEnvironment.getRouterBaseHomePath()}`, { replace: true }); }
       return;
     }
     dispatch({ type: 'setInitialRouteToUuid', uuid });
-  }, [appStatus, history, pathname]);
+  }, [appStatus, navigate, pathname]);
 
   // Trigger initial prototype datasets fetch
   useEffect(() => {
@@ -413,7 +408,7 @@ const Provider = (props) => {
       const nextLocation = missingNextUuid
         ? baseRoute
         : `${baseRoute}/${routeNextUuid}`;
-      history.push(nextLocation);
+      navigate(nextLocation);
       if (missingNextUuid) {
         NeonJsonLd.removeAllMetadata();
       } else {
@@ -432,12 +427,13 @@ const Provider = (props) => {
     if (locationUuid !== routeUuid) {
       dispatch({ type: 'setNextUuid', uuid: locationUuid });
     }
-  }, [appStatus, history, pathname, routeUuid, routeNextUuid]);
+  }, [appStatus, navigate, pathname, routeUuid, routeNextUuid]);
 
   /**
      Render
   */
   return (
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <Context.Provider value={[state, dispatch]}>
       {children}
     </Context.Provider>

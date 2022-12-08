@@ -13,6 +13,7 @@ import { AnyActionType } from '../actions/actionTypes';
 import { BaseStoreAppState, SelectOption } from '../types/store';
 
 export const appReducer = (
+  // eslint-disable-next-line @typescript-eslint/default-param-last
   state = AppState.getAppState(),
   action: AnyActionType,
 ): BaseStoreAppState => {
@@ -63,6 +64,7 @@ export const appReducer = (
 };
 
 const flowReducer = (
+  // eslint-disable-next-line @typescript-eslint/default-param-last
   state = AppState.getAppState(),
   action: AnyActionType,
 ): BaseStoreAppState => {

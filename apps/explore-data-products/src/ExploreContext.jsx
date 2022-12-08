@@ -7,17 +7,15 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import logger from 'use-reducer-logger';
-
-import { of } from 'rxjs';
+import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
 
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import {
   APP_STATUS,
@@ -25,6 +23,7 @@ import {
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
+  applyAopProductFilter,
 } from './util/stateUtil';
 
 import {
@@ -81,6 +80,7 @@ const DEFAULT_STATE = {
   // We only want to pull this out when we initialize the page
   localStorageSearch: localStorage.getItem('search'),
   localStorageInitiallyParsed: false,
+  localStorageFilterValuesInitialLoad: null,
 
   currentProducts: {
     release: LATEST_AND_PROVISIONAL,
@@ -214,7 +214,10 @@ const reducer = (state, action) => {
       }));
 
     // Fetch Handling
-    case 'fetchProductsByReleaseReleaseFailed':
+    case 'fetchProductsByReleaseStarted':
+      newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductsByReleaseFailed':
       if (!newState.fetches.productsByRelease[action.release]) { return newState; }
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productsByRelease[action.release].error = action.error;
@@ -224,6 +227,9 @@ const reducer = (state, action) => {
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
       newState.fetches.productsByRelease[action.release].unparsedData = action.data;
       return calculateAppStatus(parseProductsByReleaseData(newState, action.release, action));
+    case 'fetchAOPVizProductsStarted':
+      newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
     case 'fetchAopVizProductsFailed':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
       newState.fetches.aopVizProducts.error = action.error;
@@ -231,10 +237,7 @@ const reducer = (state, action) => {
     case 'fetchAopVizProductsSucceeded':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
       newState.aopVizProducts = action.data;
-      return calculateAppStatus(newState);
-    case 'fetchesStarted':
-      newState.fetches = { ...action.fetches };
-      return calculateAppStatus(newState);
+      return calculateAppStatus(applyAopProductFilter(newState));
 
     // Filter
     case 'resetFilter':
@@ -338,10 +341,7 @@ const Provider = (props) => {
     initialState.urlParams[param] = parseURLParam(param);
   });
 
-  const [state, dispatch] = useReducer(
-    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
-    initialState,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     appStatus,
@@ -354,12 +354,11 @@ const Provider = (props) => {
   // Trigger any fetches that are awaiting call
   useEffect(() => {
     if (appStatus !== APP_STATUS.HAS_FETCHES_TO_TRIGGER) { return; }
-    const newFetches = cloneDeep(fetches);
     // Product release fetches
     Object.keys(fetches.productsByRelease)
       .filter((release) => fetchIsAwaitingCall(fetches.productsByRelease[release]))
       .forEach((release) => {
-        newFetches.productsByRelease[release].status = FETCH_STATUS.FETCHING;
+        dispatch({ type: 'fetchProductsByReleaseStarted', release });
         const releaseArg = release === LATEST_AND_PROVISIONAL ? null : release;
         NeonGraphQL.getAllDataProducts(releaseArg).pipe(
           map((response) => {
@@ -372,7 +371,7 @@ const Provider = (props) => {
           }),
           catchError((error) => {
             dispatch({
-              type: 'fetchProductsByReleaseReleaseFailed',
+              type: 'fetchProductsByReleaseFailed',
               release,
               error,
             });
@@ -382,13 +381,27 @@ const Provider = (props) => {
       });
     // Fetch the list of product codes supported by Visus for the AOP Viewer Visualization
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
-      newFetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
-      ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
+      dispatch({ type: 'fetchAOPVizProductsStarted' });
+      ajax({
+        method: 'GET',
+        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
+        crossDomain: true,
+      }).pipe(
         map((response) => {
+          if (exists(response)
+              && Array.isArray(response.response)
+              && (response.response.length > 0)) {
+            dispatch({
+              type: 'fetchAopVizProductsSucceeded',
+              data: response.response,
+            });
+            return of(true);
+          }
           dispatch({
-            type: 'fetchAopVizProductsSucceeded',
-            data: response.data,
+            type: 'fetchAopVizProductsFailed',
+            error: 'AOP products fetch failed',
           });
+          return of('AOP visualization products fetch failed');
         }),
         catchError((error) => {
           dispatch({
@@ -399,13 +412,13 @@ const Provider = (props) => {
         }),
       ).subscribe();
     }
-    dispatch({ type: 'fetchesStarted', fetches: newFetches });
   }, [appStatus, fetches]);
 
   /**
      Render
   */
   return (
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <Context.Provider value={[state, dispatch]}>
       {children}
     </Context.Provider>

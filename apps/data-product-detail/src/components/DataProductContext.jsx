@@ -7,13 +7,10 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import logger from 'use-reducer-logger';
-
-import { of } from 'rxjs';
+import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -23,8 +20,9 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -65,6 +63,7 @@ const DEFAULT_STATE = {
     productReleases: {},
     bundleParents: {},
     bundleParentReleases: {},
+    productReleaseDois: {},
     aopVizProducts: null,
   },
   data: {
@@ -73,13 +72,12 @@ const DEFAULT_STATE = {
     bundleParents: {}, // Latest and provisional bundle parent product metadata
     bundleParentReleases: {}, // Bundle parent product metadata on a per-release basis
     releases: [], // List of release objects; fed from base product or bundle inheritance
+    productReleaseDois: {},
     aopVizProducts: [],
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 };
-
-const getProvReleaseRegex = () => new RegExp(/^[A-Z]+$/);
 
 const fetchIsInStatus = (fetchObject, status) => (
   typeof fetchObject === 'object' && fetchObject !== null && fetchObject.status === status
@@ -93,6 +91,9 @@ const stateHasFetchesInStatus = (state, status) => (
   fetchIsInStatus(state.fetches.product, status)
   || Object.keys(state.fetches.productReleases).some(
     (f) => fetchIsInStatus(state.fetches.productReleases[f], status),
+  )
+  || Object.keys(state.fetches.productReleaseDois).some(
+    (f) => fetchIsInStatus(state.fetches.productReleaseDois[f], status),
   )
   || Object.keys(state.fetches.bundleParents).some(
     (f) => fetchIsInStatus(state.fetches.bundleParents[f], status),
@@ -125,6 +126,17 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
   return releases.find((r) => r.release === currentRelease) || null;
 };
 
+const getAppliedReleaseObjectFromState = (state = DEFAULT_STATE) => {
+  const {
+    route: { release: routeRelease },
+    data: { releases },
+  } = state;
+  const latestRelease = (releases && releases.length)
+    ? releases.find((r) => !ReleaseService.isLatestNonProv(r.release))
+    : null;
+  return routeRelease || (latestRelease || {}).release;
+};
+
 const calculateFetches = (state) => {
   const newState = { ...state };
   const {
@@ -136,11 +148,7 @@ const calculateFetches = (state) => {
   if (!productCode) { return state; }
   // Find the latest non-prov release definition
   const latestRelease = (releases && releases.length)
-    ? releases.find((r) => {
-      const matches = getProvReleaseRegex().exec(r.release);
-      const isLatestProv = exists(matches) && (matches.length > 0);
-      return !isLatestProv;
-    })
+    ? releases.find((r) => !ReleaseService.isLatestNonProv(r.release))
     : null;
   const fetchRelease = routeRelease || (latestRelease || {}).release;
   // Fetch the base product
@@ -154,6 +162,10 @@ const calculateFetches = (state) => {
   // Fetch the release-specific product
   if (fetchRelease && !state.fetches.productReleases[fetchRelease]) {
     newState.fetches.productReleases[fetchRelease] = { status: FETCH_STATUS.AWAITING_CALL };
+  }
+  // Fetch the release-specific DOI state
+  if (fetchRelease && !state.fetches.productReleaseDois[fetchRelease]) {
+    newState.fetches.productReleaseDois[fetchRelease] = { status: FETCH_STATUS.AWAITING_CALL };
   }
   // Fetch all base bundle parent products
   (parentCodes || []).forEach((bundleParentCode) => {
@@ -231,6 +243,43 @@ const applyUserRelease = (current, userReleases) => {
   });
 };
 
+const applyReleaseBundleFilter = (state, release) => {
+  const isLatestNonProv = ReleaseService.isLatestNonProv(release.release);
+  if (isLatestNonProv) {
+    return true;
+  }
+  // Filter releases by bundle availability
+  const bundleRelease = BundleService.determineBundleRelease(release.release);
+  if (!exists(state.neonContextState)
+      || !exists(state.neonContextState.data)
+      || !exists(state.neonContextState.data.bundles)) {
+    return true;
+  }
+  const isProductDefined = BundleService.isProductDefined(
+    state.neonContextState.data.bundles,
+    state.route.productCode,
+  );
+  if (!isProductDefined) {
+    return true;
+  }
+  const isProductDefinedForRelease = BundleService.isProductDefinedForRelease(
+    state.neonContextState.data.bundles,
+    state.route.productCode,
+    bundleRelease,
+  );
+  if (!isProductDefinedForRelease) {
+    // If not defined within a release bundle, determine if standalone
+    // available for the release.
+    if (exists(state.data.product) && existsNonEmpty(state.data.product.releases)) {
+      return state.data.product.releases.find((productRelease) => (
+        productRelease.release.localeCompare(release.release) === 0
+      ));
+    }
+    return false;
+  }
+  return true;
+};
+
 // Idempotent function to apply releases to state.data.releases. This is the global lookup for
 // all releases applicable to this product. It's separate, and must be populated in this way,
 // because the backend currently has no concept of bundles or metadata inheritance. As such a bundle
@@ -248,6 +297,7 @@ const applyReleasesGlobally = (state, releases) => {
     .filter((r) => (
       updatedState.data.releases.every((existingR) => r.release !== existingR.release)
     ))
+    .filter((r) => applyReleaseBundleFilter(updatedState, r))
     .forEach((r) => {
       updatedState.data.releases.push({
         ...r,
@@ -256,6 +306,26 @@ const applyReleasesGlobally = (state, releases) => {
         showViz: true,
       });
     });
+  updatedState.data.releases = ReleaseService.sortReleases(updatedState.data.releases);
+  return updatedState;
+};
+
+const applyDoiStatusReleaseGlobally = (state, doiStatus) => {
+  const updatedState = { ...state };
+  const transformedRelease = ReleaseService.transformDoiStatusRelease(doiStatus);
+  if (!exists(transformedRelease)) {
+    return updatedState;
+  }
+  const hasRelease = updatedState.data.releases.some((value) => (
+    exists(value)
+    && isStringNonEmpty(value.release)
+    && isStringNonEmpty(transformedRelease.release)
+    && (value.release.localeCompare(transformedRelease.release) === 0)
+  ));
+  if (!hasRelease) {
+    updatedState.data.releases.push(transformedRelease);
+  }
+  updatedState.data.releases = ReleaseService.sortReleases(updatedState.data.releases);
   return updatedState;
 };
 
@@ -304,6 +374,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
+// eslint-disable-next-line default-param-last
 const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) => {
   const product = getCurrentProductFromState(state, true);
   if (!product || !Array.isArray(product.siteCodes)) { return null; }
@@ -530,6 +601,20 @@ const reducer = (state, action) => {
       newState.data.productReleases[action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchProductReleaseDoiStarted':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseDoiFailed':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.productReleaseDois[action.release].error = action.error;
+      // eslint-disable-next-line max-len
+      newState.app.error = `${errorDetail}: ${action.release}`;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseDoiSucceeded':
+      newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.SUCCESS;
+      newState.data.productReleaseDois[action.release] = action.data;
+      return calculateAppStatus(applyDoiStatusReleaseGlobally(newState, action.data));
+
     case 'fetchBundleParentStarted':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
@@ -611,10 +696,7 @@ const Provider = (props) => {
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
-  const [state, dispatch] = useReducer(
-    process.env.NODE_ENV === 'development' ? logger(reducer) : reducer,
-    initialState,
-  );
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
     app: { status },
@@ -654,7 +736,7 @@ const Provider = (props) => {
   // 1. route.nextRelease - set by dispatch, gets pushed into history
   // 2. location.pathname - literally the URL, route.release follows this
   // 3. route.release - only ever set from URL parsing
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
   const { pathname } = location;
   useEffect(() => {
@@ -671,7 +753,7 @@ const Provider = (props) => {
         ? `${baseRoute}/${productCode}`
         : `${baseRoute}/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
-      history.push(nextLocation);
+      navigate(nextLocation);
       NeonJsonLd.injectProduct(productCode, nextRelease);
       dispatch({ type: 'applyNextRelease' });
       return;
@@ -685,7 +767,7 @@ const Provider = (props) => {
     if (locationRelease !== currentRelease) {
       dispatch({ type: 'setNextRelease', release: locationRelease });
     }
-  }, [status, history, pathname, productCode, currentRelease, nextRelease, nextHash]);
+  }, [status, navigate, pathname, productCode, currentRelease, nextRelease, nextHash]);
 
   // Trigger any fetches that are awaiting call
   useEffect(() => {
@@ -715,6 +797,20 @@ const Provider = (props) => {
           },
           (error) => {
             dispatch({ type: 'fetchProductReleaseFailed', release, error });
+          },
+        );
+      });
+    // Product release DOI fetches
+    Object.keys(fetches.productReleaseDois)
+      .filter((release) => fetchIsAwaitingCall(fetches.productReleaseDois[release]))
+      .forEach((release) => {
+        dispatch({ type: 'fetchProductReleaseDoiStarted', release });
+        NeonApi.getProductDoisObservable(productCode, release).subscribe(
+          (response) => {
+            dispatch({ type: 'fetchProductReleaseDoiSucceeded', release, data: response.data });
+          },
+          (error) => {
+            dispatch({ type: 'fetchProductReleaseDoiFailed', release, error });
           },
         );
       });
@@ -764,9 +860,20 @@ const Provider = (props) => {
     // AOP products fetch
     if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
       dispatch({ type: 'fetchAOPVizProductsStarted' });
-      ajax.getJSON(NeonEnvironment.getVisusProductsBaseUrl()).pipe(
+      ajax({
+        method: 'GET',
+        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
+        crossDomain: true,
+      }).pipe(
         map((response) => {
-          dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.data });
+          if (exists(response)
+              && Array.isArray(response.response)
+              && (response.response.length > 0)) {
+            dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.response });
+            return of(true);
+          }
+          dispatch({ type: 'fetchAOPVizProductsFailed', error: 'AOP products fetch failed' });
+          return of('AOP visualization products fetch failed');
         }),
         catchError((error) => {
           dispatch({ type: 'fetchAOPVizProductsFailed', error });
@@ -780,6 +887,7 @@ const Provider = (props) => {
      Render
   */
   return (
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <Context.Provider value={[state, dispatch]}>
       {children}
     </Context.Provider>
@@ -812,6 +920,7 @@ const DataProductContext = {
   getCurrentProductLatestAvailableDate,
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
+  getAppliedReleaseObjectFromState,
 };
 
 export default DataProductContext;

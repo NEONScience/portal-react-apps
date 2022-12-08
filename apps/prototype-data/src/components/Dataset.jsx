@@ -77,6 +77,7 @@ const Dataset = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
   const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
+  const downSm = useMediaQuery(Theme.breakpoints.down('sm'));
   const atMd = useMediaQuery(Theme.breakpoints.only('md'));
   const showDetailIconOnly = atSm || atMd;
 
@@ -109,6 +110,7 @@ const Dataset = (props) => {
       .sort((a, b) => a.siteCode.localeCompare(b.siteCode))
       .map((location) => {
         let siteCode;
+        // eslint-disable-next-line prefer-regex-literals
         const regex = new RegExp(/^[A-Z]{4}$/);
         if (regex) {
           const matches = regex.exec(location.siteCode);
@@ -197,11 +199,20 @@ const Dataset = (props) => {
     if (showDetailIconOnly) {
       buttonText = 'Details';
     }
+    let buttonStyle = {
+      width: '100%',
+    };
+    if (!downSm) {
+      buttonStyle = {
+        ...buttonStyle,
+        maxWidth: '200px',
+      };
+    }
     return (
       <Button
         variant="contained"
         color="primary"
-        style={{ width: '100%' }}
+        style={buttonStyle}
         endIcon={<DetailsIcon />}
         onClick={() => dispatch({ type: 'setNextUuid', uuid })}
       >
@@ -219,7 +230,7 @@ const Dataset = (props) => {
               {projectTitle}
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={3} md={4} lg={4}>
+          <Grid item xs={12} sm={3} md={4} lg={4} style={{ textAlign: 'right' }}>
             {renderDetailButton()}
           </Grid>
         </Grid>

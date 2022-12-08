@@ -88,8 +88,8 @@ const FilterRelease = (props) => {
         onChange={(filterValue) => dispatch({ type: 'applyFilter', filterKey, filterValue })}
         showGenerationDate
         showProductCount
+        showReleaseLink
         nullReleaseProductCount={catalogStats.totalProducts}
-        maxWidth={276}
         key={selected}
       />
     </FilterBase>

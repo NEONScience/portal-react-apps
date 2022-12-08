@@ -9,7 +9,7 @@ import { configureInitialStore } from "./store/store";
 
 const Root = () => (
   <Provider store={configureInitialStore()}>
-    <NeonRouter>
+    <NeonRouter cleanPath={false} disableRedirect>
       <App />
     </NeonRouter>
   </Provider>

@@ -15,7 +15,7 @@ import { DataProduct, DataProductBundle, DataProductParent } from '../types/stor
 import { resolveAny } from '../util/typeUtil';
 
 const ProductParser = {
-  parseProducts: (response: AjaxResponse): DataProduct[] => {
+  parseProducts: (response: AjaxResponse<unknown>): DataProduct[] => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!exists(resolved.products)) {
       return [];
@@ -30,7 +30,7 @@ const ProductParser = {
       ProductParser.parseProduct(product)
     ));
   },
-  parseProductResponse: (response: AjaxResponse): Nullable<DataProduct[]> => {
+  parseProductResponse: (response: AjaxResponse<unknown>): Nullable<DataProduct[]> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!exists(resolved.products)) {
       return null;
@@ -51,7 +51,7 @@ const ProductParser = {
       : [],
   }),
 
-  parseBundles: (response: AjaxResponse): Record<string, DataProductBundle[]> => {
+  parseBundles: (response: AjaxResponse<unknown>): Record<string, DataProductBundle[]> => {
     const data: unknown = resolveAny(response as never, 'data') as unknown;
     const hasData = exists(data) && Array.isArray(data);
     if (!hasData) {

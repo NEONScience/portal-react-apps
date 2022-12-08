@@ -1,6 +1,7 @@
 import isEqual from 'lodash/isEqual';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import {
   /* constants */
@@ -103,6 +104,78 @@ const applyUserRelease = (current, userReleases) => {
 const withContextReleases = (neonContextState) => (
   neonContextState?.auth?.userData?.data?.releases || []
 );
+
+export const applyAopProductFilter = (state, applyLocalStorage = false) => {
+  let newState = { ...state };
+  const releaseKeys = Object.keys(newState.productsByRelease);
+  if (!Array.isArray(releaseKeys) || (releaseKeys.length <= 0)) {
+    return newState;
+  }
+  if (!Array.isArray(newState.aopVizProducts) || (newState.aopVizProducts.length <= 0)) {
+    return newState;
+  }
+  const filterItemCounts = { [FILTER_KEYS.VISUALIZATIONS]: {} };
+  const addProductToFilterItemCounts = (product) => {
+    const key = FILTER_KEYS.VISUALIZATIONS;
+    const items = product.filterableValues[FILTER_KEYS.VISUALIZATIONS];
+    for (let j = 0; j < items.length; j += 1) {
+      if (!filterItemCounts[key][items[j]]) { filterItemCounts[key][items[j]] = 0; }
+      filterItemCounts[key][items[j]] += 1;
+    }
+  };
+  releaseKeys.forEach((releaseKey) => {
+    const productRelease = newState.productsByRelease[releaseKey];
+    const productKeys = Object.keys(productRelease);
+    if (productKeys && Array.isArray(productKeys)) {
+      productKeys.forEach((productKey) => {
+        const product = productRelease[productKey];
+        if (newState.aopVizProducts.includes(product.productCode)) {
+          const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+            .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
+          if (!hasFilterableValue) {
+            product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+              VISUALIZATIONS.AOP_DATA_VIEWER.key,
+            );
+            addProductToFilterItemCounts(product);
+          }
+        }
+      });
+    }
+  });
+  const key = FILTER_KEYS.VISUALIZATIONS;
+  const existingFilterItemsValues = newState.filterItems[key].map((item) => item.value);
+  const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
+    .filter((item) => !existingFilterItemsValues.includes(item))
+    .map((item) => ({
+      name: VISUALIZATIONS[item] ? VISUALIZATIONS[item].name : null,
+      value: item,
+      subtitle: null,
+      count: filterItemCounts[key][item],
+    }));
+  newState.filterItems[key] = [...newState.filterItems[key], ...nonDuplicateNewFilterItems];
+  if (applyLocalStorage) {
+    let appliedFilterValues = newState.localStorageFilterValuesInitialLoad;
+    if (!appliedFilterValues) {
+      const localFilterValuesUnparsed = localStorage.getItem('filterValues');
+      if (localFilterValuesUnparsed) {
+        try {
+          appliedFilterValues = JSON.parse(localFilterValuesUnparsed);
+        } catch {
+          // eslint-disable-next-line no-console
+          console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
+        }
+      }
+    }
+    Object.keys(appliedFilterValues)
+      .filter((filterKey) => filterKey === FILTER_KEYS.VISUALIZATIONS)
+      .filter((filterKey) => (newState.filterValues[filterKey] || []).length <= 0)
+      .forEach((filterKey) => {
+        newState = applyFilter(newState, filterKey, appliedFilterValues[filterKey], false);
+      });
+    newState = applyCurrentProducts(newState);
+  }
+  return newState;
+};
 
 /**
    parseProductsData
@@ -229,8 +302,31 @@ export const parseProductsByReleaseData = (state, release) => {
 
     if (product.bundle.isChild) {
       // Bundle children with forwarded availability should have releases identical to the parent
+      // for the specified release.
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
-      product.releases = [...((appliedProducts[parentIdx] || {}).releases || [])];
+      const bundleCopiedReleases = [...((appliedProducts[parentIdx] || {}).releases || [])]
+        .filter((bundleParentRelease) => {
+          const bundleParentAppliedRelease = BundleService.determineBundleRelease(
+            bundleParentRelease.release,
+          );
+          return BundleService.isProductInBundle(
+            bundlesCtx,
+            bundleParentAppliedRelease,
+            productCode,
+          );
+        });
+      bundleCopiedReleases.forEach((bundleCopiedRelease) => {
+        if (exists(bundleCopiedRelease)) {
+          const hasRelease = (product.releases || []).some((productRelease) => (
+            exists(productRelease)
+            && isStringNonEmpty(productRelease.release)
+            && (productRelease.release.localeCompare(bundleCopiedRelease.release) === 0)
+          ));
+          if (!hasRelease) {
+            product.releases.push(bundleCopiedRelease);
+          }
+        }
+      });
       applyUserRelease(product.releases, userReleases);
       // Remove bundle blurb from description if this is a bundle child
       EXCISE_BUNDLE_BLURBS.forEach((blurb) => {
@@ -257,9 +353,13 @@ export const parseProductsByReleaseData = (state, release) => {
       );
     }
     if ((newState.aopVizProducts || []).includes(productCode)) {
-      product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-        VISUALIZATIONS.AOP_DATA_VIEWER.key,
-      );
+      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+        .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
+      if (!hasFilterableValue) {
+        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+          VISUALIZATIONS.AOP_DATA_VIEWER.key,
+        );
+      }
     }
 
     // Filterable value for THEMES (special handling because of lack of ID and
@@ -477,6 +577,7 @@ export const parseProductsByReleaseData = (state, release) => {
     if (localFilterValuesUnparsed) {
       try {
         const localFilterValues = JSON.parse(localFilterValuesUnparsed);
+        newState.localStorageFilterValuesInitialLoad = JSON.parse(localFilterValuesUnparsed);
         Object.keys(localFilterValues).forEach((key) => {
           if (
             !FILTER_KEYS[key]

@@ -6,7 +6,7 @@ import { DataProduct, Release } from '../types/store';
 import { resolveAny } from '../util/typeUtil';
 
 const ReleaseParser = {
-  parseReleases: (response: AjaxResponse): Release[] => {
+  parseReleases: (response: AjaxResponse<unknown>): Release[] => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!Array.isArray(resolved)) {
       return [];

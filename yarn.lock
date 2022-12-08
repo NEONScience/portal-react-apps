@@ -7817,9 +7817,9 @@ popper.js@1.16.1-lts:
   resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.16.1-lts.tgz#cf6847b807da3799d80ee3d6d2f90df8a3f50b05"
   integrity sha512-Kjw8nKRl1m+VrSFCoVGPph93W/qrSO7ZkqPpTf7F4bk/sqcfWK019dWBUpE/fBOsOQY1dks/Bmcbfn1heM/IsA==
 
-"portal-core-components@github:NEONScience/portal-core-components#ts-updates":
-  version "1.13.0"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/22614932d735e600876218b098016879f2917b76"
+"portal-core-components@github:NEONScience/portal-core-components#v2.0.0":
+  version "2.0.0"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/fed76af16e5186afe726bae96801e5bc312f1370"
   dependencies:
     "@date-io/moment" "^1.3.13"
     "@fontsource/inter" "^4.5.14"

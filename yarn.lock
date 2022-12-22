@@ -7819,7 +7819,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#v2.0.0":
   version "2.0.0"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/322190a403a4c94c07d0b5983812e9e0f4ef7d39"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/735af4784f1d66de4beffb55d0630380f3ed6f23"
   dependencies:
     "@date-io/moment" "^1.3.13"
     "@fontsource/inter" "^4.5.14"
@@ -7877,7 +7877,7 @@ popper.js@1.16.1-lts:
     tinycolor2 "^1.4.2"
     ua-parser-js "^1.0.32"
     universal-cookie "^4.0.4"
-    zod "^3.20.0"
+    zod "^3.20.2"
 
 postcss-attribute-case-insensitive@^5.0.2:
   version "5.0.2"
@@ -10818,3 +10818,8 @@ zod@^3.20.0:
   version "3.20.0"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.0.tgz#999f50f41c7c69569c77721c9372987991ba1c3a"
   integrity sha512-ZWxs7oM5ixoo1BMoxTNeDMYSih/F/FUnExsnRtHT04rG6q0Bd74TKS45RGXw07TOalOZyyzdKaYH38k8yTEv9A==
+
+zod@^3.20.2:
+  version "3.20.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.2.tgz#068606642c8f51b3333981f91c0a8ab37dfc2807"
+  integrity sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==

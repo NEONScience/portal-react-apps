@@ -958,6 +958,32 @@ const Provider = (props) => {
     );
   }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
 
+  useEffect(() => {
+    if (!isTombstoned) return;
+    if (exists(fetches.tombstoneAvailability[currentRelease])
+      && (fetches.tombstoneAvailability[currentRelease].status !== null)
+    ) {
+      return;
+    }
+    dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
+      (response) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
+          release: currentRelease,
+          data: response.data,
+        });
+      },
+      (error) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilityFailed',
+          release: currentRelease,
+          error,
+        });
+      },
+    );
+  }, [isTombstoned, fetches, productCode, currentRelease]);
+
   /**
      Render
   */

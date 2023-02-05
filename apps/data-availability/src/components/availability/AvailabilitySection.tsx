@@ -1,5 +1,6 @@
-import React, { useMemo, Suspense } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useMemo, Suspense, useEffect } from 'react';
+import { Dispatch, AnyAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
 import Grid from '@material-ui/core/Grid';
@@ -17,17 +18,20 @@ import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
-import { AnyObject } from 'portal-core-components/lib/types/core';
+import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { AnyObject, Nullable } from 'portal-core-components/lib/types/core';
 
+import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
+import AppFlow from '../../actions/flows/app';
 import { AvailabilitySectionState } from '../states/AppStates';
-import { DataProduct } from '../../types/store';
+import { DataProduct, DataProductReleaseTombAva } from '../../types/store';
 import { useStyles } from '../../styles/overlay';
 import { StylesHook } from '../../types/styles';
 import {
   AvailableDateRange,
   computeAvailableDateRange,
+  computeDateRange,
 } from '../../util/availabilityUtil';
 
 const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
@@ -61,18 +65,63 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
   const state: AvailabilitySectionState = useAvailabilitySelector();
   const classes: Record<string, string> = useStyles(Theme);
   const componentClasses: Record<string, string> = useComponentStyles(Theme);
+  const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     focalProductFetchState,
     focalProduct,
+    appliedRelease,
+    fetchProductReleaseDoi,
+    focalProductReleaseDoiFetchState,
+    isTombstoned,
+    fetchProductReleaseTombAva,
+    focalProductReleaseTombAvaFetchState,
+    focalProductReleaseTombAva,
   }: AvailabilitySectionState = state;
 
+  const terminalStates = [AsyncStateType.IDLE, AsyncStateType.FULLFILLED, AsyncStateType.FAILED];
   const isLoading = (focalProductFetchState === AsyncStateType.IDLE)
-    || (focalProductFetchState === AsyncStateType.WORKING);
-  const isComplete = (focalProductFetchState === AsyncStateType.FULLFILLED)
-    || (focalProductFetchState === AsyncStateType.FAILED);
-  const siteCodes: Record<string, unknown>[] = !exists(focalProduct)
+    || (focalProductFetchState === AsyncStateType.WORKING)
+    || ((focalProductReleaseDoiFetchState === AsyncStateType.WORKING) || fetchProductReleaseDoi)
+    || ((focalProductReleaseTombAvaFetchState === AsyncStateType.WORKING) || fetchProductReleaseTombAva);
+  const isComplete = ((focalProductFetchState === AsyncStateType.FULLFILLED)
+      || (focalProductFetchState === AsyncStateType.FAILED))
+    && terminalStates.includes(focalProductReleaseDoiFetchState)
+    && terminalStates.includes(focalProductReleaseTombAvaFetchState);
+  let siteCodes: Record<string, unknown>[] = !exists(focalProduct)
     ? new Array<Record<string, unknown>>()
     : (focalProduct as DataProduct).siteCodes;
+  if (!existsNonEmpty(siteCodes) && exists(focalProductReleaseTombAva)) {
+    const tombAva = focalProductReleaseTombAva as DataProductReleaseTombAva;
+    if (existsNonEmpty(tombAva.siteCodes)) {
+      siteCodes = tombAva.siteCodes;
+    }
+  }
+
+  useEffect(() => {
+    if (!fetchProductReleaseDoi) return;
+    dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncAction({
+      productCode: focalProduct?.productCode,
+      release: appliedRelease?.release,
+    }));
+  }, [
+    dispatch,
+    fetchProductReleaseDoi,
+    focalProduct,
+    appliedRelease,
+  ]);
+  useEffect(() => {
+    if (!fetchProductReleaseTombAva) return;
+    dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncAction({
+      productCode: focalProduct?.productCode,
+      release: appliedRelease?.release,
+    }));
+  }, [
+    dispatch,
+    fetchProductReleaseTombAva,
+    focalProduct,
+    appliedRelease,
+  ]);
+
   const skeleton: JSX.Element = (
     <Skeleton variant="rect" width="100%" height={400} className={classes.skeleton} />
   );
@@ -89,6 +138,10 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
         />
       );
     }
+    let tombstoneProps = {};
+    if (isTombstoned) {
+      tombstoneProps = { availabilityStatusType: 'tombstoned' };
+    }
     return (
       <Suspense fallback={skeleton}>
         <DataProductAvailability
@@ -97,6 +150,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
           sortMethod="states"
           sortDirection="ASC"
           siteCodes={siteCodes}
+          {...tombstoneProps}
         />
       </Suspense>
     );
@@ -110,9 +164,9 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
       return (<React.Fragment />);
     }
     const availableSites = siteCodes.length;
-    const availableDates: AvailableDateRange = computeAvailableDateRange(
-      focalProduct as DataProduct,
-    );
+    const availableDates: AvailableDateRange = isTombstoned
+      ? computeDateRange(siteCodes)
+      : computeAvailableDateRange(focalProduct as DataProduct);
     const startMonth = moment(`${availableDates.start}-01`).format('MMMM YYYY');
     const endMonth = moment(`${availableDates.end}-01`).format('MMMM YYYY');
     return (
@@ -124,6 +178,17 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
           {`${availableSites} total site${availableSites === 1 ? '' : 's'}`}
         </Typography>
       </div>
+    );
+  };
+
+  const renderTombstoneRow = (): Nullable<JSX.Element> => {
+    if (!isTombstoned) {
+      return null;
+    }
+    return (
+      <Grid item xs={12}>
+        <TombstoneNotice />
+      </Grid>
     );
   };
 
@@ -147,6 +212,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
             &nbsp;for more details.
           </Typography>
         </Grid>
+        {renderTombstoneRow()}
         <Grid item xs={12}>
           {renderSummary()}
         </Grid>

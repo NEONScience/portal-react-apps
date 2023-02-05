@@ -129,7 +129,10 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
     if (productKeys && Array.isArray(productKeys)) {
       productKeys.forEach((productKey) => {
         const product = productRelease[productKey];
-        if (newState.aopVizProducts.includes(product.productCode)) {
+        if (newState.aopVizProducts.includes(product.productCode)
+          && Array.isArray(product.siteCodes)
+          && (product.siteCodes.length > 0)
+        ) {
           const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
             .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
           if (!hasFilterableValue) {
@@ -355,7 +358,9 @@ export const parseProductsByReleaseData = (state, release) => {
     if ((newState.aopVizProducts || []).includes(productCode)) {
       const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
         .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-      if (!hasFilterableValue) {
+      const hasAvailableData = Array.isArray(availabilitySiteCodes)
+        && (availabilitySiteCodes.length > 0);
+      if (!hasFilterableValue && hasAvailableData) {
         product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
           VISUALIZATIONS.AOP_DATA_VIEWER.key,
         );

@@ -163,6 +163,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
             : [productCb.productCode],
           release: releaseCb,
         }));
+        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+        }
+        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+        }
       })
     ),
     [dispatch],

@@ -11,7 +11,6 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import DataProductContext from '../DataProductContext';
 
@@ -39,9 +38,7 @@ const TombstoneNotice = () => {
     route: { release: currentRelease, bundle },
     data: { productReleaseDois, bundleParents, product: baseProduct },
   } = state;
-  const isTombstoned = productReleaseDois
-    && productReleaseDois[currentRelease]
-    && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
+  const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
   if (!isTombstoned) {
     return null;
   }

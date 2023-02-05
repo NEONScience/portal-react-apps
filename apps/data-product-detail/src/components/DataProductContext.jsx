@@ -23,6 +23,7 @@ import BundleService from 'portal-core-components/lib/service/BundleService';
 import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -65,6 +66,7 @@ const DEFAULT_STATE = {
     bundleParentReleases: {},
     productReleaseDois: {},
     aopVizProducts: null,
+    tombstoneAvailability: {},
   },
   data: {
     product: null, // Latest and provisional product metadata
@@ -74,6 +76,7 @@ const DEFAULT_STATE = {
     releases: [], // List of release objects; fed from base product or bundle inheritance
     productReleaseDois: {},
     aopVizProducts: [],
+    tombstoneAvailability: null,
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
@@ -124,6 +127,15 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
     data: { releases },
   } = state;
   return releases.find((r) => r.release === currentRelease) || null;
+};
+
+const determineTombstoned = (productReleaseDois, currentRelease) => {
+  if (!isStringNonEmpty(currentRelease)) {
+    return false;
+  }
+  return exists(productReleaseDois)
+    && exists(productReleaseDois[currentRelease])
+    && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
 };
 
 const getAppliedReleaseObjectFromState = (state = DEFAULT_STATE) => {
@@ -656,6 +668,33 @@ const reducer = (state, action) => {
       newState.data.bundleParentReleases[action.bundleParent][action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchProductReleaseTombstoneAvailabilityStarted':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseTombstoneAvailabilityFailed':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.tombstoneAvailability[action.release].error = action.error;
+      newState.data.tombstoneAvailability = null;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseTombstoneAvailabilitySucceeded':
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.SUCCESS;
+      if (action.data) {
+        if (!newState.data.tombstoneAvailability) {
+          newState.data.tombstoneAvailability = {};
+        }
+        if (!newState.data.tombstoneAvailability[action.release]) {
+          newState.data.tombstoneAvailability[action.release] = {};
+        }
+        newState.data.tombstoneAvailability[action.release] = action.data;
+      }
+      return calculateAppStatus(newState);
+
     case 'fetchAOPVizProductsStarted':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
@@ -671,11 +710,15 @@ const reducer = (state, action) => {
     case 'setNextRelease':
       newState.route.nextRelease = action.release;
       if (action.hash) { newState.route.nextHash = action.hash.replace(/#/g, ''); }
+      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
+      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
       return calculateAppStatus(newState);
     case 'applyNextRelease':
       newState.route.release = newState.route.nextRelease;
       newState.route.nextRelease = undefined;
       newState.route.nextHash = undefined;
+      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
+      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
       return calculateContextState(
         newState,
         newState.neonContextState,
@@ -707,10 +750,15 @@ const Provider = (props) => {
       nextHash,
     },
     fetches,
+    data: {
+      productReleaseDois,
+    },
     neonContextState: {
       isFinal: neonContextIsFinal,
     },
   } = state;
+
+  const isTombstoned = determineTombstoned(productReleaseDois, currentRelease);
 
   /**
      Effects
@@ -884,6 +932,32 @@ const Provider = (props) => {
     }
   }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
 
+  useEffect(() => {
+    if (!isTombstoned) return;
+    if (exists(fetches.tombstoneAvailability[currentRelease])
+      && (fetches.tombstoneAvailability[currentRelease].status !== null)
+    ) {
+      return;
+    }
+    dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
+      (response) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
+          release: currentRelease,
+          data: response.data,
+        });
+      },
+      (error) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilityFailed',
+          release: currentRelease,
+          error,
+        });
+      },
+    );
+  }, [isTombstoned, fetches, productCode, currentRelease]);
+
   /**
      Render
   */
@@ -922,6 +996,7 @@ const DataProductContext = {
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
   getAppliedReleaseObjectFromState,
+  determineTombstoned,
 };
 
 export default DataProductContext;

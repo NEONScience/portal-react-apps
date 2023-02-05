@@ -14,6 +14,8 @@ import {
   fetchBundlesEpic,
   fetchFocalProductEpic,
   fetchFocalSiteEpic,
+  fetchFocalProductReleaseDoiEpic,
+  fetchFocalProductReleaseTombAvaEpic,
 } from './app';
 
 export const getCombinedEpics = (): unknown => (
@@ -24,6 +26,8 @@ export const getCombinedEpics = (): unknown => (
     fetchBundlesEpic,
     fetchFocalProductEpic,
     fetchFocalSiteEpic,
+    fetchFocalProductReleaseDoiEpic,
+    fetchFocalProductReleaseTombAvaEpic,
   )
 );
 

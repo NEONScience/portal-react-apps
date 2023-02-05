@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,8 +17,7 @@ import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHost
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
+import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -84,16 +83,34 @@ const AvailabilitySection = (props) => {
     data: {
       productReleaseDois,
       bundleParents,
+      tombstoneAvailability,
     },
   } = state;
+
+  if (!exists(productData)) {
+    return <SkeletonSection {...props} />;
+  }
+
   const isBundleChild = (parentCodes.length > 0) && isStringNonEmpty(doiProductCode);
-  const isTombstoned = productReleaseDois
-    && productReleaseDois[currentRelease]
-    && productReleaseDois[currentRelease].status === DoiStatusType.TOMBSTONED;
+  const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
+  const appliedTombstoneAvailability = (isTombstoned && exists(tombstoneAvailability))
+    ? tombstoneAvailability[currentRelease]
+    : {};
 
-  const dataAvailable = Object.keys(productData).length && (productData.siteCodes || []).length;
+  const dataAvailable = (Object.keys(productData).length
+    && ((productData.siteCodes || []).length > 0));
+  const tombstoneDataAvailable = (isTombstoned
+    && exists(appliedTombstoneAvailability)
+    && ((appliedTombstoneAvailability.siteCodes || []).length > 0));
 
-  const computeAvailableDateRange = () => (productData.siteCodes || []).reduce((acc, siteCode) => {
+  let availabilityAppliedSiteCodes = [];
+  if (dataAvailable) {
+    availabilityAppliedSiteCodes = productData.siteCodes;
+  } else if (tombstoneDataAvailable) {
+    availabilityAppliedSiteCodes = appliedTombstoneAvailability.siteCodes;
+  }
+
+  const computeAvailableDateRange = () => availabilityAppliedSiteCodes.reduce((acc, siteCode) => {
     const first = siteCode.availableMonths[0];
     const last = siteCode.availableMonths[siteCode.availableMonths.length - 1];
     if (acc[0] === null || acc[0] > first) { acc[0] = first; }
@@ -101,11 +118,11 @@ const AvailabilitySection = (props) => {
     return acc;
   }, [null, null]);
 
-  const availableSites = (productData.siteCodes || []).length;
-  const availableSiteCodes = (productData.siteCodes || []).map((site) => site.siteCode);
-  const availableDates = useMemo(computeAvailableDateRange, [productData.siteCodes]);
+  const availableSites = availabilityAppliedSiteCodes.length;
+  const availableSiteCodes = availabilityAppliedSiteCodes.map((site) => site.siteCode);
+  const availableDates = computeAvailableDateRange();
   let availableDatesFormatted = ['n/a', 'n/a'];
-  if (dataAvailable) {
+  if (dataAvailable || tombstoneDataAvailable) {
     availableDatesFormatted = availableDates
       .filter((month) => isStringNonEmpty(month))
       .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
@@ -193,56 +210,94 @@ const AvailabilitySection = (props) => {
     if (isTombstoned) return null;
     return (<i>No data currently availabile for this product.</i>);
   };
+  const renderAvailability = () => {
+    if (!dataAvailable && !tombstoneDataAvailable) {
+      return renderNoDataDisplay();
+    }
+    let dataProductAva;
+    let downloadDataButton;
+    if (dataAvailable) {
+      downloadDataButton = (
+        <DownloadDataButton
+          size="large"
+          data-gtm="data-product-page.section.availability.download-data-button"
+          data-gtm-product-code={productData.productCode}
+          data-selenium="data-product-page.section.availability.download-data-button"
+        />
+      );
+      dataProductAva = (<DataProductAvailability view="ungrouped" disableSelection />);
+    } else if (tombstoneDataAvailable) {
+      downloadDataButton = null;
+      dataProductAva = (
+        <DataProductAvailability
+          siteCodes={availabilityAppliedSiteCodes}
+          view="ungrouped"
+          availabilityStatusType="tombstoned"
+          disableSelection
+        />
+      );
+    }
+    return (
+      <>
+        <div className={classes.summaryDivStyle}>
+          {bundleInfo}
+          <div>
+            <Typography variant="h6" className={classes.summaryStyle}>
+              {`${availableDatesFormatted[0]} – ${availableDatesFormatted[1]}`}
+            </Typography>
+            <Typography variant="h6" className={classes.summaryStyle}>
+              {`${availableSites} total site${availableSites === 1 ? '' : 's'}`}
+            </Typography>
+          </div>
+          {downloadDataButton}
+        </div>
+        <Divider style={{ margin: Theme.spacing(3, 0) }} />
+        {dataProductAva}
+      </>
+    );
+  };
 
-  return !productData ? <SkeletonSection {...props} /> : (
-    <Section {...props}>
-      <TombstoneNotice />
-      {!fromManifest && !fromAOPManifest && fromExternalHost ? (
+  const renderExternalHost = () => {
+    if (!isStringNonEmpty(productData.productCode) || isTombstoned) return null;
+    return (
+      <ExternalHostInfo
+        productCode={productData.productCode}
+        siteCodes={availableSiteCodes}
+        style={{ marginTop: Theme.spacing(4) }}
+        data-selenium="data-product-page.section.availability.external-host-info"
+      />
+    );
+  };
+
+  const renderSection = () => {
+    if (!fromManifest && !fromAOPManifest && fromExternalHost) {
+      let externalAvailability = null;
+      if (dataAvailable) {
+        externalAvailability = (
+          <div style={{ marginBottom: Theme.spacing(4) }}>
+            <DataProductAvailability view="ungrouped" disableSelection />
+          </div>
+        );
+      }
+      return (
         <>
-          {!dataAvailable ? null : (
-            <div style={{ marginBottom: Theme.spacing(4) }}>
-              <DataProductAvailability view="ungrouped" disableSelection />
-            </div>
-          )}
+          {externalAvailability}
           <DownloadStepForm stepKey={requiredSteps[0].key} />
         </>
-      ) : (
-        <>
-          {dataAvailable ? (
-            <>
-              <div className={classes.summaryDivStyle}>
-                {bundleInfo}
-                <div>
-                  <Typography variant="h6" className={classes.summaryStyle}>
-                    {`${availableDatesFormatted[0]} – ${availableDatesFormatted[1]}`}
-                  </Typography>
-                  <Typography variant="h6" className={classes.summaryStyle}>
-                    {`${availableSites} total site${availableSites === 1 ? '' : 's'}`}
-                  </Typography>
-                </div>
-                <DownloadDataButton
-                  size="large"
-                  data-gtm="data-product-page.section.availability.download-data-button"
-                  data-gtm-product-code={productData.productCode}
-                  data-selenium="data-product-page.section.availability.download-data-button"
-                />
-              </div>
-              <Divider style={{ margin: Theme.spacing(3, 0) }} />
-              <DataProductAvailability view="ungrouped" disableSelection />
-            </>
-          ) : (
-            renderNoDataDisplay()
-          )}
-          {!productData.productCode ? null : (
-            <ExternalHostInfo
-              productCode={productData.productCode}
-              siteCodes={availableSiteCodes}
-              style={{ marginTop: Theme.spacing(4) }}
-              data-selenium="data-product-page.section.availability.external-host-info"
-            />
-          )}
-        </>
-      )}
+      );
+    }
+    return (
+      <>
+        {renderAvailability()}
+        {renderExternalHost()}
+      </>
+    );
+  };
+
+  return (
+    <Section {...props}>
+      <TombstoneNotice />
+      {renderSection()}
     </Section>
   );
 };

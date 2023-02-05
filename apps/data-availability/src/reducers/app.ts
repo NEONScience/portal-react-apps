@@ -26,12 +26,6 @@ export const appReducer = (
         ...update,
         selectedViewMode: viewMode,
         viewModeSwitching: true,
-        selectedProduct: (viewMode.value === 'Site')
-          ? null
-          : update.selectedProduct,
-        selectedSite: (viewMode.value === 'DataProduct')
-          ? null
-          : update.selectedSite,
       };
     case AppActions.RESET_VIEW_MODE_SWITCHING:
       return {
@@ -57,6 +51,16 @@ export const appReducer = (
       return {
         ...update,
         selectedSite: (action as SetSelectedSiteAction).site,
+      };
+    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI:
+      return {
+        ...update,
+        focalProductReleaseDoi: null,
+      };
+    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA:
+      return {
+        ...update,
+        focalProductReleaseTombAva: null,
       };
     default:
       return update;
@@ -115,6 +119,22 @@ const flowReducer = (
     'focalSiteFetchState',
     AppActions.FETCH_FOCAL_SITE_COMPLETED,
     'focalSite',
+  );
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
+    AppFlow.fetchFocalProductReleaseDoi.reducer,
+    update,
+    action,
+    'focalProductReleaseDoiFetchState',
+    AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI_COMPLETED,
+    'focalProductReleaseDoi',
+  );
+  update = AsyncFlow.reduce<BaseStoreAppState, AnyActionType>(
+    AppFlow.fetchFocalProductReleaseTombAva.reducer,
+    update,
+    action,
+    'focalProductReleaseTombAvaFetchState',
+    AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_COMPLETED,
+    'focalProductReleaseTombAva',
   );
   return update;
 };

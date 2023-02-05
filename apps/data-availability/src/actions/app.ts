@@ -43,6 +43,18 @@ enum AppActions {
   FETCH_FOCAL_SITE_ERROR = 'FETCH_FOCAL_SITE_ERROR',
   RESET_FETCH_FOCAL_SITE = 'RESET_FETCH_FOCAL_SITE',
 
+  FETCH_FOCAL_PRODUCT_RELEASE_DOI = 'FETCH_FOCAL_PRODUCT_RELEASE_DOI',
+  FETCH_FOCAL_PRODUCT_RELEASE_DOI_WORKING = 'FETCH_FOCAL_PRODUCT_RELEASE_DOI_WORKING',
+  FETCH_FOCAL_PRODUCT_RELEASE_DOI_COMPLETED = 'FETCH_FOCAL_PRODUCT_RELEASE_DOI_COMPLETED',
+  FETCH_FOCAL_PRODUCT_RELEASE_DOI_ERROR = 'FETCH_FOCAL_PRODUCT_RELEASE_DOI_ERROR',
+  RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI = 'RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI',
+
+  FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA = 'FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA',
+  FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_WORKING = 'FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_WORKING',
+  FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_COMPLETED = 'FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_COMPLETED',
+  FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_ERROR = 'FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_ERROR',
+  RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA = 'RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA',
+
   SET_RELEASES = 'SET_RELEASES',
 
   SET_SELECTED_VIEW_MODE = 'SET_SELECTED_VIEW_MODE',
@@ -51,6 +63,9 @@ enum AppActions {
   SET_SELECTED_SITE = 'SET_SELECTED_SITE',
 
   RESET_VIEW_MODE_SWITCHING = 'RESET_VIEW_MODE_SWITCHING',
+
+  RESET_FOCAL_PRODUCT_RELEASE_DOI = 'RESET_FOCAL_PRODUCT_RELEASE_DOI',
+  RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA = 'RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA',
 }
 
 export interface SetSelectedViewModeAction {
@@ -76,6 +91,12 @@ export interface SetSelectedSiteAction {
   type: typeof AppActions.SET_SELECTED_SITE;
   site: Site;
 }
+export interface ResetFocalProductReleaseDoi {
+  type: typeof AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI;
+}
+export interface ResetFocalProductReleaseTombAva {
+  type: typeof AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA;
+}
 
 export type AppActionTypes = (
   SetSelectedViewModeAction
@@ -84,6 +105,8 @@ export type AppActionTypes = (
   | SetSelectedProductAction
   | SetSelectedReleaseAction
   | SetSelectedSiteAction
+  | ResetFocalProductReleaseDoi
+  | ResetFocalProductReleaseTombAva
 );
 
 export const AppActionCreator = {
@@ -109,6 +132,12 @@ export const AppActionCreator = {
   setSelectedSite: (site: Site): SetSelectedSiteAction => ({
     type: AppActions.SET_SELECTED_SITE,
     site,
+  }),
+  resetFocalProductReleaseDoi: (): ResetFocalProductReleaseDoi => ({
+    type: AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI,
+  }),
+  resetFocalProductReleaseTombAva: (): ResetFocalProductReleaseTombAva => ({
+    type: AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
   }),
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import Markdown from 'markdown-to-jsx';
+import Markdown from 'react-markdown';
 
 import Grid from '@material-ui/core/Grid';
 

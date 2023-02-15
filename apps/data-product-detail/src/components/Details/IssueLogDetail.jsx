@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Markdown from 'markdown-to-jsx';
+import Markdown from 'react-markdown';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 

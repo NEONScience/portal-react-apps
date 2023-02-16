@@ -26,7 +26,7 @@ export interface BaseStoreAppState {
   focalSite: Nullable<Site>;
 
   focalProductReleaseDoiFetchState: AsyncState<Nullable<DataProductReleaseDoi>>;
-  focalProductReleaseDoi: Nullable<DataProductReleaseDoi>;
+  focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
   focalProductReleaseTombAvaFetchState: AsyncState<Nullable<DataProductReleaseTombAva>>;
   focalProductReleaseTombAva: Nullable<DataProductReleaseTombAva>;
 

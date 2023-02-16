@@ -79,5 +79,5 @@ export interface SiteAvailabilitySectionState {
 
 export interface TombstoneNoticeState {
   isTombstoned: Nullable<boolean>;
-  focalProductReleaseDoi: Nullable<DataProductReleaseDoi>;
+  focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
 }

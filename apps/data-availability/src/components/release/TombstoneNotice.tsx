@@ -5,6 +5,9 @@ import { makeStyles, Theme as MuiTheme } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -30,6 +33,9 @@ const useStyles: StylesHook = makeStyles((theme: MuiTheme) => ({
   cardContent: {
     paddingTop: theme.spacing(2),
   },
+  doiList: {
+    width: '100%',
+  },
 }));
 
 const useTombstoneNoticdSelector = (): TombstoneNoticeState => useSelector(
@@ -43,19 +49,45 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
   if (!(isTombstoned === true) || !exists(focalProductReleaseDoi)) {
     return <></>;
   }
-  const citationRelease: DataProductReleaseDoi = focalProductReleaseDoi as DataProductReleaseDoi;
-  let doiDisplay = ' ';
-  if (citationRelease.url) {
-    const doiId = citationRelease.url.split('/').slice(-2).join('/');
-    doiDisplay = ` (DOI:${doiId}) `;
+  let citationReleases: DataProductReleaseDoi[] = [];
+  if (!Array.isArray(focalProductReleaseDoi)) {
+    citationReleases.push(focalProductReleaseDoi as DataProductReleaseDoi);
+  } else {
+    citationReleases = focalProductReleaseDoi;
   }
-  const tombstoneNote = (
-    <>
-      {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-      {citationRelease.release} of this data product
-      {doiDisplay} is no longer available for download.
-      {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-    </>
+  const renderTombstoneNotes = () => (
+    citationReleases.map((citationRelease) => {
+      let doiDisplay = ' ';
+      if (citationRelease.url) {
+        const doiId = citationRelease.url.split('/').slice(-2).join('/');
+        doiDisplay = ` (DOI:${doiId}) `;
+      }
+      const tombstoneNote = (
+        <>
+          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {citationRelease.release} of this data product
+          {doiDisplay} is no longer available for download.
+          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+        </>
+      );
+      return (
+        <ListItem
+          dense
+          disableGutters
+          key={`TombstonedDoiUrlKey-${citationRelease.url}`}
+          alignItems="flex-start"
+          ContainerComponent="div"
+        >
+          <ListItemText
+            primary={(
+              <Typography variant="body2" color="textSecondary">
+                {tombstoneNote}
+              </Typography>
+            )}
+          />
+        </ListItem>
+      );
+    })
   );
   return (
     <Card className={classes.card}>
@@ -64,9 +96,9 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
         title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
       />
       <CardContent className={classes.cardContent}>
-        <Typography variant="body2" color="textSecondary">
-          {tombstoneNote}
-        </Typography>
+        <List dense disablePadding className={classes.doiList}>
+          {renderTombstoneNotes()}
+        </List>
       </CardContent>
     </Card>
   );

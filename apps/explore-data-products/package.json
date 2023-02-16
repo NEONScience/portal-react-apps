@@ -14,7 +14,7 @@
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "moment": "2.29.4",
-    "portal-core-components": "github:NEONScience/portal-core-components#tomb-ava",
+    "portal-core-components": "github:NEONScience/portal-core-components#multi-cite",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

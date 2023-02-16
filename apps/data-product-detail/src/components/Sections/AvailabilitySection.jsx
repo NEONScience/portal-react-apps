@@ -91,7 +91,8 @@ const AvailabilitySection = (props) => {
     return <SkeletonSection {...props} />;
   }
 
-  const isBundleChild = (parentCodes.length > 0) && isStringNonEmpty(doiProductCode);
+  const isBundleChild = (parentCodes.length > 0)
+    && (isStringNonEmpty(doiProductCode) || Array.isArray(doiProductCode));
   const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
   const appliedTombstoneAvailability = (isTombstoned && exists(tombstoneAvailability))
     ? tombstoneAvailability[currentRelease]

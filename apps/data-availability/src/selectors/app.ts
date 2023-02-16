@@ -20,6 +20,7 @@ import {
   DataProductParent,
   DataProductBundle,
   DataProductReleaseTombAva,
+  DataProductReleaseDoi,
 } from '../types/store';
 import {
   AppComponentState,
@@ -118,10 +119,17 @@ const appliedReleaseSelector = createSelector(
   (state: BaseStoreAppState): Nullable<Release> => findAppliedRelease(state),
 );
 
-const determineTombstoned = (state: BaseStoreAppState): boolean => (
-  exists(state.focalProductReleaseDoi)
-    && (state.focalProductReleaseDoi?.status === DoiStatusType.TOMBSTONED)
-);
+const determineTombstoned = (state: BaseStoreAppState): boolean => {
+  if (!exists(state.focalProductReleaseDoi)) {
+    return false;
+  }
+  if (!Array.isArray(state.focalProductReleaseDoi)) {
+    return state.focalProductReleaseDoi?.status === DoiStatusType.TOMBSTONED;
+  }
+  return state.focalProductReleaseDoi.every((d: DataProductReleaseDoi): boolean => (
+    d.status === DoiStatusType.TOMBSTONED
+  ));
+};
 
 const shouldFetchDoi = (state: BaseStoreAppState): boolean => {
   const {
@@ -252,7 +260,6 @@ const AppStateSelector = {
       products: !existsNonEmpty(state.products)
         ? new Array<DataProductSelectOption>()
         : state.products
-          .sort(productSorter)
           .map((value: DataProduct): DataProductSelectOption => {
             if (!exists(state.selectedRelease)) {
               return {
@@ -274,7 +281,8 @@ const AppStateSelector = {
               ...value,
               hasData: ALLOW_ALL_PRODUCT_SELECT ? true : hasData,
             };
-          }),
+          })
+          .sort(productSorter),
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
     }),
@@ -286,7 +294,6 @@ const AppStateSelector = {
       sites: !existsNonEmpty(state.sites)
         ? new Array<SiteSelectOption>()
         : state.sites
-          .sort(siteSorter)
           .map((value: Site): SiteSelectOption => {
             if (!exists(state.selectedRelease)) {
               return {
@@ -298,7 +305,8 @@ const AppStateSelector = {
               ...value,
               hasData: true,
             };
-          }),
+          })
+          .sort(siteSorter),
       selectedSite: state.selectedSite,
       selectedRelease: state.selectedRelease,
     }),
@@ -347,8 +355,7 @@ const AppStateSelector = {
               value.siteCode as string
             ));
           if (!existsNonEmpty(siteCodes)) {
-            const isTombstoned: boolean = exists(state.focalProductReleaseDoi)
-              && (state.focalProductReleaseDoi?.status === DoiStatusType.TOMBSTONED);
+            const isTombstoned: boolean = determineTombstoned(state);
             if (isTombstoned && exists(state.focalProductReleaseTombAva)) {
               const tombAva = state.focalProductReleaseTombAva as DataProductReleaseTombAva;
               if (existsNonEmpty(tombAva.siteCodes)) {

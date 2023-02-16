@@ -5,6 +5,9 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Link from '@material-ui/core/Link';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -14,7 +17,7 @@ import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUt
 
 import DataProductContext from '../DataProductContext';
 
-const { useDataProductContextState } = DataProductContext;
+const { useDataProductContextState, getProductDoiInfo } = DataProductContext;
 
 const useStyles = makeStyles((theme) => ({
   card: {
@@ -29,6 +32,14 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     paddingTop: theme.spacing(2),
   },
+  doiList: {
+    width: '100%',
+  },
+  doiFromParentBlurb: {
+    fontStyle: 'italic',
+    fontSize: '0.8rem',
+    marginTop: theme.spacing(1),
+  },
 }));
 
 const TombstoneNotice = () => {
@@ -39,58 +50,120 @@ const TombstoneNotice = () => {
     data: { productReleaseDois, bundleParents, product: baseProduct },
   } = state;
   const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
-  if (!isTombstoned) {
+  const isAtleastOneTombstoned = DataProductContext.determineTombstoned(
+    productReleaseDois,
+    currentRelease,
+    true,
+  );
+  const citationReleases = productReleaseDois[currentRelease];
+  const checkHasManyDois = Array.isArray(citationReleases);
+  if (!isAtleastOneTombstoned || (!isTombstoned && !checkHasManyDois)) {
     return null;
   }
-  const citationRelease = productReleaseDois[currentRelease];
-  let doiDisplay = ' ';
-  if (citationRelease.url) {
-    const doiId = citationRelease.url.split('/').slice(-2).join('/');
-    doiDisplay = ` (DOI:${doiId}) `;
+  const allDoiUrls = getProductDoiInfo(state);
+  const tombstonedDoiUrls = allDoiUrls.filter((doiUrlInfo) => (
+    doiUrlInfo.isTombstoned
+  ));
+  const hasTombstonedDois = (tombstonedDoiUrls.length >= 1);
+  if (!hasTombstonedDois) {
+    return null;
   }
-  let latestAvailableReleaseBlurb = null;
-  let appliedProduct = baseProduct;
-  let appliedReleases = baseProduct.releases;
-  if ((bundle.parentCodes.length > 0) && isStringNonEmpty(bundle.doiProductCode)) {
-    const bundleParentData = (bundleParents[bundle.doiProductCode] || {});
-    if (exists(bundleParentData.releases)) {
-      appliedProduct = bundleParentData;
-      appliedReleases = bundleParentData.releases;
+  const renderSingleTombstoneNote = (tombstonedDoiUrl) => {
+    let doiDisplay = ' ';
+    if (tombstonedDoiUrl.doiUrl) {
+      const doiId = tombstonedDoiUrl.doiUrl.split('/').slice(-2).join('/');
+      doiDisplay = ` (DOI:${doiId}) `;
     }
-  }
-  if (Array.isArray(appliedReleases) && (appliedReleases.length > 0)) {
-    const latestAvailableProductRelease = appliedReleases[0];
-    if (latestAvailableProductRelease && latestAvailableProductRelease.release) {
-      if (latestAvailableProductRelease.release.localeCompare(citationRelease.release) !== 0) {
-        const dataProductDetailLink = (
-          <Link href={RouteService.getProductDetailPath(appliedProduct.productCode)}>
-            newer release
+    const tombstonedRelease = tombstonedDoiUrl.releaseDoi.release;
+    let latestAvailableReleaseBlurb = null;
+    let appliedProduct = baseProduct;
+    let appliedReleases = baseProduct.releases;
+    let bundleParentLink = null;
+    let doiUrlIsFromBundleParent = false;
+    if ((bundle.parentCodes.length > 0) && isStringNonEmpty(tombstonedDoiUrl.productCode)) {
+      const bundleParentData = (bundleParents[tombstonedDoiUrl.productCode] || {});
+      if (exists(bundleParentData)) {
+        const {
+          productCode: bundleParentCode,
+          productName: bundleParentName,
+        } = bundleParentData;
+        appliedProduct = bundleParentData;
+        appliedReleases = bundleParentData.releases || [];
+        doiUrlIsFromBundleParent = true;
+        bundleParentLink = (
+          <Link
+            href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
+          >
+            {`${bundleParentName} (${bundleParentCode})`}
           </Link>
-        );
-        latestAvailableReleaseBlurb = (
-          <>
-            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-            has been replaced by a {dataProductDetailLink} and&nbsp;
-            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-          </>
         );
       }
     }
-  }
-  const contactUsLink = (
-    <Link href={RouteService.getContactUsPath()}>
-      Contact Us
-    </Link>
-  );
-  const tombstoneNote = (
-    <>
-      {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-      {citationRelease.release} of this data product
-      {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
-      If this specific release is needed for research purposes, please fill out
-      the {contactUsLink} form.
-      {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-    </>
+    if (Array.isArray(appliedReleases) && (appliedReleases.length > 0)) {
+      const latestAvailableProductRelease = appliedReleases[0];
+      if (latestAvailableProductRelease && latestAvailableProductRelease.release) {
+        if (latestAvailableProductRelease.release.localeCompare(tombstonedRelease) !== 0) {
+          const dataProductDetailLink = (
+            <Link href={RouteService.getProductDetailPath(appliedProduct.productCode)}>
+              newer release
+            </Link>
+          );
+          latestAvailableReleaseBlurb = (
+            <>
+              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              has been replaced by a {dataProductDetailLink} and&nbsp;
+              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            </>
+          );
+        }
+      }
+    }
+    const contactUsLink = (
+      <Link href={RouteService.getContactUsPath()}>
+        Contact Us
+      </Link>
+    );
+    return (
+      <ListItem
+        dense
+        disableGutters
+        key={`TombstonedDoiUrlKey-${tombstonedDoiUrl.doiUrl}`}
+        alignItems="flex-start"
+        ContainerComponent="div"
+      >
+        <ListItemText
+          primary={(
+            <Typography variant="body2" color="textSecondary">
+              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {tombstonedRelease} of this data product
+              {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
+              If this specific release is needed for research purposes, please fill out
+              the {contactUsLink} form.
+              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            </Typography>
+          )}
+          secondary={!doiUrlIsFromBundleParent ? null : (
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              component="p"
+              className={classes.doiFromParentBlurb}
+            >
+              {/* eslint-disable react/jsx-one-expression-per-line */}
+              <b>Note:</b> This product is bundled into {bundleParentLink}.
+              The above DOI refers to that product release and there is no DOI directly
+              associated with this sub-product release.
+              {/* eslint-enable react/jsx-one-expression-per-line */}
+            </Typography>
+          )}
+        />
+      </ListItem>
+    );
+  };
+  const renderTombstoneNotes = () => (
+    tombstonedDoiUrls.map((tombstonedDoiUrl) => (
+      renderSingleTombstoneNote(tombstonedDoiUrl)
+    ))
   );
   return (
     <Card className={classes.card}>
@@ -99,9 +172,9 @@ const TombstoneNotice = () => {
         title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
       />
       <CardContent className={classes.cardContent}>
-        <Typography variant="body2" color="textSecondary">
-          {tombstoneNote}
-        </Typography>
+        <List dense disablePadding className={classes.doiList}>
+          {renderTombstoneNotes()}
+        </List>
       </CardContent>
     </Card>
   );

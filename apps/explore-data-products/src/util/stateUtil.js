@@ -277,12 +277,24 @@ export const parseProductsByReleaseData = (state, release) => {
         bundleRelease,
         productCode,
       );
-      forwardAvailability = BundleService.shouldForwardAvailability(
-        bundlesCtx,
-        bundleRelease,
-        productCode,
-        availabilityParentCode,
-      );
+      if (!Array.isArray(availabilityParentCode)) {
+        forwardAvailability = BundleService.shouldForwardAvailability(
+          bundlesCtx,
+          bundleRelease,
+          productCode,
+          availabilityParentCode,
+        );
+      } else {
+        availabilityParentCode = availabilityParentCode.find((checkAvailabilityParentCode) => (
+          BundleService.shouldForwardAvailability(
+            bundlesCtx,
+            bundleRelease,
+            productCode,
+            checkAvailabilityParentCode,
+          )
+        ));
+        forwardAvailability = isStringNonEmpty(availabilityParentCode);
+      }
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
       availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
     }

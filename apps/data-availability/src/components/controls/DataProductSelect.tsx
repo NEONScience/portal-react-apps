@@ -4,7 +4,6 @@ import { useDispatch, useSelector, batch } from 'react-redux';
 
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
@@ -25,7 +24,6 @@ import {
   Theme as MuiTheme,
 } from '@material-ui/core/styles';
 
-import BundleIcon from '@material-ui/icons/Archive';
 import SearchIcon from '@material-ui/icons/Search';
 
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
@@ -82,9 +80,8 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       borderColor: (Theme as NeonTheme).colors.GOLD[300],
     },
     cardContent: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '16px !important',
+      padding: muiTheme.spacing(2),
+      paddingBottom: `${muiTheme.spacing(2)}px !important`,
     },
     cardIcon: {
       color: (Theme as NeonTheme).colors.GOLD[700],
@@ -258,11 +255,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     ));
     return (
       <div key={value.productCode}>
-        {!bundle ? <React.Fragment /> : (
-          <ListItemIcon>
-            <BundleIcon />
-          </ListItemIcon>
-        )}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
@@ -375,18 +367,15 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     return (
       <Card className={classes.card}>
         <CardContent className={classes.cardContent}>
-          <BundleIcon fontSize="large" className={classes.cardIcon} />
-          <div style={{ flexGrow: 1 }}>
-            <Typography variant="subtitle2">
-              {`This data product is bundled into ${parent.parentProductCode}`}
-            </Typography>
-            <Typography variant="body2">
-              <>
-                It is not available as a standalone download. Data availability shown
-                below reflects availability of the entire bundle.
-              </>
-            </Typography>
-          </div>
+          <Typography variant="subtitle2">
+            {`This data product is bundled into ${parent.parentProductCode}`}
+          </Typography>
+          <Typography variant="body2">
+            <>
+              It is not available as a standalone download. Data availability shown
+              below reflects availability of the entire bundle.
+            </>
+          </Typography>
         </CardContent>
       </Card>
     );

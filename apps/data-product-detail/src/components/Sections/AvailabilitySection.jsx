@@ -2,12 +2,11 @@ import React from 'react';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Typography from '@material-ui/core/Typography';
-
-import BundleIcon from '@material-ui/icons/Archive';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
@@ -37,24 +36,14 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1em',
     marginBottom: theme.spacing(1),
   },
-  startFlex: {
-    display: 'flex',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+  card: {
+    marginBottom: theme.spacing(4),
+    backgroundColor: theme.colors.GOLD[50],
+    borderColor: theme.colors.GOLD[300],
   },
-  infoSnackbar: {
-    backgroundColor: theme.palette.grey[50],
-    color: '#000',
-    border: `1px solid ${theme.palette.primary.main}80`,
-    margin: theme.spacing(0, 0, 4, 0),
-    padding: theme.spacing(0.5, 2),
-    '& div': {
-      width: '100%',
-    },
-  },
-  infoSnackbarIcon: {
-    color: theme.palette.grey[300],
-    marginRight: theme.spacing(2),
+  cardContent: {
+    padding: theme.spacing(2),
+    paddingBottom: `${theme.spacing(2)}px !important`,
   },
 }));
 
@@ -167,44 +156,32 @@ const AvailabilitySection = (props) => {
   if (isBundleChild && !forwardAvailabilityFromParent) {
     return (
       <Section {...props}>
-        <SnackbarContent
-          className={classes.infoSnackbar}
-          message={(
-            <div className={classes.startFlex} style={{ width: '100%' }}>
-              <BundleIcon fontSize="large" className={classes.infoSnackbarIcon} />
-              <div style={{ flexGrow: 1 }}>
-                {bundleParentLink}
-                <Typography variant="body2">
-                  {/* eslint-disable react/jsx-one-expression-per-line */}
-                  It is not available as a standalone download.
-                  Data availability information and product download is only available through
-                  the parent product{Object.keys(bundleParents).length > 1 ? 's' : ''}.
-                  {/* eslint-enable react/jsx-one-expression-per-line */}
-                </Typography>
-              </div>
-            </div>
-          )}
-        />
+        <Card className={classes.card}>
+          <CardContent className={classes.cardContent}>
+            {bundleParentLink}
+            <Typography variant="body2">
+              {/* eslint-disable react/jsx-one-expression-per-line */}
+              It is not available as a standalone download.
+              Data availability information and data product download is only available through
+              the parent {Object.keys(bundleParents).length > 1 ? 'products' : 'product'}.
+              {/* eslint-enable react/jsx-one-expression-per-line */}
+            </Typography>
+          </CardContent>
+        </Card>
       </Section>
     );
   }
 
   const bundleInfo = isBundleChild ? (
-    <SnackbarContent
-      className={classes.infoSnackbar}
-      message={(
-        <div className={classes.startFlex} style={{ width: '100%' }}>
-          <BundleIcon fontSize="large" className={classes.infoSnackbarIcon} />
-          <div style={{ flexGrow: 1 }}>
-            {bundleParentLink}
-            <Typography variant="body2">
-              It is not available as a standalone download. Data availability shown
-              below reflects availability of the entire bundle.
-            </Typography>
-          </div>
-        </div>
-      )}
-    />
+    <Card className={classes.card}>
+      <CardContent className={classes.cardContent}>
+        {bundleParentLink}
+        <Typography variant="body2">
+          It is not available as a standalone download. Data availability shown
+          below reflects availability of the entire bundle.
+        </Typography>
+      </CardContent>
+    </Card>
   ) : null;
 
   const renderNoDataDisplay = () => {
@@ -240,8 +217,8 @@ const AvailabilitySection = (props) => {
     }
     return (
       <>
+        {bundleInfo}
         <div className={classes.summaryDivStyle}>
-          {bundleInfo}
           <div>
             <Typography variant="h6" className={classes.summaryStyle}>
               {`${availableDatesFormatted[0]} – ${availableDatesFormatted[1]}`}

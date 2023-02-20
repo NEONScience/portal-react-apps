@@ -14,7 +14,6 @@ import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import BundleIcon from '@material-ui/icons/Archive';
 import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
 import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
 import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
@@ -93,13 +92,8 @@ const useStyles = makeStyles((theme) => ({
     borderColor: theme.colors.GOLD[300],
   },
   cardContent: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px !important',
-  },
-  cardIcon: {
-    color: theme.colors.GOLD[700],
-    marginRight: theme.spacing(2),
+    padding: theme.spacing(2),
+    paddingBottom: `${theme.spacing(2)}px !important`,
   },
   detailSubtitle: {
     marginBottom: theme.spacing(1),
@@ -274,24 +268,21 @@ const DataProduct = React.memo((props) => {
   const bundleInfo = isBundleChild ? (
     <Card className={classes.card}>
       <CardContent className={classes.cardContent}>
-        <BundleIcon fontSize="large" className={classes.cardIcon} />
-        <div style={{ flexGrow: 1 }}>
-          {bundleParentLink}
-          <Typography variant="body2">
-            {bundle.forwardAvailability ? (
-              <>
-                It is not available as a standalone download. Data availability shown
-                below reflects availability of the entire bundle.
-              </>
-            ) : (
-              <>
-                It is not available as a standalone download.
-                Data availability information and product download is only available through
-                the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
-              </>
-            )}
-          </Typography>
-        </div>
+        {bundleParentLink}
+        <Typography variant="body2">
+          {bundle.forwardAvailability ? (
+            <>
+              It is not available as a standalone download. Data availability shown
+              below reflects availability of the entire bundle.
+            </>
+          ) : (
+            <>
+              It is not available as a standalone download.
+              Data availability information and data product download is only available through
+              the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
+            </>
+          )}
+        </Typography>
       </CardContent>
     </Card>
   ) : null;

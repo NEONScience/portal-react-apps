@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '120px',
   },
   card: {
-    backgroundColor: Theme.colors.BROWN[50],
-    borderColor: Theme.colors.BROWN[300],
+    backgroundColor: theme.palette.grey[50],
+    borderColor: theme.palette.grey[300],
     marginBottom: theme.spacing(4),
   },
   cardHeader: {
@@ -79,8 +79,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   doiFromParentBlurb: {
-    fontStyle: 'italic',
-    fontSize: '0.8rem',
     marginTop: theme.spacing(1),
   },
 }));
@@ -195,18 +193,17 @@ const ReleaseCard = () => {
               <DetailTooltip tooltip={DOI_TOOLTIP} />
             </Typography>
             {!currentDoiUrl.doiUrlIsFromBundleParent ? null : (
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                className={classes.doiFromParentBlurb}
-              >
-                {/* eslint-disable react/jsx-one-expression-per-line */}
-                <b>Note:</b> This product is bundled into {currentDoiUrl.bundleParentLink}.
-                The above DOI refers to that product release and there is no DOI directly
-                associated with this sub-product release.
-                {/* eslint-enable react/jsx-one-expression-per-line */}
-              </Typography>
+              <>
+                <Typography variant="subtitle2" color="textSecondary" className={classes.doiFromParentBlurb}>
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
+                  This data product is bundled into {currentDoiUrl.bundleParentLink}
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  The above DOI refers to that data product release and there is no DOI directly
+                  associated with this sub-product release.
+                </Typography>
+              </>
             )}
           </>
         );
@@ -233,18 +230,19 @@ const ReleaseCard = () => {
               </Typography>
             )}
             secondary={(
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                component="p"
-                className={classes.doiFromParentBlurb}
-              >
-                {/* eslint-disable react/jsx-one-expression-per-line */}
-                <b>Note:</b> This product bundled into {currentDoiUrl.bundleParentLink}.
-                The above DOI refers to that product release and there is no DOI directly
-                associated with this sub-product release.
-                {/* eslint-enable react/jsx-one-expression-per-line */}
-              </Typography>
+              !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
+                <>
+                  <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
+                    {/* eslint-disable react/jsx-one-expression-per-line */}
+                    This data product is bundled into {currentDoiUrl.bundleParentLink}
+                    {/* eslint-enable react/jsx-one-expression-per-line */}
+                  </Typography>
+                  <Typography variant="body2">
+                    The above DOI refers to that data product release and there is no DOI directly
+                    associated with this sub-product release.
+                  </Typography>
+                </>
+              )
             )}
           />
           <ListItemSecondaryAction>

@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '120px',
   },
   card: {
-    backgroundColor: theme.palette.grey[50],
-    borderColor: theme.palette.grey[300],
+    backgroundColor: 'rgba(225, 227, 234, 0.6)', // This is => theme.colors.NEON_BLUE[50]
+    borderColor: theme.colors.NEON_BLUE[700],
     marginBottom: theme.spacing(4),
   },
   cardHeader: {
@@ -161,7 +161,7 @@ const ReleaseCard = () => {
           title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
         />
         <CardContent className={classes.cardContent}>
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="textPrimary">
             {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
             {currentRelease} of this data product is not available.
             The data product releases can be found {dataProductDetailLink}.
@@ -185,7 +185,7 @@ const ReleaseCard = () => {
         const currentDoiUrl = currentDoiUrls[0];
         return (
           <>
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography variant="subtitle2" color="textPrimary" component="p">
               <span className={classes.releaseAttribTitle}>DOI:</span>
               <span className={classes.releaseAttribValue}>
                 {currentDoiUrl.doiUrl}
@@ -221,7 +221,7 @@ const ReleaseCard = () => {
         >
           <ListItemText
             primary={(
-              <Typography variant="body2" color="textSecondary" component="p">
+              <Typography variant="subtitle2" color="textPrimary" component="p">
                 <span className={classes.releaseAttribTitle}>DOI:</span>
                 <span className={classes.releaseAttribValue}>
                   {currentDoiUrl.doiUrl}
@@ -301,7 +301,7 @@ const ReleaseCard = () => {
               </CopyToClipboard>
             )}
           </div>
-          <Typography variant="body2" color="textSecondary" component="p">
+          <Typography variant="subtitle2" color="textPrimary" component="p">
             <span className={classes.releaseAttribTitle}>Generated:</span>
             <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
           </Typography>

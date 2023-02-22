@@ -41,6 +41,7 @@ export interface DataProductSelectState {
   products: DataProductSelectOption[];
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
+  focalBundleProduct: Nullable<DataProduct>;
 }
 export interface SiteSelectState {
   sitesFetchState: AsyncStateType;

@@ -26,6 +26,11 @@ import {
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
+import DataProductBundleCard, {
+  buildDefaultTitleContent,
+  buildDefaultSubTitleContent,
+} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -41,6 +46,7 @@ import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
 import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
+import { IDataProductLike } from 'portal-core-components/lib/types/internal';
 
 const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -73,19 +79,6 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     listItemTextProduct: {
       display: 'inline-block',
       whiteSpace: 'normal',
-    },
-    card: {
-      marginTop: muiTheme.spacing(3),
-      backgroundColor: (Theme as NeonTheme).colors.GOLD[50],
-      borderColor: (Theme as NeonTheme).colors.GOLD[300],
-    },
-    cardContent: {
-      padding: muiTheme.spacing(2),
-      paddingBottom: `${muiTheme.spacing(2)}px !important`,
-    },
-    cardIcon: {
-      color: (Theme as NeonTheme).colors.GOLD[700],
-      marginRight: muiTheme.spacing(2),
     },
     cardSelectedProduct: {
       marginBottom: muiTheme.spacing(2),
@@ -136,6 +129,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     products,
     selectedProduct,
     selectedRelease,
+    focalBundleProduct,
   }: DataProductSelectState = state;
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
@@ -203,9 +197,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const getProductSecondaryMessage = (
     value: DataProduct,
     paramBundle?: DataProductBundle,
-  ): string => {
+  ): [string, boolean] => {
     const bundle: DataProductBundle|undefined = paramBundle
       || findBundle(releaseBundles, value.productCode);
+    let hasManyParents = false;
     let bundleMessage = '';
     if (bundle) {
       const parent: DataProductParent|undefined = findForwardParent(bundle);
@@ -218,25 +213,30 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         if (parentCodes.length <= 0) {
           bundleMessage = `This data product (${value.productCode}) is bundled.`;
         } else {
-          const parentCodeMessage = `${parentCodes.length > 1
-            ? parentCodes.join(', ')
-            : parentCodes[0]}`;
+          let parentCodeMessage;
+          if (parentCodes.length > 1) {
+            hasManyParents = true;
+            parentCodeMessage = parentCodes.join(', ');
+          } else {
+            parentCodeMessage = parentCodes[0];
+          }
           bundleMessage = `This data product (${value.productCode}) is
             bundled into ${parentCodeMessage}`;
           bundleMessage = `${bundleMessage}. See ${parentCodeMessage} for availability.`;
         }
       }
     }
-    return !bundle
-      ? value.productCode
-      : bundleMessage;
+    return [!bundle ? value.productCode : bundleMessage, hasManyParents];
   };
   const renderOption = (
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
   ): JSX.Element => {
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
-    const secondaryMessage: string = getProductSecondaryMessage(value as DataProduct, bundle);
+    const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
+      value as DataProduct,
+      bundle,
+    );
     const nameSlice: SearchSlice[] = calcSearchSlice(
       value.productName,
       renderOptionState.inputValue,
@@ -254,7 +254,8 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <div key={value.productCode}>
+      <div key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
+        {!bundle ? <React.Fragment /> : <BundleListItemIcon isSplit={hasManyParents} />}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
@@ -299,11 +300,13 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            const secondaryMessage: string = getProductSecondaryMessage(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const [secondaryMessage]: string = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
             );
-            return `${option.productName} ${secondaryMessage} ${option.productScienceTeam}`;
+            return `${option.productName} ${secondaryMessage as string} ${option.productScienceTeam}`;
           },
         })}
         renderOption={(
@@ -364,20 +367,27 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     if (!parent || !parent.forwardAvailability) {
       return (<React.Fragment />);
     }
+    let focalProductName = '';
+    console.log(focalBundleProduct);
+    if (exists(focalBundleProduct)
+        && (parent.parentProductCode === (focalBundleProduct as DataProduct).productCode)) {
+      focalProductName = (focalBundleProduct as DataProduct).productName || '';
+    }
+    const dataProductLike: IDataProductLike = {
+      productCode: parent.parentProductCode,
+      productName: focalProductName,
+    };
+    const titleContent = buildDefaultTitleContent(dataProductLike, selectedRelease?.release);
+    const subTitleContent = buildDefaultSubTitleContent(true, false);
     return (
-      <Card className={classes.card}>
-        <CardContent className={classes.cardContent}>
-          <Typography variant="subtitle2">
-            {`This data product is bundled into ${parent.parentProductCode}`}
-          </Typography>
-          <Typography variant="body2">
-            <>
-              It is not available as a standalone download. Data availability shown
-              below reflects availability of the entire bundle.
-            </>
-          </Typography>
-        </CardContent>
-      </Card>
+      <div style={{ marginTop: Theme.spacing(3) }}>
+        <DataProductBundleCard
+          showIcon={true}
+          isSplit={false}
+          titleContent={titleContent}
+          subTitleContent={subTitleContent}
+        />
+      </div>
     );
   };
 

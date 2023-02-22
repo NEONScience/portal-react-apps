@@ -2,10 +2,7 @@ import React from 'react';
 import moment from 'moment';
 
 import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
@@ -14,8 +11,13 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
 import Theme from 'portal-core-components/lib/components/Theme';
+import DataProductBundleCard, {
+  buildDefaultTitleContent,
+  buildDefaultSplitTitleContent,
+  buildDefaultSubTitleContent,
+  buildManyParentsAdditionalContent,
+} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
@@ -35,15 +37,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[300],
     lineHeight: '1em',
     marginBottom: theme.spacing(1),
-  },
-  card: {
-    marginBottom: theme.spacing(4),
-    backgroundColor: theme.colors.GOLD[50],
-    borderColor: theme.colors.GOLD[300],
-  },
-  cardContent: {
-    padding: theme.spacing(2),
-    paddingBottom: `${theme.spacing(2)}px !important`,
   },
 }));
 
@@ -118,71 +111,52 @@ const AvailabilitySection = (props) => {
       .map((month) => moment(`${month}-02`).format('MMMM YYYY'));
   }
 
-  const getParentProductLink = (parentProductData = {}) => (
-    <Link
-      href={RouteService.getProductDetailPath(parentProductData.productCode)}
-      target="_blank"
-    >
-      {`${parentProductData.productName} (${parentProductData.productCode})`}
-    </Link>
-  );
-
-  let bundleParentLink = null;
-  if (isBundleChild) {
-    bundleParentLink = parentCodes.length === 1
-      ? (
-        <Typography variant="subtitle2">
-          {/* eslint-disable react/jsx-one-expression-per-line */}
-          This data product is bundled into {getParentProductLink(bundleParents[doiProductCode])}
-          {/* eslint-enable react/jsx-one-expression-per-line */}
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="subtitle2">
-            This data product has been split and bundled into more than one parent data product:
-          </Typography>
-          <ul style={{ margin: Theme.spacing(1, 0) }}>
-            {parentCodes.map((parentCode) => (
-              <li key={parentCode}>
-                {getParentProductLink(bundleParents[parentCode])}
-              </li>
-            ))}
-          </ul>
-        </>
-      );
-  }
-
-  // Bundle children that don't forward availability: no donwload button, just link to parent
+  const renderBundleInfo = () => {
+    if (!isBundleChild) {
+      return null;
+    }
+    const bundleShowManyParents = Array.isArray(parentCodes)
+      && (parentCodes.length > 1);
+    let titleContent;
+    let additionalTitleContent;
+    const subTitleContent = buildDefaultSubTitleContent(
+      forwardAvailabilityFromParent,
+      bundleShowManyParents,
+    );
+    if (!bundleShowManyParents) {
+      const dataProductLike = {
+        productCode: bundleParents[doiProductCode].productCode,
+        productName: bundleParents[doiProductCode].productName,
+      };
+      titleContent = buildDefaultTitleContent(dataProductLike);
+    } else {
+      titleContent = buildDefaultSplitTitleContent(':');
+      const dataProductLikes = parentCodes.map((parentCode) => ({
+        productCode: bundleParents[parentCode].productCode,
+        productName: bundleParents[parentCode].productName,
+      }));
+      additionalTitleContent = buildManyParentsAdditionalContent(dataProductLikes);
+    }
+    return (
+      <div style={{ marginBottom: Theme.spacing(4) }}>
+        <DataProductBundleCard
+          showIcon
+          isSplit={bundleShowManyParents}
+          titleContent={titleContent}
+          additionalTitleContent={additionalTitleContent}
+          subTitleContent={subTitleContent}
+        />
+      </div>
+    );
+  };
+  // Bundle children that don't forward availability: no download button, just link to parent
   if (isBundleChild && !forwardAvailabilityFromParent) {
     return (
       <Section {...props}>
-        <Card className={classes.card}>
-          <CardContent className={classes.cardContent}>
-            {bundleParentLink}
-            <Typography variant="body2">
-              {/* eslint-disable react/jsx-one-expression-per-line */}
-              It is not available as a standalone download.
-              Data availability information and data product download is only available through
-              the parent {Object.keys(bundleParents).length > 1 ? 'products' : 'product'}.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
-            </Typography>
-          </CardContent>
-        </Card>
+        {renderBundleInfo()}
       </Section>
     );
   }
-
-  const bundleInfo = isBundleChild ? (
-    <Card className={classes.card}>
-      <CardContent className={classes.cardContent}>
-        {bundleParentLink}
-        <Typography variant="body2">
-          It is not available as a standalone download. Data availability shown
-          below reflects availability of the entire bundle.
-        </Typography>
-      </CardContent>
-    </Card>
-  ) : null;
 
   const renderNoDataDisplay = () => {
     if (isTombstoned) return null;
@@ -217,7 +191,7 @@ const AvailabilitySection = (props) => {
     }
     return (
       <>
-        {bundleInfo}
+        {renderBundleInfo()}
         <div className={classes.summaryDivStyle}>
           <div>
             <Typography variant="h6" className={classes.summaryStyle}>

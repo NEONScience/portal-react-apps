@@ -24,6 +24,12 @@ import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
+import DataProductBundleCard, {
+  buildDefaultTitleContent,
+  buildDefaultSplitTitleContent,
+  buildDefaultSubTitleContent,
+  buildManyParentsAdditionalContent,
+} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
@@ -85,15 +91,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-  },
-  card: {
-    marginBottom: theme.spacing(2),
-    backgroundColor: theme.colors.GOLD[50],
-    borderColor: theme.colors.GOLD[300],
-  },
-  cardContent: {
-    padding: theme.spacing(2),
-    paddingBottom: `${theme.spacing(2)}px !important`,
   },
   detailSubtitle: {
     marginBottom: theme.spacing(1),
@@ -233,59 +230,43 @@ const DataProduct = React.memo((props) => {
     </Typography>
   );
 
-  const getParentProductLink = (parentProductData = {}) => (
-    <Link
-      href={RouteService.getProductDetailPath(parentProductData.productCode)}
-      target="_blank"
-    >
-      {`${parentProductData.productName} (${parentProductData.productCode})`}
-    </Link>
-  );
-
-  let bundleParentLink = null;
-  if (isBundleChild) {
-    bundleParentLink = !Array.isArray(bundleParentProductData)
-      ? (
-        <Typography variant="subtitle2">
-          This data product is bundled into {getParentProductLink(bundleParentProductData)}
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="subtitle2">
-            This data product has been split and bundled into more than one parent data product:
-          </Typography>
-          <ul style={{ margin: Theme.spacing(1, 0) }}>
-            {bundleParentProductData.map((bundleParentProduct) => (
-              <li key={bundleParentProduct.productCode}>
-                {getParentProductLink(bundleParentProduct)}
-              </li>
-            ))}
-          </ul>
-        </>
-      );
-  }
-
-  const bundleInfo = isBundleChild ? (
-    <Card className={classes.card}>
-      <CardContent className={classes.cardContent}>
-        {bundleParentLink}
-        <Typography variant="body2">
-          {bundle.forwardAvailability ? (
-            <>
-              It is not available as a standalone download. Data availability shown
-              below reflects availability of the entire bundle.
-            </>
-          ) : (
-            <>
-              It is not available as a standalone download.
-              Data availability information and data product download is only available through
-              the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
-            </>
-          )}
-        </Typography>
-      </CardContent>
-    </Card>
-  ) : null;
+  const renderBundleInfo = () => {
+    if (!isBundleChild || !bundleParentProductData) {
+      return null;
+    }
+    const bundleShowManyParents = Array.isArray(bundleParentProductData);
+    let titleContent;
+    let additionalTitleContent;
+    const subTitleContent = buildDefaultSubTitleContent(
+      bundle.forwardAvailability,
+      bundleShowManyParents,
+    );
+    if (!bundleShowManyParents) {
+      const dataProductLike = {
+        productCode: bundleParentProductData.productCode,
+        productName: bundleParentProductData.productName,
+      };
+      titleContent = buildDefaultTitleContent(dataProductLike);
+    } else {
+      titleContent = buildDefaultSplitTitleContent(':');
+      const dataProductLikes = bundleParentProductData.map((bundleParentProduct) => ({
+        productCode: bundleParentProduct.productCode,
+        productName: bundleParentProduct.productName,
+      }));
+      additionalTitleContent = buildManyParentsAdditionalContent(dataProductLikes);
+    }
+    return (
+      <div style={{ marginBottom: Theme.spacing(2) }}>
+        <DataProductBundleCard
+          showIcon
+          isSplit={bundleShowManyParents}
+          titleContent={titleContent}
+          additionalTitleContent={additionalTitleContent}
+          subTitleContent={subTitleContent}
+        />
+      </div>
+    );
+  };
 
   const downloadDataButton = hasData ? (
     <DownloadDataContext.Provider
@@ -378,7 +359,7 @@ const DataProduct = React.memo((props) => {
           </Grid>
         </Grid>
 
-        {bundleInfo}
+        {renderBundleInfo()}
 
         <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
           {!timeRange ? null : (

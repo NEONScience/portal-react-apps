@@ -50,9 +50,12 @@ const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] =>
   determineBundle(state.bundles, state.selectedRelease?.release)
 );
 
-const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
+const findFocalProductWithAva = (
+  state: BaseStoreAppState,
+): [Nullable<DataProduct>, Nullable<DataProduct>] => {
   const { selectedProduct }: BaseStoreAppState = state;
   let appliedProduct: Nullable<DataProduct> = null;
+  let appliedBundleAvaProduct: Nullable<DataProduct> = null;
   const appliedProducts: Nullable<DataProduct[]> = state.focalProduct;
   if (existsNonEmpty(appliedProducts)) {
     if (!selectedProduct) {
@@ -91,14 +94,28 @@ const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
           ...appliedProduct,
           siteCodes: appliedAvail.siteCodes,
         };
+        appliedBundleAvaProduct = appliedAvail;
       }
     }
   }
+  return [appliedProduct, appliedBundleAvaProduct];
+};
+
+const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
+  const [appliedProduct] = findFocalProductWithAva(state);
   return appliedProduct;
+};
+const findFocalProductBundle = (state: BaseStoreAppState): Nullable<DataProduct> => {
+  const [, appliedBundleAvaProduct] = findFocalProductWithAva(state);
+  return appliedBundleAvaProduct;
 };
 const bundleProductSelector = createSelector(
   [appState],
   (state: BaseStoreAppState): Nullable<DataProduct> => findFocalProduct(state),
+);
+const bundleProductFullSelector = createSelector(
+  [appState],
+  (state: BaseStoreAppState): Nullable<DataProduct> => findFocalProductBundle(state),
 );
 
 const findAppliedRelease = (state: BaseStoreAppState): Nullable<Release> => {
@@ -252,8 +269,11 @@ const AppStateSelector = {
     }),
   ),
   dataProductSelect: createDeepEqualSelector(
-    [appStateSelector],
-    (state: BaseStoreAppState): DataProductSelectState => ({
+    [appStateSelector, bundleProductFullSelector],
+    (
+      state: BaseStoreAppState,
+      bundledProduct: Nullable<DataProduct>,
+    ): DataProductSelectState => ({
       bundlesFetchState: state.bundlesFetchState.asyncState,
       bundles: state.bundles,
       productsFetchState: state.productsFetchState.asyncState,
@@ -285,6 +305,7 @@ const AppStateSelector = {
           .sort(productSorter),
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
+      focalBundleProduct: bundledProduct,
     }),
   ),
   siteSelect: createDeepEqualSelector(

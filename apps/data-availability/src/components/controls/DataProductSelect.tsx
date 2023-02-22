@@ -27,16 +27,15 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 
 import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
-import DataProductBundleCard, {
-  buildDefaultTitleContent,
-  buildDefaultSubTitleContent,
-} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
+import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import { IDataProductLike } from 'portal-core-components/lib/types/internal';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
@@ -46,7 +45,6 @@ import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
 import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
-import { IDataProductLike } from 'portal-core-components/lib/types/internal';
 
 const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
   // eslint-disable-next-line implicit-arrow-linebreak
@@ -137,10 +135,11 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const isComplete = (productsFetchState === AsyncStateType.FULLFILLED)
     && (bundlesFetchState === AsyncStateType.FULLFILLED);
   const hasProduct: boolean = exists(selectedProduct);
+  products.sort((a: DataProduct, b: DataProduct): number => (
+    a.productName.localeCompare(b.productName)
+  ));
   const initialProduct: DataProduct = !hasProduct
-    ? products
-      .sort((a: DataProduct, b: DataProduct): number => a.productName.localeCompare(b.productName))
-      .find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
+    ? products.find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
     : selectedProduct as DataProduct;
   const releaseBundles: DataProductBundle[] = determineBundle(bundles, selectedRelease?.release);
 
@@ -368,7 +367,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       return (<React.Fragment />);
     }
     let focalProductName = '';
-    console.log(focalBundleProduct);
     if (exists(focalBundleProduct)
         && (parent.parentProductCode === (focalBundleProduct as DataProduct).productCode)) {
       focalProductName = (focalBundleProduct as DataProduct).productName || '';
@@ -377,8 +375,11 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       productCode: parent.parentProductCode,
       productName: focalProductName,
     };
-    const titleContent = buildDefaultTitleContent(dataProductLike, selectedRelease?.release);
-    const subTitleContent = buildDefaultSubTitleContent(true, false);
+    const titleContent = BundleContentBuilder.buildDefaultTitleContent(
+      dataProductLike,
+      selectedRelease?.release,
+    );
+    const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(true, false);
     return (
       <div style={{ marginTop: Theme.spacing(3) }}>
         <DataProductBundleCard

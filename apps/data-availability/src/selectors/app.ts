@@ -37,6 +37,11 @@ import { determineBundle, findForwardChildren } from '../util/bundleUtil';
 
 const ALLOW_ALL_PRODUCT_SELECT = true;
 
+interface FocalProductInfo {
+  appliedProduct: Nullable<DataProduct>;
+  appliedBundleAvaProduct: Nullable<DataProduct>;
+}
+
 const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
 );
@@ -50,9 +55,7 @@ const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] =>
   determineBundle(state.bundles, state.selectedRelease?.release)
 );
 
-const findFocalProductWithAva = (
-  state: BaseStoreAppState,
-): [Nullable<DataProduct>, Nullable<DataProduct>] => {
+const findFocalProductWithAva = (state: BaseStoreAppState): FocalProductInfo => {
   const { selectedProduct }: BaseStoreAppState = state;
   let appliedProduct: Nullable<DataProduct> = null;
   let appliedBundleAvaProduct: Nullable<DataProduct> = null;
@@ -98,16 +101,16 @@ const findFocalProductWithAva = (
       }
     }
   }
-  return [appliedProduct, appliedBundleAvaProduct];
+  return { appliedProduct, appliedBundleAvaProduct };
 };
 
 const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
-  const [appliedProduct] = findFocalProductWithAva(state);
-  return appliedProduct;
+  const focalProductInfo: FocalProductInfo = findFocalProductWithAva(state);
+  return focalProductInfo.appliedProduct;
 };
 const findFocalProductBundle = (state: BaseStoreAppState): Nullable<DataProduct> => {
-  const [, appliedBundleAvaProduct] = findFocalProductWithAva(state);
-  return appliedBundleAvaProduct;
+  const focalProductInfo: FocalProductInfo = findFocalProductWithAva(state);
+  return focalProductInfo.appliedBundleAvaProduct;
 };
 const bundleProductSelector = createSelector(
   [appState],

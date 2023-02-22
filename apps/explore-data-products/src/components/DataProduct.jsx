@@ -20,17 +20,13 @@ import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
 import AopDataViewerIcon from '@material-ui/icons/SatelliteOutlined';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
+import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
-import DataProductBundleCard, {
-  buildDefaultTitleContent,
-  buildDefaultSplitTitleContent,
-  buildDefaultSubTitleContent,
-  buildManyParentsAdditionalContent,
-} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import ExploreContext from '../ExploreContext';
@@ -236,8 +232,8 @@ const DataProduct = React.memo((props) => {
     }
     const bundleShowManyParents = Array.isArray(bundleParentProductData);
     let titleContent;
-    let additionalTitleContent;
-    const subTitleContent = buildDefaultSubTitleContent(
+    let detailContent;
+    const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(
       bundle.forwardAvailability,
       bundleShowManyParents,
     );
@@ -246,14 +242,14 @@ const DataProduct = React.memo((props) => {
         productCode: bundleParentProductData.productCode,
         productName: bundleParentProductData.productName,
       };
-      titleContent = buildDefaultTitleContent(dataProductLike);
+      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike);
     } else {
-      titleContent = buildDefaultSplitTitleContent(':');
+      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(':');
       const dataProductLikes = bundleParentProductData.map((bundleParentProduct) => ({
         productCode: bundleParentProduct.productCode,
         productName: bundleParentProduct.productName,
       }));
-      additionalTitleContent = buildManyParentsAdditionalContent(dataProductLikes);
+      detailContent = BundleContentBuilder.buildManyParentsMainContent(dataProductLikes);
     }
     return (
       <div style={{ marginBottom: Theme.spacing(2) }}>
@@ -261,7 +257,7 @@ const DataProduct = React.memo((props) => {
           showIcon
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
-          additionalTitleContent={additionalTitleContent}
+          detailContent={detailContent}
           subTitleContent={subTitleContent}
         />
       </div>

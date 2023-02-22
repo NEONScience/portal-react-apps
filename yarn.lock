@@ -8183,7 +8183,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#multi-cite":
   version "2.0.0"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/c0fc1463504c53a460160030aea827ecaf24531f"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/85bafb55523ad8cc724e38e805dbe715321f3a40"
   dependencies:
     "@date-io/moment" "^1.3.13"
     "@fontsource/inter" "^4.5.14"

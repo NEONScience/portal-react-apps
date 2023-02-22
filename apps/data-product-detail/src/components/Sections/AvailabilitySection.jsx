@@ -6,18 +6,14 @@ import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
+import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
 import Theme from 'portal-core-components/lib/components/Theme';
-import DataProductBundleCard, {
-  buildDefaultTitleContent,
-  buildDefaultSplitTitleContent,
-  buildDefaultSubTitleContent,
-  buildManyParentsAdditionalContent,
-} from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
@@ -118,8 +114,8 @@ const AvailabilitySection = (props) => {
     const bundleShowManyParents = Array.isArray(parentCodes)
       && (parentCodes.length > 1);
     let titleContent;
-    let additionalTitleContent;
-    const subTitleContent = buildDefaultSubTitleContent(
+    let detailContent;
+    const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(
       forwardAvailabilityFromParent,
       bundleShowManyParents,
     );
@@ -128,14 +124,14 @@ const AvailabilitySection = (props) => {
         productCode: bundleParents[doiProductCode].productCode,
         productName: bundleParents[doiProductCode].productName,
       };
-      titleContent = buildDefaultTitleContent(dataProductLike);
+      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike);
     } else {
-      titleContent = buildDefaultSplitTitleContent(':');
+      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(':');
       const dataProductLikes = parentCodes.map((parentCode) => ({
         productCode: bundleParents[parentCode].productCode,
         productName: bundleParents[parentCode].productName,
       }));
-      additionalTitleContent = buildManyParentsAdditionalContent(dataProductLikes);
+      detailContent = BundleContentBuilder.buildManyParentsMainContent(dataProductLikes);
     }
     return (
       <div style={{ marginBottom: Theme.spacing(4) }}>
@@ -143,7 +139,7 @@ const AvailabilitySection = (props) => {
           showIcon
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
-          additionalTitleContent={additionalTitleContent}
+          detailContent={detailContent}
           subTitleContent={subTitleContent}
         />
       </div>

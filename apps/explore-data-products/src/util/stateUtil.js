@@ -2,6 +2,7 @@ import isEqual from 'lodash/isEqual';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
   /* constants */
@@ -10,7 +11,6 @@ import {
   FILTER_KEYS,
   INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_VALUES,
-  LATEST_AND_PROVISIONAL,
   SORT_METHODS,
   SORT_DIRECTIONS,
   VISUALIZATIONS,

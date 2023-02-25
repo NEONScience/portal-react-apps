@@ -28,13 +28,14 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
 import {
   FILTER_KEYS,
   VISUALIZATIONS,
-  LATEST_AND_PROVISIONAL,
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
@@ -242,14 +243,19 @@ const DataProduct = React.memo((props) => {
         productCode: bundleParentProductData.productCode,
         productName: bundleParentProductData.productName,
       };
-      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike);
+      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike, currentRelease);
     } else {
-      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(':');
+      const isRelease = isStringNonEmpty(currentRelease)
+        && (currentRelease !== LATEST_AND_PROVISIONAL);
+      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(isRelease, ':');
       const dataProductLikes = bundleParentProductData.map((bundleParentProduct) => ({
         productCode: bundleParentProduct.productCode,
         productName: bundleParentProduct.productName,
       }));
-      detailContent = BundleContentBuilder.buildManyParentsMainContent(dataProductLikes);
+      detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        dataProductLikes,
+        currentRelease,
+      );
     }
     return (
       <div style={{ marginBottom: Theme.spacing(2) }}>

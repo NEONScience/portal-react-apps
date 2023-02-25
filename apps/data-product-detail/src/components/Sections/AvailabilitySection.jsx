@@ -15,6 +15,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -124,14 +125,19 @@ const AvailabilitySection = (props) => {
         productCode: bundleParents[doiProductCode].productCode,
         productName: bundleParents[doiProductCode].productName,
       };
-      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike);
+      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike, currentRelease);
     } else {
-      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(':');
+      const isRelease = isStringNonEmpty(currentRelease)
+        && (currentRelease !== LATEST_AND_PROVISIONAL);
+      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(isRelease, ':');
       const dataProductLikes = parentCodes.map((parentCode) => ({
         productCode: bundleParents[parentCode].productCode,
         productName: bundleParents[parentCode].productName,
       }));
-      detailContent = BundleContentBuilder.buildManyParentsMainContent(dataProductLikes);
+      detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        dataProductLikes,
+        currentRelease,
+      );
     }
     return (
       <div style={{ marginBottom: Theme.spacing(4) }}>

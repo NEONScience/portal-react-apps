@@ -16,6 +16,7 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
   APP_STATUS,
@@ -35,7 +36,6 @@ import {
   INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
-  LATEST_AND_PROVISIONAL,
   VISUALIZATIONS,
   /* functions */
   applySort,

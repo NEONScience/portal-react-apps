@@ -9,13 +9,12 @@ import Typography from '@material-ui/core/Typography';
 
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import DataProduct from './DataProduct';
 import SkeletonDataProduct from './SkeletonDataProduct';
 
 import ExploreContext from '../ExploreContext';
-
-import { LATEST_AND_PROVISIONAL } from '../util/filterUtil';
 
 const PresentationData = (props) => {
   const { skeleton, highestOrderDownloadSubject } = props;

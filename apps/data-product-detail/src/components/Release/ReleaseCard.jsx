@@ -45,6 +45,9 @@ const useStyles = makeStyles((theme) => ({
   doiList: {
     width: '100%',
   },
+  doiListItemText: {
+    margin: 0,
+  },
   doiListItemSecondaryAction: {
     paddingRight: '120px',
   },
@@ -196,7 +199,7 @@ const ReleaseCard = () => {
               <>
                 <Typography variant="subtitle2" color="textSecondary" className={classes.doiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
-                  This data product is bundled into {currentDoiUrl.bundleParentLink}
+                  This data product release is bundled into {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
@@ -220,7 +223,17 @@ const ReleaseCard = () => {
           }}
         >
           <ListItemText
+            className={classes.doiListItemText}
             primary={(
+              !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
+                <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
+                  {currentDoiUrl.bundleParentLink}
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
+                </Typography>
+              )
+            )}
+            secondary={(
               <Typography variant="subtitle2" color="textPrimary" component="p">
                 <span className={classes.releaseAttribTitle}>DOI:</span>
                 <span className={classes.releaseAttribValue}>
@@ -228,21 +241,6 @@ const ReleaseCard = () => {
                 </span>
                 <DetailTooltip tooltip={DOI_TOOLTIP} />
               </Typography>
-            )}
-            secondary={(
-              !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
-                <>
-                  <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
-                    {/* eslint-disable react/jsx-one-expression-per-line */}
-                    This data product is bundled into {currentDoiUrl.bundleParentLink}
-                    {/* eslint-enable react/jsx-one-expression-per-line */}
-                  </Typography>
-                  <Typography variant="body2">
-                    The above DOI refers to that data product release and there is no DOI directly
-                    associated with this sub-product release.
-                  </Typography>
-                </>
-              )
             )}
           />
           <ListItemSecondaryAction>
@@ -260,14 +258,25 @@ const ReleaseCard = () => {
           </ListItemSecondaryAction>
         </ListItem>
       ));
+      let subTitleContent = (
+        <>Please cite one or both depending on which data are used.</>
+      );
+      if (currentDoiUrls.length > 2) {
+        subTitleContent = (
+          <>Please cite depending on which data are used.</>
+        );
+      }
       return (
         <div className={classes.multiCitationContainer}>
           <Typography variant="subtitle2">
-            This data product has been split and bundled into more than one parent data product:
+            This data product release is a sub-product of the following data product releases:
           </Typography>
           <List dense disablePadding classeName={classes.doiList}>
             {items}
           </List>
+          <Typography variant="subtitle2" style={{ marginTop: Theme.spacing(1) }}>
+            {subTitleContent}
+          </Typography>
         </div>
       );
     };

@@ -12,6 +12,7 @@ import NeonPage from 'portal-core-components/lib/components/NeonPage';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import ExploreContext from './ExploreContext';
 
@@ -21,7 +22,6 @@ import PresentationFilter from './components/PresentationFilter';
 import DataVisualizationDialog from './components/DataVisualizationDialog';
 
 import { APP_STATUS } from './util/stateUtil';
-import { LATEST_AND_PROVISIONAL } from './util/filterUtil';
 
 const DataHeader = React.lazy(() => import('./components/DataHeader'));
 

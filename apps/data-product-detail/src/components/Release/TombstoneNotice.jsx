@@ -35,10 +35,16 @@ const useStyles = makeStyles((theme) => ({
   doiList: {
     width: '100%',
   },
+  doiListItemText: {
+    margin: 0,
+  },
   doiFromParentBlurb: {
     fontStyle: 'italic',
     fontSize: '0.8rem',
     marginTop: theme.spacing(1),
+  },
+  doiBlurb: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -65,6 +71,7 @@ const TombstoneNotice = () => {
     doiUrlInfo.isTombstoned
   ));
   const hasTombstonedDois = (tombstonedDoiUrls.length >= 1);
+  const hasManyTombstonedDois = (tombstonedDoiUrls.length > 1);
   if (!hasTombstonedDois) {
     return null;
   }
@@ -123,6 +130,63 @@ const TombstoneNotice = () => {
         Contact Us
       </Link>
     );
+    const renderPrimary = () => {
+      if (!hasManyTombstonedDois) {
+        return (
+          <Typography variant="body2" color="textSecondary">
+            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+            {tombstonedRelease} of this data product
+            {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
+            If this specific release is needed for research purposes, please fill out
+            the {contactUsLink} form.
+            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          </Typography>
+        );
+      }
+      if (!doiUrlIsFromBundleParent) {
+        return null;
+      }
+      return (
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          component="p"
+        >
+          {bundleParentLink}
+        </Typography>
+      );
+    };
+    const renderSecondary = () => {
+      if (!hasManyTombstonedDois) {
+        if (!doiUrlIsFromBundleParent) {
+          return null;
+        }
+        return (
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            component="p"
+            className={classes.doiFromParentBlurb}
+          >
+            {/* eslint-disable react/jsx-one-expression-per-line */}
+            <b>Note:</b> This product is bundled into {bundleParentLink}.
+            The above DOI refers to that product release and there is no DOI directly
+            associated with this sub-product release.
+            {/* eslint-enable react/jsx-one-expression-per-line */}
+          </Typography>
+        );
+      }
+      return (
+        <Typography variant="body2" color="textSecondary">
+          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {tombstonedRelease} of this data product
+          {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
+          If this specific release is needed for research purposes, please fill out
+          the {contactUsLink} form.
+          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+        </Typography>
+      );
+    };
     return (
       <ListItem
         dense
@@ -132,30 +196,9 @@ const TombstoneNotice = () => {
         ContainerComponent="div"
       >
         <ListItemText
-          primary={(
-            <Typography variant="body2" color="textSecondary">
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-              {tombstonedRelease} of this data product
-              {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
-              If this specific release is needed for research purposes, please fill out
-              the {contactUsLink} form.
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-            </Typography>
-          )}
-          secondary={!doiUrlIsFromBundleParent ? null : (
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              component="p"
-              className={classes.doiFromParentBlurb}
-            >
-              {/* eslint-disable react/jsx-one-expression-per-line */}
-              <b>Note:</b> This product is bundled into {bundleParentLink}.
-              The above DOI refers to that product release and there is no DOI directly
-              associated with this sub-product release.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
-            </Typography>
-          )}
+          className={hasManyTombstonedDois ? classes.doiListItemText : undefined}
+          primary={renderPrimary()}
+          secondary={renderSecondary()}
         />
       </ListItem>
     );
@@ -172,6 +215,11 @@ const TombstoneNotice = () => {
         title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
       />
       <CardContent className={classes.cardContent}>
+        {!hasManyTombstonedDois ? null : (
+          <Typography variant="subtitle2" className={classes.doiBlurb}>
+            This data product release is a sub-product of the following data product releases:
+          </Typography>
+        )}
         <List dense disablePadding className={classes.doiList}>
           {renderTombstoneNotes()}
         </List>

@@ -956,7 +956,7 @@ const Provider = (props) => {
         });
       },
     );
-  }, [isTombstoned, fetches, productCode, currentRelease]);
+  }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
 
   /**
      Render

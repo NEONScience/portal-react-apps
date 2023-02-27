@@ -770,6 +770,7 @@ const Provider = (props) => {
   }, [status, navigate, pathname, productCode, currentRelease, nextRelease, nextHash]);
 
   // Trigger any fetches that are awaiting call
+  const fetchesStringified = JSON.stringify(fetches);
   useEffect(() => {
     // NeonContext is required to fetch data for the app due to bundles.
     if (!neonContextIsFinal) { return; }
@@ -881,7 +882,7 @@ const Provider = (props) => {
         }),
       ).subscribe();
     }
-  }, [status, productCode, fetches, neonContextIsFinal]);
+  }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
 
   /**
      Render

@@ -352,6 +352,7 @@ const Provider = (props) => {
      Effects
   */
   // Trigger any fetches that are awaiting call
+  const fetchesStringified = JSON.stringify(fetches);
   useEffect(() => {
     if (appStatus !== APP_STATUS.HAS_FETCHES_TO_TRIGGER) { return; }
     // Product release fetches
@@ -412,7 +413,7 @@ const Provider = (props) => {
         }),
       ).subscribe();
     }
-  }, [appStatus, fetches]);
+  }, [appStatus, fetches, fetchesStringified]);
 
   /**
      Render

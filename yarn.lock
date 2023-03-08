@@ -8486,7 +8486,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#drupal-assets":
   version "2.0.1"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/f42eaba647972c2850cdbb0b9c61e5d3b8ffc865"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/e68814f4ba708ffbe82cd048cce511af09bdb4ac"
   dependencies:
     "@date-io/moment" "^1.3.13"
     "@fortawesome/fontawesome-svg-core" "^6.3.0"

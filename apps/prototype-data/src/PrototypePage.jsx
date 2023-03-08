@@ -10,6 +10,7 @@ import DatasetDetails from './components/DatasetDetails';
 import DatasetDetailsSkeleton from './components/DatasetDetailsSkeleton';
 import ExploreDatasets from './components/ExploreDatasets';
 import ExploreDatasetsSkeleton from './components/ExploreDatasetsSkeleton';
+import { getDoiDisplay } from './renderUtil';
 
 const {
   APP_STATUS,
@@ -53,26 +54,48 @@ const PrototypePage = () => {
 
   // Title
   let title = 'Prototype Datasets';
+  let sidebarTitle;
+  let sidebarSubtitle;
   if (routeUuid) {
     const { datasets: { [routeUuid]: dataset } } = state;
     title = (typeof dataset === 'undefined' ? 'Prototype Dataset' : dataset.projectTitle);
+    sidebarTitle = 'Prototype Dataset';
+    sidebarSubtitle = getDoiDisplay(typeof dataset === 'undefined' ? undefined : dataset.doi);
   }
 
-  let showSidebar = true;
+  const sidebarLinks = [
+    {
+      name: 'About',
+      hash: '#dataset-about',
+    },
+    {
+      name: 'Data Package and Download',
+      hash: '#dataset-download',
+    },
+    {
+      name: 'Locations and Study Area',
+      hash: '#dataset-locations-study-area',
+    },
+  ];
+
+  let showSidebarFilters = false;
+  let showSidebarLinks = false;
   let pageContent = null;
   if (skeleton) {
     if (routeUuid) {
-      showSidebar = false;
+      showSidebarLinks = true;
       pageContent = <DatasetDetailsSkeleton />;
     } else {
+      showSidebarFilters = true;
       pageContent = <ExploreDatasetsSkeleton />;
     }
   } else {
     // eslint-disable-next-line no-lonely-if
     if (routeUuid) {
-      showSidebar = false;
+      showSidebarLinks = true;
       pageContent = <DatasetDetails uuid={routeUuid} />;
     } else {
+      showSidebarFilters = true;
       pageContent = <ExploreDatasets />;
     }
   }
@@ -84,9 +107,12 @@ const PrototypePage = () => {
       breadcrumbs={breadcrumbs}
       loading={loading}
       error={error}
-      sidebarWidth={showSidebar ? 340 : undefined}
-      sidebarContent={showSidebar ? <DatasetFilters /> : undefined}
-      sidebarUnsticky={showSidebar ? true : undefined}
+      sidebarTitle={sidebarTitle}
+      sidebarSubtitle={sidebarSubtitle}
+      sidebarWidth={showSidebarLinks ? 280 : 340}
+      sidebarLinks={showSidebarLinks ? sidebarLinks : undefined}
+      sidebarContent={showSidebarFilters ? <DatasetFilters /> : undefined}
+      sidebarUnsticky={showSidebarFilters}
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });

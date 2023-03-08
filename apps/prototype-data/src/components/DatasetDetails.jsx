@@ -16,6 +16,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
@@ -37,6 +39,8 @@ import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
+import PagingTable from './PagingTable';
+import { DoiDetail } from '../renderUtil';
 
 const SiteMap = React.lazy(() => import('portal-core-components/lib/components/SiteMap'));
 
@@ -200,6 +204,11 @@ const useStyles = makeStyles((theme) => ({
     fontStyle: 'italic',
     color: theme.palette.grey[400],
   },
+  dataFilesTableHead: {
+    color: theme.palette.text.primary,
+    backgroundColor: `${theme.palette.grey[50]} !important`,
+    borderBottom: `1px solid ${theme.palette.grey[100]}`,
+  },
 }));
 
 const formatBytes = (bytes) => {
@@ -232,6 +241,114 @@ export const downloadUuid = (uuid) => {
   return submit;
 };
 
+const sortDataObjects = (a, b) => {
+  if (!a && !b) return 0;
+  if (!a) return -1;
+  if (!b) return 1;
+  const {
+    fileName: fileNameA,
+    type: { name: typeA },
+  } = a;
+  const {
+    fileName: fileNameB,
+    type: { name: typeB },
+  } = b;
+  const isAEML = typeA === 'EML';
+  const isBEML = typeB === 'EML';
+  if (isAEML || isBEML) {
+    if (isAEML && isBEML) {
+      if (!fileNameA) {
+        return -1;
+      }
+      return fileNameA.localeCompare(fileNameB);
+    }
+    if (isAEML) {
+      return -1;
+    }
+    return 1;
+  }
+  if (!fileNameA) {
+    return -1;
+  }
+  return fileNameA.localeCompare(fileNameB);
+};
+
+const renderHeaderRow = (rows, classes) => ((
+  <TableRow>
+    <TableCell
+      height={50}
+      classes={{
+        head: classes.dataFilesTableHead,
+      }}
+    >
+      {`Data files in this package (${rows.length})`}
+    </TableCell>
+  </TableRow>
+));
+
+const renderDataFileRow = (file, uuid, classes) => {
+  const {
+    description,
+    fileName,
+    size,
+    type: { name: type },
+  } = file;
+  const formattedSize = formatBytes(size);
+  const secondary = (
+    <span className={classes.listItemFileDetails}>
+      {formattedSize}
+      <span className={classes.listItemSecondarySpacer}>|</span>
+      {fileName}
+    </span>
+  );
+  let TypeIcon = FileIcon;
+  if (type === 'DATA') { TypeIcon = ZipIcon; }
+  if (type === 'EML') { TypeIcon = XmlIcon; }
+  return (
+    <TableRow key={fileName}>
+      <TableCell>
+        <ListItem className={classes.listItemFile} component="div">
+          <ListItemIcon className={classes.listItemIcon}>
+            <Tooltip
+              style={{ flex: 0 }}
+              placement="right"
+              title={`Download ${fileName} (${formattedSize})`}
+            >
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                  const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
+                  window.location.href = filePath;
+                }}
+              >
+                <DownloadIcon />
+              </IconButton>
+            </Tooltip>
+          </ListItemIcon>
+          <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
+          <ListItemText
+            primaryTypographyProps={{
+              variant: 'body2',
+            }}
+            primary={(
+              <div className={classes.listItemFilePrimaryText}>
+                <div className={classes.listItemFileIcon}>
+                  <TypeIcon size="small" className={classes.listItemFileTypeIcon} />
+                </div>
+                <div>
+                  {description}
+                </div>
+              </div>
+            )}
+            secondary={secondary}
+          />
+        </ListItem>
+      </TableCell>
+    </TableRow>
+  );
+};
+
 const DatasetDetails = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
@@ -245,7 +362,7 @@ const DatasetDetails = (props) => {
   if (typeof dataset === 'undefined') { return null; }
 
   const {
-    data: { files, dataLocations }, // url: dataUrl
+    data: { files, dataLocations },
     datasetAbstract,
     dataThemes,
     dateUploaded,
@@ -317,8 +434,10 @@ const DatasetDetails = (props) => {
   ));
 
   // Science Teams
-  let scienceTeamsFormatted = getNA();
-  if (scienceTeams.length < 2) {
+  let scienceTeamsFormatted;
+  if (scienceTeams.length <= 0) {
+    scienceTeamsFormatted = getNA();
+  } else if (scienceTeams.length < 2) {
     scienceTeamsFormatted = (
       <Typography variant="body1">{scienceTeams[0]}</Typography>
     );
@@ -414,67 +533,15 @@ const DatasetDetails = (props) => {
   }
 
   // Download File List
+  files.sort(sortDataObjects);
   const downloadFileList = !files.length ? getNA('none available') : (
-    <List dense className={classes.listScroll}>
-      {files.map((file) => {
-        const {
-          description,
-          fileName,
-          size,
-          type: { name: type },
-        } = file;
-        const formattedSize = formatBytes(size);
-        const secondary = (
-          <span className={classes.listItemFileDetails}>
-            {formattedSize}
-            <span className={classes.listItemSecondarySpacer}>|</span>
-            {fileName}
-          </span>
-        );
-        let TypeIcon = FileIcon;
-        if (type === 'DATA') { TypeIcon = ZipIcon; }
-        if (type === 'EML') { TypeIcon = XmlIcon; }
-        return (
-          <ListItem
-            key={fileName}
-            className={classes.listItemFile}
-          >
-            <ListItemIcon className={classes.listItemIcon}>
-              <Tooltip
-                style={{ flex: 0 }}
-                placement="right"
-                title={`Download ${fileName} (${formattedSize})`}
-              >
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                    const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
-                    window.location.href = filePath;
-                  }}
-                >
-                  <DownloadIcon />
-                </IconButton>
-              </Tooltip>
-            </ListItemIcon>
-            <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
-            <ListItemText
-              primary={(
-                <div className={classes.listItemFilePrimaryText}>
-                  <div className={classes.listItemFileIcon}>
-                    <TypeIcon size="small" className={classes.listItemFileTypeIcon} />
-                  </div>
-                  <div>
-                    {description}
-                  </div>
-                </div>
-              )}
-              secondary={secondary}
-            />
-          </ListItem>
-        );
-      })}
-    </List>
+    <PagingTable
+      rows={files}
+      rowsPerPageOptions={[5]}
+      rowHeight={90}
+      renderRow={(row) => renderDataFileRow(row, uuid, classes)}
+      renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}
+    />
   );
 
   // External Data Locations List
@@ -568,34 +635,6 @@ const DatasetDetails = (props) => {
     });
   }
 
-  const renderDoi = () => {
-    const hasDoi = doi && doi.url;
-    if (!hasDoi) {
-      return (
-        <Typography variant="body1" className={classes.NA}>
-          Not Available
-        </Typography>
-      );
-    }
-    const doiId = hasDoi
-      ? doi.url.split('/').slice(-2).join('/')
-      : uuid;
-    return (
-      <List dense style={{ margin: 0, padding: 0 }}>
-        <ListItem key="DOI" style={{ padding: 0, margin: 0 }}>
-          <ListItemText
-            style={{ margin: 0 }}
-            primary={(
-              <Typography variant="body1" className={classes.sidebarContentFont}>
-                {doiId}
-              </Typography>
-            )}
-          />
-        </ListItem>
-      </List>
-    );
-  };
-
   const renderDoiCopyIcon = () => {
     const hasDoi = doi && doi.url;
     if (!hasDoi) {
@@ -621,30 +660,20 @@ const DatasetDetails = (props) => {
   */
   return (
     <div>
-      <Grid container spacing={8}>
+      <Grid container spacing={4}>
 
         {/* Left Column */}
-        <Grid item xs={12} sm={12} md={8} lg={9} xl={10}>
+        <Grid item xs={12} sm={12} md={8} lg={8} xl={9}>
           {/* Prototype Dataset ID */}
           <div className={classes.section}>
             {getSectionTitle('Prototype Dataset ID')}
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
-          {/* Download */}
           <div className={classes.section}>
-            {getSectionTitle('Download')}
             {downloadButton}
-            {getSectionSubtitle(`Files in this Package (${files.length})`)}
-            {downloadFileList}
-            {allowDownload ? null : <br />}
-            {dataLocationsList}
-            {dataLocationsList ? <br /> : null}
-            {getSectionSubtitle('Metadata Description')}
-            {!metadataDescription ? null : (
-              <Typography variant="body2">
-                {metadataDescription}
-              </Typography>
-            )}
+          </div>
+          <div className={classes.section} id="dataset-about">
+            <Typography variant="h4" component="h2" gutterBottom>About</Typography>
           </div>
           {/* Dataset Abstract */}
           <div className={classes.section}>
@@ -667,32 +696,14 @@ const DatasetDetails = (props) => {
               {designDescription}
             </Typography>
           </div>
-          {/* Citation */}
           <div className={classes.section}>
             {getSectionTitle('Citation')}
             <Citation uuid={uuid} />
           </div>
-          {/* Locations and Study Area */}
-          <div className={classes.section}>
-            {getSectionTitle('Locations and Study Area')}
-            <Typography gutterBottom variant="body2" className={classes.sectionContent}>
-              {studyAreaDescription}
-            </Typography>
-            <br />
-            {!manualLocationData.length ? (
-              <Typography variant="body2" className={classes.NA}>
-                No valid associated locations found
-              </Typography>
-            ) : (
-              <Suspense fallback={<Skeleton variant="rect" width="100%" height={400} />}>
-                <SiteMap manualLocationData={manualLocationData} />
-              </Suspense>
-            )}
-          </div>
         </Grid>
 
         {/* Right Column */}
-        <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
+        <Grid item xs={12} sm={12} md={4} lg={4} xl={3}>
           {/* DOI */}
           <div className={classes.sidebarSection}>
             <Typography variant="h6" component="h2" className={classes.sidebarSectionTitleDoi}>
@@ -708,7 +719,7 @@ const DatasetDetails = (props) => {
               </IconButton>
             </Tooltip>
             {renderDoiCopyIcon()}
-            {renderDoi()}
+            <DoiDetail doi={doi} />
           </div>
           {/* Version */}
           <div className={classes.sidebarSection}>
@@ -764,6 +775,47 @@ const DatasetDetails = (props) => {
           <div className={classes.sidebarSection}>
             {getSidebarSectionTitle('Publication Citations')}
             {publicationCitationsList}
+          </div>
+        </Grid>
+
+        {/* Lower Section */}
+        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          {/* Download */}
+          <div className={classes.section} id="dataset-download">
+            <Typography variant="h4" component="h2" gutterBottom>Data Package and Download</Typography>
+          </div>
+          <div className={classes.section}>
+            {downloadButton}
+            {getSectionSubtitle('Package Contents')}
+            {downloadFileList}
+            {allowDownload ? null : <br />}
+            {dataLocationsList}
+            {dataLocationsList ? <br /> : null}
+            {getSectionSubtitle('Metadata Description')}
+            {!metadataDescription ? null : (
+              <Typography variant="body2">
+                {metadataDescription}
+              </Typography>
+            )}
+          </div>
+          {/* Locations and Study Area */}
+          <div className={classes.section} id="dataset-locations-study-area">
+            <Typography variant="h4" component="h2" gutterBottom>Locations and Study Area</Typography>
+          </div>
+          <div className={classes.section} id="dataset-locations-study-area">
+            <Typography gutterBottom variant="body2" className={classes.sectionContent}>
+              {studyAreaDescription}
+            </Typography>
+            <br />
+            {!manualLocationData.length ? (
+              <Typography variant="body2" className={classes.NA}>
+                No valid associated locations found
+              </Typography>
+            ) : (
+              <Suspense fallback={<Skeleton variant="rect" width="100%" height={400} />}>
+                <SiteMap manualLocationData={manualLocationData} />
+              </Suspense>
+            )}
           </div>
         </Grid>
       </Grid>

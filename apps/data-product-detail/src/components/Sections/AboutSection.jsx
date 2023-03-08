@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -62,7 +63,9 @@ const AboutSection = (props) => {
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >
-                <Markdown>{product.productDescription || '_n/a_'}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productDescription || '_n/a_'}
+                </Markdown>
               </ComponentErrorBoundary>
             )}
           />
@@ -76,7 +79,9 @@ const AboutSection = (props) => {
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >
-                <Markdown>{product.productAbstract || '_n/a_'}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productAbstract || '_n/a_'}
+                </Markdown>
               </ComponentErrorBoundary>
             )}
           />
@@ -91,7 +96,9 @@ const AboutSection = (props) => {
                   ))}
                   onReset={() => { /* noop for boundary reset */ }}
                 >
-                  <Markdown>{product.productRemarks}</Markdown>
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {product.productRemarks}
+                  </Markdown>
                 </ComponentErrorBoundary>
               )}
             />
@@ -122,7 +129,9 @@ const AboutSection = (props) => {
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >
-                <Markdown>{product.productStudyDescription || '_n/a_'}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productStudyDescription || '_n/a_'}
+                </Markdown>
               </ComponentErrorBoundary>
             )}
           />
@@ -137,7 +146,9 @@ const AboutSection = (props) => {
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >
-                <Markdown>{product.productDesignDescription || '_n/a_'}</Markdown>
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productDesignDescription || '_n/a_'}
+                </Markdown>
               </ComponentErrorBoundary>
             )}
           />

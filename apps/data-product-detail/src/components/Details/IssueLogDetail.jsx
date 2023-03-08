@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 
@@ -359,7 +360,9 @@ const IssueLogDetail = () => {
                     onReset={() => { /* noop for boundary reset */ }}
                   >
                     <Typography variant="body2" component="div">
-                      <Markdown>{issue}</Markdown>
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {issue}
+                      </Markdown>
                     </Typography>
                   </ComponentErrorBoundary>
                 </Grid>
@@ -376,7 +379,9 @@ const IssueLogDetail = () => {
                       onReset={() => { /* noop for boundary reset */ }}
                     >
                       <Typography variant="body2" component="div">
-                        <Markdown>{resolution}</Markdown>
+                        <Markdown remarkPlugins={[remarkGfm]}>
+                          {resolution}
+                        </Markdown>
                       </Typography>
                     </ComponentErrorBoundary>
                   ) : (

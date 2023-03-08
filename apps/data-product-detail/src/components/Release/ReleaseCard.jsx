@@ -63,6 +63,11 @@ const useStyles = makeStyles((theme) => ({
   cardContent: {
     paddingTop: theme.spacing(2),
   },
+  cardReleaseNotice: {
+    backgroundColor: Theme.colors.BROWN[50],
+    borderColor: Theme.colors.BROWN[300],
+    marginBottom: theme.spacing(4),
+  },
   flex: {
     display: 'flex',
     alignItems: 'center',
@@ -158,7 +163,7 @@ const ReleaseCard = () => {
       </Link>
     );
     return (
-      <Card className={classes.card}>
+      <Card className={classes.cardReleaseNotice}>
         <CardHeader
           className={classes.cardHeader}
           title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}

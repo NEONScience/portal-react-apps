@@ -1,6 +1,6 @@
 {
   "name": "sample-explorer",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "private": true,
   "homepage": "http://localhost/sample-explorer/",
   "dependencies": {

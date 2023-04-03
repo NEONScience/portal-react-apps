@@ -1,6 +1,6 @@
 {
   "name": "prototype-data",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "homepage": "https://localhost/prototype-datasets",
   "dependencies": {

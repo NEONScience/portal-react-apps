@@ -21,6 +21,7 @@ import CopyIcon from '@material-ui/icons/Assignment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -52,8 +53,10 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: '120px',
   },
   card: {
-    backgroundColor: 'rgba(225, 227, 234, 0.6)', // This is => theme.colors.NEON_BLUE[50]
-    borderColor: theme.colors.NEON_BLUE[700],
+    // backgroundColor: 'rgba(225, 227, 234, 0.6)', // This is => theme.colors.NEON_BLUE[50]
+    // borderColor: theme.colors.NEON_BLUE[700],
+    backgroundColor: Theme.colors.BROWN[50],
+    borderColor: Theme.colors.BROWN[300],
     marginBottom: theme.spacing(4),
   },
   cardHeader: {
@@ -191,6 +194,7 @@ const ReleaseCard = () => {
           return null;
         }
         const currentDoiUrl = currentDoiUrls[0];
+        const bundledLink = BundleContentBuilder.getBundledLink();
         return (
           <>
             <Typography variant="subtitle2" color="textPrimary" component="p">
@@ -204,12 +208,12 @@ const ReleaseCard = () => {
               <>
                 <Typography variant="subtitle2" color="textSecondary" className={classes.doiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
-                  This data product release is bundled into {currentDoiUrl.bundleParentLink}
+                  This data product release is {bundledLink} into {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                   The above DOI refers to that data product release and there is no DOI directly
-                  associated with this sub-product release.
+                  associated with this data product release.
                 </Typography>
               </>
             )}
@@ -271,10 +275,13 @@ const ReleaseCard = () => {
           <>Please cite depending on which data are used.</>
         );
       }
+      const bundledLink = BundleContentBuilder.getBundledLink();
       return (
         <div className={classes.multiCitationContainer}>
           <Typography variant="subtitle2">
-            This data product release is a sub-product of the following data product releases:
+            {/* eslint-disable react/jsx-one-expression-per-line */}
+            This data product release is {bundledLink} into the following data product releases:
+            {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
           <List dense disablePadding classeName={classes.doiList}>
             {items}

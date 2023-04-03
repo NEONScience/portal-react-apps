@@ -12,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -75,6 +76,7 @@ const TombstoneNotice = () => {
   if (!hasTombstonedDois) {
     return null;
   }
+  const bundledLink = BundleContentBuilder.getBundledLink();
   const renderSingleTombstoneNote = (tombstonedDoiUrl) => {
     let doiDisplay = ' ';
     if (tombstonedDoiUrl.doiUrl) {
@@ -169,9 +171,9 @@ const TombstoneNotice = () => {
             className={classes.doiFromParentBlurb}
           >
             {/* eslint-disable react/jsx-one-expression-per-line */}
-            <b>Note:</b> This product is bundled into {bundleParentLink}.
+            <b>Note:</b> This product is {bundledLink} into {bundleParentLink}.
             The above DOI refers to that product release and there is no DOI directly
-            associated with this sub-product release.
+            associated with this data product release.
             {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
         );
@@ -217,7 +219,9 @@ const TombstoneNotice = () => {
       <CardContent className={classes.cardContent}>
         {!hasManyTombstonedDois ? null : (
           <Typography variant="subtitle2" className={classes.doiBlurb}>
-            This data product release is a sub-product of the following data product releases:
+            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+            This data product release is {bundledLink} into the following data product releases:
+            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
           </Typography>
         )}
         <List dense disablePadding className={classes.doiList}>

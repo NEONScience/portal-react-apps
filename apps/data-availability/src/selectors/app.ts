@@ -216,7 +216,7 @@ const transformSiteForBundles = (
         ));
       if (childProduct) {
         const appliedTitle = `${childProduct.productName}. `
-          + `Showing availability for parent bundle product: ${parentAvail.dataProductCode as string}`;
+          + `Showing availability for bundle data product: ${parentAvail.dataProductCode as string}`;
         bundledProducts.push({
           ...parentAvail,
           dataProductCode: childCode,

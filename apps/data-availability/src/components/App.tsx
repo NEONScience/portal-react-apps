@@ -136,6 +136,14 @@ const App: React.FC = (): JSX.Element => {
     ) => (
       batch(() => {
         dispatch(AppActionCreator.setSelectedRelease(releaseCb));
+        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+        }
+        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+        }
         if (exists(productCb)) {
           let parentBundle: DataProductParent|undefined;
           const bundle: DataProductBundle|undefined = findBundle(

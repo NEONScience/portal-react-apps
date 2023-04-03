@@ -11,7 +11,13 @@ import {
 } from 'portal-core-components/lib/util/typeUtil';
 
 import { AjaxResponse } from 'rxjs/ajax';
-import { DataProduct, DataProductBundle, DataProductParent } from '../types/store';
+import {
+  DataProduct,
+  DataProductBundle,
+  DataProductParent,
+  DataProductReleaseDoi,
+  DataProductReleaseTombAva,
+} from '../types/store';
 import { resolveAny } from '../util/typeUtil';
 
 const ProductParser = {
@@ -46,7 +52,7 @@ const ProductParser = {
     productScienceTeam: isStringNonEmpty(product.productScienceTeam)
       ? product.productScienceTeam as string
       : 'Unspecified',
-    siteCodes: exists(product.siteCodes)
+    siteCodes: (exists(product.siteCodes) && Array.isArray(product.siteCodes))
       ? product.siteCodes as Record<string, unknown>[]
       : [],
   }),
@@ -92,6 +98,38 @@ const ProductParser = {
       bundles[release] = transformed;
     });
     return bundles;
+  },
+
+  parseProductReleaseDoi: (response: AjaxResponse<unknown>): Nullable<DataProductReleaseDoi> => {
+    const resolved: UnknownRecord = resolveAny(response as never, 'data');
+    if (!exists(resolved)) {
+      return null;
+    }
+    return {
+      productCode: resolved.productCode as string,
+      release: resolved.release as string,
+      releaseGenerationDate: resolved.releaseGenerationDate as string,
+      generationDate: resolved.generationDate as string,
+      url: resolved.url as string,
+      status: resolved.status as string,
+    };
+  },
+
+  parseProductReleaseTombAva: (
+    response: AjaxResponse<unknown>,
+  ): Nullable<DataProductReleaseTombAva> => {
+    const resolved: UnknownRecord = resolveAny(response as never, 'data');
+    if (!exists(resolved)) {
+      return null;
+    }
+    return {
+      productCode: resolved.productCode as string,
+      productName: resolved.productName as string,
+      release: resolved.release as string,
+      siteCodes: (exists(resolved.siteCodes) && Array.isArray(resolved.siteCodes))
+        ? resolved.siteCodes as Record<string, unknown>[]
+        : [],
+    };
   },
 };
 

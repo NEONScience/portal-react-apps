@@ -23,6 +23,7 @@ import BundleService from 'portal-core-components/lib/service/BundleService';
 import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -65,6 +66,7 @@ const DEFAULT_STATE = {
     bundleParentReleases: {},
     productReleaseDois: {},
     aopVizProducts: null,
+    tombstoneAvailability: {},
   },
   data: {
     product: null, // Latest and provisional product metadata
@@ -74,6 +76,7 @@ const DEFAULT_STATE = {
     releases: [], // List of release objects; fed from base product or bundle inheritance
     productReleaseDois: {},
     aopVizProducts: [],
+    tombstoneAvailability: null,
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
@@ -124,6 +127,29 @@ const getCurrentReleaseObjectFromState = (state = DEFAULT_STATE) => {
     data: { releases },
   } = state;
   return releases.find((r) => r.release === currentRelease) || null;
+};
+
+const determineTombstoned = (productReleaseDois, currentRelease, checkAtleastOne = false) => {
+  if (!isStringNonEmpty(currentRelease)) {
+    return false;
+  }
+  if (!exists(productReleaseDois) || !exists(productReleaseDois[currentRelease])) {
+    return false;
+  }
+  const prd = productReleaseDois[currentRelease];
+  if (!Array.isArray(prd)) {
+    return prd.status === DoiStatusType.TOMBSTONED;
+  }
+  if (checkAtleastOne) {
+    return prd.some((ds) => {
+      if (!exists(ds)) return false;
+      return (ds.status === DoiStatusType.TOMBSTONED);
+    });
+  }
+  return prd.every((ds) => {
+    if (!exists(ds)) return false;
+    return (ds.status === DoiStatusType.TOMBSTONED);
+  });
 };
 
 const getAppliedReleaseObjectFromState = (state = DEFAULT_STATE) => {
@@ -310,9 +336,18 @@ const applyReleasesGlobally = (state, releases) => {
   return updatedState;
 };
 
-const applyDoiStatusReleaseGlobally = (state, doiStatus) => {
+const applyDoiStatusReleaseGlobally = (state, productCode, release, doiStatus) => {
+  if (!exists(doiStatus)) {
+    return state;
+  }
   const updatedState = { ...state };
-  const transformedRelease = ReleaseService.transformDoiStatusRelease(doiStatus);
+  const appliedDoiStatus = BundleService.determineAppliedBundleRelease(
+    ((updatedState.neonContextState?.data || {})).bundles,
+    release,
+    productCode,
+    doiStatus,
+  );
+  const transformedRelease = ReleaseService.transformDoiStatusRelease(appliedDoiStatus);
   if (!exists(transformedRelease)) {
     return updatedState;
   }
@@ -343,7 +378,10 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
     route: {
       productCode,
       release: currentRelease,
-      bundle: { doiProductCode, forwardAvailabilityFromParent },
+      bundle: {
+        forwardAvailabilityFromParent,
+        forwardAvailabilityProductCode,
+      },
     },
     data: {
       product: generalProduct,
@@ -356,17 +394,16 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   // Forward Availability - if requested by the forAvailability param look to the bundle parents
   if (forAvailability && forwardAvailabilityFromParent) {
     // Bundles can have more than one parent AND can forward availability. Presently no bundle does
-    // both, so here we can safely just take the first parent code as the one from which to forward
-    // availability. If we ever need to forward availability from more than one bundle parent this
+    // both, pull from specified availability parent code.
+    // If we ever need to forward availability from more than one bundle parent this
     // logic will need to be refactored.
-    const firstParentCode = doiProductCode;
-    if (!firstParentCode) { return null; }
-    if (!currentRelease) { return bundleParents[firstParentCode]; }
+    if (!forwardAvailabilityProductCode) { return null; }
+    if (!currentRelease) { return bundleParents[forwardAvailabilityProductCode]; }
     if (
-      !bundleParentReleases[firstParentCode]
-      || !bundleParentReleases[firstParentCode][currentRelease]
+      !bundleParentReleases[forwardAvailabilityProductCode]
+      || !bundleParentReleases[forwardAvailabilityProductCode][currentRelease]
     ) { return null; }
-    return bundleParentReleases[firstParentCode][currentRelease];
+    return bundleParentReleases[forwardAvailabilityProductCode][currentRelease];
   }
   // No availability forwarding - return either the general product or the release
   if (!currentRelease) { return generalProduct; }
@@ -423,6 +460,100 @@ const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) =>
   )).toISOString();
 };
 
+const getProductDoiInfo = (state = DEFAULT_STATE) => {
+  const {
+    route: { release: currentRelease, bundle },
+    data: { productReleaseDois },
+  } = state;
+  const product = getCurrentProductFromState(state);
+  const currentReleaseObject = getCurrentReleaseObjectFromState(state);
+  let appliedSingleDoiProductCode = null;
+  let appliedProductReleaseDoi = null;
+  const currentDoiUrls = [];
+  const hasDoiUrl = currentReleaseObject
+    && currentReleaseObject.productDoi
+    && currentReleaseObject.productDoi.url;
+  const hasBundle = exists(bundle)
+    && exists(bundle.doiProductCode)
+    && (isStringNonEmpty(bundle.doiProductCode) || Array.isArray(bundle.doiProductCode));
+  const isBundleArray = hasBundle && Array.isArray(bundle.doiProductCode);
+  const hasReleaseDoi = exists(productReleaseDois[currentRelease]);
+  const isReleaseDoiArray = hasReleaseDoi && Array.isArray(productReleaseDois[currentRelease]);
+  if (hasBundle) {
+    if (isBundleArray) {
+      if (isReleaseDoiArray) {
+        bundle.doiProductCode.forEach((bundleParentCode) => {
+          const bundleDpds = productReleaseDois[currentRelease].find((ds) => {
+            if (!exists(ds)) return false;
+            return ds.productCode.localeCompare(bundleParentCode) === 0;
+          });
+          if (exists(bundleDpds)) {
+            currentDoiUrls.push({
+              productCode: bundleParentCode,
+              doiUrl: bundleDpds.url,
+              releaseDoi: bundleDpds,
+              isTombstoned: bundleDpds.status === DoiStatusType.TOMBSTONED,
+            });
+          }
+        });
+      } else {
+        // eslint-disable-next-line prefer-destructuring
+        appliedSingleDoiProductCode = bundle.doiProductCode[0];
+        if (exists(productReleaseDois[currentRelease])) {
+          appliedProductReleaseDoi = productReleaseDois[currentRelease];
+        }
+      }
+    } else if (!hasReleaseDoi) {
+      appliedSingleDoiProductCode = bundle.doiProductCode;
+    } else if (isReleaseDoiArray) {
+      const bundleDpds = productReleaseDois[currentRelease].find((ds) => {
+        if (!exists(ds)) return false;
+        return ds.productCode.localeCompare(bundle.doiProductCode) === 0;
+      });
+      if (exists(bundleDpds)) {
+        currentDoiUrls.push({
+          productCode: bundle.doiProductCode,
+          doiUrl: bundleDpds.url,
+          releaseDoi: bundleDpds,
+          isTombstoned: bundleDpds.status === DoiStatusType.TOMBSTONED,
+        });
+      }
+    } else {
+      appliedSingleDoiProductCode = bundle.doiProductCode;
+      appliedProductReleaseDoi = productReleaseDois[currentRelease];
+    }
+  } else if (exists(product)) {
+    if (!hasReleaseDoi) {
+      appliedSingleDoiProductCode = product.productCode;
+    } else if (isReleaseDoiArray) {
+      const dpds = productReleaseDois[currentRelease].find((ds) => {
+        if (!exists(ds)) return false;
+        return ds.productCode.localeCompare(product.productCode) === 0;
+      });
+      if (exists(dpds)) {
+        currentDoiUrls.push({
+          productCode: product.productCode,
+          doiUrl: dpds.url,
+          releaseDoi: dpds,
+          isTombstoned: dpds.status === DoiStatusType.TOMBSTONED,
+        });
+      }
+    } else {
+      appliedSingleDoiProductCode = product.productCode;
+      appliedProductReleaseDoi = productReleaseDois[currentRelease];
+    }
+  }
+  if (hasDoiUrl && isStringNonEmpty(appliedSingleDoiProductCode)) {
+    currentDoiUrls.push({
+      productCode: appliedSingleDoiProductCode,
+      doiUrl: currentReleaseObject.productDoi.url,
+      releaseDoi: appliedProductReleaseDoi,
+      isTombstoned: (appliedProductReleaseDoi?.status === DoiStatusType.TOMBSTONED) || false,
+    });
+  }
+  return currentDoiUrls;
+};
+
 /**
  * Calculates the bundle state for DataProductContext based on the bundle context
  * state stored in NeonContext.
@@ -435,6 +566,7 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
   let bundleParentCode = null;
   let bundleParentCodes = [];
   let bundleForwardAvailabilityFromParent = null;
+  let forwardAvailabilityProductCode = null;
   const bundleRelease = BundleService.determineBundleRelease(release);
   const isBundleChild = BundleService.isProductInBundle(
     bundlesCtx,
@@ -447,14 +579,26 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
       bundleRelease,
       productCode,
     );
-    bundleForwardAvailabilityFromParent = BundleService.shouldForwardAvailability(
-      bundlesCtx,
-      bundleRelease,
-      productCode,
-      bundleParentCode,
-    );
-    const hasManyParents = isBundleChild
-      && BundleService.isSplitProduct(bundlesCtx, bundleRelease, productCode);
+    if (!Array.isArray(bundleParentCode)) {
+      bundleForwardAvailabilityFromParent = BundleService.shouldForwardAvailability(
+        bundlesCtx,
+        bundleRelease,
+        productCode,
+        bundleParentCode,
+      );
+      forwardAvailabilityProductCode = bundleParentCode;
+    } else {
+      forwardAvailabilityProductCode = bundleParentCode.find((checkBundleParentCode) => (
+        BundleService.shouldForwardAvailability(
+          bundlesCtx,
+          bundleRelease,
+          productCode,
+          checkBundleParentCode,
+        )
+      ));
+      bundleForwardAvailabilityFromParent = isStringNonEmpty(forwardAvailabilityProductCode);
+    }
+    const hasManyParents = BundleService.isSplitProduct(bundlesCtx, bundleRelease, productCode);
     if (hasManyParents) {
       bundleParentCodes = BundleService.getSplitProductBundles(
         bundlesCtx,
@@ -476,6 +620,7 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
     parentCodes: bundleParentCodes,
     doiProductCode: bundleParentCode,
     forwardAvailabilityFromParent: bundleForwardAvailabilityFromParent,
+    forwardAvailabilityProductCode,
   };
 };
 
@@ -612,8 +757,28 @@ const reducer = (state, action) => {
       return calculateAppStatus(newState);
     case 'fetchProductReleaseDoiSucceeded':
       newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.SUCCESS;
-      newState.data.productReleaseDois[action.release] = action.data;
-      return calculateAppStatus(applyDoiStatusReleaseGlobally(newState, action.data));
+      if (!exists(action.data)) {
+        newState.data.productReleaseDois[action.release] = null;
+      } else if (Array.isArray(action.data)) {
+        if (existsNonEmpty(action.data)) {
+          newState.data.productReleaseDois[action.release] = action.data
+            .filter((dpds) => exists(dpds) && exists(dpds.status));
+        } else {
+          newState.data.productReleaseDois[action.release] = null;
+        }
+      } else if (exists(action.data.status)) {
+        newState.data.productReleaseDois[action.release] = action.data;
+      } else {
+        newState.data.productReleaseDois[action.release] = null;
+      }
+      return calculateAppStatus(
+        applyDoiStatusReleaseGlobally(
+          newState,
+          action.productCode,
+          action.release,
+          action.data,
+        ),
+      );
 
     case 'fetchBundleParentStarted':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.FETCHING;
@@ -656,6 +821,33 @@ const reducer = (state, action) => {
       newState.data.bundleParentReleases[action.bundleParent][action.release] = action.data;
       return calculateAppStatus(newState);
 
+    case 'fetchProductReleaseTombstoneAvailabilityStarted':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.FETCHING;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseTombstoneAvailabilityFailed':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.ERROR;
+      newState.fetches.tombstoneAvailability[action.release].error = action.error;
+      newState.data.tombstoneAvailability = null;
+      return calculateAppStatus(newState);
+    case 'fetchProductReleaseTombstoneAvailabilitySucceeded':
+      newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.SUCCESS;
+      if (action.data) {
+        if (!newState.data.tombstoneAvailability) {
+          newState.data.tombstoneAvailability = {};
+        }
+        if (!newState.data.tombstoneAvailability[action.release]) {
+          newState.data.tombstoneAvailability[action.release] = {};
+        }
+        newState.data.tombstoneAvailability[action.release] = action.data;
+      }
+      return calculateAppStatus(newState);
+
     case 'fetchAOPVizProductsStarted':
       newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
@@ -671,11 +863,15 @@ const reducer = (state, action) => {
     case 'setNextRelease':
       newState.route.nextRelease = action.release;
       if (action.hash) { newState.route.nextHash = action.hash.replace(/#/g, ''); }
+      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
+      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
       return calculateAppStatus(newState);
     case 'applyNextRelease':
       newState.route.release = newState.route.nextRelease;
       newState.route.nextRelease = undefined;
       newState.route.nextHash = undefined;
+      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
+      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
       return calculateContextState(
         newState,
         newState.neonContextState,
@@ -707,10 +903,15 @@ const Provider = (props) => {
       nextHash,
     },
     fetches,
+    data: {
+      productReleaseDois,
+    },
     neonContextState: {
       isFinal: neonContextIsFinal,
     },
   } = state;
+
+  const isTombstoned = determineTombstoned(productReleaseDois, currentRelease);
 
   /**
      Effects
@@ -754,7 +955,7 @@ const Provider = (props) => {
         : `${baseRoute}/${productCode}/${nextRelease}`;
       if (nextHash) { nextLocation = `${nextLocation}#${nextHash}`; }
       navigate(nextLocation);
-      NeonJsonLd.injectProduct(productCode, nextRelease);
+      NeonJsonLd.injectProduct(productCode, nextRelease, true);
       dispatch({ type: 'applyNextRelease' });
       return;
     }
@@ -808,7 +1009,12 @@ const Provider = (props) => {
         dispatch({ type: 'fetchProductReleaseDoiStarted', release });
         NeonApi.getProductDoisObservable(productCode, release).subscribe(
           (response) => {
-            dispatch({ type: 'fetchProductReleaseDoiSucceeded', release, data: response.data });
+            dispatch({
+              type: 'fetchProductReleaseDoiSucceeded',
+              productCode,
+              release,
+              data: response.data,
+            });
           },
           (error) => {
             dispatch({ type: 'fetchProductReleaseDoiFailed', release, error });
@@ -884,6 +1090,58 @@ const Provider = (props) => {
     }
   }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
 
+  useEffect(() => {
+    if (!isTombstoned) return;
+    if (exists(fetches.tombstoneAvailability[currentRelease])
+      && (fetches.tombstoneAvailability[currentRelease].status !== null)
+    ) {
+      return;
+    }
+    dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
+      (response) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
+          release: currentRelease,
+          data: response.data,
+        });
+      },
+      (error) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilityFailed',
+          release: currentRelease,
+          error,
+        });
+      },
+    );
+  }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
+
+  useEffect(() => {
+    if (!isTombstoned) return;
+    if (exists(fetches.tombstoneAvailability[currentRelease])
+      && (fetches.tombstoneAvailability[currentRelease].status !== null)
+    ) {
+      return;
+    }
+    dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
+      (response) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
+          release: currentRelease,
+          data: response.data,
+        });
+      },
+      (error) => {
+        dispatch({
+          type: 'fetchProductReleaseTombstoneAvailabilityFailed',
+          release: currentRelease,
+          error,
+        });
+      },
+    );
+  }, [isTombstoned, fetches, productCode, currentRelease]);
+
   /**
      Render
   */
@@ -922,6 +1180,8 @@ const DataProductContext = {
   getCurrentReleaseObjectFromState,
   getLatestReleaseObjectFromState,
   getAppliedReleaseObjectFromState,
+  determineTombstoned,
+  getProductDoiInfo,
 };
 
 export default DataProductContext;

@@ -189,7 +189,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
     crossDomain: true,
     withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
-    url: `${NeonEnvironment.getFullApiPath('products')}/bundles`,
+    url: NeonEnvironment.getFullApiPath('productBundles'),
   },
   workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
   successAction: (
@@ -287,6 +287,85 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   },
 });
 
+const fetchFocalProductReleaseDoiEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+  ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+  takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+  request: {
+    method: 'GET',
+    url: '',
+    crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
+    responseType: 'json',
+  },
+  workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
+  successAction: (
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
+  ): Observable<unknown> => {
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
+    if (exists(resolved) && exists(resolved.data)) {
+      return of(AppFlow.fetchFocalProductReleaseDoi.asyncCompletedAction(resolved));
+    }
+    return of(AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction(
+      null,
+      'Fetching product release doi error',
+    ));
+  },
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
+    handleError(error, AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction)
+  ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
+    const asyncAction: AsyncParamAction = (action as AsyncParamAction);
+    const params: UnknownRecord = (asyncAction.param as UnknownRecord);
+    const productCode: string = params.productCode as string;
+    const release: string = params.release as string;
+    return {
+      ...request,
+      url: `${NeonEnvironment.getFullApiPath('products')}/${productCode}/dois/${release}`,
+    };
+  },
+});
+
+const fetchFocalProductReleaseTombAvaEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+  ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+  takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+  request: {
+    method: 'GET',
+    url: '',
+    crossDomain: true,
+    withCredentials: NeonEnvironment.requireCors(),
+    responseType: 'json',
+  },
+  workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
+  successAction: (
+    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
+  ): Observable<unknown> => {
+    const resolved: UnknownRecord = resolveAny(response as never, 'response');
+    if (exists(resolved) && exists(resolved.data)) {
+      return of(AppFlow.fetchFocalProductReleaseTombAva.asyncCompletedAction(resolved));
+    }
+    return of(AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction(
+      null,
+      'Fetching product release tombstone availability error',
+    ));
+  },
+  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
+    handleError(error, AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction)
+  ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
+    const asyncAction: AsyncParamAction = (action as AsyncParamAction);
+    const params: UnknownRecord = (asyncAction.param as UnknownRecord);
+    const productCode: string = params.productCode as string;
+    const release: string = params.release as string;
+    const path = `/${productCode}/${release}/tombstone-data-availability`;
+    return {
+      ...request,
+      url: `${NeonEnvironment.getFullApiPath('products')}${path}`,
+    };
+  },
+});
+
 export {
   fetchProductsEpic,
   fetchReleasesEpic,
@@ -294,4 +373,6 @@ export {
   fetchBundlesEpic,
   fetchFocalProductEpic,
   fetchFocalSiteEpic,
+  fetchFocalProductReleaseDoiEpic,
+  fetchFocalProductReleaseTombAvaEpic,
 };

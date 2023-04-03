@@ -4,12 +4,12 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import DialogBase from 'portal-core-components/lib/components/DialogBase';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
 import {
   VISUALIZATIONS,
-  LATEST_AND_PROVISIONAL,
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 

@@ -5,9 +5,11 @@ import {
 } from 'reselect';
 import isEqual from 'lodash/isEqual';
 
+import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { Nullable } from 'portal-core-components/lib/types/core';
+import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
 
 import {
   BaseStoreAppState,
@@ -17,6 +19,8 @@ import {
   Site,
   DataProductParent,
   DataProductBundle,
+  DataProductReleaseTombAva,
+  DataProductReleaseDoi,
 } from '../types/store';
 import {
   AppComponentState,
@@ -27,8 +31,16 @@ import {
   SiteAvailabilitySectionState,
   SiteSelectOption,
   SiteSelectState,
+  TombstoneNoticeState,
 } from '../components/states/AppStates';
 import { determineBundle, findForwardChildren } from '../util/bundleUtil';
+
+const ALLOW_ALL_PRODUCT_SELECT = true;
+
+interface FocalProductInfo {
+  appliedProduct: Nullable<DataProduct>;
+  appliedBundleAvaProduct: Nullable<DataProduct>;
+}
 
 const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
@@ -43,9 +55,10 @@ const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] =>
   determineBundle(state.bundles, state.selectedRelease?.release)
 );
 
-const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
+const findFocalProductWithAva = (state: BaseStoreAppState): FocalProductInfo => {
   const { selectedProduct }: BaseStoreAppState = state;
   let appliedProduct: Nullable<DataProduct> = null;
+  let appliedBundleAvaProduct: Nullable<DataProduct> = null;
   const appliedProducts: Nullable<DataProduct[]> = state.focalProduct;
   if (existsNonEmpty(appliedProducts)) {
     if (!selectedProduct) {
@@ -84,15 +97,101 @@ const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
           ...appliedProduct,
           siteCodes: appliedAvail.siteCodes,
         };
+        appliedBundleAvaProduct = appliedAvail;
       }
     }
   }
-  return appliedProduct;
+  return { appliedProduct, appliedBundleAvaProduct };
+};
+
+const findFocalProduct = (state: BaseStoreAppState): Nullable<DataProduct> => {
+  const focalProductInfo: FocalProductInfo = findFocalProductWithAva(state);
+  return focalProductInfo.appliedProduct;
+};
+const findFocalProductBundle = (state: BaseStoreAppState): Nullable<DataProduct> => {
+  const focalProductInfo: FocalProductInfo = findFocalProductWithAva(state);
+  return focalProductInfo.appliedBundleAvaProduct;
 };
 const bundleProductSelector = createSelector(
   [appState],
   (state: BaseStoreAppState): Nullable<DataProduct> => findFocalProduct(state),
 );
+const bundleProductFullSelector = createSelector(
+  [appState],
+  (state: BaseStoreAppState): Nullable<DataProduct> => findFocalProductBundle(state),
+);
+
+const findAppliedRelease = (state: BaseStoreAppState): Nullable<Release> => {
+  const { releases, selectedRelease }: BaseStoreAppState = state;
+  let appliedRelease: Nullable<Release> = null;
+  if (exists(selectedRelease)) {
+    appliedRelease = selectedRelease;
+    return appliedRelease;
+  }
+  if (existsNonEmpty(releases)) {
+    const sortedReleases: Release[] = ReleaseService.sortReleases(releases);
+    appliedRelease = sortedReleases[0];
+  }
+  return appliedRelease;
+};
+const appliedReleaseSelector = createSelector(
+  [appState],
+  (state: BaseStoreAppState): Nullable<Release> => findAppliedRelease(state),
+);
+
+const determineTombstoned = (state: BaseStoreAppState): boolean => {
+  if (!exists(state.focalProductReleaseDoi)) {
+    return false;
+  }
+  if (!Array.isArray(state.focalProductReleaseDoi)) {
+    return state.focalProductReleaseDoi?.status === DoiStatusType.TOMBSTONED;
+  }
+  return state.focalProductReleaseDoi.every((d: DataProductReleaseDoi): boolean => (
+    d.status === DoiStatusType.TOMBSTONED
+  ));
+};
+
+const shouldFetchDoi = (state: BaseStoreAppState): boolean => {
+  const {
+    focalProductFetchState,
+    focalProductReleaseDoiFetchState,
+  }: BaseStoreAppState = state;
+  if (focalProductFetchState.asyncState !== AsyncStateType.FULLFILLED) {
+    return false;
+  }
+  if (focalProductReleaseDoiFetchState.asyncState !== AsyncStateType.IDLE) {
+    return false;
+  }
+  const focalProduct: Nullable<DataProduct> = findFocalProduct(state);
+  const appliedRelease = findAppliedRelease(state);
+  if (!exists(focalProduct) || !exists(appliedRelease)) {
+    return false;
+  }
+  const checkSiteCodes: Record<string, unknown>[] = !exists(focalProduct)
+    ? new Array<Record<string, unknown>>()
+    : (focalProduct as DataProduct).siteCodes;
+  return !existsNonEmpty(checkSiteCodes);
+};
+const shouldFetchTombAva = (state: BaseStoreAppState): boolean => {
+  const {
+    focalProductFetchState,
+    focalProductReleaseDoiFetchState,
+    focalProductReleaseTombAvaFetchState,
+  }: BaseStoreAppState = state;
+  if (focalProductFetchState.asyncState !== AsyncStateType.FULLFILLED) {
+    return false;
+  }
+  if (focalProductReleaseDoiFetchState.asyncState !== AsyncStateType.FULLFILLED) {
+    return false;
+  }
+  if (!determineTombstoned(state)) {
+    return false;
+  }
+  if (focalProductReleaseTombAvaFetchState.asyncState !== AsyncStateType.IDLE) {
+    return false;
+  }
+  return true;
+};
 
 const transformSiteForBundles = (
   focalSite: Nullable<Site>,
@@ -117,7 +216,7 @@ const transformSiteForBundles = (
         ));
       if (childProduct) {
         const appliedTitle = `${childProduct.productName}. `
-          + `Showing availability for parent bundle product: ${parentAvail.dataProductCode as string}`;
+          + `Showing availability for bundle data product: ${parentAvail.dataProductCode as string}`;
         bundledProducts.push({
           ...parentAvail,
           dataProductCode: childCode,
@@ -173,20 +272,22 @@ const AppStateSelector = {
     }),
   ),
   dataProductSelect: createDeepEqualSelector(
-    [appStateSelector],
-    (state: BaseStoreAppState): DataProductSelectState => ({
+    [appStateSelector, bundleProductFullSelector],
+    (
+      state: BaseStoreAppState,
+      bundledProduct: Nullable<DataProduct>,
+    ): DataProductSelectState => ({
       bundlesFetchState: state.bundlesFetchState.asyncState,
       bundles: state.bundles,
       productsFetchState: state.productsFetchState.asyncState,
       products: !existsNonEmpty(state.products)
         ? new Array<DataProductSelectOption>()
         : state.products
-          .sort(productSorter)
           .map((value: DataProduct): DataProductSelectOption => {
             if (!exists(state.selectedRelease)) {
               return {
                 ...value,
-                hasData: existsNonEmpty(value.siteCodes),
+                hasData: ALLOW_ALL_PRODUCT_SELECT ? true : existsNonEmpty(value.siteCodes),
               };
             }
             const release: Release = state.selectedRelease as Release;
@@ -201,11 +302,13 @@ const AppStateSelector = {
             }
             return {
               ...value,
-              hasData,
+              hasData: ALLOW_ALL_PRODUCT_SELECT ? true : hasData,
             };
-          }),
+          })
+          .sort(productSorter),
       selectedProduct: state.selectedProduct,
       selectedRelease: state.selectedRelease,
+      focalBundleProduct: bundledProduct,
     }),
   ),
   siteSelect: createDeepEqualSelector(
@@ -215,7 +318,6 @@ const AppStateSelector = {
       sites: !existsNonEmpty(state.sites)
         ? new Array<SiteSelectOption>()
         : state.sites
-          .sort(siteSorter)
           .map((value: Site): SiteSelectOption => {
             if (!exists(state.selectedRelease)) {
               return {
@@ -227,19 +329,28 @@ const AppStateSelector = {
               ...value,
               hasData: true,
             };
-          }),
+          })
+          .sort(siteSorter),
       selectedSite: state.selectedSite,
       selectedRelease: state.selectedRelease,
     }),
   ),
   availability: createDeepEqualSelector(
-    [appStateSelector, bundleProductSelector],
+    [appStateSelector, bundleProductSelector, appliedReleaseSelector],
     (
       state: BaseStoreAppState,
       bundledProduct: Nullable<DataProduct>,
+      appliedRelease: Nullable<Release>,
     ): AvailabilitySectionState => ({
       focalProductFetchState: state.focalProductFetchState.asyncState,
       focalProduct: bundledProduct,
+      appliedRelease: appliedRelease,
+      fetchProductReleaseDoi: shouldFetchDoi(state),
+      focalProductReleaseDoiFetchState: state.focalProductReleaseDoiFetchState.asyncState,
+      isTombstoned: determineTombstoned(state),
+      fetchProductReleaseTombAva: shouldFetchTombAva(state),
+      focalProductReleaseTombAvaFetchState: state.focalProductReleaseTombAvaFetchState.asyncState,
+      focalProductReleaseTombAva: state.focalProductReleaseTombAva,
     }),
   ),
   locations: createDeepEqualSelector(
@@ -267,13 +378,33 @@ const AppStateSelector = {
             .map((value: Record<string, unknown>): string => (
               value.siteCode as string
             ));
+          if (!existsNonEmpty(siteCodes)) {
+            const isTombstoned: boolean = determineTombstoned(state);
+            if (isTombstoned && exists(state.focalProductReleaseTombAva)) {
+              const tombAva = state.focalProductReleaseTombAva as DataProductReleaseTombAva;
+              if (existsNonEmpty(tombAva.siteCodes)) {
+                siteCodes = tombAva.siteCodes
+                  .map((value: Record<string, unknown>): string => (
+                    value.siteCode as string
+                  ));
+              }
+            }
+          }
           break;
       }
+      const isFocalProductReleaseWorking = (
+        ((state.focalProductReleaseDoiFetchState.asyncState === AsyncStateType.WORKING)
+          || shouldFetchDoi(state))
+        || ((state.focalProductReleaseTombAvaFetchState.asyncState === AsyncStateType.WORKING)
+          || shouldFetchTombAva(state))
+      );
       return {
         sitesFetchState: state.sitesFetchState.asyncState,
         sites: state.sites,
         viewModeSwitching: state.viewModeSwitching,
         selectedViewMode: state.selectedViewMode,
+        isTombstoned: determineTombstoned(state),
+        isFocalProductReleaseWorking,
         fetchState,
         siteCodes,
       };
@@ -288,6 +419,13 @@ const AppStateSelector = {
         state.products,
         determineBundleHelper(state),
       ),
+    }),
+  ),
+  tombstoneNotice: createSelector(
+    [appStateSelector],
+    (state: BaseStoreAppState): TombstoneNoticeState => ({
+      isTombstoned: determineTombstoned(state),
+      focalProductReleaseDoi: state.focalProductReleaseDoi,
     }),
   ),
 };

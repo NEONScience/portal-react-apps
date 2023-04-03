@@ -14,26 +14,28 @@ import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
-import BundleIcon from '@material-ui/icons/Archive';
 import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
 import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
 import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
 import AopDataViewerIcon from '@material-ui/icons/SatelliteOutlined';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
+import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
 import {
   FILTER_KEYS,
   VISUALIZATIONS,
-  LATEST_AND_PROVISIONAL,
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
@@ -86,20 +88,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     justifyContent: 'flex-start',
     alignItems: 'center',
-  },
-  card: {
-    marginBottom: theme.spacing(2),
-    backgroundColor: theme.colors.GOLD[50],
-    borderColor: theme.colors.GOLD[300],
-  },
-  cardContent: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '16px !important',
-  },
-  cardIcon: {
-    color: theme.colors.GOLD[700],
-    marginRight: theme.spacing(2),
   },
   detailSubtitle: {
     marginBottom: theme.spacing(1),
@@ -239,62 +227,48 @@ const DataProduct = React.memo((props) => {
     </Typography>
   );
 
-  const getParentProductLink = (parentProductData = {}) => (
-    <Link
-      href={RouteService.getProductDetailPath(parentProductData.productCode)}
-      target="_blank"
-    >
-      {`${parentProductData.productName} (${parentProductData.productCode})`}
-    </Link>
-  );
-
-  let bundleParentLink = null;
-  if (isBundleChild) {
-    bundleParentLink = !Array.isArray(bundleParentProductData)
-      ? (
-        <Typography variant="subtitle2">
-          This data product is bundled into {getParentProductLink(bundleParentProductData)}
-        </Typography>
-      ) : (
-        <>
-          <Typography variant="subtitle2">
-            This data product has been split and bundled into more than one parent data product:
-          </Typography>
-          <ul style={{ margin: Theme.spacing(1, 0) }}>
-            {bundleParentProductData.map((bundleParentProduct) => (
-              <li key={bundleParentProduct.productCode}>
-                {getParentProductLink(bundleParentProduct)}
-              </li>
-            ))}
-          </ul>
-        </>
+  const renderBundleInfo = () => {
+    if (!isBundleChild || !bundleParentProductData) {
+      return null;
+    }
+    const bundleShowManyParents = Array.isArray(bundleParentProductData);
+    let titleContent;
+    let detailContent;
+    const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(
+      bundle.forwardAvailability,
+      bundleShowManyParents,
+    );
+    if (!bundleShowManyParents) {
+      const dataProductLike = {
+        productCode: bundleParentProductData.productCode,
+        productName: bundleParentProductData.productName,
+      };
+      titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike, currentRelease);
+    } else {
+      const isRelease = isStringNonEmpty(currentRelease)
+        && (currentRelease !== LATEST_AND_PROVISIONAL);
+      titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(isRelease, ':');
+      const dataProductLikes = bundleParentProductData.map((bundleParentProduct) => ({
+        productCode: bundleParentProduct.productCode,
+        productName: bundleParentProduct.productName,
+      }));
+      detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        dataProductLikes,
+        currentRelease,
       );
-  }
-
-  const bundleInfo = isBundleChild ? (
-    <Card className={classes.card}>
-      <CardContent className={classes.cardContent}>
-        <BundleIcon fontSize="large" className={classes.cardIcon} />
-        <div style={{ flexGrow: 1 }}>
-          {bundleParentLink}
-          <Typography variant="body2">
-            {bundle.forwardAvailability ? (
-              <>
-                It is not available as a standalone download. Data availability shown
-                below reflects availability of the entire bundle.
-              </>
-            ) : (
-              <>
-                It is not available as a standalone download.
-                Data availability information and product download is only available through
-                the parent {Array.isArray(bundleParentProductData) ? 'products' : 'product'}.
-              </>
-            )}
-          </Typography>
-        </div>
-      </CardContent>
-    </Card>
-  ) : null;
+    }
+    return (
+      <div style={{ marginBottom: Theme.spacing(2) }}>
+        <DataProductBundleCard
+          showIcon
+          isSplit={bundleShowManyParents}
+          titleContent={titleContent}
+          detailContent={detailContent}
+          subTitleContent={subTitleContent}
+        />
+      </div>
+    );
+  };
 
   const downloadDataButton = hasData ? (
     <DownloadDataContext.Provider
@@ -387,7 +361,7 @@ const DataProduct = React.memo((props) => {
           </Grid>
         </Grid>
 
-        {bundleInfo}
+        {renderBundleInfo()}
 
         <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
           {!timeRange ? null : (

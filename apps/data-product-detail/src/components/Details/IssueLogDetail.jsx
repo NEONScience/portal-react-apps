@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 
@@ -23,8 +25,10 @@ import SearchIcon from '@material-ui/icons/Search';
 
 import MaterialTable, { MTableToolbar } from 'material-table';
 
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
+import Theme from 'portal-core-components/lib/components/Theme/Theme';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
@@ -94,6 +98,28 @@ const getDateSortWithNulls = (field, alternateField = null) => (
     return a[field] < b[field] ? -1 : 1;
   }
 );
+
+const IssueLogDetailTextComponent = (props) => {
+  const { content } = props;
+  return (
+    <Typography variant="body2" component="div">
+      {content}
+    </Typography>
+  );
+};
+IssueLogDetailTextComponent.propTypes = {
+  content: PropTypes.string,
+};
+IssueLogDetailTextComponent.defaultProps = {
+  content: null,
+};
+
+const MarkdownFallbackComponent = (props) => ((
+  <CustomComponentFallback
+    // eslint-disable-next-line react/no-unstable-nested-components
+    FallbackComponent={() => ((<IssueLogDetailTextComponent {...props} />))}
+  />
+));
 
 const IssueLogDetail = () => {
   const classes = useStyles(Theme);
@@ -326,18 +352,38 @@ const IssueLogDetail = () => {
                   <Typography variant="subtitle2">Issue Details</Typography>
                 </Grid>
                 <Grid item xs={12} sm={9} md={10}>
-                  <Typography variant="body2" component="div">
-                    <Markdown>{issue}</Markdown>
-                  </Typography>
+                  <ComponentErrorBoundary
+                    // eslint-disable-next-line react/no-unstable-nested-components
+                    fallbackComponent={() => ((
+                      <MarkdownFallbackComponent content={issue} />
+                    ))}
+                    onReset={() => { /* noop for boundary reset */ }}
+                  >
+                    <Typography variant="body2" component="div">
+                      <Markdown remarkPlugins={[remarkGfm]}>
+                        {issue}
+                      </Markdown>
+                    </Typography>
+                  </ComponentErrorBoundary>
                 </Grid>
                 <Grid item xs={12} sm={3} md={2}>
                   <Typography variant="subtitle2">Resolution</Typography>
                 </Grid>
                 <Grid item xs={12} sm={9} md={10}>
                   {resolution ? (
-                    <Typography variant="body2" component="div">
-                      <Markdown>{resolution}</Markdown>
-                    </Typography>
+                    <ComponentErrorBoundary
+                      // eslint-disable-next-line react/no-unstable-nested-components
+                      fallbackComponent={() => ((
+                        <MarkdownFallbackComponent content={resolution} />
+                      ))}
+                      onReset={() => { /* noop for boundary reset */ }}
+                    >
+                      <Typography variant="body2" component="div">
+                        <Markdown remarkPlugins={[remarkGfm]}>
+                          {resolution}
+                        </Markdown>
+                      </Typography>
+                    </ComponentErrorBoundary>
                   ) : (
                     <Typography variant="body2" className={classes.unresolved}>Unresolved</Typography>
                   )}

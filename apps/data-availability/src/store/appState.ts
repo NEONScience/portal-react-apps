@@ -46,6 +46,19 @@ const appState: BaseStoreAppState = {
   },
   focalSite: null,
 
+  focalProductReleaseDoiFetchState: {
+    asyncState: AsyncStateType.IDLE,
+    data: null,
+    error: null,
+  },
+  focalProductReleaseDoi: null,
+  focalProductReleaseTombAvaFetchState: {
+    asyncState: AsyncStateType.IDLE,
+    data: null,
+    error: null,
+  },
+  focalProductReleaseTombAva: null,
+
   selectedRelease: null,
   selectedProduct: null,
   selectedSite: null,

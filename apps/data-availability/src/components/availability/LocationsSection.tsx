@@ -13,9 +13,11 @@ import {
 
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { AnyObject, UnknownRecord } from 'portal-core-components/lib/types/core';
+import { AnyObject, Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
 
+import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
 import { LocationsSectionState } from '../states/AppStates';
 import { useStyles } from '../../styles/overlay';
@@ -51,6 +53,8 @@ const LocationsSection: React.FC = (): JSX.Element => {
     sites,
     viewModeSwitching,
     selectedViewMode,
+    isTombstoned,
+    isFocalProductReleaseWorking,
   }: LocationsSectionState = state;
 
   const isLoading = (fetchState === AsyncStateType.IDLE)
@@ -77,6 +81,11 @@ const LocationsSection: React.FC = (): JSX.Element => {
     }
     if (viewModeSwitching) {
       return skeleton;
+    }
+    if (exists(selectedViewMode) && (selectedViewMode.value === 'DataProduct')) {
+      if (isFocalProductReleaseWorking) {
+        return skeleton;
+      }
     }
     if ((siteCodes.length <= 0) && isComplete) {
       return (
@@ -127,6 +136,18 @@ const LocationsSection: React.FC = (): JSX.Element => {
       default:
         break;
     }
+
+    const renderTombstoneRow = (): Nullable<JSX.Element> => {
+      if (!isTombstoned) {
+        return null;
+      }
+      return (
+        <Grid item xs={12}>
+          <TombstoneNotice />
+        </Grid>
+      );
+    };
+
     return (
       <Grid container className={componentClasses.infoContainer}>
         <Grid item xs={12} className={componentClasses.infoTextContainer}>
@@ -134,6 +155,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
             {text}
           </Typography>
         </Grid>
+        {renderTombstoneRow()}
       </Grid>
     );
   };

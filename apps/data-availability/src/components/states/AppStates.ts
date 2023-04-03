@@ -7,6 +7,8 @@ import {
   Site,
   SelectOption,
   DataProductBundle,
+  DataProductReleaseTombAva,
+  DataProductReleaseDoi,
 } from '../../types/store';
 
 export interface AppComponentState {
@@ -39,6 +41,7 @@ export interface DataProductSelectState {
   products: DataProductSelectOption[];
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
+  focalBundleProduct: Nullable<DataProduct>;
 }
 export interface SiteSelectState {
   sitesFetchState: AsyncStateType;
@@ -50,6 +53,13 @@ export interface SiteSelectState {
 export interface AvailabilitySectionState {
   focalProductFetchState: AsyncStateType;
   focalProduct: Nullable<DataProduct>;
+  appliedRelease: Nullable<Release>;
+  fetchProductReleaseDoi: boolean;
+  focalProductReleaseDoiFetchState: AsyncStateType;
+  isTombstoned: Nullable<boolean>;
+  fetchProductReleaseTombAva: boolean;
+  focalProductReleaseTombAvaFetchState: AsyncStateType;
+  focalProductReleaseTombAva: Nullable<DataProductReleaseTombAva>;
 }
 
 export interface LocationsSectionState {
@@ -59,9 +69,16 @@ export interface LocationsSectionState {
   sites: Site[];
   viewModeSwitching: boolean;
   selectedViewMode: SelectOption;
+  isTombstoned: Nullable<boolean>;
+  isFocalProductReleaseWorking: Nullable<boolean>;
 }
 
 export interface SiteAvailabilitySectionState {
   focalSiteFetchState: AsyncStateType;
   focalSite: Nullable<Site>;
+}
+
+export interface TombstoneNoticeState {
+  isTombstoned: Nullable<boolean>;
+  focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
 }

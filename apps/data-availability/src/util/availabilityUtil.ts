@@ -5,7 +5,7 @@ export interface AvailableDateRange {
   end: string;
 }
 
-const computeDateRange = (data: Record<string, unknown>[]): AvailableDateRange => {
+export const computeDateRange = (data: Record<string, unknown>[]): AvailableDateRange => {
   const result: Array<string|null> = (data || [])
     .reduce((acc: Array<string|null>, datum: Record<string, unknown>): Array<string|null> => {
       const months = datum.availableMonths as string[];

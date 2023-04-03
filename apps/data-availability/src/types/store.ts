@@ -25,6 +25,11 @@ export interface BaseStoreAppState {
   focalSiteFetchState: AsyncState<Nullable<Site>>;
   focalSite: Nullable<Site>;
 
+  focalProductReleaseDoiFetchState: AsyncState<Nullable<DataProductReleaseDoi>>;
+  focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
+  focalProductReleaseTombAvaFetchState: AsyncState<Nullable<DataProductReleaseTombAva>>;
+  focalProductReleaseTombAva: Nullable<DataProductReleaseTombAva>;
+
   selectedRelease: Nullable<Release>;
   selectedProduct: Nullable<DataProduct>;
   selectedSite: Nullable<Site>;
@@ -66,4 +71,20 @@ export interface Site {
   domainCode: string;
   stateCode: string;
   dataProducts: Record<string, unknown>[];
+}
+
+export interface DataProductReleaseDoi {
+  productCode: string;
+  release: string;
+  releaseGenerationDate: string;
+  generationDate: string;
+  url: string;
+  status: string;
+}
+
+export interface DataProductReleaseTombAva {
+  productCode: string;
+  productName: string;
+  release: string;
+  siteCodes: Record<string, unknown>[];
 }

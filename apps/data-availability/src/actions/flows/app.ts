@@ -18,6 +18,8 @@ import {
   DataProductBundle,
   Release,
   Site,
+  DataProductReleaseDoi,
+  DataProductReleaseTombAva,
 } from '../../types/store';
 
 interface AppAsyncFlowTypes {
@@ -27,6 +29,8 @@ interface AppAsyncFlowTypes {
   fetchProductBundles: AsyncFlowHandler<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>;
   fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>;
   fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
+  fetchFocalProductReleaseDoi: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseDoi>>, AsyncActionType, Nullable<DataProductReleaseDoi>>;
+  fetchFocalProductReleaseTombAva: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseTombAva>>, AsyncActionType, Nullable<DataProductReleaseTombAva>>;
 }
 
 const AppFlowActionTypes: FlowActionTypes = {
@@ -72,6 +76,20 @@ const AppFlowActionTypes: FlowActionTypes = {
     error: AppActions.FETCH_FOCAL_SITE_ERROR,
     reset: AppActions.RESET_FETCH_FOCAL_SITE,
   },
+  fetchFocalProductReleaseDoi: {
+    fetch: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+    working: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI_WORKING,
+    completed: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI_COMPLETED,
+    error: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI_ERROR,
+    reset: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+  },
+  fetchFocalProductReleaseTombAva: {
+    fetch: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+    working: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_WORKING,
+    completed: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_COMPLETED,
+    error: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA_ERROR,
+    reset: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+  },
 };
 
 const AppFlow: AppAsyncFlowTypes = {
@@ -98,6 +116,14 @@ const AppFlow: AppAsyncFlowTypes = {
   fetchFocalSite: AsyncFlow.create<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>(
     AppFlowActionTypes.fetchFocalSite,
     SiteParser.parseSiteResponse,
+  ),
+  fetchFocalProductReleaseDoi: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseDoi>>, AsyncActionType, Nullable<DataProductReleaseDoi>>(
+    AppFlowActionTypes.fetchFocalProductReleaseDoi,
+    ProductParser.parseProductReleaseDoi,
+  ),
+  fetchFocalProductReleaseTombAva: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseTombAva>>, AsyncActionType, Nullable<DataProductReleaseTombAva>>(
+    AppFlowActionTypes.fetchFocalProductReleaseTombAva,
+    ProductParser.parseProductReleaseTombAva,
   ),
 };
 

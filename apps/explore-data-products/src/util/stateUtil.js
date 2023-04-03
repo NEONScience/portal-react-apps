@@ -2,6 +2,7 @@ import isEqual from 'lodash/isEqual';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
   /* constants */
@@ -10,7 +11,6 @@ import {
   FILTER_KEYS,
   INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_VALUES,
-  LATEST_AND_PROVISIONAL,
   SORT_METHODS,
   SORT_DIRECTIONS,
   VISUALIZATIONS,
@@ -129,7 +129,10 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
     if (productKeys && Array.isArray(productKeys)) {
       productKeys.forEach((productKey) => {
         const product = productRelease[productKey];
-        if (newState.aopVizProducts.includes(product.productCode)) {
+        if (newState.aopVizProducts.includes(product.productCode)
+          && Array.isArray(product.siteCodes)
+          && (product.siteCodes.length > 0)
+        ) {
           const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
             .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
           if (!hasFilterableValue) {
@@ -274,12 +277,24 @@ export const parseProductsByReleaseData = (state, release) => {
         bundleRelease,
         productCode,
       );
-      forwardAvailability = BundleService.shouldForwardAvailability(
-        bundlesCtx,
-        bundleRelease,
-        productCode,
-        availabilityParentCode,
-      );
+      if (!Array.isArray(availabilityParentCode)) {
+        forwardAvailability = BundleService.shouldForwardAvailability(
+          bundlesCtx,
+          bundleRelease,
+          productCode,
+          availabilityParentCode,
+        );
+      } else {
+        availabilityParentCode = availabilityParentCode.find((checkAvailabilityParentCode) => (
+          BundleService.shouldForwardAvailability(
+            bundlesCtx,
+            bundleRelease,
+            productCode,
+            checkAvailabilityParentCode,
+          )
+        ));
+        forwardAvailability = isStringNonEmpty(availabilityParentCode);
+      }
       const parentIdx = bundleParentIdxLookup[availabilityParentCode];
       availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
     }
@@ -355,7 +370,9 @@ export const parseProductsByReleaseData = (state, release) => {
     if ((newState.aopVizProducts || []).includes(productCode)) {
       const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
         .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-      if (!hasFilterableValue) {
+      const hasAvailableData = Array.isArray(availabilitySiteCodes)
+        && (availabilitySiteCodes.length > 0);
+      if (!hasFilterableValue && hasAvailableData) {
         product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
           VISUALIZATIONS.AOP_DATA_VIEWER.key,
         );

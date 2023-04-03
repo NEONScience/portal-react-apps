@@ -1,7 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+
+import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
 
 import DataProductContext from '../DataProductContext';
 
@@ -16,6 +22,28 @@ import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
 import TaxonDetail from '../Details/TaxonDetail';
 
+const AboutSectionTextComponent = (props) => {
+  const { content } = props;
+  return (
+    <Typography variant="body2" component="p">
+      {content}
+    </Typography>
+  );
+};
+AboutSectionTextComponent.propTypes = {
+  content: PropTypes.string,
+};
+AboutSectionTextComponent.defaultProps = {
+  content: null,
+};
+
+const MarkdownFallbackComponent = (props) => ((
+  <CustomComponentFallback
+    // eslint-disable-next-line react/no-unstable-nested-components
+    FallbackComponent={() => ((<AboutSectionTextComponent {...props} />))}
+  />
+));
+
 const AboutSection = (props) => {
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
@@ -28,20 +56,50 @@ const AboutSection = (props) => {
           <Detail
             title="Description"
             content={(
-              <Markdown>{product.productDescription || '_n/a_'}</Markdown>
+              <ComponentErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                fallbackComponent={() => ((
+                  <MarkdownFallbackComponent content={product.productDescription || '_n/a_'} />
+                ))}
+                onReset={() => { /* noop for boundary reset */ }}
+              >
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productDescription || '_n/a_'}
+                </Markdown>
+              </ComponentErrorBoundary>
             )}
           />
           <Detail
             title="Abstract"
             content={(
-              <Markdown>{product.productAbstract || '_n/a_'}</Markdown>
+              <ComponentErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                fallbackComponent={() => ((
+                  <MarkdownFallbackComponent content={product.productAbstract || '_n/a_'} />
+                ))}
+                onReset={() => { /* noop for boundary reset */ }}
+              >
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productAbstract || '_n/a_'}
+                </Markdown>
+              </ComponentErrorBoundary>
             )}
           />
           {product.productRemarks ? (
             <Detail
               title="Additional Information"
               content={(
-                <Markdown>{product.productRemarks}</Markdown>
+                <ComponentErrorBoundary
+                  // eslint-disable-next-line react/no-unstable-nested-components
+                  fallbackComponent={() => ((
+                    <MarkdownFallbackComponent content={product.productRemarks} />
+                  ))}
+                  onReset={() => { /* noop for boundary reset */ }}
+                >
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {product.productRemarks}
+                  </Markdown>
+                </ComponentErrorBoundary>
               )}
             />
           ) : null}
@@ -64,14 +122,34 @@ const AboutSection = (props) => {
           <Detail
             title="Study Description"
             content={(
-              <Markdown>{product.productStudyDescription || '_n/a_'}</Markdown>
+              <ComponentErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                fallbackComponent={() => ((
+                  <MarkdownFallbackComponent content={product.productStudyDescription || '_n/a_'} />
+                ))}
+                onReset={() => { /* noop for boundary reset */ }}
+              >
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productStudyDescription || '_n/a_'}
+                </Markdown>
+              </ComponentErrorBoundary>
             )}
           />
           <Detail
             title="Design Description"
             tooltip="More information about the science design can be found in this data product's documentation."
             content={(
-              <Markdown>{product.productDesignDescription || '_n/a_'}</Markdown>
+              <ComponentErrorBoundary
+                // eslint-disable-next-line react/no-unstable-nested-components
+                fallbackComponent={() => ((
+                  <MarkdownFallbackComponent content={product.productDesignDescription || '_n/a_'} />
+                ))}
+                onReset={() => { /* noop for boundary reset */ }}
+              >
+                <Markdown remarkPlugins={[remarkGfm]}>
+                  {product.productDesignDescription || '_n/a_'}
+                </Markdown>
+              </ComponentErrorBoundary>
             )}
           />
           <Detail

@@ -4,7 +4,6 @@ import { useDispatch, useSelector, batch } from 'react-redux';
 
 import FormControl from '@material-ui/core/FormControl';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Chip from '@material-ui/core/Chip';
@@ -25,15 +24,18 @@ import {
   Theme as MuiTheme,
 } from '@material-ui/core/styles';
 
-import BundleIcon from '@material-ui/icons/Archive';
 import SearchIcon from '@material-ui/icons/Search';
 
+import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
+import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 
+import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import { IDataProductLike } from 'portal-core-components/lib/types/internal';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
@@ -75,20 +77,6 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     listItemTextProduct: {
       display: 'inline-block',
       whiteSpace: 'normal',
-    },
-    card: {
-      marginTop: muiTheme.spacing(3),
-      backgroundColor: (Theme as NeonTheme).colors.GOLD[50],
-      borderColor: (Theme as NeonTheme).colors.GOLD[300],
-    },
-    cardContent: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: '16px !important',
-    },
-    cardIcon: {
-      color: (Theme as NeonTheme).colors.GOLD[700],
-      marginRight: muiTheme.spacing(2),
     },
     cardSelectedProduct: {
       marginBottom: muiTheme.spacing(2),
@@ -139,6 +127,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     products,
     selectedProduct,
     selectedRelease,
+    focalBundleProduct,
   }: DataProductSelectState = state;
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
@@ -146,10 +135,11 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const isComplete = (productsFetchState === AsyncStateType.FULLFILLED)
     && (bundlesFetchState === AsyncStateType.FULLFILLED);
   const hasProduct: boolean = exists(selectedProduct);
+  products.sort((a: DataProduct, b: DataProduct): number => (
+    a.productName.localeCompare(b.productName)
+  ));
   const initialProduct: DataProduct = !hasProduct
-    ? products
-      .sort((a: DataProduct, b: DataProduct): number => a.productName.localeCompare(b.productName))
-      .find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
+    ? products.find((value: DataProduct): boolean => existsNonEmpty(value.siteCodes)) as DataProduct
     : selectedProduct as DataProduct;
   const releaseBundles: DataProductBundle[] = determineBundle(bundles, selectedRelease?.release);
 
@@ -163,6 +153,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
             : [productCb.productCode],
           release: releaseCb,
         }));
+        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+        }
+        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+        }
       })
     ),
     [dispatch],
@@ -198,9 +196,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const getProductSecondaryMessage = (
     value: DataProduct,
     paramBundle?: DataProductBundle,
-  ): string => {
+  ): [string, boolean] => {
     const bundle: DataProductBundle|undefined = paramBundle
       || findBundle(releaseBundles, value.productCode);
+    let hasManyParents = false;
     let bundleMessage = '';
     if (bundle) {
       const parent: DataProductParent|undefined = findForwardParent(bundle);
@@ -213,25 +212,30 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         if (parentCodes.length <= 0) {
           bundleMessage = `This data product (${value.productCode}) is bundled.`;
         } else {
-          const parentCodeMessage = `${parentCodes.length > 1
-            ? parentCodes.join(', ')
-            : parentCodes[0]}`;
+          let parentCodeMessage;
+          if (parentCodes.length > 1) {
+            hasManyParents = true;
+            parentCodeMessage = parentCodes.join(', ');
+          } else {
+            parentCodeMessage = parentCodes[0];
+          }
           bundleMessage = `This data product (${value.productCode}) is
             bundled into ${parentCodeMessage}`;
           bundleMessage = `${bundleMessage}. See ${parentCodeMessage} for availability.`;
         }
       }
     }
-    return !bundle
-      ? value.productCode
-      : bundleMessage;
+    return [!bundle ? value.productCode : bundleMessage, hasManyParents];
   };
   const renderOption = (
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
   ): JSX.Element => {
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
-    const secondaryMessage: string = getProductSecondaryMessage(value as DataProduct, bundle);
+    const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
+      value as DataProduct,
+      bundle,
+    );
     const nameSlice: SearchSlice[] = calcSearchSlice(
       value.productName,
       renderOptionState.inputValue,
@@ -249,12 +253,8 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <div key={value.productCode}>
-        {!bundle ? <React.Fragment /> : (
-          <ListItemIcon>
-            <BundleIcon />
-          </ListItemIcon>
-        )}
+      <div key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
+        {!bundle ? <React.Fragment /> : <BundleListItemIcon isSplit={hasManyParents} />}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
@@ -299,11 +299,13 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            const secondaryMessage: string = getProductSecondaryMessage(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            const [secondaryMessage]: string = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
             );
-            return `${option.productName} ${secondaryMessage} ${option.productScienceTeam}`;
+            return `${option.productName} ${secondaryMessage as string} ${option.productScienceTeam}`;
           },
         })}
         renderOption={(
@@ -364,23 +366,29 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     if (!parent || !parent.forwardAvailability) {
       return (<React.Fragment />);
     }
+    let focalProductName = '';
+    if (exists(focalBundleProduct)
+        && (parent.parentProductCode === (focalBundleProduct as DataProduct).productCode)) {
+      focalProductName = (focalBundleProduct as DataProduct).productName || '';
+    }
+    const dataProductLike: IDataProductLike = {
+      productCode: parent.parentProductCode,
+      productName: focalProductName,
+    };
+    const titleContent = BundleContentBuilder.buildDefaultTitleContent(
+      dataProductLike,
+      selectedRelease?.release,
+    );
+    const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(true, false);
     return (
-      <Card className={classes.card}>
-        <CardContent className={classes.cardContent}>
-          <BundleIcon fontSize="large" className={classes.cardIcon} />
-          <div style={{ flexGrow: 1 }}>
-            <Typography variant="subtitle2">
-              {`This data product is bundled into ${parent.parentProductCode}`}
-            </Typography>
-            <Typography variant="body2">
-              <>
-                It is not available as a standalone download. Data availability shown
-                below reflects availability of the entire bundle.
-              </>
-            </Typography>
-          </div>
-        </CardContent>
-      </Card>
+      <div style={{ marginTop: Theme.spacing(3) }}>
+        <DataProductBundleCard
+          showIcon={true}
+          isSplit={false}
+          titleContent={titleContent}
+          subTitleContent={subTitleContent}
+        />
+      </div>
     );
   };
 

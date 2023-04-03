@@ -2,6 +2,8 @@ import moment from 'moment';
 
 import isEqual from 'lodash/isEqual';
 
+import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+
 /**
  * Generate a continuous list of "YYYY-MM" strings given an input date range
  * Will extend beginning and end of date range to encompass whole years
@@ -102,9 +104,6 @@ export const BUNDLE_INHERITIED_FILTER_KEYS = [
   FILTER_KEYS.STATES,
   FILTER_KEYS.SITES,
 ];
-
-// Key used in state structures for referring to the released and provisional data set
-export const LATEST_AND_PROVISIONAL = 'LATEST_AND_PROVISIONAL';
 
 export const getCurrentProductsByRelease = (state) => {
   let currentRelease = state.filterValues[FILTER_KEYS.RELEASE] || LATEST_AND_PROVISIONAL;

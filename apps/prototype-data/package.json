@@ -1,6 +1,6 @@
 {
   "name": "prototype-data",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "homepage": "https://localhost/prototype-datasets",
   "dependencies": {
@@ -14,7 +14,7 @@
     "dateformat": "^5.0.3",
     "lodash": "^4.17.21",
     "moment": "2.29.4",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.0.1",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.1.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
@@ -23,12 +23,15 @@
     "whatwg-fetch": "^3.6.2"
   },
   "devDependencies": {
+    "commander": "^9.5.0",
     "eslint": "^8.28.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.31.11",
     "express": "^4.18.2",
+    "jsdom": "^20.0.3",
+    "prettier": "^2.8.4",
     "react-scripts": "5.0.1"
   },
   "scripts": {
@@ -36,6 +39,7 @@
     "start:prod": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test - env=jsdom",
+    "build:sync-assets": "node ../../node_modules/portal-core-components/scripts/sync-assets.js --prettify-index --cwd-relative-public-dir-path=\"public\"",
     "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
     "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
     "eject": "react-scripts eject"

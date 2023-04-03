@@ -35,7 +35,7 @@ const SiteParser = {
     siteLongitude: site.siteLongitude as number,
     domainCode: site.domainCode as string,
     stateCode: site.stateCode as string,
-    dataProducts: exists(site.dataProducts)
+    dataProducts: (exists(site.dataProducts) && Array.isArray(site.dataProducts))
       ? site.dataProducts as Record<string, unknown>[]
       : [],
   }),

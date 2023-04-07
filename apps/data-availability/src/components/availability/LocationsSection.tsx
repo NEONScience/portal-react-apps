@@ -35,6 +35,9 @@ const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
     infoContainer: {
       margin: muiTheme.spacing(0, 0, 4, 0),
     },
+    infoTextContainer: {
+      margin: muiTheme.spacing(0, 0, 2, 0),
+    },
   })) as StylesHook;
 
 const useLocationsSelector = (): LocationsSectionState => useSelector(

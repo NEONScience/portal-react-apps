@@ -100,20 +100,29 @@ const ProductParser = {
     return bundles;
   },
 
-  parseProductReleaseDoi: (response: AjaxResponse<unknown>): Nullable<DataProductReleaseDoi> => {
+  parseProductReleaseDoi: (
+    response: AjaxResponse<unknown>,
+  ): Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'data');
     if (!exists(resolved)) {
       return null;
     }
-    return {
-      productCode: resolved.productCode as string,
-      release: resolved.release as string,
-      releaseGenerationDate: resolved.releaseGenerationDate as string,
-      generationDate: resolved.generationDate as string,
-      url: resolved.url as string,
-      status: resolved.status as string,
-    };
+    if (!Array.isArray(resolved)) {
+      return ProductParser.parseProductReleaseDoiRecord(resolved);
+    }
+    return resolved.map((r: UnknownRecord): DataProductReleaseDoi => (
+      ProductParser.parseProductReleaseDoiRecord(r)
+    ));
   },
+
+  parseProductReleaseDoiRecord:(prdr: UnknownRecord): DataProductReleaseDoi => ({
+    productCode: prdr.productCode as string,
+    release: prdr.release as string,
+    releaseGenerationDate: prdr.releaseGenerationDate as string,
+    generationDate: prdr.generationDate as string,
+    url: prdr.url as string,
+    status: prdr.status as string,
+  }),
 
   parseProductReleaseTombAva: (
     response: AjaxResponse<unknown>,

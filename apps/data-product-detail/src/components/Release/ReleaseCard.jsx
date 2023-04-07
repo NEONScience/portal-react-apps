@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 
 import moment from 'moment';
@@ -7,9 +6,6 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
@@ -22,8 +18,9 @@ import CopyIcon from '@material-ui/icons/Assignment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
+import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
+import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -61,18 +58,6 @@ const useStyles = makeStyles((theme) => ({
   },
   doiListItemSecondaryAction: {
     paddingRight: '120px',
-  },
-  cardHeader: {
-    padding: theme.spacing(3),
-    paddingBottom: 0,
-  },
-  cardContent: {
-    paddingTop: theme.spacing(2),
-  },
-  cardReleaseNotice: {
-    backgroundColor: Theme.colors.BROWN[50],
-    borderColor: Theme.colors.BROWN[300],
-    marginBottom: theme.spacing(4),
   },
   flex: {
     display: 'flex',
@@ -176,20 +161,19 @@ const ReleaseCard = () => {
       </Link>
     );
     return (
-      <Card className={classes.cardReleaseNotice}>
-        <CardHeader
-          className={classes.cardHeader}
-          title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
-        />
-        <CardContent className={classes.cardContent}>
-          <Typography variant="body2" color="textPrimary">
-            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-            {currentRelease} of this data product is not available.
-            The data product releases can be found {dataProductDetailLink}.
-            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-          </Typography>
-        </CardContent>
-      </Card>
+      <ReleaseNoticeCard
+        messageContent={(
+          <div>
+            <Divider className={classes.releaseCardDivider} />
+            <Typography variant="body2" color="textPrimary">
+              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              <b>{currentRelease}</b> of this data product is not available.
+              The available data product releases can be found {dataProductDetailLink}.
+              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            </Typography>
+          </div>
+        )}
+      />
     );
   };
 

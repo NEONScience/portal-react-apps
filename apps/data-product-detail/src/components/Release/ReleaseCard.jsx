@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -44,10 +45,16 @@ const useStyles = makeStyles((theme) => ({
   multiCitationContainer: {
     marginTop: theme.spacing(2),
   },
+  releaseCardDivider: {
+    margin: theme.spacing(0, 0, 2, 0),
+  },
   doiList: {
-    width: '100%',
     marginTop: theme.spacing(1),
     marginLeft: theme.spacing(3),
+  },
+  doiListitem: {
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   doiListItemText: {
     margin: 0,
@@ -86,7 +93,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
   },
   doiFromParentBlurb: {
+    marginTop: theme.spacing(1),
+  },
+  multiDoiFromParentBlurb: {
     marginTop: 0,
+  },
+  multiBundleBlurbSubtext: {
+    fontWeight: 400,
+    marginTop: Theme.spacing(1),
   },
 }));
 
@@ -202,12 +216,12 @@ const ReleaseCard = () => {
             </Typography>
             {!currentDoiUrl.doiUrlIsFromBundleParent ? null : (
               <>
-                <Typography variant="subtitle2" color="textSecondary" className={classes.doiFromParentBlurb}>
+                <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
                   This data product release is {bundledLink} into {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2">
                   The above DOI refers to that data product release and there is no DOI directly
                   associated with this data product release.
                 </Typography>
@@ -223,6 +237,7 @@ const ReleaseCard = () => {
           key={`ReleaseCardDoiUrlKey-${currentDoiUrl}`}
           alignItems="flex-start"
           ContainerComponent="div"
+          className={classes.doiListitem}
           classes={{
             secondaryAction: classes.doiListItemSecondaryAction,
           }}
@@ -231,7 +246,7 @@ const ReleaseCard = () => {
             className={classes.doiListItemText}
             primary={(
               !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
-                <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
+                <Typography variant="subtitle2" className={classes.multiDoiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
                   {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
@@ -279,10 +294,10 @@ const ReleaseCard = () => {
             This data product release is {bundledLink} into the following data product releases:
             {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
-          <List dense disablePadding classeName={classes.doiList}>
+          <List dense disablePadding className={classes.doiList}>
             {items}
           </List>
-          <Typography variant="subtitle2" style={{ fontWeight: 400, marginTop: Theme.spacing(1) }}>
+          <Typography variant="subtitle2" className={classes.multiBundleBlurbSubtext}>
             {subTitleContent}
           </Typography>
         </div>
@@ -292,6 +307,7 @@ const ReleaseCard = () => {
       <ReleaseMessageCard
         messageContent={(
           <div>
+            <Divider className={classes.releaseCardDivider} />
             <div className={classes.flex}>
               <Typography variant="h5" component="h2">
                 <span className={classes.releaseTitle}>Release:&nbsp;</span>

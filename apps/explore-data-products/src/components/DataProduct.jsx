@@ -60,9 +60,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(0.75),
   },
   releaseChip: {
-    color: theme.colors.GREEN[800],
-    border: `1px solid ${theme.colors.GREEN[500]}`,
-    backgroundColor: theme.colors.GREEN[100],
+    color: theme.colors.LIGHT_BLUE[800],
+    border: `1px solid ${theme.colors.LIGHT_BLUE[300]}`,
+    backgroundColor: theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
     cursor: 'help',
   },

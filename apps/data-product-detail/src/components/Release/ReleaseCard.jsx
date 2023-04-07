@@ -21,6 +21,7 @@ import CopyIcon from '@material-ui/icons/Assignment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -45,19 +46,14 @@ const useStyles = makeStyles((theme) => ({
   },
   doiList: {
     width: '100%',
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(3),
   },
   doiListItemText: {
     margin: 0,
   },
   doiListItemSecondaryAction: {
     paddingRight: '120px',
-  },
-  card: {
-    // backgroundColor: 'rgba(225, 227, 234, 0.6)', // This is => theme.colors.NEON_BLUE[50]
-    // borderColor: theme.colors.NEON_BLUE[700],
-    backgroundColor: Theme.colors.BROWN[50],
-    borderColor: Theme.colors.BROWN[300],
-    marginBottom: theme.spacing(4),
   },
   cardHeader: {
     padding: theme.spacing(3),
@@ -75,22 +71,22 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(0.5),
   },
   copyButton: {
     backgroundColor: '#fff',
   },
+  releaseTitle: {
+    fontWeight: 600,
+  },
   releaseAttribTitle: {
     marginRight: theme.spacing(1),
-  },
-  releaseAttribValue: {
-    fontWeight: 600,
   },
   releaseInfoLink: {
     fontWeight: 600,
   },
   doiFromParentBlurb: {
-    marginTop: theme.spacing(1),
+    marginTop: 0,
   },
 }));
 
@@ -197,9 +193,9 @@ const ReleaseCard = () => {
         const bundledLink = BundleContentBuilder.getBundledLink();
         return (
           <>
-            <Typography variant="subtitle2" color="textPrimary" component="p">
+            <Typography variant="body2" color="textPrimary">
               <span className={classes.releaseAttribTitle}>DOI:</span>
-              <span className={classes.releaseAttribValue}>
+              <span>
                 {currentDoiUrl.doiUrl}
               </span>
               <DetailTooltip tooltip={DOI_TOOLTIP} />
@@ -243,9 +239,9 @@ const ReleaseCard = () => {
               )
             )}
             secondary={(
-              <Typography variant="subtitle2" color="textPrimary" component="p">
+              <Typography variant="body2" color="textPrimary">
                 <span className={classes.releaseAttribTitle}>DOI:</span>
-                <span className={classes.releaseAttribValue}>
+                <span>
                   {currentDoiUrl.doiUrl}
                 </span>
                 <DetailTooltip tooltip={DOI_TOOLTIP} />
@@ -286,49 +282,51 @@ const ReleaseCard = () => {
           <List dense disablePadding classeName={classes.doiList}>
             {items}
           </List>
-          <Typography variant="subtitle2" style={{ marginTop: Theme.spacing(1) }}>
+          <Typography variant="subtitle2" style={{ fontWeight: 400, marginTop: Theme.spacing(1) }}>
             {subTitleContent}
           </Typography>
         </div>
       );
     };
     return (
-      <Card className={classes.card}>
-        <CardContent>
-          <div className={classes.flex}>
-            <Typography variant="h5" component="h2">
-              Release:&nbsp;
-              <Tooltip
-                placement="right"
-                title={releaseInfoTooltip}
-                className={classes.tooltip}
-              >
-                <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
-                  {currentRelease}
-                </Link>
-              </Tooltip>
-            </Typography>
-            {hasManyDois || !currentDoiUrls[0] ? null : (
-              <CopyToClipboard text={currentDoiUrls[0].doiUrl}>
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  size="small"
-                  className={classes.copyButton}
+      <ReleaseMessageCard
+        messageContent={(
+          <div>
+            <div className={classes.flex}>
+              <Typography variant="h5" component="h2">
+                <span className={classes.releaseTitle}>Release:&nbsp;</span>
+                <Tooltip
+                  placement="right"
+                  title={releaseInfoTooltip}
+                  className={classes.tooltip}
                 >
-                  <CopyIcon fontSize="small" />
-                  Copy DOI
-                </Button>
-              </CopyToClipboard>
-            )}
+                  <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                    {currentRelease}
+                  </Link>
+                </Tooltip>
+              </Typography>
+              {hasManyDois || !currentDoiUrls[0] ? null : (
+                <CopyToClipboard text={currentDoiUrls[0].doiUrl}>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                    className={classes.copyButton}
+                  >
+                    <CopyIcon fontSize="small" />
+                    Copy DOI
+                  </Button>
+                </CopyToClipboard>
+              )}
+            </div>
+            <Typography variant="body2" color="textPrimary">
+              <span className={classes.releaseAttribTitle}>Generated:</span>
+              <span>{currentReleaseGenDate}</span>
+            </Typography>
+            {renderDois()}
           </div>
-          <Typography variant="subtitle2" color="textPrimary" component="p">
-            <span className={classes.releaseAttribTitle}>Generated:</span>
-            <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
-          </Typography>
-          {renderDois()}
-        </CardContent>
-      </Card>
+        )}
+      />
     );
   };
   return (

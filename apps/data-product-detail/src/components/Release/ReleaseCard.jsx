@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 
 import moment from 'moment';
@@ -7,9 +6,7 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -22,6 +19,8 @@ import CopyIcon from '@material-ui/icons/Assignment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
+import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
+import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
@@ -43,8 +42,16 @@ const useStyles = makeStyles((theme) => ({
   multiCitationContainer: {
     marginTop: theme.spacing(2),
   },
+  releaseCardDivider: {
+    margin: theme.spacing(0, 0, 2, 0),
+  },
   doiList: {
-    width: '100%',
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(3),
+  },
+  doiListitem: {
+    paddingTop: 0,
+    paddingBottom: 0,
   },
   doiListItemText: {
     margin: 0,
@@ -52,45 +59,33 @@ const useStyles = makeStyles((theme) => ({
   doiListItemSecondaryAction: {
     paddingRight: '120px',
   },
-  card: {
-    // backgroundColor: 'rgba(225, 227, 234, 0.6)', // This is => theme.colors.NEON_BLUE[50]
-    // borderColor: theme.colors.NEON_BLUE[700],
-    backgroundColor: Theme.colors.BROWN[50],
-    borderColor: Theme.colors.BROWN[300],
-    marginBottom: theme.spacing(4),
-  },
-  cardHeader: {
-    padding: theme.spacing(3),
-    paddingBottom: 0,
-  },
-  cardContent: {
-    paddingTop: theme.spacing(2),
-  },
-  cardReleaseNotice: {
-    backgroundColor: Theme.colors.BROWN[50],
-    borderColor: Theme.colors.BROWN[300],
-    marginBottom: theme.spacing(4),
-  },
   flex: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(0.5),
   },
   copyButton: {
     backgroundColor: '#fff',
   },
+  releaseTitle: {
+    fontWeight: 600,
+  },
   releaseAttribTitle: {
     marginRight: theme.spacing(1),
-  },
-  releaseAttribValue: {
-    fontWeight: 600,
   },
   releaseInfoLink: {
     fontWeight: 600,
   },
   doiFromParentBlurb: {
     marginTop: theme.spacing(1),
+  },
+  multiDoiFromParentBlurb: {
+    marginTop: 0,
+  },
+  multiBundleBlurbSubtext: {
+    fontWeight: 400,
+    marginTop: Theme.spacing(1),
   },
 }));
 
@@ -166,20 +161,19 @@ const ReleaseCard = () => {
       </Link>
     );
     return (
-      <Card className={classes.cardReleaseNotice}>
-        <CardHeader
-          className={classes.cardHeader}
-          title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
-        />
-        <CardContent className={classes.cardContent}>
-          <Typography variant="body2" color="textPrimary">
-            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-            {currentRelease} of this data product is not available.
-            The data product releases can be found {dataProductDetailLink}.
-            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
-          </Typography>
-        </CardContent>
-      </Card>
+      <ReleaseNoticeCard
+        messageContent={(
+          <div>
+            <Divider className={classes.releaseCardDivider} />
+            <Typography variant="body2" color="textPrimary">
+              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              <b>{currentRelease}</b> of this data product is not available.
+              The available data product releases can be found {dataProductDetailLink}.
+              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            </Typography>
+          </div>
+        )}
+      />
     );
   };
 
@@ -197,21 +191,21 @@ const ReleaseCard = () => {
         const bundledLink = BundleContentBuilder.getBundledLink();
         return (
           <>
-            <Typography variant="subtitle2" color="textPrimary" component="p">
+            <Typography variant="body2" color="textPrimary">
               <span className={classes.releaseAttribTitle}>DOI:</span>
-              <span className={classes.releaseAttribValue}>
+              <span>
                 {currentDoiUrl.doiUrl}
               </span>
               <DetailTooltip tooltip={DOI_TOOLTIP} />
             </Typography>
             {!currentDoiUrl.doiUrlIsFromBundleParent ? null : (
               <>
-                <Typography variant="subtitle2" color="textSecondary" className={classes.doiFromParentBlurb}>
+                <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
                   This data product release is {bundledLink} into {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2">
                   The above DOI refers to that data product release and there is no DOI directly
                   associated with this data product release.
                 </Typography>
@@ -227,6 +221,7 @@ const ReleaseCard = () => {
           key={`ReleaseCardDoiUrlKey-${currentDoiUrl}`}
           alignItems="flex-start"
           ContainerComponent="div"
+          className={classes.doiListitem}
           classes={{
             secondaryAction: classes.doiListItemSecondaryAction,
           }}
@@ -235,7 +230,7 @@ const ReleaseCard = () => {
             className={classes.doiListItemText}
             primary={(
               !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
-                <Typography variant="subtitle2" className={classes.doiFromParentBlurb}>
+                <Typography variant="subtitle2" className={classes.multiDoiFromParentBlurb}>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
                   {currentDoiUrl.bundleParentLink}
                   {/* eslint-enable react/jsx-one-expression-per-line */}
@@ -243,9 +238,9 @@ const ReleaseCard = () => {
               )
             )}
             secondary={(
-              <Typography variant="subtitle2" color="textPrimary" component="p">
+              <Typography variant="body2" color="textPrimary">
                 <span className={classes.releaseAttribTitle}>DOI:</span>
-                <span className={classes.releaseAttribValue}>
+                <span>
                   {currentDoiUrl.doiUrl}
                 </span>
                 <DetailTooltip tooltip={DOI_TOOLTIP} />
@@ -283,52 +278,55 @@ const ReleaseCard = () => {
             This data product release is {bundledLink} into the following data product releases:
             {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
-          <List dense disablePadding classeName={classes.doiList}>
+          <List dense disablePadding className={classes.doiList}>
             {items}
           </List>
-          <Typography variant="subtitle2" style={{ marginTop: Theme.spacing(1) }}>
+          <Typography variant="subtitle2" className={classes.multiBundleBlurbSubtext}>
             {subTitleContent}
           </Typography>
         </div>
       );
     };
     return (
-      <Card className={classes.card}>
-        <CardContent>
-          <div className={classes.flex}>
-            <Typography variant="h5" component="h2">
-              Release:&nbsp;
-              <Tooltip
-                placement="right"
-                title={releaseInfoTooltip}
-                className={classes.tooltip}
-              >
-                <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
-                  {currentRelease}
-                </Link>
-              </Tooltip>
-            </Typography>
-            {hasManyDois || !currentDoiUrls[0] ? null : (
-              <CopyToClipboard text={currentDoiUrls[0].doiUrl}>
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  size="small"
-                  className={classes.copyButton}
+      <ReleaseMessageCard
+        messageContent={(
+          <div>
+            <Divider className={classes.releaseCardDivider} />
+            <div className={classes.flex}>
+              <Typography variant="h5" component="h2">
+                <span className={classes.releaseTitle}>Release:&nbsp;</span>
+                <Tooltip
+                  placement="right"
+                  title={releaseInfoTooltip}
+                  className={classes.tooltip}
                 >
-                  <CopyIcon fontSize="small" />
-                  Copy DOI
-                </Button>
-              </CopyToClipboard>
-            )}
+                  <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                    {currentRelease}
+                  </Link>
+                </Tooltip>
+              </Typography>
+              {hasManyDois || !currentDoiUrls[0] ? null : (
+                <CopyToClipboard text={currentDoiUrls[0].doiUrl}>
+                  <Button
+                    color="primary"
+                    variant="outlined"
+                    size="small"
+                    className={classes.copyButton}
+                  >
+                    <CopyIcon fontSize="small" />
+                    Copy DOI
+                  </Button>
+                </CopyToClipboard>
+              )}
+            </div>
+            <Typography variant="body2" color="textPrimary">
+              <span className={classes.releaseAttribTitle}>Generated:</span>
+              <span>{currentReleaseGenDate}</span>
+            </Typography>
+            {renderDois()}
           </div>
-          <Typography variant="subtitle2" color="textPrimary" component="p">
-            <span className={classes.releaseAttribTitle}>Generated:</span>
-            <span className={classes.releaseAttribValue}>{currentReleaseGenDate}</span>
-          </Typography>
-          {renderDois()}
-        </CardContent>
-      </Card>
+        )}
+      />
     );
   };
   return (

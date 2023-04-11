@@ -29,7 +29,7 @@ interface AppAsyncFlowTypes {
   fetchProductBundles: AsyncFlowHandler<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>;
   fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>;
   fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
-  fetchFocalProductReleaseDoi: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseDoi>>, AsyncActionType, Nullable<DataProductReleaseDoi>>;
+  fetchFocalProductReleaseDoi: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>, AsyncActionType, Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>;
   fetchFocalProductReleaseTombAva: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseTombAva>>, AsyncActionType, Nullable<DataProductReleaseTombAva>>;
 }
 
@@ -117,7 +117,7 @@ const AppFlow: AppAsyncFlowTypes = {
     AppFlowActionTypes.fetchFocalSite,
     SiteParser.parseSiteResponse,
   ),
-  fetchFocalProductReleaseDoi: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseDoi>>, AsyncActionType, Nullable<DataProductReleaseDoi>>(
+  fetchFocalProductReleaseDoi: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>, AsyncActionType, Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>(
     AppFlowActionTypes.fetchFocalProductReleaseDoi,
     ProductParser.parseProductReleaseDoi,
   ),

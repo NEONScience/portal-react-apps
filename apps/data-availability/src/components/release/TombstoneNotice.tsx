@@ -2,16 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import { makeStyles, Theme as MuiTheme } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 
+import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import Theme from 'portal-core-components/lib/components/Theme';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import AppStateSelector from '../../selectors/app';
@@ -20,21 +18,11 @@ import { TombstoneNoticeState } from '../states/AppStates';
 import { DataProductReleaseDoi } from '../../types/store';
 
 const useStyles: StylesHook = makeStyles((theme: MuiTheme) => ({
-  card: {
-    backgroundColor: (Theme as NeonTheme).colors.BROWN[50],
-    borderColor: (Theme as NeonTheme).colors.BROWN[300],
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(4),
-  },
-  cardHeader: {
-    padding: theme.spacing(3),
-    paddingBottom: 0,
-  },
-  cardContent: {
-    paddingTop: theme.spacing(2),
-  },
   doiList: {
     width: '100%',
+  },
+  noticeCardDivider: {
+    margin: theme.spacing(0, 0, 2, 0),
   },
 }));
 
@@ -65,7 +53,7 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
       const tombstoneNote = (
         <>
           {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-          {citationRelease.release} of this data product
+          <b>{citationRelease.release}</b> of this data product
           {doiDisplay} is no longer available for download.
           {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
         </>
@@ -80,7 +68,7 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
         >
           <ListItemText
             primary={(
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textPrimary">
                 {tombstoneNote}
               </Typography>
             )}
@@ -90,17 +78,16 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
     })
   );
   return (
-    <Card className={classes.card}>
-      <CardHeader
-        className={classes.cardHeader}
-        title={(<Typography variant="h5" component="h2">Release Notice</Typography>)}
-      />
-      <CardContent className={classes.cardContent}>
-        <List dense disablePadding className={classes.doiList}>
-          {renderTombstoneNotes()}
-        </List>
-      </CardContent>
-    </Card>
+    <ReleaseNoticeCard
+      messageContent={(
+        <>
+          <Divider className={classes.noticeCardDivider} />
+          <List dense disablePadding className={classes.doiList}>
+            {renderTombstoneNotes()}
+          </List>
+        </>
+      )}
+    />
   );
 };
 

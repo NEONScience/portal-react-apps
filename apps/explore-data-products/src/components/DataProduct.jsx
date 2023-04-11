@@ -24,6 +24,7 @@ import DataProductBundleCard from 'portal-core-components/lib/components/Bundles
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
+import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
@@ -53,12 +54,16 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     cursor: 'help',
   },
+  releaseChipIcon: {
+    color: theme.colors.GREEN[800],
+    fontSize: '1em',
+    marginRight: theme.spacing(0.75),
+  },
   releaseChip: {
-    color: Theme.colors.BROWN[500],
-    border: `1px solid ${Theme.colors.BROWN[500]}`,
-    backgroundColor: Theme.colors.BROWN[100],
+    color: theme.colors.LIGHT_BLUE[800],
+    border: `1px solid ${theme.colors.LIGHT_BLUE[300]}`,
+    backgroundColor: theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
-    marginLeft: theme.spacing(1.5),
     cursor: 'help',
   },
   descriptionButton: {
@@ -187,20 +192,22 @@ const DataProduct = React.memo((props) => {
         />
       </Tooltip>
       {currentRelease === LATEST_AND_PROVISIONAL ? null : (
-        <Tooltip
-          title={(
+        <ReleaseChip
+          chipLabel={`Release: ${currentRelease}`}
+          chipStyle={{
+            marginLeft: Theme.spacing(1.5),
+          }}
+          classes={{
+            chip: classes.releaseChip,
+            icon: classes.releaseChipIcon,
+          }}
+          tooltipTitle={(
             <span>
               Availability and metadata shown is for
               the <b>{currentRelease}</b> release of this product
             </span>
           )}
-        >
-          <Chip
-            size="small"
-            label={`Release: ${currentRelease}`}
-            className={classes.releaseChip}
-          />
-        </Tooltip>
+        />
       )}
     </div>
   );
@@ -260,7 +267,6 @@ const DataProduct = React.memo((props) => {
     return (
       <div style={{ marginBottom: Theme.spacing(2) }}>
         <DataProductBundleCard
-          showIcon
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
           detailContent={detailContent}

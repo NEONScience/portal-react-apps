@@ -142,7 +142,6 @@ const AvailabilitySection = (props) => {
     return (
       <div style={{ marginBottom: Theme.spacing(4) }}>
         <DataProductBundleCard
-          showIcon
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
           detailContent={detailContent}

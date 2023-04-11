@@ -1,6 +1,6 @@
 {
   "name": "taxonomic-lists",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {
@@ -10,20 +10,20 @@
     "@material-ui/pickers": "^3.3.10",
     "@material-ui/styles": "^4.11.5",
     "bootstrap": "^3.4.1",
-    "core-js": "^3.26.1",
-    "datatables.net": "^1.13.1",
-    "datatables.net-bs": "^1.13.1",
-    "datatables.net-responsive": "^2.4.0",
-    "datatables.net-responsive-bs": "^2.4.0",
-    "jquery": "^3.6.1",
+    "core-js": "^3.30.0",
+    "datatables.net": "^1.13.4",
+    "datatables.net-bs": "^1.13.4",
+    "datatables.net-responsive": "^2.4.1",
+    "datatables.net-responsive-bs": "^2.4.1",
+    "jquery": "^3.6.4",
     "lodash": "^4.17.21",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.1.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.2.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-fontawesome": "^1.7.1",
     "react-redux": "^8.0.5",
     "react-scripts": "5.0.1",
-    "redux": "^4.2.0",
+    "redux": "^4.2.1",
     "redux-logger": "^3.0.6",
     "whatwg-fetch": "^3.6.2"
   },
@@ -39,11 +39,11 @@
   },
   "devDependencies": {
     "commander": "^9.5.0",
-    "eslint": "^8.28.0",
-    "eslint-plugin-react": "^7.31.11",
+    "eslint": "^8.37.0",
+    "eslint-plugin-react": "^7.32.2",
     "express": "^4.18.2",
     "jsdom": "^20.0.3",
-    "prettier": "^2.8.4"
+    "prettier": "^2.8.7"
   },
   "browserslist": {
     "production": [

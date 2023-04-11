@@ -383,7 +383,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     return (
       <div style={{ marginTop: Theme.spacing(3) }}>
         <DataProductBundleCard
-          showIcon={true}
           isSplit={false}
           titleContent={titleContent}
           subTitleContent={subTitleContent}

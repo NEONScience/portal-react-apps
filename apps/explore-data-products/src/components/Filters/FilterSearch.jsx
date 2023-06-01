@@ -121,6 +121,7 @@ const FilterSearch = (props) => {
       event: 'dataProductSearch',
       dataProductSearchTerm: searchTerm,
     });
+    window.gtag('event', 'dataProductSearch', { dataProductSearchTerm: searchTerm });
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 

@@ -53,7 +53,11 @@ const FilterSearch = (props) => {
       event: 'prototypeDatasetSearch',
       datasetSearchTerm: searchTerm,
     });
-    window.gtag('event', 'prototypeDatasetSearch', { datasetSearchTerm: searchTerm });
+    window.gtag(
+      'event',
+      'prototype_data_dataset_search',
+      { search_term: searchTerm },
+    );
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 

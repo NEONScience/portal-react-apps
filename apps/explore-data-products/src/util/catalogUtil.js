@@ -131,7 +131,7 @@ const generateCsv = (products, productOrder, filtered = false) => {
         let value = typeof column.value === 'function'
           ? column.value(products[productCode])
           : products[productCode][column.value];
-        if (column.escape) { value = `"${value.replace('"', '\\"')}"`; }
+        if (column.escape) { value = `"${value.replace(/"/g, '""')}"`; }
         return value;
       });
     rows.push(row.join(','));

@@ -361,7 +361,7 @@ const Provider = (props) => {
       .forEach((release) => {
         dispatch({ type: 'fetchProductsByReleaseStarted', release });
         const releaseArg = release === LATEST_AND_PROVISIONAL ? null : release;
-        NeonGraphQL.getAllDataProducts(releaseArg).pipe(
+        NeonGraphQL.getAllDataProducts(releaseArg, true).pipe(
           map((response) => {
             dispatch({
               type: 'fetchProductsByReleaseSucceeded',

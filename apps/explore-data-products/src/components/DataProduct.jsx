@@ -402,7 +402,7 @@ const DataProduct = React.memo((props) => {
         </Grid>
 
         {hasData ? (
-          <DataProductAvailability siteCodes={siteCodes} />
+          <DataProductAvailability delineateRelease siteCodes={siteCodes} />
         ) : null}
 
       </CardContent>

@@ -19,7 +19,7 @@
     "core-js": "^3.30.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
-    "portal-core-components": "github:NEONScience/portal-core-components#ga",
+    "portal-core-components": "github:NEONScience/portal-core-components#data-ava-chart",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

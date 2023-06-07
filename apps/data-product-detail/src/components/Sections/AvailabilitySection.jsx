@@ -178,7 +178,7 @@ const AvailabilitySection = (props) => {
           data-selenium="data-product-page.section.availability.download-data-button"
         />
       );
-      dataProductAva = (<DataProductAvailability view="ungrouped" disableSelection />);
+      dataProductAva = (<DataProductAvailability view="ungrouped" disableSelection delineateRelease />);
     } else if (tombstoneDataAvailable) {
       downloadDataButton = null;
       dataProductAva = (
@@ -187,6 +187,7 @@ const AvailabilitySection = (props) => {
           view="ungrouped"
           availabilityStatusType="tombstoned"
           disableSelection
+          delineateRelease
         />
       );
     }
@@ -228,7 +229,7 @@ const AvailabilitySection = (props) => {
       if (dataAvailable) {
         externalAvailability = (
           <div style={{ marginBottom: Theme.spacing(4) }}>
-            <DataProductAvailability view="ungrouped" disableSelection />
+            <DataProductAvailability view="ungrouped" disableSelection delineateRelease />
           </div>
         );
       }

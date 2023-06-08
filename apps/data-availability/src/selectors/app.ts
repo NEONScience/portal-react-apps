@@ -139,6 +139,10 @@ const appliedReleaseSelector = createSelector(
   (state: BaseStoreAppState): Nullable<Release> => findAppliedRelease(state),
 );
 
+const shouldDelineateAvaRelease = (appliedRelease: Nullable<Release>): boolean => (
+  !exists(appliedRelease) || ReleaseService.determineDelineateAvaRelease(appliedRelease?.release)
+);
+
 const determineTombstoned = (state: BaseStoreAppState): boolean => {
   if (!exists(state.focalProductReleaseDoi)) {
     return false;
@@ -345,6 +349,7 @@ const AppStateSelector = {
       focalProductFetchState: state.focalProductFetchState.asyncState,
       focalProduct: bundledProduct,
       appliedRelease: appliedRelease,
+      delineateAvaRelease: shouldDelineateAvaRelease(state.selectedRelease),
       fetchProductReleaseDoi: shouldFetchDoi(state),
       focalProductReleaseDoiFetchState: state.focalProductReleaseDoiFetchState.asyncState,
       isTombstoned: determineTombstoned(state),

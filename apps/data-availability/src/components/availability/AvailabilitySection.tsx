@@ -70,6 +70,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
     focalProductFetchState,
     focalProduct,
     appliedRelease,
+    delineateAvaRelease,
     fetchProductReleaseDoi,
     focalProductReleaseDoiFetchState,
     isTombstoned,
@@ -140,12 +141,15 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
     }
     let tombstoneProps = {};
     if (isTombstoned) {
-      tombstoneProps = { availabilityStatusType: 'tombstoned' };
+      tombstoneProps = {
+        availabilityStatusType: 'tombstoned',
+        delineateRelease: false,
+      };
     }
     return (
       <Suspense fallback={skeleton}>
         <DataProductAvailability
-          delineateRelease
+          delineateRelease={delineateAvaRelease}
           view="ungrouped"
           sortMethod="states"
           sortDirection="ASC"

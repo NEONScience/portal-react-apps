@@ -863,15 +863,15 @@ const reducer = (state, action) => {
     case 'setNextRelease':
       newState.route.nextRelease = action.release;
       if (action.hash) { newState.route.nextHash = action.hash.replace(/#/g, ''); }
-      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
-      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
+      newState.fetches.tombstoneAvailability = { ...DEFAULT_STATE.fetches.tombstoneAvailability };
+      newState.data.tombstoneAvailability = { ...DEFAULT_STATE.data.tombstoneAvailability };
       return calculateAppStatus(newState);
     case 'applyNextRelease':
       newState.route.release = newState.route.nextRelease;
       newState.route.nextRelease = undefined;
       newState.route.nextHash = undefined;
-      newState.fetches.tombstoneAvailability = DEFAULT_STATE.fetches.tombstoneAvailability;
-      newState.data.tombstoneAvailability = DEFAULT_STATE.data.tombstoneAvailability;
+      newState.fetches.tombstoneAvailability = { ...DEFAULT_STATE.fetches.tombstoneAvailability };
+      newState.data.tombstoneAvailability = { ...DEFAULT_STATE.data.tombstoneAvailability };
       return calculateContextState(
         newState,
         newState.neonContextState,
@@ -1115,32 +1115,6 @@ const Provider = (props) => {
       },
     );
   }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
-
-  useEffect(() => {
-    if (!isTombstoned) return;
-    if (exists(fetches.tombstoneAvailability[currentRelease])
-      && (fetches.tombstoneAvailability[currentRelease].status !== null)
-    ) {
-      return;
-    }
-    dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
-    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
-      (response) => {
-        dispatch({
-          type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
-          release: currentRelease,
-          data: response.data,
-        });
-      },
-      (error) => {
-        dispatch({
-          type: 'fetchProductReleaseTombstoneAvailabilityFailed',
-          release: currentRelease,
-          error,
-        });
-      },
-    );
-  }, [isTombstoned, fetches, productCode, currentRelease]);
 
   /**
      Render

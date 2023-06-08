@@ -54,6 +54,7 @@ export interface AvailabilitySectionState {
   focalProductFetchState: AsyncStateType;
   focalProduct: Nullable<DataProduct>;
   appliedRelease: Nullable<Release>;
+  delineateAvaRelease: boolean;
   fetchProductReleaseDoi: boolean;
   focalProductReleaseDoiFetchState: AsyncStateType;
   isTombstoned: Nullable<boolean>;

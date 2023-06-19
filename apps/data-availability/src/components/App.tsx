@@ -281,6 +281,25 @@ const App: React.FC = (): JSX.Element => {
     }
   };
 
+  const dataAvaLink = (
+    <Link
+      target="_blank"
+      rel="noreferrer noopener"
+      href={RouteService.getDataAvailabilityPath()}
+    >
+      technical availability
+    </Link>
+  );
+  const dataRevReleaseLink = (
+    <Link
+      target="_blank"
+      rel="noreferrer noopener"
+      href={RouteService.getDataRevisionsReleasePath()}
+    >
+      Data Product Revisions and Releases
+    </Link>
+  );
+
   return (
     <NeonPage
       title={title}
@@ -293,10 +312,15 @@ const App: React.FC = (): JSX.Element => {
       <Grid container className={classes.infoContainer}>
         <Grid item xs={12} className={classes.introTextContainer}>
           <Typography variant="subtitle1">
-            The availability chart and site map below show the combination of
-            product, site, and month where data are currently available and where
-            those data are collected, respectively. The availability chart
-            distinguishes between provisional data availability and release data availability.
+            The availability chart and site map below show the combination of product, site, and month
+            where data are currently available, and distinguishes between provisional and release data
+            availability. Currently, the chart only captures {dataAvaLink} (i.e., is there a data record
+            present for a particular site-month combination?), not scientific availability (i.e., are the
+            available data non-null, valid, and scientifically usable for certain use cases?). In the future,
+            measures of scientific availability will be incorporated. When viewing a specific release, only
+            data included in that release are displayed. You must select "Latest and Provisional" to see
+            provisional data availability. See {dataRevReleaseLink} for more details about
+            the differences between these data.
           </Typography>
         </Grid>
         <Grid item xs={12}>

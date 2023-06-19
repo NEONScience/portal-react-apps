@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 
 import debounce from 'lodash/debounce';
 
+import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import PrototypeContext from '../PrototypeContext';
@@ -49,10 +50,7 @@ const FilterSearch = (props) => {
     const terms = parseSearchTerms(searchTerm);
     if (!terms.length) { dispatch({ type: 'resetFilter', filterKey }); }
     // Push an event with latest term to Google Tag Manager
-    window.gtmDataLayer.push({
-      event: 'prototypeDatasetSearch',
-      datasetSearchTerm: searchTerm,
-    });
+    AnalyticsService.gaPrototypeDataSearchEvent(searchTerm);
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 

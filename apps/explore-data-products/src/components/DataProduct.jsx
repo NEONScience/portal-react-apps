@@ -30,7 +30,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
@@ -179,6 +179,8 @@ const DataProduct = React.memo((props) => {
       </Link>
     </Typography>
   );
+  const isRelease = isStringNonEmpty(currentRelease) && (currentRelease !== LATEST_AND_PROVISIONAL);
+  const delineateAvaRelease = ReleaseService.determineDelineateAvaRelease(currentRelease);
 
   const code = (
     <div className={classes.startFlex} style={{ margin: Theme.spacing(1.5, 0) }}>
@@ -252,8 +254,6 @@ const DataProduct = React.memo((props) => {
       };
       titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike, currentRelease);
     } else {
-      const isRelease = isStringNonEmpty(currentRelease)
-        && (currentRelease !== LATEST_AND_PROVISIONAL);
       titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(isRelease, ':');
       const dataProductLikes = bundleParentProductData.map((bundleParentProduct) => ({
         productCode: bundleParentProduct.productCode,
@@ -402,7 +402,10 @@ const DataProduct = React.memo((props) => {
         </Grid>
 
         {hasData ? (
-          <DataProductAvailability siteCodes={siteCodes} />
+          <DataProductAvailability
+            delineateRelease={delineateAvaRelease}
+            siteCodes={siteCodes}
+          />
         ) : null}
 
       </CardContent>

@@ -15,7 +15,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -70,6 +70,9 @@ const AvailabilitySection = (props) => {
     return <SkeletonSection {...props} />;
   }
 
+  const isRelease = isStringNonEmpty(currentRelease)
+    && (currentRelease !== LATEST_AND_PROVISIONAL);
+  const delineateAvaRelease = ReleaseService.determineDelineateAvaRelease(currentRelease);
   const isBundleChild = (parentCodes.length > 0)
     && (isStringNonEmpty(doiProductCode) || Array.isArray(doiProductCode));
   const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
@@ -127,8 +130,6 @@ const AvailabilitySection = (props) => {
       };
       titleContent = BundleContentBuilder.buildDefaultTitleContent(dataProductLike, currentRelease);
     } else {
-      const isRelease = isStringNonEmpty(currentRelease)
-        && (currentRelease !== LATEST_AND_PROVISIONAL);
       titleContent = BundleContentBuilder.buildDefaultSplitTitleContent(isRelease, ':');
       const dataProductLikes = parentCodes.map((parentCode) => ({
         productCode: bundleParents[parentCode].productCode,
@@ -178,7 +179,13 @@ const AvailabilitySection = (props) => {
           data-selenium="data-product-page.section.availability.download-data-button"
         />
       );
-      dataProductAva = (<DataProductAvailability view="ungrouped" disableSelection />);
+      dataProductAva = (
+        <DataProductAvailability
+          view="ungrouped"
+          delineateRelease={delineateAvaRelease}
+          disableSelection
+        />
+      );
     } else if (tombstoneDataAvailable) {
       downloadDataButton = null;
       dataProductAva = (
@@ -228,7 +235,7 @@ const AvailabilitySection = (props) => {
       if (dataAvailable) {
         externalAvailability = (
           <div style={{ marginBottom: Theme.spacing(4) }}>
-            <DataProductAvailability view="ungrouped" disableSelection />
+            <DataProductAvailability view="ungrouped" disableSelection delineateRelease />
           </div>
         );
       }

@@ -18,6 +18,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 import debounce from 'lodash/debounce';
 
+import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../../ExploreContext';
@@ -117,10 +118,7 @@ const FilterSearch = (props) => {
     const terms = parseSearchTerms(searchTerm);
     if (!terms.length) { dispatch({ type: 'resetFilter', filterKey }); }
     // Push an event with latest term to Google Tag Manager
-    window.gtmDataLayer.push({
-      event: 'dataProductSearch',
-      dataProductSearchTerm: searchTerm,
-    });
+    AnalyticsService.gaExploreSearchEvent(searchTerm);
     return dispatch({ type: 'applyFilter', filterKey, filterValue: terms });
   }, DEBOUNCE_MILLISECONDS);
 

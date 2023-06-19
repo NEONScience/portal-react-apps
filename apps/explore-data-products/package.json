@@ -1,6 +1,6 @@
 {
   "name": "explore-data-products",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "homepage": "https://localhost/data-products/explore",
   "dependencies": {

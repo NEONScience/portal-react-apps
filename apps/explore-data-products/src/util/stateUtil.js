@@ -1,7 +1,7 @@
 import isEqual from 'lodash/isEqual';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
@@ -285,18 +285,23 @@ export const parseProductsByReleaseData = (state, release) => {
           availabilityParentCode,
         );
       } else {
-        availabilityParentCode = availabilityParentCode.find((checkAvailabilityParentCode) => (
-          BundleService.shouldForwardAvailability(
-            bundlesCtx,
-            bundleRelease,
-            productCode,
-            checkAvailabilityParentCode,
-          )
-        ));
-        forwardAvailability = isStringNonEmpty(availabilityParentCode);
+        const forwardAvailabilityParentCode = availabilityParentCode
+          .find((checkAvailabilityParentCode) => (
+            BundleService.shouldForwardAvailability(
+              bundlesCtx,
+              bundleRelease,
+              productCode,
+              checkAvailabilityParentCode,
+            )
+          ));
+        forwardAvailability = isStringNonEmpty(forwardAvailabilityParentCode);
       }
-      const parentIdx = bundleParentIdxLookup[availabilityParentCode];
-      availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
+      if (!Array.isArray(availabilityParentCode)) {
+        const parentIdx = bundleParentIdxLookup[availabilityParentCode];
+        availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
+      } else {
+        availabilitySiteCodes = [];
+      }
     }
     let appliedBundleParent = null;
     if (isBundleChild) {
@@ -318,18 +323,41 @@ export const parseProductsByReleaseData = (state, release) => {
     if (product.bundle.isChild) {
       // Bundle children with forwarded availability should have releases identical to the parent
       // for the specified release.
-      const parentIdx = bundleParentIdxLookup[availabilityParentCode];
-      const bundleCopiedReleases = [...((appliedProducts[parentIdx] || {}).releases || [])]
-        .filter((bundleParentRelease) => {
-          const bundleParentAppliedRelease = BundleService.determineBundleRelease(
-            bundleParentRelease.release,
-          );
-          return BundleService.isProductInBundle(
-            bundlesCtx,
-            bundleParentAppliedRelease,
-            productCode,
-          );
+      let parentIdx = null;
+      const multiParentIdx = [];
+      if (!Array.isArray(availabilityParentCode)) {
+        parentIdx = bundleParentIdxLookup[availabilityParentCode];
+      } else {
+        availabilityParentCode.forEach((checkAvailabilityParentCode) => {
+          multiParentIdx.push(bundleParentIdxLookup[checkAvailabilityParentCode]);
         });
+      }
+      let parentReleases = [];
+      if (exists(parentIdx)) {
+        const appliedBundleParentFromIdx = appliedProducts[parentIdx];
+        if (exists(appliedBundleParentFromIdx)
+            && existsNonEmpty(appliedBundleParentFromIdx.releases)) {
+          parentReleases = [...appliedBundleParentFromIdx.releases];
+        }
+      } else if (existsNonEmpty(multiParentIdx)) {
+        multiParentIdx.forEach((checkMultiParentIdx) => {
+          const appliedBundleParentFromIdx = appliedProducts[checkMultiParentIdx];
+          if (exists(appliedBundleParentFromIdx)
+              && existsNonEmpty(appliedBundleParentFromIdx.releases)) {
+            Array.prototype.push.apply(parentReleases, [...appliedBundleParentFromIdx.releases]);
+          }
+        });
+      }
+      const bundleCopiedReleases = parentReleases.filter((bundleParentRelease) => {
+        const bundleParentAppliedRelease = BundleService.determineBundleRelease(
+          bundleParentRelease.release,
+        );
+        return BundleService.isProductInBundle(
+          bundlesCtx,
+          bundleParentAppliedRelease,
+          productCode,
+        );
+      });
       bundleCopiedReleases.forEach((bundleCopiedRelease) => {
         if (exists(bundleCopiedRelease)) {
           const hasRelease = (product.releases || []).some((productRelease) => (

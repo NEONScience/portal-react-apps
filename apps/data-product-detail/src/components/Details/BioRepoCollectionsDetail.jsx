@@ -21,6 +21,8 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(0),
     marginTop: theme.spacing(-1),
     marginBottom: theme.spacing(1),
+    maxHeight: '440px',
+    overflowY: 'scroll',
   },
   listItemLink: {
     borderRadius: theme.spacing(0.5),

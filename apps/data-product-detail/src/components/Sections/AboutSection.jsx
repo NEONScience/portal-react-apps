@@ -21,6 +21,7 @@ import DataRangeDetail from '../Details/DataRangeDetail';
 import CitationDetail from '../Details/CitationDetail';
 import KeywordsDetail from '../Details/KeywordsDetail';
 import TaxonDetail from '../Details/TaxonDetail';
+import BioRepoCollectionsDetail from '../Details/BioRepoCollectionsDetail';
 
 const AboutSectionTextComponent = (props) => {
   const { content } = props;
@@ -115,6 +116,7 @@ const AboutSection = (props) => {
           />
           <DataRangeDetail />
           <KeywordsDetail />
+          <BioRepoCollectionsDetail />
           <TaxonDetail dataProductCode={product.productCode} />
         </Grid>
 

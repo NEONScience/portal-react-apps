@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(-1),
     marginBottom: theme.spacing(1),
     maxHeight: '440px',
-    overflowY: 'scroll',
+    overflowY: 'auto',
   },
   listItemLink: {
     borderRadius: theme.spacing(0.5),

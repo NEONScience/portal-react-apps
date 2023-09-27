@@ -34,7 +34,9 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
   const state: TombstoneNoticeState = useTombstoneNoticdSelector();
   const classes = useStyles(Theme);
   const { isTombstoned, focalProductReleaseDoi }: TombstoneNoticeState = state;
-  if (!(isTombstoned === true) || !exists(focalProductReleaseDoi)) {
+  if (!(isTombstoned === true)
+      || !exists(focalProductReleaseDoi)
+      || (Array.isArray(focalProductReleaseDoi) && (focalProductReleaseDoi.length <= 0))) {
     return <></>;
   }
   let citationReleases: DataProductReleaseDoi[] = [];

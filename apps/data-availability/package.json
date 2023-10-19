@@ -1,6 +1,6 @@
 {
   "name": "data-availability",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "homepage": "https://localhost/visualizations/data-availability",
   "dependencies": {

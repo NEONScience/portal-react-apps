@@ -1,6 +1,6 @@
 {
   "name": "taxonomic-lists",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "private": true,
   "homepage": "http://localhost/taxonomic-lists/",
   "dependencies": {
@@ -17,7 +17,7 @@
     "datatables.net-responsive-bs": "^2.4.1",
     "jquery": "^3.6.4",
     "lodash": "^4.17.21",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.5.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.5.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-fontawesome": "^1.7.1",

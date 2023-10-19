@@ -8690,7 +8690,7 @@ popper.js@1.16.1-lts:
 
 "portal-core-components@github:NEONScience/portal-core-components#download-provisional":
   version "2.4.0"
-  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/e31eedb3090243fd262ec1d69e8ec76a22db151c"
+  resolved "https://codeload.github.com/NEONScience/portal-core-components/tar.gz/b3bfa30ff567dfa5f713b64e3a7fad85eae6a62c"
   dependencies:
     "@date-io/moment" "^1.3.13"
     "@fortawesome/fontawesome-svg-core" "^6.4.0"

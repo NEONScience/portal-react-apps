@@ -14,7 +14,7 @@
     "dateformat": "^5.0.3",
     "lodash": "^4.17.21",
     "moment": "2.29.4",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.5.1",
+    "portal-core-components": "github:NEONScience/portal-core-components#aop-download-workflow",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",

@@ -2,8 +2,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import dateFormat from 'dateformat';
-
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,6 +18,7 @@ import DownloadIcon from '@material-ui/icons/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
+import CitationService from 'portal-core-components/lib/service/CitationService';
 import DataCiteService, {
   CitationDownloadType,
 } from 'portal-core-components/lib/service/DataCiteService';
@@ -28,33 +27,6 @@ import RouteService from 'portal-core-components/lib/service/RouteService';
 import PrototypeContext from '../PrototypeContext';
 
 const { usePrototypeContextState } = PrototypeContext;
-
-const getCitationText = (dataset) => {
-  if (!dataset) { return null; }
-  const {
-    doi,
-    projectTitle,
-    uuid,
-    version,
-  } = dataset;
-  const hasDoi = doi && doi.url;
-  const now = new Date();
-  const today = dateFormat(now, 'mmmm d, yyyy');
-  const neon = 'NEON (National Ecological Observatory Network)';
-  const doiId = hasDoi
-    ? doi.url.split('/').slice(-2).join('/')
-    : uuid;
-  const url = hasDoi
-    ? `${doi.url}.`
-    : `${RouteService.getPrototypeDatasetDetailPath(uuid)}`;
-  const accessed = hasDoi
-    ? `Dataset accessed from ${RouteService.getDataProductCitationDownloadUrl()} on ${today}`
-    : `(accessed ${today})`;
-  const title = version
-    ? `${projectTitle}, ${version}`
-    : projectTitle;
-  return `${neon}. ${title} (${doiId}). ${url} ${accessed}`;
-};
 
 const useStyles = makeStyles(() => ({
   citationText: {
@@ -78,7 +50,7 @@ const Citation = (props) => {
       Data Policies &amp; Citation Guidelines
     </Link>
   );
-  const citationText = getCitationText(dataset);
+  const citationText = CitationService.buildPrototypeDatasetCitationText(dataset);
 
   // Click handler for initiating a citation download
   const handleDownloadCitation = (format) => {

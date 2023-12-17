@@ -8,5 +8,6 @@
   "scripts": {
     "ci": "yarn install --frozen-lockfile",
     "ci:prod": "yarn install --frozen-lockfile --production"
-  }
+  },
+  "dependencies": {}
 }

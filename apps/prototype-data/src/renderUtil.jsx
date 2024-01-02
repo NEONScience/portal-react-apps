@@ -44,7 +44,7 @@ export const getSkeleton = (height = 10, width = 100, marginBottom = 0, widthIsP
 export const getDoiDisplay = (doi) => {
   const hasDoi = doi && doi.url;
   if (!hasDoi) {
-    return undefined;
+    return 'Not Available';
   }
   return doi.url.split('/').slice(-2).join('/');
 };

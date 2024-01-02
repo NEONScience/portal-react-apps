@@ -22,7 +22,6 @@ class FilterTaxonType extends Component {
   }
 
   componentDidMount() {
-    console.log('Component mounted.');
     const queryParams = new URLSearchParams(window.location.search);
     const queryTaxonTypeCode = queryParams.get('taxonTypeCode') ?? '';
     if (queryTaxonTypeCode !== '') {

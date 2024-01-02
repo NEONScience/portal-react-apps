@@ -18,6 +18,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import DetailsIcon from '@material-ui/icons/InfoOutlined';
 
 import PrototypeContext from '../PrototypeContext';
+import { getDoiDisplay } from '../renderUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
@@ -95,6 +96,7 @@ const Dataset = (props) => {
     projectTitle,
     startYear,
     version,
+    doi,
   } = dataset;
 
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
@@ -237,12 +239,24 @@ const Dataset = (props) => {
 
         <Grid container spacing={2}>
           <Grid item xs={12} sm={10}>
-            <Typography variant="subtitle2" className={classes.sectionTitle}>
-              Prototype Dataset ID
-            </Typography>
-            <div style={{ marginBottom: Theme.spacing(3) }}>
-              <Chip label={uuid} className={classes.datasetIdChip} />
-            </div>
+            <Grid container>
+              <Grid item xs={12} sm={12} md={12} lg={4}>
+                <Typography variant="subtitle2" className={classes.sectionTitle}>
+                  DOI
+                </Typography>
+                <div style={{ marginBottom: Theme.spacing(3) }}>
+                  <Chip label={getDoiDisplay(doi)} className={classes.datasetIdChip} />
+                </div>
+              </Grid>
+              <Grid item xs={12} sm={12} md={12} lg={8}>
+                <Typography variant="subtitle2" className={classes.sectionTitle}>
+                  Prototype Dataset ID
+                </Typography>
+                <div style={{ marginBottom: Theme.spacing(3) }}>
+                  <Chip label={uuid} className={classes.datasetIdChip} />
+                </div>
+              </Grid>
+            </Grid>
             <Typography variant="subtitle2" className={classes.sectionTitle}>
               Project Description
             </Typography>

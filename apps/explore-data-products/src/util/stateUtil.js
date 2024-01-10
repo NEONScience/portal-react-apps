@@ -1,8 +1,9 @@
 import isEqual from 'lodash/isEqual';
 
+import ExternalHost from 'portal-core-components/lib/components/ExternalHost/ExternalHost';
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
   /* constants */
@@ -300,7 +301,17 @@ export const parseProductsByReleaseData = (state, release) => {
         const parentIdx = bundleParentIdxLookup[availabilityParentCode];
         availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
       } else {
+        // For multi bundle products, identify the first bundle product
+        // that has availability, and consider this product as available
+        // when at least one bundle product has available data.
         availabilitySiteCodes = [];
+        availabilityParentCode.forEach((checkAvailabilityParentCode) => {
+          const parentIdx = bundleParentIdxLookup[checkAvailabilityParentCode];
+          const checkParentSiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
+          if ((availabilitySiteCodes.length <= 0) && (checkParentSiteCodes.length > 0)) {
+            availabilitySiteCodes = checkParentSiteCodes;
+          }
+        });
       }
     }
     let appliedBundleParent = null;
@@ -379,12 +390,31 @@ export const parseProductsByReleaseData = (state, release) => {
       });
     }
 
+    // Determine release when not a "non" release and not a special case release.
+    const isRelease = isStringNonEmpty(release)
+      && !ReleaseService.isNonRelease(release)
+      && !ReleaseService.isLatestNonProv(release);
+    const hasDataAva = (availabilitySiteCodes.length > 0);
+    let appliedDataStatus;
+    if (hasDataAva) {
+      appliedDataStatus = 'Available';
+    } else {
+      // Some external hosts with no availability can be made "Available"
+      // with the "allowNoAvailability" flag.
+      const externalHost = ExternalHost.getProductSpecificInfo(product.productCode);
+      if (!isRelease && exists(externalHost) && (externalHost.allowNoAvailability === true)) {
+        appliedDataStatus = 'Available';
+      } else {
+        appliedDataStatus = 'Coming Soon';
+      }
+    }
+
     // Generate filterable values - derived values for each product that filters
     // interact with directly. Start with the simple / one-liner ones.
     product.filterableValues = {
       [FILTER_KEYS.SCIENCE_TEAM]: product.productScienceTeam,
       [FILTER_KEYS.RELEASE]: (product.releases || []).map((r) => r.release),
-      [FILTER_KEYS.DATA_STATUS]: availabilitySiteCodes.length > 0 ? 'Available' : 'Coming Soon',
+      [FILTER_KEYS.DATA_STATUS]: appliedDataStatus,
       [FILTER_KEYS.SITES]: availabilitySiteCodes.map((s) => s.siteCode),
     };
 

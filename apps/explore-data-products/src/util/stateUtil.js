@@ -181,6 +181,88 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
   return newState;
 };
 
+const mergeDataAva = (dataAvas) => {
+  // For multi bundle products, merge bundled availabilities,
+  // and consider this product as available
+  // when at least one bundled product has available data.
+  const availabilitySiteCodes = [];
+  if (!existsNonEmpty(dataAvas)) {
+    return availabilitySiteCodes;
+  }
+  // Keyed by site to Set of months
+  const multiAvaMerged = {};
+  dataAvas.forEach((dataAvaSiteCodes) => {
+    if (dataAvaSiteCodes.length > 0) {
+      dataAvaSiteCodes.forEach((avaSiteCode) => {
+        if (!exists(multiAvaMerged[avaSiteCode.siteCode])) {
+          multiAvaMerged[avaSiteCode.siteCode] = {
+            availableMonths: new Set(),
+            availableReleases: {},
+          };
+        }
+        if (existsNonEmpty(avaSiteCode.availableMonths)) {
+          avaSiteCode.availableMonths.forEach((avaMonth) => {
+            multiAvaMerged[avaSiteCode.siteCode].availableMonths.add(avaMonth);
+          });
+        }
+        if (existsNonEmpty(avaSiteCode.availableReleases)) {
+          avaSiteCode.availableReleases.forEach((avaRelease) => {
+            const hasExistingRelease = multiAvaMerged[avaSiteCode.siteCode]
+              .availableReleases[avaRelease.release];
+            if (!exists(hasExistingRelease)) {
+              multiAvaMerged[avaSiteCode.siteCode].availableReleases[avaRelease.release] = {
+                availableMonths: new Set(),
+              };
+            }
+            if (existsNonEmpty(avaRelease.availableMonths)) {
+              avaRelease.availableMonths.forEach((avaMonth) => {
+                multiAvaMerged[avaSiteCode.siteCode]
+                  .availableReleases[avaRelease.release]
+                  .availableMonths.add(avaMonth);
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+  Object.keys(multiAvaMerged).sort().forEach((siteCodeKey) => {
+    const mergedAvaMonthsSet = multiAvaMerged[siteCodeKey].availableMonths;
+    const ava = {
+      siteCode: siteCodeKey,
+      availableMonths: [],
+      availableReleases: [],
+    };
+    const hasAvaMonths = exists(mergedAvaMonthsSet) && (mergedAvaMonthsSet.size > 0);
+    if (hasAvaMonths) {
+      ava.availableMonths = [...mergedAvaMonthsSet].sort();
+    }
+    Object.keys(multiAvaMerged[siteCodeKey].availableReleases)
+      .sort()
+      .forEach((releaseKey) => {
+        const mergedReleaseAvaMonthsSet = multiAvaMerged[siteCodeKey]
+          .availableReleases[releaseKey]
+          .availableMonths;
+        const releaseAva = {
+          release: releaseKey,
+          availableMonths: [],
+        };
+        const hasReleaseAvaMonths = exists(mergedReleaseAvaMonthsSet)
+          && (mergedReleaseAvaMonthsSet.size > 0);
+        if (hasReleaseAvaMonths) {
+          releaseAva.availableMonths = [...mergedReleaseAvaMonthsSet].sort();
+        }
+        if (hasReleaseAvaMonths) {
+          ava.availableReleases.push(releaseAva);
+        }
+      });
+    if (hasAvaMonths) {
+      availabilitySiteCodes.push(ava);
+    }
+  });
+  return availabilitySiteCodes;
+};
+
 /**
    parseProductsData
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
@@ -301,72 +383,15 @@ export const parseProductsByReleaseData = (state, release) => {
         const parentIdx = bundleParentIdxLookup[availabilityParentCode];
         availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
       } else {
-        // For multi bundle products, merge bundled availabilities,
-        // and consider this product as available
-        // when at least one bundled product has available data.
-        availabilitySiteCodes = [];
-        // Keyed by site to Set of months
-        const multiAvaMerged = {};
+        const parentDataAvaSiteCodes = [];
         availabilityParentCode.forEach((checkAvailabilityParentCode) => {
           const parentIdx = bundleParentIdxLookup[checkAvailabilityParentCode];
           const checkParentSiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
           if (checkParentSiteCodes.length > 0) {
-            checkParentSiteCodes.forEach((avaSiteCode) => {
-              if (!exists(multiAvaMerged[avaSiteCode.siteCode])) {
-                multiAvaMerged[avaSiteCode.siteCode] = {
-                  availableMonths: new Set(),
-                  availableDataUrls: new Set(),
-                  availableReleases: {},
-                };
-              }
-              avaSiteCode.availableMonths.forEach((avaMonth) => {
-                multiAvaMerged[avaSiteCode.siteCode].availableMonths.add(avaMonth);
-              });
-              avaSiteCode.availableReleases.forEach((avaRelease) => {
-                if (!exists(multiAvaMerged[avaSiteCode.siteCode][avaRelease.release])) {
-                  multiAvaMerged[avaSiteCode.siteCode][avaRelease.release] = {
-                    availableMonths: new Set(),
-                  };
-                }
-                avaRelease.availableMonths.forEach((avaMonth) => {
-                  multiAvaMerged[avaSiteCode.siteCode][avaRelease.release]
-                    .availableMonths.add(avaMonth);
-                });
-              });
-            });
+            parentDataAvaSiteCodes.push(checkParentSiteCodes);
           }
         });
-        Object.keys(multiAvaMerged).sort().forEach((siteCodeKey) => {
-          const mergedAvaMonthsSet = multiAvaMerged[siteCodeKey].availableMonths;
-          const ava = {
-            siteCode: siteCodeKey,
-            availableMonths: [],
-            availableReleases: [],
-          };
-          const hasAvaMonths = exists(mergedAvaMonthsSet) && (mergedAvaMonthsSet.size > 0);
-          if (hasAvaMonths) {
-            ava.availableMonths = [...mergedAvaMonthsSet].sort();
-          }
-          Object.keys(multiAvaMerged[siteCodeKey]).sort().forEach((releaseKey) => {
-            const mergedReleaseAvaMonthsSet = multiAvaMerged[siteCodeKey][releaseKey]
-              .availableMonths;
-            const releaseAva = {
-              release: releaseKey,
-              availableMonths: [],
-            };
-            const hasReleaseAvaMonths = exists(mergedReleaseAvaMonthsSet)
-              && (mergedReleaseAvaMonthsSet.size > 0);
-            if (hasReleaseAvaMonths) {
-              releaseAva.availableMonths = [...mergedReleaseAvaMonthsSet].sort();
-            }
-            if (hasReleaseAvaMonths) {
-              ava.availableReleases.push(releaseAva);
-            }
-          });
-          if (hasAvaMonths) {
-            availabilitySiteCodes.push(ava);
-          }
-        });
+        availabilitySiteCodes = mergeDataAva(parentDataAvaSiteCodes);
       }
     }
     let appliedBundleParent = null;

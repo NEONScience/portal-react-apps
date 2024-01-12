@@ -301,15 +301,70 @@ export const parseProductsByReleaseData = (state, release) => {
         const parentIdx = bundleParentIdxLookup[availabilityParentCode];
         availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
       } else {
-        // For multi bundle products, identify the first bundle product
-        // that has availability, and consider this product as available
-        // when at least one bundle product has available data.
+        // For multi bundle products, merge bundled availabilities,
+        // and consider this product as available
+        // when at least one bundled product has available data.
         availabilitySiteCodes = [];
+        // Keyed by site to Set of months
+        const multiAvaMerged = {};
         availabilityParentCode.forEach((checkAvailabilityParentCode) => {
           const parentIdx = bundleParentIdxLookup[checkAvailabilityParentCode];
           const checkParentSiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
-          if ((availabilitySiteCodes.length <= 0) && (checkParentSiteCodes.length > 0)) {
-            availabilitySiteCodes = checkParentSiteCodes;
+          if (checkParentSiteCodes.length > 0) {
+            checkParentSiteCodes.forEach((avaSiteCode) => {
+              if (!exists(multiAvaMerged[avaSiteCode.siteCode])) {
+                multiAvaMerged[avaSiteCode.siteCode] = {
+                  availableMonths: new Set(),
+                  availableDataUrls: new Set(),
+                  availableReleases: {},
+                };
+              }
+              avaSiteCode.availableMonths.forEach((avaMonth) => {
+                multiAvaMerged[avaSiteCode.siteCode].availableMonths.add(avaMonth);
+              });
+              avaSiteCode.availableReleases.forEach((avaRelease) => {
+                if (!exists(multiAvaMerged[avaSiteCode.siteCode][avaRelease.release])) {
+                  multiAvaMerged[avaSiteCode.siteCode][avaRelease.release] = {
+                    availableMonths: new Set(),
+                  };
+                }
+                avaRelease.availableMonths.forEach((avaMonth) => {
+                  multiAvaMerged[avaSiteCode.siteCode][avaRelease.release]
+                    .availableMonths.add(avaMonth);
+                });
+              });
+            });
+          }
+        });
+        Object.keys(multiAvaMerged).sort().forEach((siteCodeKey) => {
+          const mergedAvaMonthsSet = multiAvaMerged[siteCodeKey].availableMonths;
+          const ava = {
+            siteCode: siteCodeKey,
+            availableMonths: [],
+            availableReleases: [],
+          };
+          const hasAvaMonths = exists(mergedAvaMonthsSet) && (mergedAvaMonthsSet.size > 0);
+          if (hasAvaMonths) {
+            ava.availableMonths = [...mergedAvaMonthsSet].sort();
+          }
+          Object.keys(multiAvaMerged[siteCodeKey]).sort().forEach((releaseKey) => {
+            const mergedReleaseAvaMonthsSet = multiAvaMerged[siteCodeKey][releaseKey]
+              .availableMonths;
+            const releaseAva = {
+              release: releaseKey,
+              availableMonths: [],
+            };
+            const hasReleaseAvaMonths = exists(mergedReleaseAvaMonthsSet)
+              && (mergedReleaseAvaMonthsSet.size > 0);
+            if (hasReleaseAvaMonths) {
+              releaseAva.availableMonths = [...mergedReleaseAvaMonthsSet].sort();
+            }
+            if (hasReleaseAvaMonths) {
+              ava.availableReleases.push(releaseAva);
+            }
+          });
+          if (hasAvaMonths) {
+            availabilitySiteCodes.push(ava);
           }
         });
       }

@@ -1,8 +1,9 @@
 import isEqual from 'lodash/isEqual';
 
+import ExternalHost from 'portal-core-components/lib/components/ExternalHost/ExternalHost';
 import BundleService from 'portal-core-components/lib/service/BundleService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
   /* constants */
@@ -180,6 +181,88 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
   return newState;
 };
 
+const mergeDataAva = (dataAvas) => {
+  // For multi bundle products, merge bundled availabilities,
+  // and consider this product as available
+  // when at least one bundled product has available data.
+  const availabilitySiteCodes = [];
+  if (!existsNonEmpty(dataAvas)) {
+    return availabilitySiteCodes;
+  }
+  // Keyed by site to Set of months
+  const multiAvaMerged = {};
+  dataAvas.forEach((dataAvaSiteCodes) => {
+    if (dataAvaSiteCodes.length > 0) {
+      dataAvaSiteCodes.forEach((avaSiteCode) => {
+        if (!exists(multiAvaMerged[avaSiteCode.siteCode])) {
+          multiAvaMerged[avaSiteCode.siteCode] = {
+            availableMonths: new Set(),
+            availableReleases: {},
+          };
+        }
+        if (existsNonEmpty(avaSiteCode.availableMonths)) {
+          avaSiteCode.availableMonths.forEach((avaMonth) => {
+            multiAvaMerged[avaSiteCode.siteCode].availableMonths.add(avaMonth);
+          });
+        }
+        if (existsNonEmpty(avaSiteCode.availableReleases)) {
+          avaSiteCode.availableReleases.forEach((avaRelease) => {
+            const hasExistingRelease = multiAvaMerged[avaSiteCode.siteCode]
+              .availableReleases[avaRelease.release];
+            if (!exists(hasExistingRelease)) {
+              multiAvaMerged[avaSiteCode.siteCode].availableReleases[avaRelease.release] = {
+                availableMonths: new Set(),
+              };
+            }
+            if (existsNonEmpty(avaRelease.availableMonths)) {
+              avaRelease.availableMonths.forEach((avaMonth) => {
+                multiAvaMerged[avaSiteCode.siteCode]
+                  .availableReleases[avaRelease.release]
+                  .availableMonths.add(avaMonth);
+              });
+            }
+          });
+        }
+      });
+    }
+  });
+  Object.keys(multiAvaMerged).sort().forEach((siteCodeKey) => {
+    const mergedAvaMonthsSet = multiAvaMerged[siteCodeKey].availableMonths;
+    const ava = {
+      siteCode: siteCodeKey,
+      availableMonths: [],
+      availableReleases: [],
+    };
+    const hasAvaMonths = exists(mergedAvaMonthsSet) && (mergedAvaMonthsSet.size > 0);
+    if (hasAvaMonths) {
+      ava.availableMonths = [...mergedAvaMonthsSet].sort();
+    }
+    Object.keys(multiAvaMerged[siteCodeKey].availableReleases)
+      .sort()
+      .forEach((releaseKey) => {
+        const mergedReleaseAvaMonthsSet = multiAvaMerged[siteCodeKey]
+          .availableReleases[releaseKey]
+          .availableMonths;
+        const releaseAva = {
+          release: releaseKey,
+          availableMonths: [],
+        };
+        const hasReleaseAvaMonths = exists(mergedReleaseAvaMonthsSet)
+          && (mergedReleaseAvaMonthsSet.size > 0);
+        if (hasReleaseAvaMonths) {
+          releaseAva.availableMonths = [...mergedReleaseAvaMonthsSet].sort();
+        }
+        if (hasReleaseAvaMonths) {
+          ava.availableReleases.push(releaseAva);
+        }
+      });
+    if (hasAvaMonths) {
+      availabilitySiteCodes.push(ava);
+    }
+  });
+  return availabilitySiteCodes;
+};
+
 /**
    parseProductsData
    Parse a raw response from a products GraphQL query. Refactor into a dictionary by product key and
@@ -300,7 +383,15 @@ export const parseProductsByReleaseData = (state, release) => {
         const parentIdx = bundleParentIdxLookup[availabilityParentCode];
         availabilitySiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
       } else {
-        availabilitySiteCodes = [];
+        const parentDataAvaSiteCodes = [];
+        availabilityParentCode.forEach((checkAvailabilityParentCode) => {
+          const parentIdx = bundleParentIdxLookup[checkAvailabilityParentCode];
+          const checkParentSiteCodes = (appliedProducts[parentIdx] || {}).siteCodes || [];
+          if (checkParentSiteCodes.length > 0) {
+            parentDataAvaSiteCodes.push(checkParentSiteCodes);
+          }
+        });
+        availabilitySiteCodes = mergeDataAva(parentDataAvaSiteCodes);
       }
     }
     let appliedBundleParent = null;
@@ -379,12 +470,31 @@ export const parseProductsByReleaseData = (state, release) => {
       });
     }
 
+    // Determine release when not a "non" release and not a special case release.
+    const isRelease = isStringNonEmpty(release)
+      && !ReleaseService.isNonRelease(release)
+      && !ReleaseService.isLatestNonProv(release);
+    const hasDataAva = (availabilitySiteCodes.length > 0);
+    let appliedDataStatus;
+    if (hasDataAva) {
+      appliedDataStatus = 'Available';
+    } else {
+      // Some external hosts with no availability can be made "Available"
+      // with the "allowNoAvailability" flag.
+      const externalHost = ExternalHost.getProductSpecificInfo(product.productCode);
+      if (!isRelease && exists(externalHost) && (externalHost.allowNoAvailability === true)) {
+        appliedDataStatus = 'Available';
+      } else {
+        appliedDataStatus = 'Coming Soon';
+      }
+    }
+
     // Generate filterable values - derived values for each product that filters
     // interact with directly. Start with the simple / one-liner ones.
     product.filterableValues = {
       [FILTER_KEYS.SCIENCE_TEAM]: product.productScienceTeam,
       [FILTER_KEYS.RELEASE]: (product.releases || []).map((r) => r.release),
-      [FILTER_KEYS.DATA_STATUS]: availabilitySiteCodes.length > 0 ? 'Available' : 'Coming Soon',
+      [FILTER_KEYS.DATA_STATUS]: appliedDataStatus,
       [FILTER_KEYS.SITES]: availabilitySiteCodes.map((s) => s.siteCode),
     };
 

@@ -1,6 +1,6 @@
 {
   "name": "explore-data-products",
-  "version": "2.8.1",
+  "version": "2.9.0",
   "private": true,
   "homepage": "https://localhost/data-products/explore",
   "dependencies": {
@@ -10,11 +10,11 @@
     "@material-ui/lab": "~4.0.0-alpha.61",
     "@material-ui/pickers": "^3.3.11",
     "@material-ui/styles": "^4.11.5",
-    "core-js": "^3.34.0",
+    "core-js": "^3.37.1",
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
-    "moment": "2.29.4",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.8.0",
+    "moment": "2.30.1",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.9.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -22,13 +22,13 @@
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
-    "commander": "^11.1.0",
-    "eslint": "^8.56.0",
+    "commander": "^12.1.0",
+    "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "express": "^4.18.2",
-    "jsdom": "^23.0.1",
-    "prettier": "^3.1.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "express": "^4.19.2",
+    "jsdom": "^24.1.0",
+    "prettier": "^3.3.3",
     "react-scripts": "5.0.1",
     "source-map-explorer": "^2.5.3",
     "worker-loader": "^3.0.8"

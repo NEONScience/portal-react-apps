@@ -56,7 +56,7 @@ const VisualizationsSection = (props) => {
       node: <AopDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
     };
   }
-  const hideViz = currentReleaseObject && !currentReleaseObject.showViz;
+  const hideViz = currentReleaseObject && (currentReleaseObject.showViz === false);
   if (currentRelease && hideViz && Object.keys(viz).length) {
     const releaseTag = <b>{currentRelease}</b>;
     const handleOnClick = () => {

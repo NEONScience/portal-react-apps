@@ -14,12 +14,12 @@
     "dateformat": "^5.0.3",
     "lodash": "^4.17.21",
     "moment": "2.30.1",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.9.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.9.1",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^17.0.2",
-    "react-router-dom": "^6.25.0",
+    "react-router-dom": "^6.25.1",
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
@@ -27,7 +27,7 @@
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "express": "^4.19.2",
-    "jsdom": "^24.1.0",
+    "jsdom": "^24.1.1",
     "prettier": "^3.3.3",
     "react-scripts": "5.0.1"
   },

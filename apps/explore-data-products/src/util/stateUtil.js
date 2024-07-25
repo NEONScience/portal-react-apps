@@ -500,7 +500,7 @@ export const parseProductsByReleaseData = (state, release) => {
 
     // Filterable value for VISUALIZATIONS
     product.filterableValues[FILTER_KEYS.VISUALIZATIONS] = [];
-    if ((timeSeriesDataProductsJSON.productCodes || []).includes(productCode)) {
+    if ((timeSeriesDataProductsJSON.productCodes || []).includes(productCode) && hasDataAva) {
       product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
         VISUALIZATIONS.TIME_SERIES_VIEWER.key,
       );

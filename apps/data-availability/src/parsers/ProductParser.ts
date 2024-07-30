@@ -115,7 +115,7 @@ const ProductParser = {
     ));
   },
 
-  parseProductReleaseDoiRecord:(prdr: UnknownRecord): DataProductReleaseDoi => ({
+  parseProductReleaseDoiRecord: (prdr: UnknownRecord): DataProductReleaseDoi => ({
     productCode: prdr.productCode as string,
     release: prdr.release as string,
     releaseGenerationDate: prdr.releaseGenerationDate as string,

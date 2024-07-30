@@ -1,0 +1,11 @@
+.git
+.yarn
+
+node_modules
+build
+templates
+
+**/*/node_modules
+**/*/build
+
+.DS_Store

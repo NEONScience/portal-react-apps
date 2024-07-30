@@ -17,7 +17,7 @@
     "datatables.net-responsive-bs": "^2.5.1",
     "jquery": "~3.7.1",
     "lodash": "^4.17.21",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.9.2",
+    "portal-core-components": "github:NEONScience/portal-core-components#maintenance",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-fontawesome": "^1.7.1",
@@ -35,7 +35,14 @@
     "eject": "react-scripts eject",
     "build:sync-assets": "node ../../node_modules/portal-core-components/scripts/sync-assets.js --prettify-index --cwd-relative-public-dir-path=\"public\"",
     "lint": "(npx eslint src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
-    "lint:fix": "(npx eslint --fix src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0"
+    "lint:fix": "(npx eslint --fix src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
+    "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
+    "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
+    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/taxonomic-lists --publish=3001:3001 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists --publish=3000:3000 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run build",
+    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/taxonomic-lists/public --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base npm run build:sync-assets"
   },
   "devDependencies": {
     "commander": "^12.1.0",

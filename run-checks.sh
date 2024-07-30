@@ -1,35 +1,34 @@
 #!/bin/bash
 
-echo;
-echo 'Linting...';
-cd ./apps/data-availability
-yarn run lint
-cd ../data-product-detail
-yarn run lint
-cd ../explore-data-products
-yarn run lint
-cd ../prototype-data
-yarn run lint
-cd ../sample-explorer
-yarn run lint
-cd ../taxonomic-lists
-yarn run lint
+LOC=$(pwd)
 
-cd ../../
 echo;
-echo 'Building...';
+echo 'Building docker images...';
+npm run build:docker-all
+
+cd $LOC
+echo;
+echo 'Running checks...';
 cd ./apps/data-availability
-yarn run build
+pwd
+npm run checks:docker
 cd ../data-product-detail
-yarn run build
+pwd
+npm run checks:docker
 cd ../explore-data-products
-yarn run build
+pwd
+npm run checks:docker
 cd ../prototype-data
-yarn run build
+pwd
+npm run checks:docker
 cd ../sample-explorer
-yarn run build
+pwd
+npm run checks:docker
 cd ../taxonomic-lists
-yarn run build
+pwd
+npm run checks:docker
+
+cd $LOC
 
 echo 'Done';
 echo;

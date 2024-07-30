@@ -2,12 +2,16 @@
   "name": "portal-react-apps",
   "version": "2.9.2",
   "private": true,
+  "packageManager": "yarn@4.3.1",
   "workspaces": [
     "apps/*"
   ],
   "scripts": {
-    "ci": "yarn install --frozen-lockfile",
-    "ci:prod": "yarn install --frozen-lockfile --production"
-  },
-  "dependencies": {}
+    "ci": "yarn install --immutable",
+    "ci:prod": "yarn install --immutable",
+    "build:docker-clean": "docker image rm portal-react-apps:latest-builder-base",
+    "build:docker-build-image": "docker buildx build --no-cache --build-arg YARN_VERSION=4.3.1 --tag portal-react-apps:latest-builder-base --file ./build.Dockerfile .",
+    "build:docker-image": "(npm run build:docker-clean || true) && npm run build:docker-build-image",
+    "build:docker-all": "docker buildx bake --set *.args.YARN_VERSION=4.3.1 --file docker-bake.hcl"
+  }
 }

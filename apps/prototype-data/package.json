@@ -14,7 +14,7 @@
     "dateformat": "^5.0.3",
     "lodash": "^4.17.21",
     "moment": "2.30.1",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.9.2",
+    "portal-core-components": "github:NEONScience/portal-core-components#maintenance",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
@@ -26,6 +26,8 @@
     "commander": "^12.1.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.35.0",
     "express": "^4.19.2",
     "jsdom": "^24.1.1",
     "prettier": "^3.3.3",
@@ -39,7 +41,14 @@
     "build:sync-assets": "node ../../node_modules/portal-core-components/scripts/sync-assets.js --prettify-index --cwd-relative-public-dir-path=\"public\"",
     "lint": "(eslint src/ --ext .js,.jsx || true) && exit 0",
     "lint:fix": "(eslint --fix src/ --ext .js,.jsx || true) && exit 0",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
+    "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
+    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/prototype-data --publish=3011:3011 portal-react-apps/prototype-data:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data --publish=3000:3000 portal-react-apps/prototype-data:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run build",
+    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/prototype-data/public --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base npm run build:sync-assets"
   },
   "browserslist": [
     ">0.2%",

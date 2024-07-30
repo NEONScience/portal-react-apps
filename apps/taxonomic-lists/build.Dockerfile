@@ -1,5 +1,5 @@
 FROM portal-react-apps:latest-builder-base AS builder-base
-FROM node:22.5-alpine
+FROM portal-react-apps/node:current
 
 EXPOSE 3000
 EXPOSE 3001

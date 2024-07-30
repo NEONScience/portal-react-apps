@@ -1,4 +1,4 @@
-FROM node:22.5-alpine AS builder
+FROM portal-react-apps/node:current AS builder
 
 ARG YARN_VERSION
 

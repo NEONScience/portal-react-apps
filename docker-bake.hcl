@@ -1,5 +1,8 @@
+variable "NODE_VERSION" {
+  default = "22.5"
+}
 variable "YARN_VERSION" {
-  default = "4.3.1"
+  default = ""
 }
 
 group "default" {
@@ -21,6 +24,9 @@ target "base" {
   tags = ["portal-react-apps:latest-builder-base"]
   dockerfile = "build.Dockerfile"
   no-cache = true
+  contexts = {
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
+  }
 }
 
 target "data-availability" {
@@ -31,7 +37,8 @@ target "data-availability" {
   dockerfile = "apps/data-availability/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }
 
@@ -43,7 +50,8 @@ target "data-product-detail" {
   dockerfile = "apps/data-product-detail/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }
 
@@ -55,7 +63,8 @@ target "explore-data-products" {
   dockerfile = "apps/explore-data-products/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }
 
@@ -67,7 +76,8 @@ target "prototype-data" {
   dockerfile = "apps/prototype-data/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }
 
@@ -79,7 +89,8 @@ target "sample-explorer" {
   dockerfile = "apps/sample-explorer/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }
 
@@ -91,6 +102,7 @@ target "taxonomic-lists" {
   dockerfile = "apps/taxonomic-lists/build.Dockerfile"
   no-cache = true
   contexts = {
-    "portal-react-apps:latest-builder-base": "target:base"
+    "portal-react-apps:latest-builder-base" = "target:base"
+    "portal-react-apps/node:current" = "docker-image://node:${NODE_VERSION}-alpine"
   }
 }

@@ -312,6 +312,7 @@ const App: React.FC = (): JSX.Element => {
       <Grid container className={classes.infoContainer}>
         <Grid item xs={12} className={classes.introTextContainer}>
           <Typography variant="subtitle1">
+            {/* eslint-disable */}
             The availability chart and site map below show the combination of product, site, and month
             where data are currently available, and distinguishes between provisional and release data
             availability. Currently, the chart only captures {dataAvaLink} (i.e., is there a data record
@@ -321,6 +322,7 @@ const App: React.FC = (): JSX.Element => {
             data included in that release are displayed. You must select "Latest and Provisional" to see
             provisional data availability. See {dataRevReleaseLink} for more details about
             the differences between these data.
+            {/* eslint-enable */}
           </Typography>
         </Grid>
         <Grid item xs={12}>

@@ -1,8 +1,13 @@
 {
-  "extends": ["react-app", "airbnb", "plugin:jsx-a11y/recommended"],
-  "plugins": ["jsx-a11y"],
+  "extends": [
+    "../../.eslintrc.json",
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "plugins": ["react", "jsx-a11y"],
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": "latest",
     "ecmaFeatures": {
       "impliedStrict": true,
       "jsx": true

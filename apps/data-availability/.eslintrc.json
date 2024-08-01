@@ -1,10 +1,9 @@
 {
   "extends": [
     "../../.eslintrc.json",
+    "airbnb",
+    "airbnb/hooks",
     "airbnb-typescript",
-    "react-app",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:jsx-a11y/recommended"
   ],
   "plugins": ["@typescript-eslint", "react", "jsx-a11y"],
@@ -23,8 +22,18 @@
     "server.js"
   ],
   "rules": {
+    "max-len": ["warn", 120],
+    "prefer-destructuring": "off",
+    "no-unreachable-loop": "off",
+    "no-restricted-syntax": "off",
+    "object-shorthand": "off",
+    "@typescript-eslint/no-use-before-define": "off",
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/space-infix-ops": "off",
-    "react/jsx-fragments": "off"
+    "@typescript-eslint/no-unused-vars": "off",
+    "react/jsx-fragments": "off",
+    "react/function-component-definition": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/jsx-props-no-spreading": "off"
   }
 }

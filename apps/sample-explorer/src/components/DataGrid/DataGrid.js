@@ -15,17 +15,20 @@ class DataGrid extends Component {
     this.onGridReady = this.onGridReady.bind(this);
   }
 
+  handleLoading() {
+    this.api.setGridOption("loading", this.props.isLoading === true ? true : false);
+  }
+
   onGridReady(params) {
     this.api = params.api;
     this.columnApi = params.columnApi;
     params.api.sizeColumnsToFit();
-    if (this.state.isLoading) {
-      this.api.showLoadingOverlay();
-    }
+    this.handleLoading();
   }
   componentDidUpdate() {
     if (this.api !== null && typeof this.api !== "undefined") {
-      this.api.setColumnDefs(this.props.columnDefs);
+      this.handleLoading();
+      this.api.updateGridOptions({ columnDefs: this.props.columnDefs })
       this.api.redrawRows();
       this.api.hideOverlay();
       if (!this.props.rowData || this.props.rowData.length <= 0) {

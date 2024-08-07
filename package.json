@@ -9,6 +9,28 @@
   "workspaces": [
     "apps/*"
   ],
+  "resolutions": {
+    "@material-ui/pickers": "^3.3.11",
+    "css-line-break": "^2.1.0",
+    "fast-deep-equal": "^3.1.3",
+    "html2canvas": "^1.4.1",
+    "html2canvas/css-line-break": "^2.1.0",
+    "html2canvas/text-segmentation": "^1.0.3",
+    "jspdf": "^2.5.1",
+    "jspdf/html2canvas": "^1.4.1",
+    "jspdf-autotable": "^3.8.2",
+    "material-table@npm:^1.69.3/@material-ui/pickers": "^3.3.11",
+    "material-table/fast-deep-equal": "^3.1.3",
+    "material-table/jspdf": "^2.5.1",
+    "material-table/jspdf-autotable": "^3.8.2",
+    "material-table/prop-types": "^15.8.1",
+    "react-beautiful-dnd/react-redux": "^8.1.3",
+    "react-markdown/inline-style-parser": "^0.2.3",
+    "react-markdown/style-to-object": "^1.0.6",
+    "react-is": "^17.0.2",
+    "prop-types": "^15.8.1",
+    "text-segmentation": "^1.0.3"
+  },
   "scripts": {
     "ci": "yarn install --immutable",
     "ci:prod": "yarn install --immutable",

@@ -8,6 +8,8 @@ import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+
 import DataProductContext from './DataProductContext';
 
 import SkeletonSection from './Sections/SkeletonSection';
@@ -32,7 +34,14 @@ const DataProductPage = () => {
   const product = getCurrentProductFromState(state);
   const {
     app: { status: appStatus, error: appError },
-    route: { productCode, release: currentRelease },
+    route: {
+      productCode,
+      release: currentRelease,
+      bundle: {
+        doiProductCode,
+        parentCodes,
+      },
+    },
     data: {
       releases,
       aopVizProducts,
@@ -112,8 +121,11 @@ const DataProductPage = () => {
   }, [title, currentRelease]);
 
   const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
-  const showVizSection = !isTombstoned
-    && (timeSeriesProductCodes.includes(productCode) || aopVizProducts.includes(productCode));
+  const isVizProduct = (timeSeriesProductCodes.includes(productCode)
+    || aopVizProducts.includes(productCode));
+  const isBundleChild = (parentCodes.length > 0)
+    && (isStringNonEmpty(doiProductCode) || Array.isArray(doiProductCode));
+  const showVizSection = !isTombstoned && (isVizProduct && !isBundleChild);
 
   // Establish sidebar links mapping to sections
   const sidebarLinks = [

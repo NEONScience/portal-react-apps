@@ -10,6 +10,7 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -36,19 +37,26 @@ const VisualizationsSection = (props) => {
     return <SkeletonSection {...props} />;
   }
 
+  let defaultVizMessage = 'This product does not currently have any visualizations.';
+
   // Build an object containing rendered visualization nodes
   const viz = {};
   if (timeSeriesProductCodes.includes(productCode)) {
-    viz.TIME_SERIES = {
-      name: 'Time Series Viewer',
-      node: (
-        <TimeSeriesViewer
-          key="timeSeriesViewer"
-          productCode={productCode}
-          release={currentRelease}
-        />
-      ),
-    };
+    const hasData = exists(product) && existsNonEmpty(product.siteCodes);
+    if (!hasData) {
+      defaultVizMessage = 'This product does not currently have any data to display.';
+    } else {
+      viz.TIME_SERIES = {
+        name: 'Time Series Viewer',
+        node: (
+          <TimeSeriesViewer
+            key="timeSeriesViewer"
+            productCode={productCode}
+            release={currentRelease}
+          />
+        ),
+      };
+    }
   }
   if (aopVizProducts.includes(productCode)) {
     viz.AOP = {
@@ -84,7 +92,7 @@ const VisualizationsSection = (props) => {
         Object.keys(viz).map((k) => viz[k].node)
       ) : (
         <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
-          This product does not currently have any visualizations.
+          {defaultVizMessage}
         </Typography>
       )}
     </Section>

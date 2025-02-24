@@ -1,4 +1,4 @@
-# Portal React Apps
+# Portal React Apps!
 
 This repository is a collection of the React Single Page Applications (SPAs) that make up several
 pages and sections of the [NEON Data Portal](https://data.neonscience.org). SPAs are organized in

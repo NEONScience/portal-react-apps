@@ -46,11 +46,11 @@
     "eject": "react-scripts eject",
     "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
     "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
-    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/prototype-data --publish=3011:3011 portal-react-apps/prototype-data:latest-builder-base yarn run start",
-    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data --publish=3000:3000 portal-react-apps/prototype-data:latest-builder-base yarn run start:prod",
-    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run build",
-    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run lint",
-    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/prototype-data/public --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base npm run build:sync-assets"
+    "start:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/prototype-data --publish=3011:3011 portal-react-apps/prototype-data:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data --publish=3000:3000 portal-react-apps/prototype-data:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/prototype-data/build --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run build",
+    "lint:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/prototype-data/public --workdir=/app/apps/prototype-data portal-react-apps/prototype-data:latest-builder-base npm run build:sync-assets"
   },
   "browserslist": [
     ">0.2%",

@@ -35,8 +35,6 @@
     "ci": "yarn install --immutable",
     "ci:prod": "yarn install --immutable",
     "build:docker-clean": "docker image rm portal-react-apps:latest-builder-base",
-    "build:docker-build-image": "docker buildx build --no-cache --build-arg YARN_VERSION=$npm_package_config_yarnVersion --tag portal-react-apps:latest-builder-base --file ./build.Dockerfile .",
-    "build:docker-image": "(npm run build:docker-clean || true) && npm run build:docker-build-image",
     "build:docker-all": "docker buildx bake --set *.args.YARN_VERSION=$npm_package_config_yarnVersion --file docker-bake.hcl"
   }
 }

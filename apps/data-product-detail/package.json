@@ -18,7 +18,7 @@
     "lodash": "^4.17.21",
     "material-table": "^1.69.3",
     "moment": "2.30.1",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.11.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#kube",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.1.0",
@@ -54,11 +54,11 @@
     "eject": "react-scripts eject",
     "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
     "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
-    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/data-product-detail --publish=3012:3012 portal-react-apps/data-product-detail:latest-builder-base yarn run start",
-    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --workdir=/app/apps/data-product-detail --publish=3000:3000 portal-react-apps/data-product-detail:latest-builder-base yarn run start:prod",
-    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base yarn run build",
-    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base yarn run lint",
-    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/data-product-detail/public --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base npm run build:sync-assets"
+    "start:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/data-product-detail --publish=3012:3012 portal-react-apps/data-product-detail:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --workdir=/app/apps/data-product-detail --publish=3000:3000 portal-react-apps/data-product-detail:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base yarn run build",
+    "lint:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/data-product-detail/public --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base npm run build:sync-assets"
   },
   "browserslist": {
     "production": [

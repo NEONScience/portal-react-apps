@@ -17,7 +17,7 @@
     "datatables.net-responsive-bs": "^2.5.1",
     "jquery": "~3.7.1",
     "lodash": "^4.17.21",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.11.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#kube",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -39,11 +39,11 @@
     "lint:fix": "(npx eslint --fix src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",
     "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
     "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
-    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/taxonomic-lists --publish=3001:3001 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start",
-    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists --publish=3000:3000 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start:prod",
-    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run build",
-    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run lint",
-    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/taxonomic-lists/public --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base npm run build:sync-assets"
+    "start:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/taxonomic-lists --publish=3001:3001 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists --publish=3000:3000 portal-react-apps/taxonomic-lists:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/taxonomic-lists/build --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run build",
+    "lint:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/taxonomic-lists/public --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base npm run build:sync-assets"
   },
   "devDependencies": {
     "commander": "^12.1.0",

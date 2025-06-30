@@ -56,9 +56,10 @@ target "base" {
 target "portal-data-availability" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-data-availability")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-data-availability")]
   dockerfile = "apps/data-availability/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"
@@ -70,9 +71,10 @@ target "portal-data-availability" {
 target "portal-data-product-detail" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-data-products")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-data-products")]
   dockerfile = "apps/data-product-detail/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"
@@ -84,9 +86,10 @@ target "portal-data-product-detail" {
 target "portal-explore-data-products" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-browse")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-browse")]
   dockerfile = "apps/explore-data-products/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"
@@ -98,9 +101,10 @@ target "portal-explore-data-products" {
 target "portal-prototype-data" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-prototype-data")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-prototype-data")]
   dockerfile = "apps/prototype-data/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"
@@ -112,9 +116,10 @@ target "portal-prototype-data" {
 target "portal-samples" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-samples")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-samples")]
   dockerfile = "apps/sample-explorer/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"
@@ -126,9 +131,10 @@ target "portal-samples" {
 target "portal-taxon" {
   inherits = ["bootstrap", "docker-metadata-action"]
   args = {
+    DOCKER_META_IMAGES = replace (target.docker-metadata-action.args.DOCKER_META_IMAGES, "__service__", "portal-react-taxon")
     YARN_VERSION = "${YARN_VERSION}"
   }
-  tags = [for tag in target.docker-metadata-action.tags : tag]
+  tags = [for tag in target.docker-metadata-action.tags : replace(tag, "__service__", "portal-react-taxon")]
   dockerfile = "apps/taxonomic-lists/bake.Dockerfile"
   contexts = {
     "portal-react-apps-parent:latest-builder-base" = "target:base"

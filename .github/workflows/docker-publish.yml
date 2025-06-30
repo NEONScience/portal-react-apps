@@ -57,11 +57,11 @@ jobs:
           source: .
           targets: |
             portal-data-availability
-            #portal-data-product-detail
-            #portal-explore-data-products
-            #portal-prototype-data
-            #portal-samples
-            #portal-taxon
+            portal-data-product-detail
+            portal-explore-data-products
+            portal-prototype-data
+            portal-samples
+            portal-taxon
           files: |
             ./docker-bake.hcl
             ${{ steps.meta.outputs.bake-file }}

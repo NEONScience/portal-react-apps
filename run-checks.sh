@@ -2,10 +2,6 @@
 
 LOC=$(pwd)
 
-echo;
-echo 'Building docker images...';
-npm run build:docker-all
-
 cd $LOC
 echo;
 echo 'Running checks...';

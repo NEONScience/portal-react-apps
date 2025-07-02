@@ -1,6 +1,6 @@
 {
   "name": "sample-explorer",
-  "version": "2.12.0",
+  "version": "2.13.0",
   "private": true,
   "homepage": "http://localhost/sample-explorer/",
   "dependencies": {
@@ -18,7 +18,7 @@
     "d3-transition": "^1.3.2",
     "js-file-download": "^0.4.12",
     "json2csv": "^5.0.7",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.12.0",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.13.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-d3-graph": "^2.6.0",
@@ -50,11 +50,11 @@
     "lint:watch": "npm run lint -- --watch",
     "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
     "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
-    "start:docker": "docker run --rm --tty --interactive --workdir=/app/apps/sample-explorer --publish=3000:3000 portal-react-apps/sample-explorer:latest-builder-base yarn run start",
-    "start:docker-prod": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/sample-explorer/build --workdir=/app/apps/sample-explorer --publish=3000:3000 portal-react-apps/sample-explorer:latest-builder-base yarn run start:prod",
-    "build:docker": "docker run --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/sample-explorer/build --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base yarn run build",
-    "lint:docker": "docker run --rm --tty --interactive --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base yarn run lint",
-    "build:docker-sync-assets": "docker run --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/sample-explorer/public --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base npm run build:sync-assets"
+    "start:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/sample-explorer --publish=3000:3000 portal-react-apps/sample-explorer:latest-builder-base yarn run start",
+    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/sample-explorer/build --workdir=/app/apps/sample-explorer --publish=3000:3000 portal-react-apps/sample-explorer:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/sample-explorer/build --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base yarn run build",
+    "lint:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base yarn run lint",
+    "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/sample-explorer/public --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base npm run build:sync-assets"
   },
   "devDependencies": {
     "commander": "^12.1.0",

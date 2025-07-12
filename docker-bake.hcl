@@ -5,7 +5,7 @@ variable "YARN_VERSION" {
   default = "4.3.1"
 }
 variable "PORTAL_WEB_SERVER_BUILDER_TAG" {
-  default = "v2.0.0"
+  default = "v2.1.0"
 }
 
 # Populated from GitHub Action

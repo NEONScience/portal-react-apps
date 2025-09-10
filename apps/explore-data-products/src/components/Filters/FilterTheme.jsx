@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import Link from '@material-ui/core/Link';
 import Tooltip from '@material-ui/core/Tooltip';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -10,6 +10,7 @@ import FilterBase from '../FilterBase';
 import FilterCheckBox from '../FilterCheckBox';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
+import dataThemeDesc from '../../util/neonDataExtrator';
 
 const FilterTheme = (props) => {
   const { skeleton } = props;
@@ -40,6 +41,15 @@ const FilterTheme = (props) => {
       <ul>
         {filterItems[filterKey].map((filterItem) => {
           const countTitle = `data products are a part of the ${filterItem.name} theme`;
+          const url = 'https://www.neonscience.org/data-samples/data-themes/';
+          const releasesLink = (
+            <div>
+              <Link href={url + filterItem.name.replace(' ', '-')} target="_blank">
+                {filterItem.name}
+              </Link>
+            </div>
+          );
+
           return (
             <li key={filterItem.value}>
               <FilterCheckBox
@@ -48,7 +58,12 @@ const FilterTheme = (props) => {
                     <div style={{ margin: Theme.spacing(0.5, 1, 0, 0) }}>
                       <DataThemeIcon theme={filterItem.value} size={3} />
                     </div>
-                    <Tooltip title={countTitle} arrow>
+                    <Tooltip
+                      title={`${(dataThemeDesc[filterItem.name] || countTitle)} ${releasesLink}`}
+                      arrow
+                      right-start
+                      interactive
+                    >
                       <span>
                         {filterItem.name}
                       </span>

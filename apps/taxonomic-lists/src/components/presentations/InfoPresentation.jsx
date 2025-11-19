@@ -45,7 +45,7 @@ const InfoPresentation = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} lg={6}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
-                Taxonomic lists are compiled from a variety of published sources and are used to:
+                Taxonomic lists are compiled from a variety of published sources and are used primarily by staff scientists to:
               </Typography>
               <ol className={classes.ol}>
                 <li>
@@ -55,10 +55,10 @@ const InfoPresentation = () => {
                   Constrain data entry to known geographic ranges
                 </li>
                 <li>
-                  Track rare, threatened and endangered species
+                  Track rare, threatened, and endangered species
                 </li>
                 <li>
-                  Provide information on means of establishment (i.e. native vs introduced)
+                  Provide information on means of establishment (i.e., native vs introduced)
                 </li>
                 <li>
                   Provide higher taxonomy
@@ -68,8 +68,9 @@ const InfoPresentation = () => {
                 </li>
               </ol>
               <Typography variant="body1">
-                The availability and accuracy of source data varies by taxonomic group. NEON anticipates
-                these lists will be updated and refined over time.
+                These lists are <strong>not</strong> species checklists, or lists of taxa that have been 
+                observed in the field. The availability and accuracy of source data varies by taxonomic group. 
+                NEON anticipates these lists will be updated and refined over time.
               </Typography>
             </Grid>
             <Grid item xs={12} lg={6}>

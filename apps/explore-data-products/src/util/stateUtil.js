@@ -484,6 +484,10 @@ export const parseProductsByReleaseData = (state, release) => {
       const externalHost = ExternalHost.getProductSpecificInfo(product.productCode);
       if (!isRelease && exists(externalHost) && (externalHost.allowNoAvailability === true)) {
         appliedDataStatus = 'Available';
+      } else if (Array.isArray(product.releases) && (product.releases.length > 0)) {
+        // Ensure that the product is not available in any previous release
+        // for it to be considered "coming soon"
+        appliedDataStatus = 'Available';
       } else {
         appliedDataStatus = 'Coming Soon';
       }

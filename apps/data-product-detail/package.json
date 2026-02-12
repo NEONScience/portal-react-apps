@@ -1,6 +1,6 @@
 {
   "name": "portal-data-products",
-  "version": "2.14.2",
+  "version": "2.15.0",
   "private": true,
   "homepage": "http://localhost/data-products/",
   "dependencies": {

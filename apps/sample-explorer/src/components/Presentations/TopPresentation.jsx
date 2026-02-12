@@ -15,7 +15,7 @@ const TopPresentation = (props) => {
   } = props;
 
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
     { name: 'Samples & Specimens', href: RouteService.getSamplesPath() },
     { name: 'Sample Explorer' },
   ];

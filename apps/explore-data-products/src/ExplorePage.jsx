@@ -72,8 +72,8 @@ const ExplorePage = (props) => {
 
   // Breadcrumbs
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
-    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data Portal', href: RouteService.getDataProductExplorePath() },
     { name: 'Explore Data Products' },
   ];
 

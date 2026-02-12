@@ -173,8 +173,8 @@ const App: React.FC = (): JSX.Element => {
 
   const title = 'Data Availability';
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
-    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data Portal', href: RouteService.getDataProductExplorePath() },
     { name: title },
   ];
   const sidebarContent: JSX.Element = (

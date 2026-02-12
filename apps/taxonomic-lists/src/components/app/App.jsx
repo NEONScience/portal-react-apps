@@ -11,7 +11,7 @@ import RouteService from 'portal-core-components/lib/service/RouteService';
 
 const App = () => {
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
     { name: 'Samples & Specimens', href: RouteService.getSamplesPath() },
     { name: "Taxonomic Lists" },
   ];

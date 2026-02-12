@@ -487,7 +487,16 @@ export const parseProductsByReleaseData = (state, release) => {
       } else if (Array.isArray(product.releases) && (product.releases.length > 0)) {
         // Ensure that the product is not available in any previous release
         // for it to be considered "coming soon"
-        appliedDataStatus = 'Available';
+        const hasNonLatest = product.releases.some((checkRelease) => (
+          exists(checkRelease)
+          && isStringNonEmpty(checkRelease.release)
+          && !ReleaseService.isLatestNonProv(checkRelease.release)
+        ));
+        if (hasNonLatest) {
+          appliedDataStatus = 'Available';
+        } else {
+          appliedDataStatus = 'Coming Soon';
+        }
       } else {
         appliedDataStatus = 'Coming Soon';
       }

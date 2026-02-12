@@ -1,6 +1,6 @@
 {
   "name": "explore-data-products",
-  "version": "2.14.2",
+  "version": "2.15.0",
   "private": true,
   "homepage": "https://localhost/data-products/explore",
   "dependencies": {
@@ -14,7 +14,7 @@
     "jspdf": "^2.5.1",
     "lodash": "^4.17.21",
     "moment": "2.30.1",
-    "portal-core-components": "github:NEONScience/portal-core-components#v2.14.1",
+    "portal-core-components": "github:NEONScience/portal-core-components#v2.15.0",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

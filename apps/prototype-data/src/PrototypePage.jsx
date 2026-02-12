@@ -42,8 +42,8 @@ const PrototypePage = () => {
 
   // Breadcrumbs
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
-    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data Portal', href: RouteService.getDataProductExplorePath() },
   ];
   if (routeUuid) {
     breadcrumbs.push({ name: 'Prototype Datasets', href: RouteService.getPrototypeDatasetsPath() });

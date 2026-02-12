@@ -81,9 +81,8 @@ const DataProductPage = () => {
   let title = 'Data Product';
 
   const breadcrumbs = [
-    { name: 'Data & Samples', href: RouteService.getDataSamplesPath() },
-    { name: 'Data Portal', href: RouteService.getDataSamplesDataPath() },
-    { name: 'Explore Data Products', href: RouteService.getDataProductExplorePath() },
+    { name: 'Data', href: RouteService.getDataSamplesDataPath() },
+    { name: 'Data Portal', href: RouteService.getDataProductExplorePath() },
   ];
   if (productCode) {
     if (currentRelease) {

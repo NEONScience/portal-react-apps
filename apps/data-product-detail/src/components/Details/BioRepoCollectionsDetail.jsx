@@ -70,7 +70,7 @@ const BioRepoCollectionsDetail = () => {
     return null;
   }
   return (
-    <Detail title="Biorepository Collections">
+    <Detail title="Biorepository Sample Types">
       <List dense className={classes.list}>
         {collections.map((collection) => {
           const {

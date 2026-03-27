@@ -2,30 +2,29 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector, batch } from 'react-redux';
 
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
-} from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+} from '@mui/material/Autocomplete';
+import Skeleton from '@mui/material/Skeleton';
+import { Theme as MuiTheme } from '@mui/material/styles';
 
-import LocationIcon from '@material-ui/icons/MyLocation';
-import SearchIcon from '@material-ui/icons/Search';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import LocationIcon from '@mui/icons-material/MyLocation';
+import SearchIcon from '@mui/icons-material/Search';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
@@ -69,13 +68,13 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       padding: muiTheme.spacing(2),
     },
     autocompleteInput: {
-      padding: `${muiTheme.spacing(2)}px !important`,
+      padding: `${muiTheme.spacing(2)} !important`,
     },
     autocompletePopupOpen: {
       transform: 'rotate(0) !important',
     },
     autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)}px !important`,
+      paddingLeft: `${muiTheme.spacing(1)} !important`,
       paddingTop: '6px !important',
     },
     autocompleteLabelShrink: {
@@ -262,7 +261,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
   };
   const renderSiteSelect = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading) {
-      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+      return <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />;
     }
     return (
       <Autocomplete
@@ -278,7 +277,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
         groupBy={(option: SiteSelectDataOption): string => option.stateName}
-        getOptionSelected={(
+        isOptionEqualToValue={(
           option: SiteSelectDataOption,
           value: SiteSelectDataOption,
         ): boolean => (option.siteCode.localeCompare(value.siteCode) === 0)}
@@ -296,6 +295,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
           ),
         })}
         renderOption={(
+          props: React.HTMLAttributes<HTMLLIElement>,
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
         ): JSX.Element => renderOption(value, renderOptionState)}
@@ -334,9 +334,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 
   const renderSelectedSite = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading || !selectedSiteOption) {
-      return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
-      );
+      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
     }
     return (
       <Card className={classes.cardSelectedSite}>
@@ -347,6 +345,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 target="_blank"
                 rel="noreferrer noopener"
                 href={RouteService.getFieldSiteDetailPath(selectedSiteOption.siteCode)}
+                underline="hover"
               >
                 {selectedSiteOption.siteDescription}
               </Link>
@@ -399,7 +398,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 
   return (
     <div id="site-select" className={classes.section}>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Site
         </Typography>

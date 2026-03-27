@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, Suspense } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
+import { Theme as MuiTheme } from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
@@ -76,7 +75,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
   );
 
   const skeleton: JSX.Element = (
-    <Skeleton variant="rect" width="100%" height={600} className={classes.skeleton} />
+    <Skeleton variant="rectangular" width="100%" height={600} className={classes.skeleton} />
   );
   const renderLocations = (): JSX.Element => {
     if (((siteCodes.length <= 0) && isLoading) || isLoading) {

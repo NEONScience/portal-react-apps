@@ -2,29 +2,28 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector, batch } from 'react-redux';
 
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
-} from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+} from '@mui/material/Autocomplete';
+import Skeleton from '@mui/material/Skeleton';
+import { Theme as MuiTheme } from '@mui/material/styles';
 
-import SearchIcon from '@material-ui/icons/Search';
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
+
+import SearchIcon from '@mui/icons-material/Search';
 
 import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
@@ -86,13 +85,13 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
       padding: muiTheme.spacing(2),
     },
     autocompleteInput: {
-      padding: `${muiTheme.spacing(2)}px !important`,
+      padding: `${muiTheme.spacing(2)} !important`,
     },
     autocompletePopupOpen: {
       transform: 'rotate(0) !important',
     },
     autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)}px !important`,
+      paddingLeft: `${muiTheme.spacing(1)} !important`,
       paddingTop: '6px !important',
     },
     autocompleteLabelShrink: {
@@ -266,9 +265,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   const renderDataProductSelect = (): JSX.Element => {
     if ((products.length <= 0) || isLoading) {
-      return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
-      );
+      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
     }
     return (
       <Autocomplete
@@ -284,7 +281,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
         groupBy={(option: DataProductSelectOption): string => option.productScienceTeam}
-        getOptionSelected={(
+        isOptionEqualToValue={(
           option: DataProductSelectOption,
           value: DataProductSelectOption,
         ): boolean => (option.productCode.localeCompare(value.productCode) === 0)}
@@ -309,6 +306,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
           },
         })}
         renderOption={(
+          props: React.HTMLAttributes<HTMLLIElement>,
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
         ): JSX.Element => renderOption(value, renderOptionState)}
@@ -393,9 +391,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   const renderSelectedProduct = (): JSX.Element => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
-      return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
-      );
+      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
     }
     return (
       <Card className={classes.cardSelectedProduct}>
@@ -406,6 +402,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
                 target="_blank"
                 rel="noreferrer noopener"
                 href={RouteService.getProductDetailPath(initialProduct.productCode)}
+                underline="hover"
               >
                 {initialProduct.productName}
               </Link>
@@ -429,7 +426,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   return (
     <div id="data-product-select" className={classes.section}>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Data Product
         </Typography>

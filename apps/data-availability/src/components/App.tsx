@@ -2,15 +2,14 @@ import React, { useEffect, useCallback, useMemo } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { batch, useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Divider from '@material-ui/core/Divider';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Divider from '@mui/material/Divider';
+import { Theme as MuiTheme } from '@mui/material/styles';
+
+import { makeStyles } from '@mui/styles';
+import createStyles from '@mui/styles/createStyles';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
@@ -286,6 +285,7 @@ const App: React.FC = (): JSX.Element => {
       target="_blank"
       rel="noreferrer noopener"
       href={RouteService.getDataAvailabilityPath()}
+      underline="hover"
     >
       technical availability
     </Link>
@@ -295,6 +295,7 @@ const App: React.FC = (): JSX.Element => {
       target="_blank"
       rel="noreferrer noopener"
       href={RouteService.getDataRevisionsReleasePath()}
+      underline="hover"
     >
       Data Product Revisions and Releases
     </Link>
@@ -338,6 +339,7 @@ const App: React.FC = (): JSX.Element => {
                   target="_blank"
                   rel="noreferrer noopener"
                   href={RouteService.getDataAvailabilityPath()}
+                  underline="hover"
                 >
                   NEON Data Availability
                 </Link>

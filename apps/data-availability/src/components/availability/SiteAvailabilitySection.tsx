@@ -2,15 +2,14 @@ import React, { useMemo, Suspense } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Skeleton from '@mui/material/Skeleton';
+import { Theme as MuiTheme } from '@mui/material/styles';
+
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
@@ -74,7 +73,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
     ? new Array<Record<string, unknown>>()
     : (focalSite as Site).dataProducts;
   const skeleton: JSX.Element = (
-    <Skeleton variant="rect" width="100%" height={400} className={classes.skeleton} />
+    <Skeleton variant="rectangular" width="100%" height={400} className={classes.skeleton} />
   );
   const renderAvailability = (): JSX.Element => {
     if ((dataProducts.length <= 0) && isLoading) {
@@ -138,6 +137,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
               target="_blank"
               rel="noreferrer noopener"
               href={RouteService.getDataRevisionsReleasePath()}
+              underline="hover"
             >
               Data Product Revisions and Releases
             </Link>

@@ -2,6 +2,7 @@ import React from 'react';
 import { ReplaySubject } from 'rxjs';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
+import { ThemeProvider, createTheme } from '@material-ui/core/styles';
 
 import ExploreContext from './ExploreContext';
 import ExplorePage from './ExplorePage';
@@ -13,12 +14,15 @@ import ExplorePage from './ExplorePage';
 // created (e.g. through scrolling, filtering, etc.). Do this here so that the ReplaySubject
 // is invoked exactly once at initiation, but not kept in state.
 const highestOrderDownloadSubject = new ReplaySubject(1);
+const theme = createTheme();
 
 export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <ExploreContext.Provider>
-        <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
+        <ThemeProvider theme={theme}>
+          <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
+        </ThemeProvider>
       </ExploreContext.Provider>
     </NeonRouter>
   );

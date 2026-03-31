@@ -5,23 +5,23 @@ import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Hidden from '@material-ui/core/Hidden';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import ClearIcon from '@material-ui/icons/Clear';
-import SearchIcon from '@material-ui/icons/Search';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Hidden from '@mui/material/Hidden';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 
 import MaterialTable, { MTableToolbar } from 'material-table';
 
@@ -229,7 +229,7 @@ const IssueLogDetail = () => {
       ? {
         borderLeft: `1px dotted ${Theme.palette.grey[100]}`,
         paddingLeft: Theme.spacing(4),
-        boxShadow: `${Theme.spacing(-10)}px ${Theme.spacing(0)}px ${Theme.palette.grey[50]}`,
+        boxShadow: `${Theme.spacing(-10)} ${Theme.spacing(0)} ${Theme.palette.grey[50]}`,
       } : {}),
   }, {
     title: 'Resolution',
@@ -505,7 +505,7 @@ const IssueLogDetail = () => {
 
   return (
     <>
-      <Hidden smDown>
+      <Hidden mdDown>
         <Detail seleniumKey="issue-log">
           <MaterialTable
             title=""
@@ -531,9 +531,10 @@ const IssueLogDetail = () => {
         <Detail title="Issue Log" seleniumKey="issue-log">
           <Grid container spacing={1}>
             <Grid item xs={6} sm={4}>
-              <FormControl fullWidth>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-column">Sort By</InputLabel>
                 <Select
+                  variant="standard"
                   value={xsSortColumn}
                   onChange={handleChangeXsSortColumn}
                   inputProps={{ name: 'sort-column', id: 'sort-column' }}
@@ -548,9 +549,10 @@ const IssueLogDetail = () => {
               </FormControl>
             </Grid>
             <Grid item xs={6} sm={4}>
-              <FormControl fullWidth>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-direction">Sort Direction</InputLabel>
                 <Select
+                  variant="standard"
                   value={xsSortDirection}
                   onChange={handleChangeXsSortDirection}
                   inputProps={{ name: 'sort-direction', id: 'sort-direction' }}
@@ -563,9 +565,10 @@ const IssueLogDetail = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="search" shrink>Search Issues</InputLabel>
                 <TextField
+                  variant="standard"
                   id="search"
                   label=" "
                   onChange={handleChangeXsSearch}
@@ -580,7 +583,7 @@ const IssueLogDetail = () => {
                     ),
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton aria-label="clear search term" onClick={handleClearXsSearch}>
+                        <IconButton aria-label="clear search term" onClick={handleClearXsSearch} size="large">
                           <ClearIcon />
                         </IconButton>
                       </InputAdornment>

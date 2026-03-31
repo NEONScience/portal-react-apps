@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -101,7 +101,10 @@ const TaxonDetail = ({ dataProductCode }) => {
         <ul className={classes.linkList}>
           {taxonTypes.map((taxonType) => (
             <li key={taxonType} className={classes.link}>
-              <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
+              <Link
+                href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}
+                underline="hover"
+              >
                 {parseTaxonType(taxonType)}
               </Link>
             </li>

@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
@@ -13,9 +13,11 @@ export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <DataProductContext.Provider>
-        <ThemeProvider theme={theme}>
-          <DataProductPage />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <DataProductPage />
+          </ThemeProvider>
+        </StyledEngineProvider>
       </DataProductContext.Provider>
     </NeonRouter>
   );

@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -93,6 +93,7 @@ const TombstoneNotice = () => {
         bundleParentLink = (
           <Link
             href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
+            underline="hover"
           >
             {`${bundleParentName} (${bundleParentCode})`}
           </Link>
@@ -104,7 +105,10 @@ const TombstoneNotice = () => {
       if (latestAvailableProductRelease && latestAvailableProductRelease.release) {
         if (latestAvailableProductRelease.release.localeCompare(tombstonedRelease) !== 0) {
           const dataProductDetailLink = (
-            <Link href={RouteService.getProductDetailPath(appliedProduct.productCode)}>
+            <Link
+              href={RouteService.getProductDetailPath(appliedProduct.productCode)}
+              underline="hover"
+            >
               newer release
             </Link>
           );
@@ -119,7 +123,7 @@ const TombstoneNotice = () => {
       }
     }
     const contactUsLink = (
-      <Link href={RouteService.getContactUsPath()}>
+      <Link href={RouteService.getContactUsPath()} underline="hover">
         Contact Us
       </Link>
     );

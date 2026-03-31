@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Tooltip from '@material-ui/core/Tooltip';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Tooltip from '@mui/material/Tooltip';
 
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -104,6 +104,7 @@ const BioRepoCollectionsDetail = () => {
                     <IconButton
                       color="primary"
                       onClick={() => { downloadCollection(collectionDownloadUrl); }}
+                      size="large"
                     >
                       <DownloadIcon />
                     </IconButton>

@@ -1,7 +1,7 @@
 import React from 'react';
 import dateFormat from 'dateformat';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';

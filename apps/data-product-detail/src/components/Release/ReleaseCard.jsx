@@ -4,17 +4,17 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import CopyIcon from '@material-ui/icons/Assignment';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import CopyIcon from '@mui/icons-material/Assignment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -127,6 +127,7 @@ const ReleaseCard = () => {
       const bundleParentLink = !Object.keys(bundleParentData).length ? null : (
         <Link
           href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
+          underline="hover"
         >
           {`${bundleParentName} (${bundleParentCode})`}
         </Link>
@@ -156,7 +157,10 @@ const ReleaseCard = () => {
   const renderNotInReleaseNotice = () => {
     if (!showNotInReleaseNotice) return null;
     const dataProductDetailLink = (
-      <Link href={RouteService.getProductDetailPath(baseProduct.productCode)}>
+      <Link
+        href={RouteService.getProductDetailPath(baseProduct.productCode)}
+        underline="hover"
+      >
         here
       </Link>
     );
@@ -300,7 +304,11 @@ const ReleaseCard = () => {
                   title={releaseInfoTooltip}
                   className={classes.tooltip}
                 >
-                  <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                  <Link
+                    href={releaseInfoHref}
+                    className={classes.releaseInfoLink}
+                    underline="hover"
+                  >
                     {currentRelease}
                   </Link>
                 </Tooltip>

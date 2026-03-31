@@ -1,9 +1,9 @@
 import React from 'react';
 import moment from 'moment';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';

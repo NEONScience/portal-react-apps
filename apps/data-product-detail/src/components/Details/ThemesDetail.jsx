@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -30,6 +30,7 @@ const ThemesDetail = () => {
       title={theme}
       style={{ marginRight: Theme.spacing(1) }}
       href={RouteService.getThemeDetailPath(dataThemeHrefs[theme])}
+      underline="hover"
     >
       <DataThemeIcon
         theme={theme}

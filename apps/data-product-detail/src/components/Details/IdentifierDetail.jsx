@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import makeStyles from '@mui/styles/makeStyles';
+import Chip from '@mui/material/Chip';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 

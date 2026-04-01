@@ -2,24 +2,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Skeleton from '@material-ui/lab/Skeleton';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 
-import DateIcon from '@material-ui/icons/DateRange';
-import ListIcon from '@material-ui/icons/List';
-import NoneIcon from '@material-ui/icons/NotInterested';
-import ClearIcon from '@material-ui/icons/Clear';
+import DateIcon from '@mui/icons-material/DateRange';
+import ListIcon from '@mui/icons-material/List';
+import NoneIcon from '@mui/icons-material/NotInterested';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(2),
       fontSize: '1.5rem',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -115,7 +115,7 @@ const DataHeader = (props) => {
   } = state;
   const products = getCurrentProductsByRelease(state);
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const visible = catalogSummaryVisible || !belowMd;
 
   const { states: statesJSON = {} } = neonContextState.data;
@@ -417,7 +417,10 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
               placement="left"
               title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
             >
-              <IconButton onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}>
+              <IconButton
+                onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}
+                size="large"
+              >
                 {catalogSummaryVisible ? <ClearIcon /> : <ListIcon />}
               </IconButton>
             </Tooltip>

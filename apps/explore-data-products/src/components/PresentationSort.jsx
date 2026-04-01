@@ -1,27 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
-import FormControl from '@material-ui/core/FormControl';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Skeleton from '@material-ui/lab/Skeleton';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Collapse from '@mui/material/Collapse';
+import FormControl from '@mui/material/FormControl';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Skeleton from '@mui/material/Skeleton';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import SortIcon from '@material-ui/icons/SwapVert';
-import AscIcon from '@material-ui/icons/ArrowDownward';
-import DescIcon from '@material-ui/icons/ArrowUpward';
-import ClearIcon from '@material-ui/icons/Clear';
+import SortIcon from '@mui/icons-material/SwapVert';
+import AscIcon from '@mui/icons-material/ArrowDownward';
+import DescIcon from '@mui/icons-material/ArrowUpward';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(2),
       fontSize: '1.5rem',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -104,7 +104,7 @@ const PresentationSort = (props) => {
     currentProducts: { order: productOrder },
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
   const visible = sortVisible || !belowMd;
 
@@ -162,6 +162,7 @@ const PresentationSort = (props) => {
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <FormControl variant="outlined">
         <Select
+          variant="standard"
           value={sortMethod}
           aria-label="Sort Method"
           className={classes.select}
@@ -227,7 +228,7 @@ const PresentationSort = (props) => {
               placement="left"
               title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}
             >
-              <IconButton onClick={() => dispatch({ type: 'toggleSortVisibility' })}>
+              <IconButton onClick={() => dispatch({ type: 'toggleSortVisibility' })} size="large">
                 {sortVisible ? <ClearIcon /> : <SortIcon />}
               </IconButton>
             </Tooltip>

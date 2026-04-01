@@ -5,7 +5,7 @@ import { ReplaySubject } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';

@@ -4,20 +4,20 @@ import PropTypes from 'prop-types';
 
 import { ReplaySubject } from 'rxjs';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
-import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
-import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
-import AopDataViewerIcon from '@material-ui/icons/SatelliteOutlined';
+import MoreIcon from '@mui/icons-material/KeyboardArrowRight';
+import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
+import ProductDetailsIcon from '@mui/icons-material/InfoOutlined';
+import AopDataViewerIcon from '@mui/icons-material/SatelliteOutlined';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
@@ -55,14 +55,14 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'help',
   },
   releaseChipIcon: {
-    color: theme.colors.GREEN[800],
+    color: Theme.colors.GREEN[800],
     fontSize: '1em',
     marginRight: theme.spacing(0.75),
   },
   releaseChip: {
-    color: theme.colors.LIGHT_BLUE[800],
-    border: `1px solid ${theme.colors.LIGHT_BLUE[300]}`,
-    backgroundColor: theme.colors.LIGHT_BLUE[50],
+    color: Theme.colors.LIGHT_BLUE[800],
+    border: `1px solid ${Theme.colors.LIGHT_BLUE[300]}`,
+    backgroundColor: Theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
     cursor: 'help',
   },
@@ -174,7 +174,7 @@ const DataProduct = React.memo((props) => {
 
   const name = (
     <Typography variant="h6" className={classes.productName}>
-      <Link href={productHref} target="_blank">
+      <Link href={productHref} target="_blank" underline="hover">
         {productName}
       </Link>
     </Typography>
@@ -227,6 +227,7 @@ const DataProduct = React.memo((props) => {
             component="button"
             className={classes.moreLink}
             onClick={() => dispatch({ type: 'expandProductDescription', productCode })}
+            underline="hover"
           >
             More
             <MoreIcon fontSize="small" className={classes.moreIcon} />

@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Collapse from '@material-ui/core/Collapse';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import makeStyles from '@mui/styles/makeStyles';
+import Collapse from '@mui/material/Collapse';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: '276px',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
     '& > div:not(:last-child)': {
@@ -63,7 +63,7 @@ const PresentationFilter = (props) => {
   const [state] = ExploreContext.useExploreContextState();
   const { filtersVisible } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
   const visible = filtersVisible || !belowMd;
 

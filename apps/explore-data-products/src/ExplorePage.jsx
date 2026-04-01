@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, Suspense } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
 import debounce from 'lodash/debounce';
 
@@ -126,7 +126,7 @@ const ExplorePage = (props) => {
       }}
     >
       <DataVisualizationDialog />
-      <Suspense fallback={<Skeleton variant="rect" width="100%" height={160} />}>
+      <Suspense fallback={<Skeleton variant="rectangular" width="100%" height={160} />}>
         <DataHeader {...drillProps} />
       </Suspense>
       <PresentationSort {...drillProps} />

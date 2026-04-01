@@ -2,7 +2,7 @@ import React from 'react';
 import { ReplaySubject } from 'rxjs';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
-import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 
 import ExploreContext from './ExploreContext';
 import ExplorePage from './ExplorePage';
@@ -20,9 +20,11 @@ export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <ExploreContext.Provider>
-        <ThemeProvider theme={theme}>
-          <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
+          </ThemeProvider>
+        </StyledEngineProvider>
       </ExploreContext.Provider>
     </NeonRouter>
   );

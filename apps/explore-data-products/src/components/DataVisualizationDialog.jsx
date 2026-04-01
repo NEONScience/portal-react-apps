@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
 import DialogBase from 'portal-core-components/lib/components/DialogBase';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -22,10 +22,10 @@ const useDialogBaseStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     height: '100%',
     position: 'relative',
-    width: `calc(100% - ${theme.spacing(2) * 2}px)`,
+    width: `calc(100% - calc(${theme.spacing(2)} * 2))`,
     minWidth: '340px',
     minHeight: '600px',
-    [Theme.breakpoints.down('xs')]: {
+    [Theme.breakpoints.down('sm')]: {
       minHeight: '700px',
     },
   },

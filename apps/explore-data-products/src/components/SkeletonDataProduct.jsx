@@ -1,11 +1,11 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import makeStyles from '@mui/styles/makeStyles';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -29,8 +29,8 @@ const SkeletonDataProduct = () => {
             <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
           </Grid>
           <Grid item xs={12} sm={5} md={4} lg={3}>
-            <Skeleton height={32} width="100%" variant="rect" style={{ marginBottom: Theme.spacing(1.5) }} />
-            <Skeleton height={32} width="100%" variant="rect" style={{ marginBottom: Theme.spacing(1.5) }} />
+            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1.5) }} />
+            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1.5) }} />
           </Grid>
         </Grid>
 
@@ -42,17 +42,17 @@ const SkeletonDataProduct = () => {
           <Grid item xs={12} sm={4}>
             <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
             <div style={{ display: 'flex' }}>
-              <Skeleton height={32} width={32} variant="rect" style={{ marginRight: Theme.spacing(0.5) }} />
-              <Skeleton height={32} width={32} variant="rect" style={{ marginRight: Theme.spacing(0.5) }} />
+              <Skeleton height={32} width={32} variant="rectangular" style={{ marginRight: Theme.spacing(0.5) }} />
+              <Skeleton height={32} width={32} variant="rectangular" style={{ marginRight: Theme.spacing(0.5) }} />
             </div>
           </Grid>
           <Grid item xs={12} sm={4}>
             <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={32} width="100%" variant="rect" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1) }} />
           </Grid>
         </Grid>
 
-        <Skeleton height={80} width="100%" variant="rect" />
+        <Skeleton height={80} width="100%" variant="rectangular" />
 
       </CardContent>
     </Card>

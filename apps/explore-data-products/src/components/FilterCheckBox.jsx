@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    width: `calc(100% + ${theme.spacing(2)}px)`,
+    width: `calc(100% + ${theme.spacing(2)})`,
     marginLeft: theme.spacing(-2),
     marginRight: 'unset',
     marginBottom: theme.spacing(1),

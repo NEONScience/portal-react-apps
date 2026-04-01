@@ -2,12 +2,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import makeStyles from '@mui/styles/makeStyles';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -47,7 +47,11 @@ const FilterRelease = (props) => {
   const selected = filterValues[filterKey];
 
   const releasesLink = (
-    <Link href={RouteService.getDataRevisionsReleasePath()} target="_blank">
+    <Link
+      href={RouteService.getDataRevisionsReleasePath()}
+      target="_blank"
+      underline="hover"
+    >
       Data Product Revisions and Releases
     </Link>
   );

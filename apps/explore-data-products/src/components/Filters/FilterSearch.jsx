@@ -2,19 +2,19 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Chip from '@material-ui/core/Chip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
+import { alpha } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 
 import debounce from 'lodash/debounce';
 
@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
   keywordChip: {
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderColor: fade(theme.palette.primary.main, 0.4),
+    borderColor: alpha(theme.palette.primary.main, 0.4),
     borderStyle: 'dotted',
   },
   keywordChipIcon: {
@@ -103,8 +103,8 @@ const FilterSearch = (props) => {
   const dialogSearchRef = useRef(null);
 
   const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
-  const belowLg = useMediaQuery(Theme.breakpoints.down('md'));
+  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
+  const belowLg = useMediaQuery(Theme.breakpoints.down('lg'));
 
   const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
     if (applyValueToInput) {
@@ -177,7 +177,7 @@ const FilterSearch = (props) => {
         onClose={onClose}
         aria-labelledby="keywords-dialog-title"
       >
-        <DialogTitle className={classes.dialogTitle} disableTypography>
+        <DialogTitle className={classes.dialogTitle}>
           <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3) }}>
             <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }} id="keywords-dialog-title">
               Browse Keywords
@@ -210,7 +210,12 @@ const FilterSearch = (props) => {
             </Typography>
           </div>
           <div style={{ flexBasis: Theme.spacing(6), textAlign: 'right' }}>
-            <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={onClose}
+              size="large"
+            >
               <CloseIcon />
             </IconButton>
           </div>
@@ -267,7 +272,7 @@ const FilterSearch = (props) => {
         {/* eslint-disable react/jsx-one-expression-per-line */}
         Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
         Quote terms to match phrases (e.g. &quot;wind speed&quot;).&nbsp;
-        <Link href="#" onClick={() => setDialogOpen(true)}>Browse keywords</Link> for ideas.
+        <Link href="#" onClick={() => setDialogOpen(true)} underline="hover">Browse keywords</Link> for ideas.
         {/* eslint-enable react/jsx-one-expression-per-line */}
       </Typography>
       {renderDialog()}

@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
-import Button from "@material-ui/core/Button";
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from "@material-ui/core/Typography";
-import SearchIcon from '@material-ui/icons/Search';
+import Button from "@mui/material/Button";
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from "@mui/material/Typography";
+import SearchIcon from '@mui/icons-material/Search';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';

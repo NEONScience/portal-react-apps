@@ -1,10 +1,10 @@
 import React, { useRef } from "react";
 
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import makeStyles from '@mui/styles/makeStyles';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -13,7 +13,7 @@ import { QUERY_TYPE } from "../../util/queryUtil";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
@@ -51,8 +51,9 @@ const QueryBySampleTagAndClass = (props) => {
     >
       <InputLabel id="select-sample-class-label" ref={labelRef}>Sample Class</InputLabel>
       <Select
+        variant="standard"
         labelId="select-sample-class-label"
-        labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
+        label={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
         data-gtm="sample-search-form.select-sample-class"
         data-selenium="sample-search-form.select-sample-class"
         value={sampleClass || ''}
@@ -66,8 +67,7 @@ const QueryBySampleTagAndClass = (props) => {
             + `?sampleTag=${encodeURIComponent(appliedSampleTag)}`
             + `&sampleClass=${encodeURIComponent(appliedSampleClass)}`;
           onQueryClick(url, cacheControl);
-        }}
-      >
+        }}>
         {sampleClasses.length ? sampleClasses.map(option => (
           <MenuItem key={option} value={option}>{option}</MenuItem>
         )) : (

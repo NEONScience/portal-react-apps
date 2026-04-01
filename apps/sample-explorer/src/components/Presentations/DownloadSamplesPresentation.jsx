@@ -1,21 +1,21 @@
 import React, { useReducer } from 'react';
 
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-import Button from "@material-ui/core/Button";
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import TextField from '@material-ui/core/TextField';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Button from "@mui/material/Button";
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import TextField from '@mui/material/TextField';
 
-import CancelIcon from '@material-ui/icons/Close';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import CancelIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -155,7 +155,10 @@ const DownloadSamplesPresentation = (props) => {
         <DialogContent>
           <div style={{ display: 'flex', marginBottom: Theme.spacing(3), flexWrap: 'wrap' }}>
             {/* Data Format */}
-            <FormControl component="fieldset" style={{ marginRight: Theme.spacing(5) }}>
+            <FormControl
+              variant="standard"
+              component="fieldset"
+              style={{ marginRight: Theme.spacing(5) }}>
               <FormLabel component="legend">Data format</FormLabel>
               <RadioGroup
                 aria-label="data format"
@@ -174,7 +177,7 @@ const DownloadSamplesPresentation = (props) => {
               </RadioGroup>
             </FormControl>
             {/* Samples of Interest */}
-            <FormControl component="fieldset">
+            <FormControl variant="standard" component="fieldset">
               <FormLabel component="legend">Samples of interest</FormLabel>
               <RadioGroup
                 aria-label="samples of interest"
@@ -197,7 +200,10 @@ const DownloadSamplesPresentation = (props) => {
           {/* Relationship Extent */}
           {!['first', 'current'].includes(state.sampleSelection) ? null : (
             <div style={{ marginBottom: Theme.spacing(3) }}>
-              <FormControl component="fieldset" style={{ marginBottom: Theme.spacing(1) }}>
+              <FormControl
+                variant="standard"
+                component="fieldset"
+                style={{ marginBottom: Theme.spacing(1) }}>
                 <FormLabel component="legend">Relationship extent for selected sample</FormLabel>
                 <RadioGroup
                   aria-label="relationship extent for selected sample"
@@ -219,7 +225,7 @@ const DownloadSamplesPresentation = (props) => {
                   />
                 </RadioGroup>
               </FormControl>
-              <FormControl component="fieldset">
+              <FormControl variant="standard" component="fieldset">
                 <TextField
                   label="Degrees"
                   autoComplete="on"

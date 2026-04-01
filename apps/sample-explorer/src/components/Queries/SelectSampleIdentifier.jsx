@@ -1,17 +1,17 @@
 import React, { useRef } from "react";
 
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import makeStyles from '@mui/styles/makeStyles';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
@@ -36,8 +36,9 @@ const SelectSampleIdentifier = (props) => {
     <FormControl variant="outlined" className={classes.formControl}>
       <InputLabel id="select-identifier-type-label" ref={labelRef}>Identifier Type</InputLabel>
       <Select
+        variant="standard"
         labelId="select-identifier-type-label"
-        labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
+        label={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
         data-gtm="sample-search-form.select-identifier-type"
         data-selenium="sample-search-form.select-identifier-type"
         value={queryType}
@@ -47,8 +48,7 @@ const SelectSampleIdentifier = (props) => {
             const url = `${NeonEnvironment.getFullApiPath('samples')}/supportedClasses`;
             onDownloadSupportedClassesClick(url, true, false);
           }
-        }}
-      >
+        }}>
         {queryTypeOptions.map(option => (
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}

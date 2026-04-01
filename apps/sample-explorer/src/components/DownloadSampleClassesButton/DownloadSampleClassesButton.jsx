@@ -1,7 +1,7 @@
 import React from "react";
 
-import Button from '@material-ui/core/Button';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import Button from '@mui/material/Button';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';

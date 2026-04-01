@@ -2,17 +2,17 @@ import React, { useReducer } from 'react';
 import DataGrid from '../DataGrid/DataGrid';
 import { fetch as fetchPolyfill } from "whatwg-fetch";
 
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
 
-import CancelIcon from '@material-ui/icons/Close';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import CancelIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonApi from "portal-core-components/lib/components/NeonApi";
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';

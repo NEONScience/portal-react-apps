@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 const InfoPresentation = (props) => {
   const classes = useStyles(Theme);
   const exploreDataProductsLink = (
-    <Link href={RouteService.getDataProductExplorePath()}>
+    <Link href={RouteService.getDataProductExplorePath()} underline="hover">
       Explore Data Products
     </Link>
   );

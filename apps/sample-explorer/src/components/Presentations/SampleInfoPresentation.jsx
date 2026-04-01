@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   subtitle: {
-    marginBottom: theme.spacing(1),    
+    marginBottom: theme.spacing(1),
   },
 }));
 

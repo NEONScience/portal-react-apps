@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -23,7 +23,7 @@ const SampleEventPresentation = (props) => {
         <SampleInfoPresentation  {...props} />
       </div>
       <div style={{ marginBottom: Theme.spacing(3) }}>
-        <DataGrid 
+        <DataGrid
           columnDefs={props.tableDefinition}
           rowData={props.tableData}
           uuid={props.sampleUuid}

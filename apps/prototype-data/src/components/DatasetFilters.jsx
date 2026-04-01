@@ -1,16 +1,16 @@
 import React, { useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Hidden from '@material-ui/core/Hidden';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Collapse from '@material-ui/core/Collapse';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import makeStyles from '@mui/styles/makeStyles';
+import Hidden from '@mui/material/Hidden';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import ClearIcon from '@material-ui/icons/Clear';
-import FilterIcon from '@material-ui/icons/FilterList';
+import ClearIcon from '@mui/icons-material/Clear';
+import FilterIcon from '@mui/icons-material/FilterList';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       marginBottom: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: '276px',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
     '& > div:not(:last-child)': {
@@ -85,7 +85,7 @@ const DatasetFilters = () => {
     filtersVisible,
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const visible = filtersVisible || !belowMd;
   const skeleton = [
     APP_STATUS.INITIALIZING,
@@ -150,7 +150,7 @@ const DatasetFilters = () => {
       data-selenium="prototype-data--page.filters"
       style={{ position: 'relative' }}
     >
-      <Hidden smDown>
+      <Hidden mdDown>
         {title}
       </Hidden>
       <Hidden mdUp>
@@ -166,7 +166,10 @@ const DatasetFilters = () => {
             placement="left"
             title={`${filtersVisible ? 'Collapse' : 'Expand'} filters`}
           >
-            <IconButton onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}>
+            <IconButton
+              onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}
+              size="large"
+            >
               {filtersVisible ? <ClearIcon /> : <FilterIcon />}
             </IconButton>
           </Tooltip>

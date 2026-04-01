@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Skeleton from '@material-ui/lab/Skeleton';
-import Typography from '@material-ui/core/Typography';
-import ClearIcon from '@material-ui/icons/Clear';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 

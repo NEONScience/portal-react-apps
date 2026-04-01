@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider, createTheme } from '@material-ui/core/styles';
+import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
@@ -12,9 +12,11 @@ export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <PrototypeContext.Provider>
-        <ThemeProvider theme={theme}>
-          <PrototypePage />
-        </ThemeProvider>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={theme}>
+            <PrototypePage />
+          </ThemeProvider>
+        </StyledEngineProvider>
       </PrototypeContext.Provider>
     </NeonRouter>
   );

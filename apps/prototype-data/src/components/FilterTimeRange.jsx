@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import Slider from '@material-ui/core/Slider';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import Slider from '@mui/material/Slider';
 
 import MomentUtils from '@date-io/moment';
 import moment from 'moment';
@@ -22,7 +22,7 @@ const getYearMoment = (year) => moment(`${year}-06-01`);
 
 const useStyles = makeStyles((theme) => ({
   slider: {
-    width: `calc(100% - ${theme.spacing(6)}px)`,
+    width: `calc(100% - ${theme.spacing(6)})`,
     marginLeft: Theme.spacing(3),
     marginBottom: Theme.spacing(5.5),
   },

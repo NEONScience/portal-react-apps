@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import ExpandIcon from '@material-ui/icons/Add';
-import CollapseIcon from '@material-ui/icons/Remove';
-import ShowSelectedIcon from '@material-ui/icons/CheckBox';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import ExpandIcon from '@mui/icons-material/Add';
+import CollapseIcon from '@mui/icons-material/Remove';
+import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 

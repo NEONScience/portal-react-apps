@@ -5,31 +5,31 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
-import DownloadIcon from '@material-ui/icons/SaveAlt';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
-import XmlIcon from '@material-ui/icons/DescriptionOutlined';
-import ZipIcon from '@material-ui/icons/Archive';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import CopyIcon from '@material-ui/icons/Assignment';
-import LinkIcon from '@material-ui/icons/Link';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
+import FileIcon from '@mui/icons-material/InsertDriveFile';
+import XmlIcon from '@mui/icons-material/DescriptionOutlined';
+import ZipIcon from '@mui/icons-material/Archive';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import CopyIcon from '@mui/icons-material/Assignment';
+import LinkIcon from '@mui/icons-material/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1.4118rem',
     fontWeight: 'normal',
     color: '#000',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: '1.3118rem',
     },
   },
@@ -168,7 +168,7 @@ const useStyles = makeStyles((theme) => ({
     // fontSize: '1.1rem',
     // color: 'rgba(0, 0, 0, 0.70)',
     // lineHeight: '1.6',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       // fontSize: '1rem',
     },
   },
@@ -321,6 +321,7 @@ const renderDataFileRow = (file, uuid, classes) => {
                   const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
                   window.location.href = filePath;
                 }}
+                size="large"
               >
                 <DownloadIcon />
               </IconButton>
@@ -515,7 +516,7 @@ const DatasetDetails = (props) => {
           let identifierLink = null;
           if (citationIdentifierType && citationIdentifier) {
             const identifier = /^http[s]?:/.test(citationIdentifier)
-              ? <Link href={citationIdentifier}>{citationIdentifier}</Link>
+              ? <Link href={citationIdentifier} underline="hover">{citationIdentifier}</Link>
               : citationIdentifier;
             identifierLink = (
               <div>{identifier}</div>
@@ -641,17 +642,18 @@ const DatasetDetails = (props) => {
       return null;
     }
     return (
-      <Tooltip
-        style={{ flex: 0 }}
-        placement="left"
-        title={`Copy DOI URL (${doi.url})`}
-      >
-        <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
-          <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
-            Copy
-          </Button>
-        </CopyToClipboard>
-      </Tooltip>
+      // NOTE: Tooltip is breaking CopyToClipboard as of MUI v5!
+      // <Tooltip
+      //   style={{ flex: 0 }}
+      //   placement="left"
+      //   title={`Copy DOI URL (${doi.url})`}
+      // >
+      <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
+        <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+          Copy
+        </Button>
+      </CopyToClipboard>
+      // </Tooltip>
     );
   };
 
@@ -812,7 +814,7 @@ const DatasetDetails = (props) => {
                 No valid associated locations found
               </Typography>
             ) : (
-              <Suspense fallback={<Skeleton variant="rect" width="100%" height={400} />}>
+              <Suspense fallback={<Skeleton variant="rectangular" width="100%" height={400} />}>
                 <SiteMap manualLocationData={manualLocationData} />
               </Suspense>
             )}

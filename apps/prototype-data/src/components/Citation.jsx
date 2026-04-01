@@ -4,17 +4,17 @@ import PropTypes from 'prop-types';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import CopyIcon from '@material-ui/icons/Assignment';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import CopyIcon from '@mui/icons-material/Assignment';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -46,7 +46,7 @@ const Citation = (props) => {
   if (typeof dataset === 'undefined') { return null; }
 
   const dataPolicyLink = (
-    <Link href={RouteService.getDataPoliciesCitationPath()}>
+    <Link href={RouteService.getDataPoliciesCitationPath()} underline="hover">
       Data Policies &amp; Citation Guidelines
     </Link>
   );
@@ -81,16 +81,17 @@ const Citation = (props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Tooltip
+          {/* NOTE: Tooltip is breaking CopyToClipboard as of MUI v5!
+            <Tooltip
             placement="bottom-start"
             title="Click to copy the above citation to the clipboard"
-          >
-            <CopyToClipboard text={citationText}>
-              <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
-                Copy
-              </Button>
-            </CopyToClipboard>
-          </Tooltip>
+          > */}
+          <CopyToClipboard text={citationText}>
+            <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+              Copy
+            </Button>
+          </CopyToClipboard>
+          {/* </Tooltip> */}
           {DataCiteService.getPrototypeDatasetFormats().map((format) => (
             <Tooltip
               key={format.shortName}

@@ -1,16 +1,16 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
 
-import AscIcon from '@material-ui/icons/ArrowDownward';
-import DescIcon from '@material-ui/icons/ArrowUpward';
+import AscIcon from '@mui/icons-material/ArrowDownward';
+import DescIcon from '@mui/icons-material/ArrowUpward';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -59,6 +59,7 @@ const Sort = () => {
       <Typography variant="h6" component="h4" className={classes.title}>Sort</Typography>
       <FormControl variant="outlined">
         <Select
+          variant="standard"
           value={method}
           aria-label="Sort Method"
           className={classes.select}

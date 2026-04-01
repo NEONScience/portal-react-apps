@@ -1,21 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import makeStyles from '@mui/styles/makeStyles';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DetailsIcon from '@material-ui/icons/InfoOutlined';
+import DetailsIcon from '@mui/icons-material/InfoOutlined';
 
 import PrototypeContext from '../PrototypeContext';
 import { getDoiDisplay } from '../renderUtil';
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     height: '28px',
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       fontSize: '0.67rem',
     },
   },
@@ -78,7 +78,7 @@ const Dataset = (props) => {
   const { uuid } = props;
   const classes = useStyles(Theme);
   const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
-  const downSm = useMediaQuery(Theme.breakpoints.down('sm'));
+  const downSm = useMediaQuery(Theme.breakpoints.down('md'));
   const atMd = useMediaQuery(Theme.breakpoints.only('md'));
   const showDetailIconOnly = atSm || atMd;
 

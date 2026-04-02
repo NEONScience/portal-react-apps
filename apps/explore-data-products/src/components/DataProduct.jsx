@@ -107,7 +107,6 @@ const DataProduct = React.memo((props) => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     productDescriptionExpanded,
-    aopVizProducts,
     neonContextState,
     currentProducts: { release: currentRelease },
   } = state;
@@ -127,7 +126,6 @@ const DataProduct = React.memo((props) => {
   // Used as a key prop on any rendered elements we want to re-render with a release change
   const renderKey = `${productCode}/${currentRelease || ''}`;
 
-  const isAopViewerProduct = aopVizProducts.includes(productCode);
   const descriptionExpanded = productDescriptionExpanded[productCode];
 
   const {
@@ -143,6 +141,12 @@ const DataProduct = React.memo((props) => {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
   } = neonContextState.data;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
+
+  const {
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+  } = neonContextState.data;
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  const isAopViewerProduct = aopProductCodes.includes(productCode);
 
   const isBundleChild = bundle.isChild && bundleParentProductData;
   let siteCodes = [];

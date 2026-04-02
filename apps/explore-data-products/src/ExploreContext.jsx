@@ -7,15 +7,12 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { of, map, catchError } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
 import {
@@ -24,7 +21,6 @@ import {
   parseURLParam,
   parseProductsByReleaseData,
   parseAnyUnparsedProductSets,
-  applyAopProductFilter,
 } from './util/stateUtil';
 
 import {
@@ -52,13 +48,12 @@ const DEFAULT_STATE = {
     productsByRelease: {
       [LATEST_AND_PROVISIONAL]: { status: FETCH_STATUS.AWAITING_CALL },
     },
-    aopVizProducts: { status: FETCH_STATUS.AWAITING_CALL },
   },
 
   productsByRelease: {
     [LATEST_AND_PROVISIONAL]: {},
   },
-  aopVizProducts: [],
+  aopVizProducts: ['DP3.30010.001'],
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 
@@ -149,11 +144,6 @@ const stateHasFetchesInStatus = (state, status) => (
   Object.keys(state.fetches.productsByRelease).some(
     (release) => fetchIsInStatus(state.fetches.productsByRelease[release], status),
   )
-  // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
-  // triggered. Otherwise it should never affect app-level status.
-  || (
-    status === FETCH_STATUS.AWAITING_CALL && fetchIsInStatus(state.fetches.aopVizProducts, status)
-  )
 );
 
 const calculateFetches = (state) => {
@@ -227,17 +217,6 @@ const reducer = (state, action) => {
       newState.fetches.productsByRelease[action.release].status = FETCH_STATUS.SUCCESS;
       newState.fetches.productsByRelease[action.release].unparsedData = action.data;
       return calculateAppStatus(parseProductsByReleaseData(newState, action.release, action));
-    case 'fetchAOPVizProductsStarted':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
-      return calculateAppStatus(newState);
-    case 'fetchAopVizProductsFailed':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
-      newState.fetches.aopVizProducts.error = action.error;
-      return calculateAppStatus(newState);
-    case 'fetchAopVizProductsSucceeded':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
-      newState.aopVizProducts = action.data;
-      return calculateAppStatus(applyAopProductFilter(newState));
 
     // Filter
     case 'resetFilter':
@@ -380,39 +359,6 @@ const Provider = (props) => {
           }),
         ).subscribe();
       });
-    // Fetch the list of product codes supported by Visus for the AOP Viewer Visualization
-    if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
-      dispatch({ type: 'fetchAOPVizProductsStarted' });
-      ajax({
-        method: 'GET',
-        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
-        crossDomain: true,
-      }).pipe(
-        map((response) => {
-          if (exists(response)
-              && Array.isArray(response.response)
-              && (response.response.length > 0)) {
-            dispatch({
-              type: 'fetchAopVizProductsSucceeded',
-              data: response.response,
-            });
-            return of(true);
-          }
-          dispatch({
-            type: 'fetchAopVizProductsFailed',
-            error: 'AOP products fetch failed',
-          });
-          return of('AOP visualization products fetch failed');
-        }),
-        catchError((error) => {
-          dispatch({
-            type: 'fetchAopVizProductsFailed',
-            error,
-          });
-          return of('AOP visualization products fetch failed');
-        }),
-      ).subscribe();
-    }
   }, [appStatus, fetches, fetchesStringified]);
 
   /**

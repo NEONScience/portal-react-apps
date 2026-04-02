@@ -1,16 +1,16 @@
 import React from "react";
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import Typography from "@material-ui/core/Typography";
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Typography from "@mui/material/Typography";
 
 import { getColumns, getColumnDisplayGroupLabel } from "../../api/dataTableColumns";
 
@@ -105,7 +105,7 @@ const ColumnManager = (props) => {
       aria-labelledby="column-manager-title"
       data-selenium="column-manager-dialog"
     >
-      <DialogTitle id="column-manager-title" disableTypography>
+      <DialogTitle id="column-manager-title">
         <Typography variant="h4" style={{ marginTop: '8px' }}>
           Table Columns
         </Typography>
@@ -115,7 +115,7 @@ const ColumnManager = (props) => {
       </DialogContent>
       <DialogActions>
         <Button
-          color="primary" 
+          color="primary"
           onClick={() => onSetColumns(getColumns())}
           data-selenium="column-manager-dialog.reset-button"
         >

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Popover from '@material-ui/core/Popover';
-import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Popover from '@mui/material/Popover';
+import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import makeStyles from '@mui/styles/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -67,7 +67,9 @@ const DataProductLinks = (props: any) => {
                     <ul className={classes.linkList}>
                         {dataProducts.map((dataProduct: any) => (
                             <li key={dataProduct.dataProductCode}>
-                                <Link href={RouteService.getProductDetailPath(dataProduct.dataProductCode)}>
+                                <Link
+                                    href={RouteService.getProductDetailPath(dataProduct.dataProductCode)}
+                                    underline="hover">
                                     {dataProduct.dataProductCode}
                                 </Link> - {dataProduct.dataProductName}
                             </li>

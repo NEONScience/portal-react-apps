@@ -115,7 +115,8 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
   const {
     aopDataProducts: aopDataProductsJSON,
   } = state.neonContextState.data;
-  if (!Array.isArray(aopDataProductsJSON) || (aopDataProductsJSON.length <= 0)) {
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  if (!Array.isArray(aopProductCodes) || (aopProductCodes.length <= 0)) {
     return newState;
   }
   const filterItemCounts = { [FILTER_KEYS.VISUALIZATIONS]: {} };
@@ -133,7 +134,7 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
     if (productKeys && Array.isArray(productKeys)) {
       productKeys.forEach((productKey) => {
         const product = productRelease[productKey];
-        if (aopDataProductsJSON.includes(product.productCode)
+        if (aopProductCodes.includes(product.productCode)
           && Array.isArray(product.siteCodes)
           && (product.siteCodes.length > 0)
         ) {
@@ -290,6 +291,7 @@ export const parseProductsByReleaseData = (state, release) => {
     timeSeriesDataProducts: timeSeriesDataProductsJSON,
     aopDataProducts: aopDataProductsJSON,
   } = state.neonContextState.data;
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
 
   // State object that we'll update and ultimately return
   let newState = { ...state };
@@ -522,7 +524,7 @@ export const parseProductsByReleaseData = (state, release) => {
         VISUALIZATIONS.TIME_SERIES_VIEWER.key,
       );
     }
-    if ((aopDataProductsJSON || []).includes(productCode)) {
+    if ((aopProductCodes || []).includes(productCode)) {
       const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
         .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
       const hasAvailableData = Array.isArray(availabilitySiteCodes)

@@ -53,7 +53,6 @@ const DEFAULT_STATE = {
   productsByRelease: {
     [LATEST_AND_PROVISIONAL]: {},
   },
-  aopVizProducts: ['DP3.30010.001'],
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
 

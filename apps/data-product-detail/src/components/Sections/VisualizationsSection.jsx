@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
+import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -22,13 +22,16 @@ const VisualizationsSection = (props) => {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
   } = neonContextData;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
+  const {
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+  } = neonContextData;
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
 
   const [state, dispatch] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
 
   const {
     route: { productCode, release: currentRelease },
-    data: { aopVizProducts },
   } = state;
 
   const currentReleaseObject = DataProductContext.getCurrentReleaseObjectFromState(state);
@@ -58,10 +61,10 @@ const VisualizationsSection = (props) => {
       };
     }
   }
-  if (aopVizProducts.includes(productCode)) {
+  if (aopProductCodes.includes(productCode)) {
     viz.AOP = {
       name: 'AOP Data Viewer',
-      node: <AopDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
+      node: <AopGeeDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
     };
   }
   const hideViz = currentReleaseObject && (currentReleaseObject.showViz === false);

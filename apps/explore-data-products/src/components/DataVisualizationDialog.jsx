@@ -13,7 +13,6 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const AopDataViewer = React.lazy(() => import('portal-core-components/lib/components/AopDataViewer'));
 const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
 
 const useDialogBaseStyles = makeStyles((theme) => ({
@@ -32,7 +31,6 @@ const useDialogBaseStyles = makeStyles((theme) => ({
 }));
 
 const DataVisualizationDialog = () => {
-  const dialogBaseClasses = useDialogBaseStyles(Theme);
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     currentProducts: { release: currentRelease },
@@ -59,14 +57,6 @@ const DataVisualizationDialog = () => {
 
   if (open) {
     switch (component) {
-      case VISUALIZATIONS.AOP_DATA_VIEWER.key:
-        title = `AOP Data Viewer - ${productCode} - ${product.productName}`;
-        contents = (
-          <AopDataViewer fillContainer productCode={productCode} showTitle={false} />
-        );
-        appliedDialogBaseClasses = dialogBaseClasses;
-        break;
-
       case VISUALIZATIONS.TIME_SERIES_VIEWER.key:
         title = `Time Series Viewer - ${productCode} - ${product.productName}`;
         dialogBaseProps.nopaper = true;

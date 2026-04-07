@@ -303,7 +303,7 @@ const DataProduct = React.memo((props) => {
 
   const aopViewerButton = hasData && isAopViewerProduct
     ? (
-      <AopGeeDataViewer />
+      <AopGeeDataViewer isFullWidth />
     ) : null;
 
   const viewTimeSeriesDataButton = hasTimeSeriesData

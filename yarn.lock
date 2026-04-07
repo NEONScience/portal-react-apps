@@ -12583,7 +12583,7 @@ __metadata:
 
 "portal-core-components@github:NEONScience/portal-core-components#AOP-GEE-Viewer":
   version: 2.15.0
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=84253b1577e784aa317723780ca193c624a9ec92"
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=30febc2984806e2b42857c27cb64a6a92d61f3c2"
   dependencies:
     "@date-io/moment": "npm:^1.3.13"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
@@ -12670,7 +12670,7 @@ __metadata:
       optional: true
     worker-loader:
       optional: true
-  checksum: 10c0/e464d1a5bd22dbfa830df027590bf1a5e66bd061a3ecc14882ba8d1c402736946ee5f6b87ff490915682412ea6b8488c73a8a5063428c7527ff48ea962042337
+  checksum: 10c0/d788349dab0852a1dede753d57b1f724cade6013aeb4b850afeacc736200017bcd4c39567cef29da02aa46c9ab6fe6f7c806b843a56fdba4a33910c9a1bfe12e
   languageName: node
   linkType: hard
 

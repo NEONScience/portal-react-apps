@@ -5,6 +5,8 @@ import React from 'react';
 
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
@@ -15,6 +17,27 @@ import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
 import SkeletonSection from './SkeletonSection';
+
+const useStyles = makeStyles((theme) => ({
+  divider: {
+    margin: theme.spacing(2, 0),
+  },
+}));
+
+const AopVizNode = () => {
+  const classes = useStyles(Theme);
+  return (
+    <div>
+      <Typography variant="caption" gutterBottom>
+        The Google Earth Engine viewer allows for interactive exploration of remotely
+        sensed data from the Airborne Observation Platform (AOP).
+      </Typography>
+      <Divider className={classes.divider} />
+      {/* <Divider /> */}
+      <AopGeeDataViewer isFullWidth={false} />
+    </div>
+  );
+};
 
 const VisualizationsSection = (props) => {
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
@@ -63,10 +86,11 @@ const VisualizationsSection = (props) => {
   }
   if (aopProductCodes.includes(productCode)) {
     viz.AOP = {
-      name: 'AOP Data Viewer',
-      node: <AopGeeDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
+      name: 'AOP GEE Data Viewer',
+      node: AopVizNode(),
     };
   }
+
   const hideViz = currentReleaseObject && (currentReleaseObject.showViz === false);
   if (currentRelease && hideViz && Object.keys(viz).length) {
     const releaseTag = <b>{currentRelease}</b>;

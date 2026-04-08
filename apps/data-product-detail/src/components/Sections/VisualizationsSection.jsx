@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import { makeStyles } from '@material-ui/core/styles';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
@@ -24,13 +25,28 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const aopVideoUrl = (
+  <>
+    {' '}
+    <a href={NeonEnvironment.getAopGEEVideoUrl()}>
+      THIS VIDEO
+    </a>
+    {' '}
+  </>
+);
+
 const AopVizNode = () => {
   const classes = useStyles(Theme);
   return (
     <div>
       <Typography variant="caption" gutterBottom>
-        The Google Earth Engine viewer allows for interactive exploration of remotely
-        sensed data from the Airborne Observation Platform (AOP).
+        This Google Earth Engine (GEE) viewer allows for interactive exploration of remotely
+        sensed data from the Airborne Observation Platform (AOP) that have been added to GEE.
+        In the app, change the field site and data product for up to two images and/or dates
+        to view and compare. See
+        {aopVideoUrl}
+        for an overview of all the interactive features included in the app. Note that not all
+        AOP data available on the data portal may be included in the GEE catalog at any given time.
       </Typography>
       <Divider className={classes.divider} />
       {/* <Divider /> */}

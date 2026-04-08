@@ -39,7 +39,7 @@ const AopVizNode = () => {
   const classes = useStyles(Theme);
   return (
     <div>
-      <Typography variant="caption" gutterBottom>
+      <Typography variant="body2" gutterBottom>
         This Google Earth Engine (GEE) viewer allows for interactive exploration of remotely
         sensed data from the Airborne Observation Platform (AOP) that have been added to GEE.
         In the app, change the field site and data product for up to two images and/or dates

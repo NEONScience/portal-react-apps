@@ -212,6 +212,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
   const renderOption = (
     value: SiteSelectDataOption,
     renderOptionState: AutocompleteRenderOptionState,
+    props: any,
   ): JSX.Element => {
     const primarySlice: SearchSlice[] = calcSearchSlice(
       `${value.siteDescription}, ${value.stateCode}`,
@@ -238,7 +239,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <div key={value.siteCode}>
+      <li {...props} key={value.siteCode}>
         <ListItemText
           primary={(<div>{renderSlices(primarySlice)}</div>)}
           secondary={(
@@ -256,7 +257,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
             </React.Fragment>
           )}
         />
-      </div>
+      </li>
     );
   };
   const renderSiteSelect = (): JSX.Element => {
@@ -298,7 +299,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
           props: React.HTMLAttributes<HTMLLIElement>,
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState)}
+        ): JSX.Element => renderOption(value, renderOptionState, props)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading

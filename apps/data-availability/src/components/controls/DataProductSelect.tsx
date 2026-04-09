@@ -229,6 +229,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const renderOption = (
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
+    props: any,
   ): JSX.Element => {
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
@@ -252,14 +253,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <div key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
+      <li {...props} key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
         {!bundle ? <React.Fragment /> : <BundleListItemIcon isSplit={hasManyParents} />}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
           secondary={(<>{renderSlices(secondarySlice)}</>)}
         />
-      </div>
+      </li>
     );
   };
 
@@ -309,7 +310,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
           props: React.HTMLAttributes<HTMLLIElement>,
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState)}
+        ): JSX.Element => renderOption(value, renderOptionState, props)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             // eslint-disable-next-line react/jsx-props-no-spreading

@@ -16,13 +16,15 @@ import 'core-js/es/string/pad-start';
 import 'core-js/es/string/starts-with';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import Root from './components/Root';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Root />
-  </React.StrictMode>,
-  document.getElementById('root'),
+const root = createRoot(document.getElementById('root')!);
+root.render(
+  // https://v6.mui.com/system/styles/basics/
+  // disabling strict mode for now until all apps are on MUI6 (or maybe React 19).
+  // <React.StrictMode>
+  <Root />,
+  // </React.StrictMode>,
 );

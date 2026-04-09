@@ -17,7 +17,7 @@ import Typography from '@material-ui/core/Typography';
 import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
 import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
 import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
-import AopDataViewerIcon from '@material-ui/icons/SatelliteOutlined';
+import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
@@ -107,7 +107,6 @@ const DataProduct = React.memo((props) => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     productDescriptionExpanded,
-    aopVizProducts,
     neonContextState,
     currentProducts: { release: currentRelease },
   } = state;
@@ -127,7 +126,6 @@ const DataProduct = React.memo((props) => {
   // Used as a key prop on any rendered elements we want to re-render with a release change
   const renderKey = `${productCode}/${currentRelease || ''}`;
 
-  const isAopViewerProduct = aopVizProducts.includes(productCode);
   const descriptionExpanded = productDescriptionExpanded[productCode];
 
   const {
@@ -143,6 +141,12 @@ const DataProduct = React.memo((props) => {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
   } = neonContextState.data;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
+
+  const {
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+  } = neonContextState.data;
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  const isAopViewerProduct = aopProductCodes.includes(productCode);
 
   const isBundleChild = bundle.isChild && bundleParentProductData;
   let siteCodes = [];
@@ -299,18 +303,7 @@ const DataProduct = React.memo((props) => {
 
   const aopViewerButton = hasData && isAopViewerProduct
     ? (
-      <Button
-        data-gtm="explore-data-products.aop-data-viewer-button"
-        data-gtm-product-code={productCode}
-        data-selenium={`browse-data-products-page.products.${productCode}.aop-data-viewer-button`}
-        className={classes.productPaperButton}
-        variant="outlined"
-        color="primary"
-        endIcon={<AopDataViewerIcon />}
-        onClick={() => handleChangeVisualization(VISUALIZATIONS.AOP_DATA_VIEWER.key)}
-      >
-        {VISUALIZATIONS.AOP_DATA_VIEWER.name}
-      </Button>
+      <AopGeeDataViewer isFullWidth />
     ) : null;
 
   const viewTimeSeriesDataButton = hasTimeSeriesData

@@ -5,7 +5,6 @@ import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
 import FilterCheckBox from '../FilterCheckBox';
 
-import { FETCH_STATUS } from '../../util/stateUtil';
 import { FILTER_KEYS } from '../../util/filterUtil';
 
 const FilterVisualization = (props) => {
@@ -16,11 +15,9 @@ const FilterVisualization = (props) => {
     filtersApplied,
     filterValues,
     filterItems,
-    fetches,
   } = state;
 
   const filterKey = FILTER_KEYS.VISUALIZATIONS;
-  const loadingViz = fetches.aopVizProducts.status === FETCH_STATUS.FETCHING;
 
   const checkboxProps = {
     filterValues: filterValues[filterKey],
@@ -31,7 +28,7 @@ const FilterVisualization = (props) => {
   return (
     <FilterBase
       title="Visualizations"
-      skeleton={skeleton || loadingViz ? 2 : 0}
+      skeleton={skeleton ? 2 : 0}
       data-selenium="browse-data-products-page.filters.visualizations"
       handleResetFilter={checkboxProps.onResetFilter}
       showResetButton={filtersApplied.includes(filterKey)}

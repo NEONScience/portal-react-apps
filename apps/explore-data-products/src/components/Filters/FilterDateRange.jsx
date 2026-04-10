@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
+// import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 
-import MomentUtils from '@date-io/moment';
-import moment from 'moment';
+// import MomentUtils from '@date-io/moment';
+// import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
@@ -15,7 +15,7 @@ import FilterBase from '../FilterBase';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
+// const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
 
 const useStyles = makeStyles((theme) => ({
   slider: {
@@ -113,20 +113,20 @@ const FilterDateRange = () => {
     label: selectableRange[sliderMax].substring(0, 4),
   });
 
-  const handleChangeDatePicker = (rangeIndex, value) => {
-    // Confirm arguments are sane
-    const formattedValue = value.format('YYYY-MM');
-    const newSliderValue = selectableRange.indexOf(formattedValue);
-    if (!formattedValue || ![0, 1].includes(rangeIndex) || newSliderValue === -1) { return; }
+  // const handleChangeDatePicker = (rangeIndex, value) => {
+  //   // Confirm arguments are sane
+  //   const formattedValue = value.format('YYYY-MM');
+  //   const newSliderValue = selectableRange.indexOf(formattedValue);
+  //   if (!formattedValue || ![0, 1].includes(rangeIndex) || newSliderValue === -1) { return; }
 
-    // Apply the updated filter value to state
-    const newFilterValues = [
-      currentRange[0] === null ? selectableRange[sliderMin] : currentRange[0],
-      currentRange[1] === null ? selectableRange[sliderMax] : currentRange[1],
-    ];
-    newFilterValues[rangeIndex] = formattedValue;
-    dispatch({ type: 'applyFilter', filterKey, filterValue: newFilterValues });
-  };
+  //   // Apply the updated filter value to state
+  //   const newFilterValues = [
+  //     currentRange[0] === null ? selectableRange[sliderMin] : currentRange[0],
+  //     currentRange[1] === null ? selectableRange[sliderMax] : currentRange[1],
+  //   ];
+  //   newFilterValues[rangeIndex] = formattedValue;
+  //   dispatch({ type: 'applyFilter', filterKey, filterValue: newFilterValues });
+  // };
 
   // Render active date range filter with slider and date picker inputs
   return (
@@ -164,7 +164,7 @@ const FilterDateRange = () => {
           });
         }}
       />
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      {/* <MuiPickersUtilsProvider utils={MomentUtils}>
         <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.from-input"
           inputVariant="outlined"
@@ -176,7 +176,8 @@ const FilterDateRange = () => {
           label="From"
           openTo="month"
           minDate={getYearMonthMoment(selectableRange[sliderMin])}
-          maxDate={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax]).subtract(1, 'months')}
+          maxDate={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])
+          .subtract(1, 'months')}
           style={{ width: '100%', marginBottom: Theme.spacing(2) }}
         />
         <DatePicker
@@ -189,11 +190,12 @@ const FilterDateRange = () => {
           views={['month', 'year']}
           label="Through"
           openTo="month"
-          minDate={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin]).add(1, 'months')}
+          minDate={getYearMonthMoment(currentRange[0] ||
+           selectableRange[sliderMin]).add(1, 'months')}
           maxDate={getYearMonthMoment(selectableRange[sliderMax])}
           style={{ width: '100%' }}
         />
-      </MuiPickersUtilsProvider>
+      </MuiPickersUtilsProvider> */}
     </FilterBase>
   );
 };

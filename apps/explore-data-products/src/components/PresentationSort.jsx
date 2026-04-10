@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -24,6 +23,7 @@ import DescIcon from '@mui/icons-material/ArrowUpward';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import ExploreContext from '../ExploreContext';
 
@@ -88,10 +88,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PresentationSort = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const PresentationSort = (inProps) => {
   const classes = useStyles(Theme);
 
-  const { skeleton } = props;
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -257,14 +261,6 @@ const PresentationSort = (props) => {
       </CardContent>
     </Card>
   );
-};
-
-PresentationSort.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-PresentationSort.defaultProps = {
-  skeleton: false,
 };
 
 export default PresentationSort;

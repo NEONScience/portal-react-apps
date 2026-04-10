@@ -1,8 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
+
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -10,8 +11,12 @@ import FilterCheckBox from '../FilterCheckBox';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const FilterTheme = (props) => {
-  const { skeleton } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterTheme = (inProps) => {
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -61,14 +66,6 @@ const FilterTheme = (props) => {
       </ul>
     </FilterBase>
   );
-};
-
-FilterTheme.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterTheme.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterTheme;

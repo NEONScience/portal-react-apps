@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -22,6 +21,7 @@ import NoneIcon from '@mui/icons-material/NotInterested';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import ExploreContext from '../ExploreContext';
 
@@ -96,10 +96,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DataHeader = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const DataHeader = (inProps) => {
   const classes = useStyles(Theme);
 
-  const { skeleton } = props;
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -435,14 +439,6 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
   }
 
   return catalogSummaryContents;
-};
-
-DataHeader.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-DataHeader.defaultProps = {
-  skeleton: false,
 };
 
 export default DataHeader;

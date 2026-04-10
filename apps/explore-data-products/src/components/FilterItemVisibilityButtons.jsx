@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
@@ -8,8 +7,9 @@ import CollapseIcon from '@mui/icons-material/Remove';
 import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
-import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
+import { FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -25,7 +25,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterItemVisibilityButtons = (props) => {
+const defaultProps = {
+  totalItemCount: 0,
+  selectedItemCount: 0,
+};
+
+const FilterItemVisibilityButtons = (inProps) => {
   const classes = useStyles(Theme);
   const {
     filterKey,
@@ -35,7 +40,7 @@ const FilterItemVisibilityButtons = (props) => {
     onExpandFilterItems,
     onCollapseFilterItems,
     onShowSelectedFilterItems,
-  } = props;
+  } = resolveProps(defaultProps, inProps);
 
   if (!totalItemCount) { return null; }
 
@@ -100,21 +105,6 @@ const FilterItemVisibilityButtons = (props) => {
       {buttons}
     </div>
   );
-};
-
-FilterItemVisibilityButtons.propTypes = {
-  filterKey: PropTypes.oneOf(Object.keys(FILTER_KEYS)).isRequired,
-  currentState: PropTypes.oneOf(Object.keys(FILTER_ITEM_VISIBILITY_STATES)).isRequired,
-  totalItemCount: PropTypes.number,
-  selectedItemCount: PropTypes.number,
-  onExpandFilterItems: PropTypes.func.isRequired,
-  onCollapseFilterItems: PropTypes.func.isRequired,
-  onShowSelectedFilterItems: PropTypes.func.isRequired,
-};
-
-FilterItemVisibilityButtons.defaultProps = {
-  totalItemCount: 0,
-  selectedItemCount: 0,
 };
 
 export default FilterItemVisibilityButtons;

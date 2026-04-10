@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
@@ -13,6 +12,7 @@ import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -31,9 +31,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterRelease = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterRelease = (inProps) => {
   const classes = useStyles(Theme);
-  const { skeleton } = props;
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -68,7 +72,7 @@ const FilterRelease = (props) => {
       <Typography variant="h5" component="h3" className={classes.title}>
         {FILTER_LABELS[filterKey]}
       </Typography>
-      <Tooltip placement="right" title={tooltip} interactive>
+      <Tooltip placement="right" title={tooltip} interactive="true">
         <IconButton size="small" aria-label={tooltip} style={{ marginLeft: Theme.spacing(0.5) }}>
           <InfoIcon fontSize="small" />
         </IconButton>
@@ -98,14 +102,6 @@ const FilterRelease = (props) => {
       />
     </FilterBase>
   );
-};
-
-FilterRelease.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterRelease.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterRelease;

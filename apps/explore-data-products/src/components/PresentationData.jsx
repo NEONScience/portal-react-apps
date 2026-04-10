@@ -1,7 +1,4 @@
 import React, { useReducer, useEffect } from 'react';
-import PropTypes from 'prop-types';
-
-import { ReplaySubject } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -10,14 +7,19 @@ import Typography from '@mui/material/Typography';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DataProduct from './DataProduct';
 import SkeletonDataProduct from './SkeletonDataProduct';
 
 import ExploreContext from '../ExploreContext';
 
-const PresentationData = (props) => {
-  const { skeleton, highestOrderDownloadSubject } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const PresentationData = (inProps) => {
+  const { skeleton, highestOrderDownloadSubject } = resolveProps(defaultProps, inProps);
 
   const [state] = ExploreContext.useExploreContextState();
   const {
@@ -115,15 +117,6 @@ const PresentationData = (props) => {
       ))}
     </div>
   );
-};
-
-PresentationData.propTypes = {
-  skeleton: PropTypes.bool,
-  highestOrderDownloadSubject: PropTypes.instanceOf(ReplaySubject).isRequired,
-};
-
-PresentationData.defaultProps = {
-  skeleton: false,
 };
 
 export default PresentationData;

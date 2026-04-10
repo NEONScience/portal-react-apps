@@ -5,7 +5,6 @@ import React, {
   useReducer,
   useEffect,
 } from 'react';
-import PropTypes from 'prop-types';
 
 import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -17,6 +16,7 @@ import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import {
   APP_STATUS,
@@ -325,11 +325,13 @@ const reducer = (state, action) => {
   }
 };
 
+const defaultProps = {};
+
 /**
    PROVIDER
 */
-const Provider = (props) => {
-  const { children } = props;
+const Provider = (inProps) => {
+  const { children } = resolveProps(defaultProps, inProps);
 
   /**
     State initialization
@@ -425,22 +427,6 @@ const Provider = (props) => {
     </Context.Provider>
   );
 };
-
-/**
-   Prop Types
-*/
-Provider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.string,
-    ])),
-    PropTypes.node,
-    PropTypes.string,
-  ]).isRequired,
-};
-
-Provider.defaultProps = {};
 
 /**
    EXPORT

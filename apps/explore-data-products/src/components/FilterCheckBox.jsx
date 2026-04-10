@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Checkbox from '@mui/material/Checkbox';
@@ -8,6 +7,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -39,7 +39,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterCheckBox = (props) => {
+const defaultProps = {
+  count: null,
+  countTitle: null,
+  subtitle: null,
+  checked: false,
+};
+
+const FilterCheckBox = (inProps) => {
   const classes = useStyles(Theme);
   const {
     name,
@@ -51,7 +58,7 @@ const FilterCheckBox = (props) => {
     filterValues,
     onApplyFilter,
     onResetFilter,
-  } = props;
+  } = resolveProps(defaultProps, inProps);
 
   const showCount = typeof count !== 'undefined';
   const showSubtitle = typeof subtitle !== 'undefined';
@@ -102,25 +109,6 @@ const FilterCheckBox = (props) => {
       )}
     />
   );
-};
-
-FilterCheckBox.propTypes = {
-  name: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
-  value: PropTypes.string.isRequired,
-  filterValues: PropTypes.arrayOf(PropTypes.string).isRequired,
-  count: PropTypes.number,
-  countTitle: PropTypes.string,
-  subtitle: PropTypes.string,
-  checked: PropTypes.bool,
-  onApplyFilter: PropTypes.func.isRequired,
-  onResetFilter: PropTypes.func.isRequired,
-};
-
-FilterCheckBox.defaultProps = {
-  count: null,
-  countTitle: null,
-  subtitle: null,
-  checked: false,
 };
 
 export default FilterCheckBox;

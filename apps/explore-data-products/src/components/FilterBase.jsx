@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
@@ -8,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 const useStyles = makeStyles((theme) => ({
   filter: {
@@ -42,7 +42,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterBase = (props) => {
+const defaultProps = {
+  subtitle: null,
+  skeleton: false,
+  showResetButton: false,
+  handleResetFilter: () => {},
+  additionalTitleButton: null,
+  'data-selenium': null,
+};
+
+const FilterBase = (inProps) => {
   const classes = useStyles(Theme);
   const {
     title,
@@ -53,7 +62,7 @@ const FilterBase = (props) => {
     handleResetFilter,
     additionalTitleButton,
     'data-selenium': dataSeleniumTag,
-  } = props;
+  } = resolveProps(defaultProps, inProps);
 
   let contents = children;
   if (parseInt(skeleton, 10) > 0) {
@@ -101,36 +110,6 @@ const FilterBase = (props) => {
       {contents}
     </div>
   );
-};
-
-FilterBase.propTypes = {
-  title: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.string,
-  ]).isRequired,
-  subtitle: PropTypes.string,
-  skeleton: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
-  showResetButton: PropTypes.bool,
-  handleResetFilter: PropTypes.func,
-  additionalTitleButton: PropTypes.node,
-  'data-selenium': PropTypes.string,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.string,
-    ])),
-    PropTypes.node,
-    PropTypes.string,
-  ]).isRequired,
-};
-
-FilterBase.defaultProps = {
-  subtitle: null,
-  skeleton: false,
-  showResetButton: false,
-  handleResetFilter: () => {},
-  additionalTitleButton: null,
-  'data-selenium': null,
 };
 
 export default FilterBase;

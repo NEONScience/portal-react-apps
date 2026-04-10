@@ -1,5 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -8,8 +9,12 @@ import FilterCheckBox from '../FilterCheckBox';
 import { FETCH_STATUS } from '../../util/stateUtil';
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const FilterVisualization = (props) => {
-  const { skeleton } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterVisualization = (inProps) => {
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -52,14 +57,6 @@ const FilterVisualization = (props) => {
       </ul>
     </FilterBase>
   );
-};
-
-FilterVisualization.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterVisualization.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterVisualization;

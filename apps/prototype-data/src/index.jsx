@@ -19,13 +19,14 @@ import 'core-js/modules/esnext.string.match-all';
 import 'whatwg-fetch';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
 import App from './App';
 import { getUuidFromURL } from './filterUtil';
 
+const root = createRoot(document.getElementById('root'));
 const uuid = getUuidFromURL();
 if (uuid) {
   NeonJsonLd.injectPrototypeDataset(uuid);
@@ -33,4 +34,4 @@ if (uuid) {
   NeonJsonLd.removeAllMetadata();
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+root.render(<App />);

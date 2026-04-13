@@ -1,5 +1,8 @@
 import React from 'react';
 import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material/styles';
+import {
+  BrowserRouter,
+} from 'react-router-dom';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
 
@@ -10,14 +13,16 @@ const theme = createTheme();
 
 export default function App() {
   return (
-    <NeonRouter disableRedirect cleanPath={false}>
-      <PrototypeContext.Provider>
-        <StyledEngineProvider injectFirst>
-          <ThemeProvider theme={theme}>
-            <PrototypePage />
-          </ThemeProvider>
-        </StyledEngineProvider>
-      </PrototypeContext.Provider>
-    </NeonRouter>
+    <BrowserRouter>
+      <NeonRouter disableRedirect cleanPath={false}>
+        <PrototypeContext.Provider>
+          <StyledEngineProvider injectFirst>
+            <ThemeProvider theme={theme}>
+              <PrototypePage />
+            </ThemeProvider>
+          </StyledEngineProvider>
+        </PrototypeContext.Provider>
+      </NeonRouter>
+    </BrowserRouter>
   );
 }

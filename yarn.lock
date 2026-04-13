@@ -15690,6 +15690,9 @@ __metadata:
     "@mui/icons-material": "npm:5.17.1"
     "@mui/material": "npm:5.17.1"
     "@mui/styles": "npm:5.17.1"
+    "@mui/x-date-pickers": "npm:7.29.4"
+    "@types/react": "npm:18.3.1"
+    "@types/react-dom": "npm:18.3.1"
     commander: "npm:^12.1.0"
     core-js: "npm:^3.37.1"
     dateformat: "npm:^5.0.3"
@@ -15703,13 +15706,13 @@ __metadata:
     jsdom: "npm:^24.1.1"
     lodash: "npm:^4.17.21"
     moment: "npm:2.30.1"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.15.0"
+    portal-core-components: "github:NEONScience/portal-core-components#bf7456352d6f21dbd668944fab0c11244f656d90"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
-    react: "npm:^17.0.2"
+    react: "npm:18.3.1"
     react-copy-to-clipboard: "npm:5.1.1"
-    react-dom: "npm:^17.0.2"
-    react-router-dom: "npm:^6.25.1"
+    react-dom: "npm:18.3.1"
+    react-router-dom: "npm:6.30.3"
     react-scripts: "npm:5.0.1"
     whatwg-fetch: "npm:^3.6.20"
   languageName: unknown
@@ -16138,6 +16141,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-router-dom@npm:6.30.3, react-router-dom@npm:^6.26.1":
+  version: 6.30.3
+  resolution: "react-router-dom@npm:6.30.3"
+  dependencies:
+    "@remix-run/router": "npm:1.23.2"
+    react-router: "npm:6.30.3"
+  peerDependencies:
+    react: ">=16.8"
+    react-dom: ">=16.8"
+  checksum: 10c0/e8a1e13c662ed6ee71a785bd3418ba04b700bcd8aff6ea7b32524371e8abb1c85568cd4fe9b9e9d555b8101fd415f6f1796531f593da60be179ce75b37038657
+  languageName: node
+  linkType: hard
+
 "react-router-dom@npm:^6.25.1":
   version: 6.26.0
   resolution: "react-router-dom@npm:6.26.0"
@@ -16148,19 +16164,6 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: 10c0/f59a5b72b1dab6480f97f20fa49b601cb1366e6e1c8def7fd727ccbc4e8cf527f64f7aedd2889534de222dc86634a23e2ed108b99e5443e7b5401a4db104e611
-  languageName: node
-  linkType: hard
-
-"react-router-dom@npm:^6.26.1":
-  version: 6.30.3
-  resolution: "react-router-dom@npm:6.30.3"
-  dependencies:
-    "@remix-run/router": "npm:1.23.2"
-    react-router: "npm:6.30.3"
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 10c0/e8a1e13c662ed6ee71a785bd3418ba04b700bcd8aff6ea7b32524371e8abb1c85568cd4fe9b9e9d555b8101fd415f6f1796531f593da60be179ce75b37038657
   languageName: node
   linkType: hard
 

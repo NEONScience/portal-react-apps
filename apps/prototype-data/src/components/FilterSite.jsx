@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
-import PropTypes from 'prop-types';
+
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -11,8 +12,12 @@ import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
 const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
 
-const FilterSite = (props) => {
-  const { skeleton } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterSite = (inProps) => {
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = PrototypeContext.usePrototypeContextState();
   const {
@@ -103,14 +108,6 @@ const FilterSite = (props) => {
       />
     </FilterBase>
   );
-};
-
-FilterSite.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterSite.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterSite;

@@ -1,5 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -9,8 +10,12 @@ import { FILTER_KEYS } from '../filterUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const FilterScienceTeam = (props) => {
-  const { skeleton } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterScienceTeam = (inProps) => {
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = usePrototypeContextState();
   const {
@@ -56,14 +61,6 @@ const FilterScienceTeam = (props) => {
       </ul>
     </FilterBase>
   );
-};
-
-FilterScienceTeam.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterScienceTeam.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterScienceTeam;

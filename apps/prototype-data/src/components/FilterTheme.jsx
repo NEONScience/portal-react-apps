@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -12,8 +12,12 @@ import { FILTER_KEYS } from '../filterUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const FilterTheme = (props) => {
-  const { skeleton } = props;
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterTheme = (inProps) => {
+  const { skeleton } = resolveProps(defaultProps, inProps);
 
   const [state, dispatch] = usePrototypeContextState();
   const {
@@ -63,14 +67,6 @@ const FilterTheme = (props) => {
       </ul>
     </FilterBase>
   );
-};
-
-FilterTheme.propTypes = {
-  skeleton: PropTypes.bool,
-};
-
-FilterTheme.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterTheme;

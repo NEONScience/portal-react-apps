@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
-import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
 
-import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -158,7 +159,8 @@ const FilterTimeRange = () => {
           });
         }}
       />
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+
+      <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <DatePicker
@@ -173,6 +175,12 @@ const FilterTimeRange = () => {
               openTo="year"
               minDate={getYearMoment(selectableRange[sliderMin])}
               maxDate={getYearMoment(currentRange[1] || selectableRange[sliderMax]).subtract(1, 'years')}
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  width: '100%',
+                },
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -188,10 +196,17 @@ const FilterTimeRange = () => {
               openTo="year"
               minDate={getYearMoment(currentRange[0] || selectableRange[sliderMin]).add(1, 'years')}
               maxDate={getYearMoment(selectableRange[sliderMax])}
+              slotProps={{
+                textField: {
+                  size: 'small',
+                  width: '100%',
+                },
+              }}
             />
           </Grid>
         </Grid>
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
+
     </FilterBase>
   );
 };

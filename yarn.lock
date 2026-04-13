@@ -12583,7 +12583,7 @@ __metadata:
 
 "portal-core-components@github:NEONScience/portal-core-components#NSE-10969-Token-Notifications":
   version: 2.16.0
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=43e06051c5c848056a2df43b3d2f762f506a1acf"
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=4c0f130d6f4c9cd18cf7f25f5245a506a5089736"
   dependencies:
     "@date-io/moment": "npm:^1.3.13"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
@@ -12670,7 +12670,7 @@ __metadata:
       optional: true
     worker-loader:
       optional: true
-  checksum: 10c0/4c07f270ad5094187a60993aa8991eb2301e353bc3a251dbeb1d1bab3a17be997aca130a2bcb1e0170783dc2fc06d36350514c27cd0c30c6351dfac5435afc95
+  checksum: 10c0/3d6833626957258fce5574dd1857020d9718ef2e83c912aaefb423303c56c1d0b0392ff7c1a902a2f466e6d5548403a8927deeb405f7b4e2911e874a2f608ad1
   languageName: node
   linkType: hard
 

@@ -29,7 +29,7 @@ const aopVideoUrl = (
   <>
     {' '}
     <a href={NeonEnvironment.getAopGEEVideoUrl()}>
-      THIS VIDEO
+      this video
     </a>
     {' '}
   </>

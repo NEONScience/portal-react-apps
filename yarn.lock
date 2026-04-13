@@ -3215,7 +3215,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mui/x-date-pickers@npm:^7.14.0":
+"@mui/x-date-pickers@npm:7.29.4, @mui/x-date-pickers@npm:^7.14.0":
   version: 7.29.4
   resolution: "@mui/x-date-pickers@npm:7.29.4"
   dependencies:
@@ -8963,6 +8963,7 @@ __metadata:
     "@mui/icons-material": "npm:5.17.1"
     "@mui/material": "npm:5.17.1"
     "@mui/styles": "npm:5.17.1"
+    "@mui/x-date-pickers": "npm:7.29.4"
     "@types/react": "npm:18.3.1"
     "@types/react-dom": "npm:18.3.1"
     commander: "npm:^12.1.0"

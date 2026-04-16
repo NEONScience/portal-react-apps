@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -8,6 +7,7 @@ import Typography from '@mui/material/Typography';
 
 import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
 import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 
@@ -23,19 +23,17 @@ import KeywordsDetail from '../Details/KeywordsDetail';
 import TaxonDetail from '../Details/TaxonDetail';
 import BioRepoCollectionsDetail from '../Details/BioRepoCollectionsDetail';
 
-const AboutSectionTextComponent = (props) => {
-  const { content } = props;
+const AboutSectionTextComponentDefaultProps = {
+  content: null,
+};
+
+const AboutSectionTextComponent = (inProps) => {
+  const { content } = resolveProps(AboutSectionTextComponentDefaultProps, inProps);
   return (
     <Typography variant="body2" component="p">
       {content}
     </Typography>
   );
-};
-AboutSectionTextComponent.propTypes = {
-  content: PropTypes.string,
-};
-AboutSectionTextComponent.defaultProps = {
-  content: null,
 };
 
 const MarkdownFallbackComponent = (props) => ((

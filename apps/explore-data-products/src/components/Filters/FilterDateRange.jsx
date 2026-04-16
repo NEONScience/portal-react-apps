@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
-// import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import { LocalizationProvider } from '@mui/x-date-pickers';

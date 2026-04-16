@@ -1,11 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 // Theme and override styles are (re)introduced here because without them
 // the primary color is lost and the expansion panel layout gets messed up.
@@ -15,7 +15,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Section = (props) => {
+const defaultProps = {
+  skeleton: false,
+  children: null,
+};
+
+const Section = (inProps) => {
   const classes = useStyles(Theme);
 
   const {
@@ -24,7 +29,7 @@ const Section = (props) => {
     skeleton,
     children,
     ...otherProps
-  } = props;
+  } = resolveProps(defaultProps, inProps);
 
   const genericKey = (skeleton ? 'skeleton' : (name || 'generic'))
     .toLowerCase().replace(/[^a-z0-9-]/g, '-');
@@ -40,18 +45,6 @@ const Section = (props) => {
       {children}
     </div>
   );
-};
-
-Section.propTypes = {
-  hash: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  skeleton: PropTypes.bool,
-  children: PropTypes.node,
-};
-
-Section.defaultProps = {
-  skeleton: false,
-  children: null,
 };
 
 export default Section;

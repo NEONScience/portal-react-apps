@@ -1,11 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DetailTooltip from './DetailTooltip';
 
@@ -18,7 +18,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Detail = (props) => {
+const defaultProps = {
+  title: null,
+  tooltip: null,
+  content: null,
+  seleniumKey: null,
+  children: null,
+};
+
+const Detail = (inProps) => {
   const classes = useStyles(Theme);
 
   const {
@@ -26,9 +34,9 @@ const Detail = (props) => {
     tooltip,
     content,
     children,
-  } = props;
+  } = resolveProps(defaultProps, inProps);
 
-  let { seleniumKey } = props;
+  let { seleniumKey } = inProps;
   if (!seleniumKey) {
     seleniumKey = (title || 'generic').toLowerCase().replace(/[^a-z0-9-]/g, '-');
   }
@@ -56,28 +64,6 @@ const Detail = (props) => {
       {body}
     </div>
   );
-};
-
-Detail.propTypes = {
-  title: PropTypes.string,
-  tooltip: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.node,
-  ]),
-  content: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.node,
-  ]),
-  seleniumKey: PropTypes.string,
-  children: PropTypes.node,
-};
-
-Detail.defaultProps = {
-  title: null,
-  tooltip: null,
-  content: null,
-  seleniumKey: null,
-  children: null,
 };
 
 export default Detail;

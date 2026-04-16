@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import makeStyles from '@mui/styles/makeStyles';
@@ -8,6 +7,7 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 /**
  * Style the component using the imported theme
@@ -22,12 +22,17 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
+const defaultProps = {
+  dataProductCode: '',
+};
+
 /**
  * Define the taxon detail component
  * @param {*} dataProductCode
  * @returns The component
  */
-const TaxonDetail = ({ dataProductCode }) => {
+const TaxonDetail = (inProps) => {
+  const { dataProductCode } = resolveProps(defaultProps, inProps);
   /* use state for the popover */
   const [taxonTypes, setTaxonTypes] = useState(null);
 
@@ -114,16 +119,6 @@ const TaxonDetail = ({ dataProductCode }) => {
     );
   }
   return null;
-};
-
-/* Define the component prop types */
-TaxonDetail.propTypes = {
-  dataProductCode: PropTypes.string,
-};
-
-/* Define the default prop values */
-TaxonDetail.defaultProps = {
-  dataProductCode: '',
 };
 
 /* export the component */

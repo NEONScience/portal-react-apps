@@ -17,7 +17,7 @@ import 'core-js/es/string/includes';
 import 'whatwg-fetch';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
 
@@ -28,8 +28,6 @@ const [productCode, release] = DataProductContext.getProductCodeAndReleaseFromUR
 if (productCode) {
   NeonJsonLd.injectProduct(productCode, release);
 }
-
-ReactDOM.render(
-  <App />,
-  document.getElementById('root'),
-);
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);

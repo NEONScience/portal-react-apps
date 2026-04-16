@@ -5,7 +5,6 @@ import React, {
   useReducer,
   useEffect,
 } from 'react';
-import PropTypes from 'prop-types';
 
 import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -18,6 +17,7 @@ import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import BundleService from 'portal-core-components/lib/service/BundleService';
 import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
@@ -885,11 +885,13 @@ const reducer = (state, action) => {
   }
 };
 
+const defaultProps = {};
+
 /**
    PROVIDER
 */
-const Provider = (props) => {
-  const { children } = props;
+const Provider = (inProps) => {
+  const { children } = resolveProps(defaultProps, inProps);
 
   const initialState = cloneDeep(DEFAULT_STATE);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -1126,19 +1128,6 @@ const Provider = (props) => {
     </Context.Provider>
   );
 };
-
-Provider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.string,
-    ])),
-    PropTypes.node,
-    PropTypes.string,
-  ]).isRequired,
-};
-
-Provider.defaultProps = {};
 
 /**
    EXPORT

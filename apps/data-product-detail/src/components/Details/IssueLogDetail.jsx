@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
@@ -29,6 +28,7 @@ import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/
 import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
@@ -99,19 +99,17 @@ const getDateSortWithNulls = (field, alternateField = null) => (
   }
 );
 
-const IssueLogDetailTextComponent = (props) => {
-  const { content } = props;
+const IssueLogDetailTextComponentDefaultProps = {
+  content: null,
+};
+
+const IssueLogDetailTextComponent = (inProps) => {
+  const { content } = resolveProps(IssueLogDetailTextComponentDefaultProps, inProps);
   return (
     <Typography variant="body2" component="div">
       {content}
     </Typography>
   );
-};
-IssueLogDetailTextComponent.propTypes = {
-  content: PropTypes.string,
-};
-IssueLogDetailTextComponent.defaultProps = {
-  content: null,
 };
 
 const MarkdownFallbackComponent = (props) => ((

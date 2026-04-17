@@ -1,4 +1,7 @@
 import React, { useReducer, useEffect } from 'react';
+import PropTypes from 'prop-types';
+
+import { ReplaySubject } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -19,7 +22,8 @@ const defaultProps = {
 };
 
 const PresentationData = (inProps) => {
-  const { skeleton, highestOrderDownloadSubject } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { skeleton, highestOrderDownloadSubject } = props;
 
   const [state] = ExploreContext.useExploreContextState();
   const {
@@ -117,6 +121,11 @@ const PresentationData = (inProps) => {
       ))}
     </div>
   );
+};
+
+PresentationData.propTypes = {
+  skeleton: PropTypes.bool,
+  highestOrderDownloadSubject: PropTypes.instanceOf(ReplaySubject).isRequired,
 };
 
 export default PresentationData;

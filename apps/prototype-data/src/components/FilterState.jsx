@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
+import PropTypes from 'prop-types';
 
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
@@ -17,7 +18,8 @@ const defaultProps = {
 };
 
 const FilterState = (inProps) => {
-  const { skeleton } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { skeleton } = props;
 
   const [state, dispatch] = PrototypeContext.usePrototypeContextState();
   const {
@@ -105,6 +107,10 @@ const FilterState = (inProps) => {
       />
     </FilterBase>
   );
+};
+
+FilterState.propTypes = {
+  skeleton: PropTypes.bool,
 };
 
 export default FilterState;

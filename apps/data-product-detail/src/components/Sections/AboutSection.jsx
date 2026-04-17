@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -28,12 +29,16 @@ const AboutSectionTextComponentDefaultProps = {
 };
 
 const AboutSectionTextComponent = (inProps) => {
-  const { content } = resolveProps(AboutSectionTextComponentDefaultProps, inProps);
+  const props = resolveProps(AboutSectionTextComponentDefaultProps, inProps);
+  const { content } = props;
   return (
     <Typography variant="body2" component="p">
       {content}
     </Typography>
   );
+};
+AboutSectionTextComponent.propTypes = {
+  content: PropTypes.string,
 };
 
 const MarkdownFallbackComponent = (props) => ((

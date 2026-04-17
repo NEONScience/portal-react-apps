@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
@@ -21,6 +22,7 @@ const defaultProps = {
 };
 
 const Section = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const classes = useStyles(Theme);
 
   const {
@@ -29,7 +31,7 @@ const Section = (inProps) => {
     skeleton,
     children,
     ...otherProps
-  } = resolveProps(defaultProps, inProps);
+  } = props;
 
   const genericKey = (skeleton ? 'skeleton' : (name || 'generic'))
     .toLowerCase().replace(/[^a-z0-9-]/g, '-');
@@ -45,6 +47,13 @@ const Section = (inProps) => {
       {children}
     </div>
   );
+};
+
+Section.propTypes = {
+  hash: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  skeleton: PropTypes.bool,
+  children: PropTypes.node,
 };
 
 export default Section;

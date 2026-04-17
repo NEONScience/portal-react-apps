@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
@@ -104,12 +105,16 @@ const IssueLogDetailTextComponentDefaultProps = {
 };
 
 const IssueLogDetailTextComponent = (inProps) => {
-  const { content } = resolveProps(IssueLogDetailTextComponentDefaultProps, inProps);
+  const props = resolveProps(IssueLogDetailTextComponentDefaultProps, inProps);
+  const { content } = props;
   return (
     <Typography variant="body2" component="div">
       {content}
     </Typography>
   );
+};
+IssueLogDetailTextComponent.propTypes = {
+  content: PropTypes.string,
 };
 
 const MarkdownFallbackComponent = (props) => ((

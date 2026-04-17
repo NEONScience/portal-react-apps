@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import makeStyles from '@mui/styles/makeStyles';
@@ -32,7 +33,8 @@ const defaultProps = {
  * @returns The component
  */
 const TaxonDetail = (inProps) => {
-  const { dataProductCode } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { dataProductCode } = props;
   /* use state for the popover */
   const [taxonTypes, setTaxonTypes] = useState(null);
 
@@ -119,6 +121,10 @@ const TaxonDetail = (inProps) => {
     );
   }
   return null;
+};
+
+TaxonDetail.propTypes = {
+  dataProductCode: PropTypes.string,
 };
 
 /* export the component */

@@ -5,6 +5,7 @@ import React, {
   useReducer,
   useEffect,
 } from 'react';
+import PropTypes from 'prop-types';
 
 import { of, map, catchError } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -891,7 +892,8 @@ const defaultProps = {};
    PROVIDER
 */
 const Provider = (inProps) => {
-  const { children } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -1127,6 +1129,17 @@ const Provider = (inProps) => {
       {children}
     </Context.Provider>
   );
+};
+
+Provider.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.string,
+    ])),
+    PropTypes.node,
+    PropTypes.string,
+  ]).isRequired,
 };
 
 /**

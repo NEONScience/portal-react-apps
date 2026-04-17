@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
@@ -13,7 +14,8 @@ const defaultProps = {
 };
 
 const FilterScienceTeam = (inProps) => {
-  const { skeleton } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { skeleton } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -59,6 +61,10 @@ const FilterScienceTeam = (inProps) => {
       </ul>
     </FilterBase>
   );
+};
+
+FilterScienceTeam.propTypes = {
+  skeleton: PropTypes.bool,
 };
 
 export default FilterScienceTeam;

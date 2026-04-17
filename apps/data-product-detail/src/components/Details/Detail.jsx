@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -28,15 +29,15 @@ const defaultProps = {
 
 const Detail = (inProps) => {
   const classes = useStyles(Theme);
-
+  const props = resolveProps(defaultProps, inProps);
   const {
     title,
     tooltip,
     content,
     children,
-  } = resolveProps(defaultProps, inProps);
+  } = props;
 
-  let { seleniumKey } = inProps;
+  let { seleniumKey } = props;
   if (!seleniumKey) {
     seleniumKey = (title || 'generic').toLowerCase().replace(/[^a-z0-9-]/g, '-');
   }
@@ -64,6 +65,20 @@ const Detail = (inProps) => {
       {body}
     </div>
   );
+};
+
+Detail.propTypes = {
+  title: PropTypes.string,
+  tooltip: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.node,
+  ]),
+  content: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.node,
+  ]),
+  seleniumKey: PropTypes.string,
+  children: PropTypes.node,
 };
 
 export default Detail;

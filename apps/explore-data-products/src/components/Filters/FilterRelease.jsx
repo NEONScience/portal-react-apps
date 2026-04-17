@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
@@ -37,7 +38,8 @@ const defaultProps = {
 
 const FilterRelease = (inProps) => {
   const classes = useStyles(Theme);
-  const { skeleton } = resolveProps(defaultProps, inProps);
+  const props = resolveProps(defaultProps, inProps);
+  const { skeleton } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -102,6 +104,10 @@ const FilterRelease = (inProps) => {
       />
     </FilterBase>
   );
+};
+
+FilterRelease.propTypes = {
+  skeleton: PropTypes.bool,
 };
 
 export default FilterRelease;

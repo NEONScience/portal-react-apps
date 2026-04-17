@@ -20,6 +20,7 @@
     "import/no-relative-packages": 0,
     "linebreak-style": ["error", "unix"],
     "react/function-component-definition": 0,
-    "react/jsx-props-no-spreading": 0
+    "react/jsx-props-no-spreading": 0,
+    "react/require-default-props": "off"
   }
 }

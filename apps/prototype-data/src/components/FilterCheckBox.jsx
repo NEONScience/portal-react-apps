@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Checkbox from '@mui/material/Checkbox';
@@ -47,6 +48,7 @@ const defaultProps = {
 };
 
 const FilterCheckBox = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const classes = useStyles(Theme);
   const {
     name,
@@ -58,7 +60,7 @@ const FilterCheckBox = (inProps) => {
     filterValues,
     onApplyFilter,
     onResetFilter,
-  } = resolveProps(defaultProps, inProps);
+  } = props;
 
   const showCount = typeof count !== 'undefined';
   const showSubtitle = typeof subtitle !== 'undefined';
@@ -109,6 +111,18 @@ const FilterCheckBox = (inProps) => {
       )}
     />
   );
+};
+
+FilterCheckBox.propTypes = {
+  name: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
+  value: PropTypes.string.isRequired,
+  filterValues: PropTypes.arrayOf(PropTypes.string).isRequired,
+  count: PropTypes.number,
+  countTitle: PropTypes.string,
+  subtitle: PropTypes.string,
+  checked: PropTypes.bool,
+  onApplyFilter: PropTypes.func.isRequired,
+  onResetFilter: PropTypes.func.isRequired,
 };
 
 export default FilterCheckBox;

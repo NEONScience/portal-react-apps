@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -93,9 +94,10 @@ const defaultProps = {
 };
 
 const PresentationSort = (inProps) => {
-  const classes = useStyles(Theme);
+  const props = resolveProps(defaultProps, inProps);
+  const { skeleton } = props;
 
-  const { skeleton } = resolveProps(defaultProps, inProps);
+  const classes = useStyles(Theme);
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -261,6 +263,10 @@ const PresentationSort = (inProps) => {
       </CardContent>
     </Card>
   );
+};
+
+PresentationSort.propTypes = {
+  skeleton: PropTypes.bool,
 };
 
 export default PresentationSort;

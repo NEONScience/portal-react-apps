@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
@@ -52,6 +53,7 @@ const defaultProps = {
 };
 
 const FilterBase = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const classes = useStyles(Theme);
   const {
     title,
@@ -62,7 +64,7 @@ const FilterBase = (inProps) => {
     handleResetFilter,
     additionalTitleButton,
     'data-selenium': dataSeleniumTag,
-  } = resolveProps(defaultProps, inProps);
+  } = props;
 
   let contents = children;
   if (parseInt(skeleton, 10) > 0) {
@@ -110,6 +112,27 @@ const FilterBase = (inProps) => {
       {contents}
     </div>
   );
+};
+
+FilterBase.propTypes = {
+  title: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.string,
+  ]).isRequired,
+  subtitle: PropTypes.string,
+  skeleton: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
+  showResetButton: PropTypes.bool,
+  handleResetFilter: PropTypes.func,
+  additionalTitleButton: PropTypes.node,
+  'data-selenium': PropTypes.string,
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.string,
+    ])),
+    PropTypes.node,
+    PropTypes.string,
+  ]).isRequired,
 };
 
 export default FilterBase;

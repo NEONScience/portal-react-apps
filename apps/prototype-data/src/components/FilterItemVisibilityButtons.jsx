@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
@@ -31,6 +32,7 @@ const defaultProps = {
 };
 
 const FilterItemVisibilityButtons = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const classes = useStyles(Theme);
   const {
     filterKey,
@@ -40,7 +42,7 @@ const FilterItemVisibilityButtons = (inProps) => {
     onExpandFilterItems,
     onCollapseFilterItems,
     onShowSelectedFilterItems,
-  } = resolveProps(defaultProps, inProps);
+  } = props;
 
   if (!totalItemCount) { return null; }
 
@@ -105,6 +107,16 @@ const FilterItemVisibilityButtons = (inProps) => {
       {buttons}
     </div>
   );
+};
+
+FilterItemVisibilityButtons.propTypes = {
+  filterKey: PropTypes.string.isRequired,
+  currentState: PropTypes.oneOf(Object.values(FILTER_ITEM_VISIBILITY_STATES)).isRequired,
+  totalItemCount: PropTypes.number.isRequired,
+  selectedItemCount: PropTypes.number.isRequired,
+  onExpandFilterItems: PropTypes.func.isRequired,
+  onCollapseFilterItems: PropTypes.func.isRequired,
+  onShowSelectedFilterItems: PropTypes.func.isRequired,
 };
 
 export default FilterItemVisibilityButtons;

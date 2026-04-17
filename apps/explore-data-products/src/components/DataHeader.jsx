@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -101,9 +102,10 @@ const defaultProps = {
 };
 
 const DataHeader = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const classes = useStyles(Theme);
 
-  const { skeleton } = resolveProps(defaultProps, inProps);
+  const { skeleton } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -439,6 +441,10 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
   }
 
   return catalogSummaryContents;
+};
+
+DataHeader.propTypes = {
+  skeleton: PropTypes.bool,
 };
 
 export default DataHeader;

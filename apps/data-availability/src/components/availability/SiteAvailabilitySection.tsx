@@ -1,4 +1,4 @@
-import React, { useMemo, Suspense } from 'react';
+import React, { useMemo, Suspense, type JSX } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
+import React, { useEffect, useCallback, useMemo, type JSX } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { batch, useDispatch, useSelector } from 'react-redux';
 

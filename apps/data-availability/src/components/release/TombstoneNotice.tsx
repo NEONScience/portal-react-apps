@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Theme as MuiTheme } from '@mui/material/styles';

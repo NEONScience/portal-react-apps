@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
+import React, { useEffect, useMemo, Suspense, type JSX } from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 

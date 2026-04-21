@@ -1,4 +1,9 @@
-import React, { useEffect, useCallback, useMemo, type JSX } from 'react';
+import React, {
+  useEffect,
+  useCallback,
+  useMemo,
+  type JSX,
+} from 'react';
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector, batch } from 'react-redux';
 
@@ -246,10 +251,11 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        // eslint-disable-next-line react/no-array-index-key
-        (<span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
-          {slice.text}
-        </span>)
+        (// eslint-disable-next-line react/no-array-index-key
+          <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
+            {slice.text}
+          </span>
+        )
       )))
     ));
     return (

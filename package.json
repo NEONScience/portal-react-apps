@@ -7,7 +7,8 @@
     "yarnVersion": "4.3.1"
   },
   "workspaces": [
-    "apps/sample-explorer/"
+    "apps/data-availability/",
+    "apps/taxonomic-lists/"
   ],
   "resolutions": {
     "@material-ui/pickers": "^3.3.11",
@@ -29,7 +30,8 @@
     "react-markdown/style-to-object": "^1.0.6",
     "react-is": "^17.0.2",
     "prop-types": "^15.8.1",
-    "text-segmentation": "^1.0.3"
+    "text-segmentation": "^1.0.3",
+    "jquery": "3.7.1"
   },
   "scripts": {
     "ci": "yarn install --immutable",

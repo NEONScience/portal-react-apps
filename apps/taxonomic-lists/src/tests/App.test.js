@@ -1,3 +1,4 @@
+import { createRoot } from "react-dom/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -11,10 +12,9 @@ $.DataTable();
 
 global.it("renders without crashing", () => {
   const div = document.createElement("div");
-  ReactDOM.render(
-    <Provider store={store}>
-      <App />
-    </Provider>,
-    div
-	);
+  const root = createRoot(div);
+
+  root.render(<Provider store={store}>
+    <App />
+  </Provider>);
 });

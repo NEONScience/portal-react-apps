@@ -6404,7 +6404,7 @@ __metadata:
     jsdom: "npm:^24.1.1"
     lodash: "npm:^4.17.21"
     moment: "npm:^2.30.1"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
@@ -7886,7 +7886,7 @@ __metadata:
     jspdf: "npm:^2.5.1"
     lodash: "npm:^4.17.21"
     moment: "npm:2.30.1"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
@@ -12581,9 +12581,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"portal-core-components@github:NEONScience/portal-core-components#v2.16.0":
-  version: 2.16.0
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=191f7430112f5e0d990d8d9c6da129b1feec0e15"
+"portal-core-components@github:NEONScience/portal-core-components#v2.17.0":
+  version: 2.17.0
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=900b56375399f9481cbbcfa5e1fb837cabbf514b"
   dependencies:
     "@date-io/moment": "npm:^1.3.13"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
@@ -12670,7 +12670,7 @@ __metadata:
       optional: true
     worker-loader:
       optional: true
-  checksum: 10c0/f9eb3e684e1e931600cff06a182b6dc7146042202ff634e4c860e1375cb91ab94c763fd8371c6f1257f14cec6e31c62dfc98162196744f05c2aad3f3d0176b59
+  checksum: 10c0/f1d52143c96f6fef6df74a47ba15766c4197cbf906d7335604d246a442de40eea2d7ea6ef0eafca12b8fc41fdccf1e1e755df435451bf6105a3cef96f44d17af
   languageName: node
   linkType: hard
 
@@ -12701,7 +12701,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     material-table: "npm:^1.69.3"
     moment: "npm:2.30.1"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
@@ -13729,7 +13729,7 @@ __metadata:
     jsdom: "npm:^24.1.1"
     lodash: "npm:^4.17.21"
     moment: "npm:2.30.1"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
@@ -14802,7 +14802,7 @@ __metadata:
     js-file-download: "npm:^0.4.12"
     jsdom: "npm:^24.1.1"
     json2csv: "npm:^5.0.7"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"
@@ -15898,7 +15898,7 @@ __metadata:
     jquery: "npm:~3.7.1"
     jsdom: "npm:^24.1.1"
     lodash: "npm:^4.17.21"
-    portal-core-components: "github:NEONScience/portal-core-components#v2.16.0"
+    portal-core-components: "github:NEONScience/portal-core-components#v2.17.0"
     prettier: "npm:^3.3.3"
     prop-types: "npm:^15.8.1"
     react: "npm:^17.0.2"

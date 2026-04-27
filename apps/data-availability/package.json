@@ -47,9 +47,9 @@
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "next dev",
+    "start": "PORTAL_REACT_APPS_ENV=dev next dev",
     "start:prod": "node server.js",
-    "build": "next build",
+    "build": "PORTAL_REACT_APPS_ENV=prod next build",
     "test": "react-scripts test",
     "build:sync-assets": "node ../../node_modules/portal-core-components/scripts/sync-assets.js --prettify-index --cwd-relative-public-dir-path=\"public\"",
     "lint": "(npx eslint src/ --ext .js,.jsx,.ts,.tsx || true) && exit 0",

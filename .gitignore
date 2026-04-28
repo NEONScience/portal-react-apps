@@ -24,3 +24,6 @@ yarn-debug.log*
 yarn-error.log*
 
 *.local.sh
+
+.next
+next-env.d.ts

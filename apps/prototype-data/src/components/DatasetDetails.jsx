@@ -331,6 +331,7 @@ const renderDataFileRow = (file, uuid, classes) => {
           <ListItemText
             primaryTypographyProps={{
               variant: 'body2',
+              component: 'div',
             }}
             primary={(
               <div className={classes.listItemFilePrimaryText}>

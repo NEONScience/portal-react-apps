@@ -18,7 +18,7 @@ import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
 import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
 import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer';
+import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
 import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
@@ -331,7 +331,7 @@ const DataProduct = React.memo((props) => {
 
   const saeViewerButton = hasData && isSaeViewerProduct
     ? (
-      <SaeDataViewer
+      <SaeDataViewerButton
         isFullWidth
         name="sae-visuialization-button"
       />

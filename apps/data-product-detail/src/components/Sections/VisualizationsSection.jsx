@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer';
+import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -66,7 +66,7 @@ const SaeVizNode = (product) => {
         data.
       </Typography>
       <Divider className={classes.divider} />
-      <SaeDataViewer
+      <SaeDataViewerButton
         isFullWidth={false}
         product={product}
       />

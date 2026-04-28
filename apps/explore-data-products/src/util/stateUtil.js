@@ -290,8 +290,10 @@ export const parseProductsByReleaseData = (state, release) => {
     bundles: bundlesCtx,
     timeSeriesDataProducts: timeSeriesDataProductsJSON,
     aopDataProducts: aopDataProductsJSON,
+    saeDataProducts: saeDataProductsJSON,
   } = state.neonContextState.data;
   const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  const { productCodes: saeProductCodes } = saeDataProductsJSON;
 
   // State object that we'll update and ultimately return
   let newState = { ...state };
@@ -532,6 +534,17 @@ export const parseProductsByReleaseData = (state, release) => {
       if (!hasFilterableValue && hasAvailableData) {
         product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
           VISUALIZATIONS.AOP_DATA_VIEWER.key,
+        );
+      }
+    }
+    if ((saeProductCodes || []).includes(productCode)) {
+      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+        .includes(VISUALIZATIONS.SAE_DATA_VIEWER.key);
+      const hasAvailableData = Array.isArray(availabilitySiteCodes)
+        && (availabilitySiteCodes.length > 0);
+      if (!hasFilterableValue && hasAvailableData) {
+        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+          VISUALIZATIONS.SAE_DATA_VIEWER.key,
         );
       }
     }

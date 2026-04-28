@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "type": "chrome",
+            "name": "data-products/explore",
+            "request": "launch",
+            "url": "http://localhost:3011/data-products/explore"
+        },
+        {
+            "type": "chrome",
+            "name": "data-products/DP1.00003.001",
+            "request": "launch",
+            "url": "http://localhost:3012/data-products/DP1.00003.001"
+        }
+    ]
+}

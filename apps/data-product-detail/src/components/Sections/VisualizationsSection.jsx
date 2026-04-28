@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
+import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -55,6 +56,24 @@ const AopVizNode = () => {
   );
 };
 
+const SaeVizNode = (product) => {
+  const classes = useStyles(Theme);
+  return (
+    <div>
+      <Typography variant="body2" gutterBottom>
+        This tool provides a quick, interactive view of fluxes and key meteorological drivers.
+        Users can preview time series, QC information, and site-level patterns before downloading
+        data.
+      </Typography>
+      <Divider className={classes.divider} />
+      <SaeDataViewer
+        isFullWidth={false}
+        product={product}
+      />
+    </div>
+  );
+};
+
 const VisualizationsSection = (props) => {
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
@@ -65,6 +84,10 @@ const VisualizationsSection = (props) => {
     aopDataProducts: aopDataProductsJSON = { productCodes: [] },
   } = neonContextData;
   const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  const {
+    saeDataProducts: saeDataProductsJSON = { productCodes: [] },
+  } = neonContextData;
+  const { productCodes: saeProductCodes } = saeDataProductsJSON;
 
   const [state, dispatch] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
@@ -104,6 +127,12 @@ const VisualizationsSection = (props) => {
     viz.AOP = {
       name: 'AOP GEE Data Viewer',
       node: AopVizNode(),
+    };
+  }
+  if (saeProductCodes.includes(productCode)) {
+    viz.SAE = {
+      name: 'SAE Data Viewer',
+      node: SaeVizNode(productCode),
     };
   }
 

@@ -1,6 +1,9 @@
 import moment from 'moment';
 
 import isEqual from 'lodash/isEqual';
+import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
+import AopViewerIcon from '@material-ui/icons/SatelliteOutlined';
+import SaeViewerIcon from '@material-ui/icons/TimelineOutlined';
 
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
 
@@ -39,10 +42,17 @@ export const VISUALIZATIONS = {
   TIME_SERIES_VIEWER: {
     key: 'TIME_SERIES_VIEWER',
     name: 'Time Series Viewer',
+    icon: TimeSeriesIcon,
   },
   AOP_DATA_VIEWER: {
     key: 'AOP_DATA_VIEWER',
     name: 'AOP Data Viewer',
+    icon: AopViewerIcon,
+  },
+  SAE_DATA_VIEWER: {
+    key: 'SAE_DATA_VIEWER',
+    name: 'SAE Data Viewer',
+    icon: SaeViewerIcon,
   },
 };
 

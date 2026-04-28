@@ -32,6 +32,18 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "apps/data-availability/build",
+    "apps/data-availability/node_modules",
+    "apps/data-product-detail/build",
+    "apps/data-product-detail/node_modules",
+    "apps/explore-data-products/build",
+    "apps/explore-data-products/node_modules",
+    "apps/prototype-data/build",
+    "apps/prototype-data/node_modules",
+    "apps/sample-explorer/build",
+    "apps/sample-explorer/node_modules",
+    "apps/taxonomic-lists/build",
+    "apps/taxonomic-lists/node_modules",
   ]
 }

@@ -1,7 +1,9 @@
 import type { NextConfig } from 'next';
 
+const isProd = process.env.PORTAL_REACT_APPS_ENV === 'prod';
+
 const nextConfig: NextConfig = {
-  output: 'export', // Outputs a Single-Page Application (SPA)
+  output: isProd ? 'export' : undefined,
   distDir: 'build',
   basePath: '/data-products',
   trailingSlash: false,

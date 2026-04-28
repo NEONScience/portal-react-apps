@@ -5,7 +5,6 @@
   },
   "include": [
     "./src/**/*",
-    "next-env.d.ts",
-    "app/**/*"
+    "next-env.d.ts"
   ]
 }

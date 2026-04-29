@@ -113,7 +113,7 @@ const DataProduct = React.memo((props) => {
     currentProducts: { release: currentRelease },
   } = state;
   const products = getCurrentProductsByRelease(state);
-  const [selectedVis, setSelectedVis] = useState();
+  const [selectedVis, setSelectedVis] = useState(VISUALIZATIONS.TIME_SERIES_VIEWER);
 
   if (!products[productCode]) { return null; }
 
@@ -318,9 +318,6 @@ const DataProduct = React.memo((props) => {
   }
   const visList = getVisList();
 
-  if (!selectedVis && visList.length > 1) {
-    setSelectedVis(visList[0]);
-  }
   const aopViewerButton = hasData && isAopViewerProduct
     ? (
       <AopGeeDataViewer

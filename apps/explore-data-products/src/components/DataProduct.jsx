@@ -333,6 +333,7 @@ const DataProduct = React.memo((props) => {
     ? (
       <SaeDataViewerButton
         isFullWidth
+        product={productCode}
         name="sae-visuialization-button"
       />
     ) : null;

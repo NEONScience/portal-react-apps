@@ -84,20 +84,9 @@ export default defineConfig([
   {
     name: "global rules",
     rules: {
-      "linebreak-style": 0,
       "eslint linebreak-style": [0, "error", "windows"],
       "react/jsx-props-no-spreading": "off",
-      "no-const-assign": "warn",
-      "no-this-before-super": "warn",
-      "no-undef": "warn",
-      "no-unreachable": "warn",
-      "no-unused-vars": "warn",
-      "constructor-super": "warn",
-      "valid-typeof": "warn",
       "quotes": "off",
-      "max-len": ["warn", 120],
-      "react/jsx-uses-react": 2,
-      "react/jsx-uses-vars": 2,
       "import/no-extraneous-dependencies": "off"
     },
   },

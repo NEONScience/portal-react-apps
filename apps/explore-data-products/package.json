@@ -24,7 +24,6 @@
     "react": "19.2.5",
     "react-dom": "19.2.5",
     "rxjs": "7.8.2",
-    "typescript": "~5.9.3",
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
@@ -43,7 +42,8 @@
     "express": "^4.19.2",
     "jsdom": "^24.1.1",
     "prettier": "^3.3.3",
-    "source-map-explorer": "^2.5.3"
+    "source-map-explorer": "^2.5.3",
+    "typescript": "~5.9.3"
   },
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",

@@ -31,7 +31,6 @@
     "remark-gfm": "^3.0.1",
     "rxjs": "7.8.2",
     "stickyfilljs": "^2.1.0",
-    "typescript": "~5.9.3",
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
@@ -49,7 +48,8 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "express": "^4.19.2",
     "jsdom": "^24.1.1",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "typescript": "~5.9.3"
   },
   "scripts": {
     "start": "PORTAL_REACT_APPS_ENV=dev next dev",

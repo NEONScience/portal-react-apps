@@ -40,11 +40,8 @@ export default defineConfig([
     "next-env.d.ts",
     "node_modules/",
   ]),
-
   ...airbnbConfigs,
-
   parentConfig,
-
   {
     name: "Base plugins",
     plugins: {
@@ -55,7 +52,6 @@ export default defineConfig([
       "react-hooks": reactHooksPlugin,
     },
   },
-
   {
     name: "Javascript and React rules",
     files: ["src/**/*.{js,jsx}"],
@@ -69,7 +65,6 @@ export default defineConfig([
       },
     },
   },
-
   {
     name: "Typescript and React rules",
     files: ["src/**/*.{ts,tsx}"],
@@ -86,7 +81,6 @@ export default defineConfig([
       },
     },
   },
-
   {
     name: "global rules",
     rules: {

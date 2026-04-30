@@ -84,7 +84,6 @@ export default defineConfig([
   {
     name: "global rules",
     rules: {
-      "linebreak-style": 0,
       "eslint linebreak-style": [0, "error", "windows"],
       "react/function-component-definition": 0,
       "react/jsx-props-no-spreading": "off",

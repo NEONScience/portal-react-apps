@@ -6,6 +6,7 @@
   "include": [
     "./src/**/*",
     "next-env.d.ts",
-    "app/**/*"
+    "app/**/*",
+    "next.config.ts",
   ]
 }

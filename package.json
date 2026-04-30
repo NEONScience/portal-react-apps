@@ -7,7 +7,7 @@
     "yarnVersion": "4.3.1"
   },
   "workspaces": [
-    "apps/taxonomic-lists"
+    "apps/sample-explorer"
   ],
   "resolutions": {
     "@material-ui/pickers": "^3.3.11",

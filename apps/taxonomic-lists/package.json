@@ -49,11 +49,23 @@
     "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/taxonomic-lists/public --workdir=/app/apps/taxonomic-lists portal-react-apps/taxonomic-lists:latest-builder-base npm run build:sync-assets"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.39.4",
+    "@types/eslint-plugin-jsx-a11y": "^6",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
     "commander": "^12.1.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.39.4",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-next": "^16.2.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "express": "^4.19.2",
     "jsdom": "^24.1.1",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "typescript": "~5.9.3"
   },
   "browserslist": {
     "production": [

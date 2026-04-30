@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, {
   createContext,
   useContext,
@@ -739,7 +738,6 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseFailed':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleases[action.release].error = action.error;
-      // eslint-disable-next-line max-len
       newState.app.error = `${errorDetail}: ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseSucceeded':
@@ -753,7 +751,6 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseDoiFailed':
       newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleaseDois[action.release].error = action.error;
-      // eslint-disable-next-line max-len
       newState.app.error = `${errorDetail}: ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseDoiSucceeded':
@@ -792,19 +789,15 @@ const reducer = (state, action) => {
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
-      // eslint-disable-next-line max-len
       newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
       return calculateAppStatus(
         calculateFetches(
-          // eslint-disable-next-line max-len
           applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
         ),
       );
 
     case 'fetchBundleParentReleaseStarted':
-      /* eslint-disable max-len */
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.FETCHING;
-      /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseFailed':
       /* eslint-disable max-len */
@@ -814,7 +807,6 @@ const reducer = (state, action) => {
       /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
-      // eslint-disable-next-line max-len
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
       if (!newState.data.bundleParentReleases[action.bundleParent]) {
         newState.data.bundleParentReleases[action.bundleParent] = {};

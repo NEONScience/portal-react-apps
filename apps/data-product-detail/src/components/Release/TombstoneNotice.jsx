@@ -114,9 +114,9 @@ const TombstoneNotice = () => {
           );
           latestAvailableReleaseBlurb = (
             <>
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
               has been replaced by a {dataProductDetailLink} and&nbsp;
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-enable react/jsx-one-expression-per-line */}
             </>
           );
         }
@@ -131,12 +131,12 @@ const TombstoneNotice = () => {
       if (!hasManyTombstonedDois) {
         return (
           <Typography variant="body2">
-            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+            {/* eslint-disable react/jsx-one-expression-per-line */}
             <b>{tombstonedRelease}</b> of this data product
             {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
             If this specific release is needed for research purposes, please fill out
             the {contactUsLink} form.
-            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
         );
       }
@@ -164,19 +164,18 @@ const TombstoneNotice = () => {
             <Typography variant="body2" color="textPrimary">
               The above DOI refers to that data product release and there is no DOI directly
               associated with this data product release.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
             </Typography>
           </>
         );
       }
       return (
         <Typography variant="body2" color="textPrimary">
-          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-disable react/jsx-one-expression-per-line */}
           <b>{tombstonedRelease}</b> of this data product
           {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
           If this specific release is needed for research purposes, please fill out
           the {contactUsLink} form.
-          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-enable react/jsx-one-expression-per-line */}
         </Typography>
       );
     };
@@ -208,9 +207,8 @@ const TombstoneNotice = () => {
           <Divider className={classes.noticeCardDivider} />
           {!hasManyTombstonedDois ? null : (
             <Typography variant="subtitle2" className={classes.doiBlurb}>
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
               This data product release is {bundledLink} into the following data product releases:
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
             </Typography>
           )}
           <List

@@ -1,6 +1,3 @@
-/* eslint-disable import/no-unresolved */
-// TODO: figure out why NeonContext raises an import/no-unresolved false positive
-// (why that rule is disabled in this file)
 import React from 'react';
 
 import Button from '@mui/material/Button';

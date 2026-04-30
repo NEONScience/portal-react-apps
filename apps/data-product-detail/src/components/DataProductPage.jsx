@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useLayoutEffect } from 'react';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext';

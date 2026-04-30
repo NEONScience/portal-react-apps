@@ -170,10 +170,10 @@ const ReleaseCard = () => {
           <div>
             <Divider className={classes.releaseCardDivider} />
             <Typography variant="body2" color="textPrimary">
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
               <b>{currentRelease}</b> of this data product is not available.
               The available data product releases can be found {dataProductDetailLink}.
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-enable react/jsx-one-expression-per-line */}
             </Typography>
           </div>
         )}
@@ -235,9 +235,7 @@ const ReleaseCard = () => {
             primary={(
               !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
                 <Typography variant="subtitle2" className={classes.multiDoiFromParentBlurb}>
-                  {/* eslint-disable react/jsx-one-expression-per-line */}
                   {currentDoiUrl.bundleParentLink}
-                  {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
               )
             )}

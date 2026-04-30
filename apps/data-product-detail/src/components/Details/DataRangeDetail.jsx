@@ -56,8 +56,10 @@ const DataRangeDetail = () => {
     rangeText = `${renderDemarc(range[0])} - ${renderDemarc(range[1])}`;
   }
 
+  // eslint-disable-next-line max-len
   let tooltip = 'The available date range from the earliest observation to the latest observation, across the entire observatory. Each site may have a different range.';
   if (forwardAvailabilityFromParent) {
+    // eslint-disable-next-line max-len
     tooltip = `${tooltip} Also, as this product is part of a bundle, these dates represent availability of the entire bundle. See the Availability and Download section below for more detail.`;
   }
 

@@ -55,10 +55,10 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
       }
       const tombstoneNote = (
         <>
-          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-disable react/jsx-one-expression-per-line */}
           <b>{citationRelease.release}</b> of this data product
           {doiDisplay} is no longer available for download.
-          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-enable react/jsx-one-expression-per-line */}
         </>
       );
       return (

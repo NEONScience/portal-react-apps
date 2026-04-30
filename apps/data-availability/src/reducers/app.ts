@@ -12,63 +12,8 @@ import AppFlow from '../actions/flows/app';
 import { AnyActionType } from '../actions/actionTypes';
 import { BaseStoreAppState, SelectOption } from '../types/store';
 
-export const appReducer = (
-  // eslint-disable-next-line @typescript-eslint/default-param-last
-  state = AppState.getAppState(),
-  action: AnyActionType,
-): BaseStoreAppState => {
-  const update: BaseStoreAppState = flowReducer(state, action);
-  let viewMode: SelectOption;
-  switch (action.type) {
-    case AppActions.SET_SELECTED_VIEW_MODE:
-      viewMode = (action as SetSelectedViewModeAction).viewMode;
-      return {
-        ...update,
-        selectedViewMode: viewMode,
-        viewModeSwitching: true,
-      };
-    case AppActions.RESET_VIEW_MODE_SWITCHING:
-      return {
-        ...update,
-        viewModeSwitching: false,
-      };
-    case AppActions.SET_RELEASES:
-      return {
-        ...update,
-        releases: (action as SetReleasesAction).releases,
-      };
-    case AppActions.SET_SELECTED_PRODUCT:
-      return {
-        ...update,
-        selectedProduct: (action as SetSelectedProductAction).product,
-      };
-    case AppActions.SET_SELECTED_RELEASE:
-      return {
-        ...update,
-        selectedRelease: (action as SetSelectedReleaseAction).release,
-      };
-    case AppActions.SET_SELECTED_SITE:
-      return {
-        ...update,
-        selectedSite: (action as SetSelectedSiteAction).site,
-      };
-    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI:
-      return {
-        ...update,
-        focalProductReleaseDoi: null,
-      };
-    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA:
-      return {
-        ...update,
-        focalProductReleaseTombAva: null,
-      };
-    default:
-      return update;
-  }
-};
-
 const flowReducer = (
-  // eslint-disable-next-line @typescript-eslint/default-param-last
+  // eslint-disable-next-line default-param-last
   state = AppState.getAppState(),
   action: AnyActionType,
 ): BaseStoreAppState => {
@@ -137,6 +82,61 @@ const flowReducer = (
     'focalProductReleaseTombAva',
   );
   return update;
+};
+
+export const appReducer = (
+  // eslint-disable-next-line default-param-last
+  state = AppState.getAppState(),
+  action: AnyActionType,
+): BaseStoreAppState => {
+  const update: BaseStoreAppState = flowReducer(state, action);
+  let viewMode: SelectOption;
+  switch (action.type) {
+    case AppActions.SET_SELECTED_VIEW_MODE:
+      viewMode = (action as SetSelectedViewModeAction).viewMode;
+      return {
+        ...update,
+        selectedViewMode: viewMode,
+        viewModeSwitching: true,
+      };
+    case AppActions.RESET_VIEW_MODE_SWITCHING:
+      return {
+        ...update,
+        viewModeSwitching: false,
+      };
+    case AppActions.SET_RELEASES:
+      return {
+        ...update,
+        releases: (action as SetReleasesAction).releases,
+      };
+    case AppActions.SET_SELECTED_PRODUCT:
+      return {
+        ...update,
+        selectedProduct: (action as SetSelectedProductAction).product,
+      };
+    case AppActions.SET_SELECTED_RELEASE:
+      return {
+        ...update,
+        selectedRelease: (action as SetSelectedReleaseAction).release,
+      };
+    case AppActions.SET_SELECTED_SITE:
+      return {
+        ...update,
+        selectedSite: (action as SetSelectedSiteAction).site,
+      };
+    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI:
+      return {
+        ...update,
+        focalProductReleaseDoi: null,
+      };
+    case AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA:
+      return {
+        ...update,
+        focalProductReleaseTombAva: null,
+      };
+    default:
+      return update;
+  }
 };
 
 export default appReducer;

@@ -131,7 +131,6 @@ const LocationsSection: React.FC = (): JSX.Element => {
       return (<React.Fragment />);
     }
     let text = '';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     switch (selectedViewMode.value) {
       case 'DataProduct':
         text = `The site map shows the field sites where data are available for the

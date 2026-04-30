@@ -22,10 +22,6 @@ const getRootState = (): StoreRootState => ({
   app: AppState.getAppState(),
 });
 
-const configureInitialStore = (): Store<StoreRootState, AnyAction> => (
-  configureStore(getRootState())
-);
-
 const configureStore = (state: StoreRootState): Store<StoreRootState, AnyAction> => {
   const epicMiddleware: EpicMiddleware<AnyAction> = getEpicMiddleware();
   const middlewares: Middleware[] = [
@@ -33,7 +29,6 @@ const configureStore = (state: StoreRootState): Store<StoreRootState, AnyAction>
   ];
   if (NeonEnvironment.isDevEnv) {
     const { logger } = require('redux-logger'); // eslint-disable-line
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     middlewares.push(logger);
   }
   store = createStore<StoreRootState, AnyAction, Record<string, unknown>, Record<string, unknown>>(
@@ -44,6 +39,10 @@ const configureStore = (state: StoreRootState): Store<StoreRootState, AnyAction>
   epicMiddleware.run(getCombinedEpics() as never);
   return store;
 };
+
+const configureInitialStore = (): Store<StoreRootState, AnyAction> => (
+  configureStore(getRootState())
+);
 
 const RootStore = {
   getStore,

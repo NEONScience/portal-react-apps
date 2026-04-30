@@ -17,8 +17,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
-  AutocompleteChangeDetails,
-  AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
@@ -134,6 +132,7 @@ const transformOptions = (
 ): SiteSelectDataOption[] => (
   sites
     .map((value: SiteSelectOption): SiteSelectDataOption => (
+      // eslint-disable-next-line no-use-before-define
       transformOption(value, states, domains)
     ))
     .filter((a: SiteSelectDataOption): boolean => exists(a) && isStringNonEmpty(a.stateName))
@@ -168,7 +167,6 @@ const SiteSelect: React.FC = (): JSX.Element => {
   }: SiteSelectState = state;
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { states, domains }: Record<string, unknown> = neonContextData;
   const siteOptions: SiteSelectDataOption[] = transformOptions(
     sites,
@@ -237,7 +235,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        (// eslint-disable-next-line react/no-array-index-key
+        (
           <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
             {slice.text}
           </span>
@@ -291,7 +289,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
         getOptionDisabled={(option: SiteSelectDataOption): boolean => (
           !option.hasData
         )}
-        getOptionLabel={(option: SiteSelectDataOption): string => ''}
+        getOptionLabel={(): string => ''}
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: SiteSelectDataOption) => (
@@ -308,7 +306,6 @@ const SiteSelect: React.FC = (): JSX.Element => {
         ): JSX.Element => renderOption(value, renderOptionState, props)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             variant="outlined"
             label="Search Field Sites"
@@ -324,12 +321,10 @@ const SiteSelect: React.FC = (): JSX.Element => {
         onChange={(
           event: React.ChangeEvent<unknown>,
           nextValue: SiteSelectDataOption | null,
-          reason: AutocompleteChangeReason,
-          details?: AutocompleteChangeDetails<SiteSelectDataOption>,
         ): void => {
           if (!exists(nextValue)) return;
           const nextSite: Site = !exists(nextValue)
-            ? sites.find((value: Site): boolean => true) as Site
+            ? sites.find((): boolean => true) as Site
             : sites.find((value: Site): boolean => (
               value.siteCode.localeCompare((nextValue as Site).siteCode) === 0
             )) as Site;

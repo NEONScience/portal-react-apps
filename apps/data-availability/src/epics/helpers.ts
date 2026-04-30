@@ -9,11 +9,13 @@ import {
 } from 'portal-core-components/lib/types/core';
 import { resolveAny } from '../util/typeUtil';
 
-export type CascadeActionFunction = (param?: unknown) => AnyObject;
+export type CascadeActionFunction = () => AnyObject;
 
 export const handleSuccess = (
   response: AjaxResponse<unknown>,
+  // eslint-disable-next-line no-unused-vars
   completed: (response: AnyObject) => AnyObject,
+  // eslint-disable-next-line no-unused-vars
   error: (response: Nullable<AnyObject>) => AnyObject,
 ): Observable<unknown> => {
   const resolved: UnknownRecord = resolveAny(response as never, 'response');
@@ -30,7 +32,9 @@ export const handleSuccess = (
 
 export const handleSuccessObservable = (
   response: AjaxResponse<unknown>,
+  // eslint-disable-next-line no-unused-vars
   completed: (response: AnyObject) => Observable<unknown>,
+  // eslint-disable-next-line no-unused-vars
   error: (response: Nullable<AnyObject>) => Observable<unknown>,
 ): Observable<unknown> => {
   const resolved: UnknownRecord = resolveAny(response as never, 'response');
@@ -47,6 +51,7 @@ export const handleSuccessObservable = (
 
 export const handleError = (
   response: AjaxResponse<unknown>,
+  // eslint-disable-next-line no-unused-vars
   error: (response: Nullable<AnyObject>, message?: Nullable<string>) => AnyObject,
   cascadeAction?: CascadeActionFunction,
 ): Observable<unknown> => {

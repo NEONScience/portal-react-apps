@@ -17,8 +17,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
-  AutocompleteChangeDetails,
-  AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
@@ -251,7 +249,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        (// eslint-disable-next-line react/no-array-index-key
+        (
           <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
             {slice.text}
           </span>
@@ -295,7 +293,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         getOptionDisabled={(option: DataProductSelectOption): boolean => (
           getOptionsDisabled(option)
         )}
-        getOptionLabel={(option: DataProductSelectOption): string => ''}
+        getOptionLabel={(): string => ''}
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: DataProductSelectOption): string => {
@@ -303,7 +301,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             const [secondaryMessage]: string = getProductSecondaryMessage(
               option as DataProduct,
@@ -319,7 +316,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         ): JSX.Element => renderOption(value, renderOptionState, props)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             variant="outlined"
             label="Search Data Products"
@@ -335,12 +331,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         onChange={(
           event: React.ChangeEvent<unknown>,
           nextValue: DataProductSelectOption | null,
-          reason: AutocompleteChangeReason,
-          details?: AutocompleteChangeDetails<DataProductSelectOption>,
         ): void => {
           if (!exists(nextValue)) return;
           const nextProduct: DataProduct = !exists(nextValue)
-            ? products.find((value: DataProduct): boolean => true) as DataProduct
+            ? products.find((): boolean => true) as DataProduct
             : products.find((value: DataProduct): boolean => {
               const coerced = (nextValue as DataProduct);
               return value.productCode.localeCompare(coerced.productCode) === 0;

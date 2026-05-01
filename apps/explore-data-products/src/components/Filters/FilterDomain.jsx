@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 
@@ -90,6 +89,7 @@ const FilterDomain = (inProps) => {
               value={filterItem.value}
               subtitle={filterItem.subtitle}
               count={filterItem.count}
+              // eslint-disable-next-line max-len
               countTitle={`{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`}
               checked={filterValues[filterKey].includes(filterItem.value)}
               {...checkboxProps}

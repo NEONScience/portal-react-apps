@@ -201,9 +201,12 @@ const DataHeader = (inProps) => {
   const selenium = 'browse-data-products-page.data-header';
 
   const getTooltip = (format, filtered) => {
+    // eslint-disable-next-line max-len
     const baseTooltip = `Download a ${format} file containing catalog data (product name, description, url, etc.--no science data)`;
     return filtered
+      // eslint-disable-next-line max-len
       ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`
+      // eslint-disable-next-line max-len
       : `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
   };
 

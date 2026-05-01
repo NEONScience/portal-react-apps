@@ -41,6 +41,7 @@ export const APP_STATUS = {
 // We present the same info in a more visible callout, so we actively scrub it
 // from short descriptions.
 const EXCISE_BUNDLE_BLURBS = [
+  // eslint-disable-next-line max-len
   ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
 ];
 
@@ -780,7 +781,7 @@ export const parseProductsByReleaseData = (state, release) => {
             newState.filterItemVisibility[key] = localFilterItemVisibility[key];
           });
       } catch {
-        // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-console, max-len
         console.error('Unable to rebuild filter item visibility from saved local storage. Stored value is not parseable.');
       }
     }

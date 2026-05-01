@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 

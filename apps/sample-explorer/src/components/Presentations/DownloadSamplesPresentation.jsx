@@ -1,4 +1,5 @@
 import React, { useReducer } from 'react';
+import PropTypes from 'prop-types';
 
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -20,7 +21,7 @@ import DownloadIcon from '@mui/icons-material/SaveAlt';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-const DownloadSamplesPresentation = (props) => {
+function DownloadSamplesPresentation(props) {
   const {
     sampleUuid,
     cacheControl,
@@ -32,7 +33,7 @@ const DownloadSamplesPresentation = (props) => {
     },
   } = props;
 
-  const degreeIsValid = d => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
+  const degreeIsValid = (d) => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
 
   const initialState = {
     dialogOpen: false,
@@ -48,7 +49,7 @@ const DownloadSamplesPresentation = (props) => {
       newState.canDownload = false;
       if (newState.sampleSelection === 'allSamples') {
         newState.canDownload = true;
-      } else if (['first', 'current'].includes(newState.sampleSelection)){
+      } else if (['first', 'current'].includes(newState.sampleSelection)) {
         if (newState.degreeType === 'chosen') {
           newState.canDownload = true;
         } else if (newState.degreeType === 'degree') {
@@ -66,7 +67,7 @@ const DownloadSamplesPresentation = (props) => {
         resetCanDownload();
         break;
       case 'setSampleSelection':
-      if (!['first', 'current', 'allSamples'].includes(action.sampleSelection)) { return prevState; }
+        if (!['first', 'current', 'allSamples'].includes(action.sampleSelection)) { return prevState; }
         newState.sampleSelection = action.sampleSelection;
         resetCanDownload();
         break;
@@ -81,7 +82,7 @@ const DownloadSamplesPresentation = (props) => {
         break;
       default:
         break;
-    };
+    }
     return newState;
   };
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -108,17 +109,15 @@ const DownloadSamplesPresentation = (props) => {
     }
     if (state.sampleSelection === 'allSamples') {
       return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-    } else {
-      if (state.degreeType === 'chosen') {
-        return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-      } else {
-        const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
+    }
+    if (state.degreeType === 'chosen') {
+      return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
+    }
+    const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
           + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
           + `&sampleClass=${sampleList[0].sampleClass}`
           + `&degree=${state.degree}`;
-        return onDownloadClick(state.downloadType, url, cacheControl);
-      }
-    }
+    return onDownloadClick(state.downloadType, url, cacheControl);
   };
 
   return (
@@ -158,7 +157,8 @@ const DownloadSamplesPresentation = (props) => {
             <FormControl
               variant="standard"
               component="fieldset"
-              style={{ marginRight: Theme.spacing(5) }}>
+              style={{ marginRight: Theme.spacing(5) }}
+            >
               <FormLabel component="legend">Data format</FormLabel>
               <RadioGroup
                 aria-label="data format"
@@ -203,7 +203,8 @@ const DownloadSamplesPresentation = (props) => {
               <FormControl
                 variant="standard"
                 component="fieldset"
-                style={{ marginBottom: Theme.spacing(1) }}>
+                style={{ marginBottom: Theme.spacing(1) }}
+              >
                 <FormLabel component="legend">Relationship extent for selected sample</FormLabel>
                 <RadioGroup
                   aria-label="relationship extent for selected sample"
@@ -411,6 +412,19 @@ const DownloadSamplesPresentation = (props) => {
     )
   }
   */
+}
+
+DownloadSamplesPresentation.propTypes = {
+  sampleUuid: PropTypes.string.isRequired,
+  cacheControl: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/require-default-props
+  downloadErrorStr: PropTypes.string,
+  onDownloadClick: PropTypes.func.isRequired,
+  onDownloadVisitedSamplesClick: PropTypes.func.isRequired,
+  visitedSamples: PropTypes.shape({
+    // eslint-disable-next-line react/forbid-prop-types
+    sampleViews: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }).isRequired,
 };
 
 export default DownloadSamplesPresentation;

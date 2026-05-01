@@ -3,9 +3,7 @@ import { exists } from "portal-core-components/lib/util/typeUtil";
 /**
  * Determines if the current location has search params
  */
-export const hasParams = () => {
-  return exists(window.location.search) && (window.location.search.length > 0);
-}
+export const hasParams = () => exists(window.location.search) && (window.location.search.length > 0);
 
 /**
  * Parse the URL search params into an object lookup
@@ -21,7 +19,9 @@ export const parseParams = (paramNames) => {
   }
   let params = null;
   if (typeof URLSearchParams === "undefined") {
+    // eslint-disable-next-line no-console
     console.log("using URLSearchParams polyfill");
+    // eslint-disable-next-line global-require
     require("url-search-params-polyfill");
     params = new URLSearchParams(window.location.search);
   } else {
@@ -31,28 +31,28 @@ export const parseParams = (paramNames) => {
     return {};
   }
 
-  let parsed = {};
-  for (let p of params) {
-    if (!parseAll && (paramNames.indexOf(p[0]) < 0)) {
+  const parsed = {};
+  // eslint-disable-next-line no-restricted-syntax
+  for (const [key, value] of params) {
+    if (!parseAll && (paramNames.indexOf(key) < 0)) {
+      // eslint-disable-next-line no-continue
       continue;
     }
 
-    if (!exists(parsed[p[0]])) {
-      parsed[p[0]] = p[1];
+    if (!exists(parsed[key])) {
+      parsed[key] = value;
+    } else if (!Array.isArray(parsed[key])) {
+      const current = parsed[key];
+      parsed[key] = [];
+      parsed[key].push(current);
+      parsed[key].push(value);
     } else {
-      if (!Array.isArray(parsed[p[0]])) {
-        let current = parsed[p[0]];
-        parsed[p[0]] = [];
-        parsed[p[0]].push(current);
-        parsed[p[0]].push(p[1]);
-      } else {
-        parsed[p[0]].push(p[1]);
-      }
+      parsed[key].push(value);
     }
   }
 
   return parsed;
-}
+};
 
 /**
  * Applies the key values from the params object to the target object
@@ -65,19 +65,22 @@ export const applyParams = (target, params) => {
     return;
   }
 
-  for (let k in target) {
-    if (target.hasOwnProperty(k) && params.hasOwnProperty(k)) {
+  Object.keys(target).forEach((k) => {
+    if (Object.prototype.hasOwnProperty.call(params, k)) {
       if (Array.isArray(target[k])) {
         if (Array.isArray(params[k])) {
+          // eslint-disable-next-line no-param-reassign
           target[k] = params[k];
         } else {
           target[k].push(params[k]);
         }
       } else {
+        // eslint-disable-next-line no-param-reassign
         target[k] = params[k];
       }
     }
-  }
+  });
 
+  // eslint-disable-next-line consistent-return
   return target;
-}
+};

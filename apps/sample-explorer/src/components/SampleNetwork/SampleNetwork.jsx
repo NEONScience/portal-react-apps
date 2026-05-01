@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useLayoutEffect,
 } from "react";
+import PropTypes from 'prop-types';
 
 import { Graph } from "react-d3-graph";
 
@@ -16,7 +17,7 @@ import { exists } from "portal-core-components/lib/util/typeUtil";
 
 import { GRAPH_COLORS } from "../../util/appUtil";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   container: {
     cursor: 'move',
     border: `1px solid ${Theme.palette.grey[400]}`,
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SampleNetwork = (props) => {
+function SampleNetwork(props) {
   const { onNodeClick, graphData } = props;
   const classes = useStyles(Theme);
 
@@ -111,8 +112,8 @@ const SampleNetwork = (props) => {
     },
     link: {
       color: GRAPH_COLORS.LINKS,
-      highlightColor: "#000000"
-    }
+      highlightColor: "#000000",
+    },
   };
 
   return (
@@ -128,6 +129,18 @@ const SampleNetwork = (props) => {
       />
     </div>
   );
+}
+
+SampleNetwork.propTypes = {
+  onNodeClick: PropTypes.func.isRequired,
+  graphData: PropTypes.shape({
+    nodes: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        sampleName: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+  }).isRequired,
 };
 
 export default SampleNetwork;

@@ -1,4 +1,8 @@
+/* eslint-disable react/no-unused-state */
+/* eslint-disable react/forbid-prop-types */
+/* eslint-disable react/destructuring-assignment */
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-balham.css";
@@ -9,26 +13,15 @@ class DataGrid extends Component {
     this.state = {
       columnDefs: this.props.columnDefs,
       rowData: this.props.rowData,
-      uuid: this.props.uuid,
       isLoading: this.props.isLoading,
     };
     this.onGridReady = this.onGridReady.bind(this);
   }
 
-  handleLoading() {
-    this.api.setGridOption("loading", this.props.isLoading === true ? true : false);
-  }
-
-  onGridReady(params) {
-    this.api = params.api;
-    this.columnApi = params.columnApi;
-    params.api.sizeColumnsToFit();
-    this.handleLoading();
-  }
   componentDidUpdate() {
     if (this.api !== null && typeof this.api !== "undefined") {
       this.handleLoading();
-      this.api.updateGridOptions({ columnDefs: this.props.columnDefs })
+      this.api.updateGridOptions({ columnDefs: this.props.columnDefs });
       this.api.redrawRows();
       this.api.hideOverlay();
       if (!this.props.rowData || this.props.rowData.length <= 0) {
@@ -37,8 +30,18 @@ class DataGrid extends Component {
     }
   }
 
+  handleLoading() {
+    this.api.setGridOption("loading", this.props.isLoading === true);
+  }
+
+  onGridReady(params) {
+    this.api = params.api;
+    params.api.sizeColumnsToFit();
+    this.handleLoading();
+  }
+
   render() {
-    let containerStyle = {
+    const containerStyle = {
       height: "280px",
       width: "100%",
     };
@@ -56,8 +59,15 @@ class DataGrid extends Component {
           onGridReady={this.onGridReady}
         />
       </div>
-    )
+    );
   }
 }
+
+DataGrid.propTypes = {
+  columnDefs: PropTypes.array.isRequired,
+  rowData: PropTypes.array.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  height: PropTypes.string.isRequired,
+};
 
 export default DataGrid;

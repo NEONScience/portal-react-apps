@@ -21,123 +21,89 @@ export const QUERY_FAILED = "QUERY_FAILED";
 export const QUERY_SUPPORTED_CLASSES_SUCCESSFUL = "QUERY_SUPPORTED_CLASSES_SUCCESSFUL";
 export const QUERY_SAMPLE_CLASS_SUCCESSFUL = "QUERY_SAMPLE_CLASS_SUCCESSFUL";
 
-export const setUrlParams = () => {
-  return {
-    type: SET_URL_PARAMS
-  };
-}
+export const setUrlParams = () => ({
+  type: SET_URL_PARAMS,
+});
 
-export const querySampleFromUrl = () => {
-  return {
-    type: QUERY_SAMPLE_FROM_URL
-  };
-}
+export const querySampleFromUrl = () => ({
+  type: QUERY_SAMPLE_FROM_URL,
+});
 
-export const setQueryType = (queryType) => {
-  return {
-    type: SET_QUERY_TYPE,
-    queryType: queryType,
-  };
-}
+export const setQueryType = (queryType) => ({
+  type: SET_QUERY_TYPE,
+  queryType,
+});
 
-export const setQuerySampleTag = (sampleTag) => {
-  return {
-    type: SET_QUERY_SAMPLE_TAG,
-    sampleTag: sampleTag,
-  };
-}
+export const setQuerySampleTag = (sampleTag) => ({
+  type: SET_QUERY_SAMPLE_TAG,
+  sampleTag,
+});
 
-export const setQuerySampleClass = (sampleClass) => {
-  return {
-    type: SET_QUERY_SAMPLE_CLASS,
-    sampleClass: sampleClass,
-  };
-}
+export const setQuerySampleClass = (sampleClass) => ({
+  type: SET_QUERY_SAMPLE_CLASS,
+  sampleClass,
+});
 
-export const setQueryArchiveGuid = (archiveGuid) => {
-  return {
-    type: SET_QUERY_ARCHIVE_GUID,
-    archiveGuid: archiveGuid
-  };
-}
+export const setQueryArchiveGuid = (archiveGuid) => ({
+  type: SET_QUERY_ARCHIVE_GUID,
+  archiveGuid,
+});
 
-export const setQueryBarcode = (barcode) => {
-  return {
-    type: SET_QUERY_BARCODE,
-    barcode: barcode
-  };
-}
+export const setQueryBarcode = (barcode) => ({
+  type: SET_QUERY_BARCODE,
+  barcode,
+});
 
-export const downloadHasCompleted = (downloadType, json) => {
-  return {
-    type: DOWNLOAD_SUCCESSFUL,
-    downloadType: downloadType,
-    json
-  };
-}
+export const downloadHasCompleted = (downloadType, json) => ({
+  type: DOWNLOAD_SUCCESSFUL,
+  downloadType,
+  json,
+});
 
-export const downloadIsRunning = (bool) => {
-  return {
-    type: DOWNLOAD_RUNNING,
-    isLoading: bool
-  };
-}
+export const downloadIsRunning = (bool) => ({
+  type: DOWNLOAD_RUNNING,
+  isLoading: bool,
+});
 
-export const downloadVisitedSamples = (downloadType, samples) => {
-  return {
-    type: DOWNLOAD_VISITED_SAMPLES,
-    downloadType: downloadType,
-    samples: samples
-  };
-}
+export const downloadVisitedSamples = (downloadType, samples) => ({
+  type: DOWNLOAD_VISITED_SAMPLES,
+  downloadType,
+  samples,
+});
 
-export const queryHasCompleted = (payload) => {
-  return {
-    type: QUERY_SUCCESSFUL,
-    payload
-  };
-}
+export const queryHasCompleted = (payload) => ({
+  type: QUERY_SUCCESSFUL,
+  payload,
+});
 
-export const querySupportedSampleClassHasCompleted = (payload, download) => {
-  return {
-    type: QUERY_SUPPORTED_CLASSES_SUCCESSFUL,
-    payload,
-    download
-  };
-}
+export const querySupportedSampleClassHasCompleted = (payload, download) => ({
+  type: QUERY_SUPPORTED_CLASSES_SUCCESSFUL,
+  payload,
+  download,
+});
 
-export const querySampleClassHasCompleted = (payload) => {
-  return {
-    type: QUERY_SAMPLE_CLASS_SUCCESSFUL,
-    payload
-  };
-}
+export const querySampleClassHasCompleted = (payload) => ({
+  type: QUERY_SAMPLE_CLASS_SUCCESSFUL,
+  payload,
+});
 
 // Only for MAIN query, not any queries around, for example, supported sample classes
-export const queryIsRunning = () => {
-  return {
-    type: QUERY_RUNNING,
-  };
-}
+export const queryIsRunning = () => ({
+  type: QUERY_RUNNING,
+});
 
-export const queryHasErrored = (error) => {
-  return {
-    type: QUERY_FAILED,
-    hasErrored: true,
-    error: error
-  };
-}
+export const queryHasErrored = (error) => ({
+  type: QUERY_FAILED,
+  hasErrored: true,
+  error,
+});
 
-export const downloadHasErrored = (error) => {
-  return {
-    type: DOWNLOAD_FAILED,
-    hasErrored: true,
-    error: error
-  };
-}
+export const downloadHasErrored = (error) => ({
+  type: DOWNLOAD_FAILED,
+  hasErrored: true,
+  error,
+});
 
-export const resetDownloadState = () => {
-  return {
-    type: RESET_DOWNLOAD_STATE
-  };
-}
+export const resetDownloadState = () => ({
+  type: RESET_DOWNLOAD_STATE,
+});

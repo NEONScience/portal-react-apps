@@ -1,9 +1,9 @@
-import { handleError } from "./actionUtil";
 import { fetch as fetchPolyfill } from "whatwg-fetch";
 
 import NeonApi from "portal-core-components/lib/components/NeonApi";
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import { exists } from "portal-core-components/lib/util/typeUtil";
+import { handleError } from "./actionUtil";
 
 import {
   queryIsRunning,
@@ -13,25 +13,24 @@ import {
   querySupportedSampleClassHasCompleted,
   downloadIsRunning,
   downloadHasCompleted,
-  downloadHasErrored
+  downloadHasErrored,
 } from "../actions/actions";
 import { buildViewUrl } from "./appUtil";
 import { QUERY_TYPE } from "./queryUtil";
 
 const checkStatus = (response) => {
   if (typeof response === "undefined") {
-    let error = new Error("Error occurred");
+    const error = new Error("Error occurred");
     error.response = null;
     throw error;
   }
   if (response.status >= 200 && response.status < 300) {
     return response;
-  } else {
-    let error = new Error(response.statusText);
-    error.response = response;
-    throw error;
   }
-}
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+};
 
 const getFetch = () => {
   let fetchFunc = fetch;
@@ -39,30 +38,10 @@ const getFetch = () => {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
-}
-
-export const querySampleFromUrlDispatch = (urlParams) => {
-  let viewUrl = null;
-  switch (urlParams.idType) {
-    case QUERY_TYPE.SAMPLE_TAG:
-      let url = NeonEnvironment.getFullApiPath('samples');
-      let classUrl = url + "/classes?sampleTag=" + encodeURIComponent(urlParams.sampleTag.trim());
-      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
-      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass);
-    case QUERY_TYPE.BARCODE:
-      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
-      return querySample(viewUrl);
-    case QUERY_TYPE.ARCHIVE_GUID:
-      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
-      return querySample(viewUrl);
-    default:
-      break;
-  }
-  return;
-}
+};
 
 export const querySample = (url, cacheControl) => {
-  let fetchHeaders = {
+  const fetchHeaders = {
     Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
   };
@@ -77,7 +56,7 @@ export const querySample = (url, cacheControl) => {
     cache: "default",
   };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     dispatch(queryIsRunning());
@@ -85,9 +64,9 @@ export const querySample = (url, cacheControl) => {
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
@@ -99,12 +78,12 @@ export const querySample = (url, cacheControl) => {
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
-      })
+      });
   };
-}
+};
 
 export const querySampleTagClasses = (classUrl) => {
-  let fetchHeaders = {
+  const fetchHeaders = {
     Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
   };
@@ -116,15 +95,15 @@ export const querySampleTagClasses = (classUrl) => {
     cache: "default",
   };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
   return (dispatch) => {
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
@@ -140,12 +119,12 @@ export const querySampleTagClasses = (classUrl) => {
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
-      })
+      });
   };
-}
+};
 
 export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) => {
-  let fetchHeaders = {
+  const fetchHeaders = {
     Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
   };
@@ -158,18 +137,18 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
     mode: "cors",
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: "default",
-  }
+  };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
@@ -183,12 +162,13 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
         if (exists(sampleClass) && (json.data.sampleClasses.indexOf(sampleClass) > 0)) {
           appliedSampleClass = sampleClass;
         } else if (json.data.sampleClasses.length > 0) {
-          appliedSampleClass = json.data.sampleClasses[0];
+          const [firstSampleClass] = json.data.sampleClasses;
+          appliedSampleClass = firstSampleClass;
         }
 
         if (exists(appliedSampleClass)) {
-          viewUrl = viewUrl + "&sampleClass=" + appliedSampleClass;
-          dispatch(querySample(viewUrl, cacheControl));
+          const viewUrlForQuerySample = `${viewUrl}&sampleClass=${appliedSampleClass}`;
+          dispatch(querySample(viewUrlForQuerySample, cacheControl));
         }
       })
       .catch((error) => {
@@ -199,32 +179,54 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
-      })
+      });
   };
-}
+};
+
+export const querySampleFromUrlDispatch = (urlParams) => {
+  let viewUrl = null;
+  switch (urlParams.idType) {
+    case QUERY_TYPE.SAMPLE_TAG: {
+      const url = NeonEnvironment.getFullApiPath('samples');
+      const classUrl = `${url}/classes?sampleTag=${encodeURIComponent(urlParams.sampleTag.trim())}`;
+      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
+      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass);
+    }
+    case QUERY_TYPE.BARCODE: {
+      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
+      return querySample(viewUrl);
+    }
+    case QUERY_TYPE.ARCHIVE_GUID: {
+      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
+      return querySample(viewUrl);
+    }
+    default:
+      return undefined;
+  }
+};
 
 export const querySupportedSampleClasses = (url, query, download) => {
   const fetchInit = {
     method: "GET",
     headers: {
       Accept: "application/json;charset=UTF-8; text/plain",
-      ...NeonApi.getApiTokenHeader()
+      ...NeonApi.getApiTokenHeader(),
     },
     mode: "cors",
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: "default",
-  }
+  };
 
   if (query) {
-    let fetchFunc = getFetch();
+    const fetchFunc = getFetch();
     return (dispatch) => {
       fetchFunc(url, fetchInit)
         .then(checkStatus)
         .then((response) => {
           if (!response.ok) {
-            var error = new Error(response.statusText)
-            error.response = response
-            throw error
+            const error = new Error(response.statusText);
+            error.response = response;
+            throw error;
           }
           return response;
         })
@@ -236,15 +238,13 @@ export const querySupportedSampleClasses = (url, query, download) => {
           } else {
             handleError(dispatch, queryHasErrored, error);
           }
-        })
+        });
     };
-  } else {
-    return (dispatch) => {
-      dispatch(querySupportedSampleClassHasCompleted(null, download));
-    }
   }
-
-}
+  return (dispatch) => {
+    dispatch(querySupportedSampleClassHasCompleted(null, download));
+  };
+};
 
 export const downloadSamples = (downloadType, url, cacheControl) => {
   const fetchHeaders = new Headers();
@@ -262,9 +262,9 @@ export const downloadSamples = (downloadType, url, cacheControl) => {
     mode: "cors",
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: "default",
-  }
+  };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     dispatch(downloadIsRunning(true));
@@ -272,9 +272,9 @@ export const downloadSamples = (downloadType, url, cacheControl) => {
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         dispatch(downloadIsRunning(false));
         return response;
@@ -287,6 +287,6 @@ export const downloadSamples = (downloadType, url, cacheControl) => {
         } else {
           handleError(dispatch, downloadHasErrored, error);
         }
-      })
+      });
   };
-}
+};

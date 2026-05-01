@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
 
@@ -9,7 +10,7 @@ import SampleEventPresentation from './SampleEventPresentation';
 import SampleGraphContainer from '../Containers/SampleGraphContainer';
 import InfoPresentation from './InfoPresentation';
 
-const TopPresentation = (props) => {
+function TopPresentation(props) {
   const {
     query: { queryErrorStr },
   } = props;
@@ -35,6 +36,12 @@ const TopPresentation = (props) => {
       )}
     </NeonPage>
   );
+}
+
+TopPresentation.propTypes = {
+  query: PropTypes.shape({
+    queryErrorStr: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default TopPresentation;

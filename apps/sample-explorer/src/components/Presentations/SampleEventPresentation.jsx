@@ -1,4 +1,6 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
@@ -9,7 +11,8 @@ import DownloadSamplesPresentation from './DownloadSamplesPresentation';
 import DataGrid from '../DataGrid/DataGrid';
 import SampleSmsFieldsDialog from './SampleSmsFieldsDialog';
 
-const SampleEventPresentation = (props) => {
+function SampleEventPresentation(props) {
+  const { tableDefinition, tableData, sampleUuid } = props;
   return (
     <div style={{ marginBottom: Theme.spacing(3) }} data-selenium="sample-events-section">
       <Typography variant="h4" gutterBottom>
@@ -20,13 +23,13 @@ const SampleEventPresentation = (props) => {
         System (SMS) fields (taxon excepted) available for the focal sample tag.
       </Typography>
       <div style={{ margin: Theme.spacing(3, 0) }}>
-        <SampleInfoPresentation  {...props} />
+        <SampleInfoPresentation {...props} />
       </div>
       <div style={{ marginBottom: Theme.spacing(3) }}>
         <DataGrid
-          columnDefs={props.tableDefinition}
-          rowData={props.tableData}
-          uuid={props.sampleUuid}
+          columnDefs={tableDefinition}
+          rowData={tableData}
+          uuid={sampleUuid}
         />
       </div>
       <div style={{ marginBottom: Theme.spacing(3), display: 'flex', flexWrap: 'wrap' }}>
@@ -35,6 +38,12 @@ const SampleEventPresentation = (props) => {
       </div>
     </div>
   );
+}
+
+SampleEventPresentation.propTypes = {
+  tableDefinition: PropTypes.arrayOf(PropTypes.any).isRequired,
+  tableData: PropTypes.arrayOf(PropTypes.any).isRequired,
+  sampleUuid: PropTypes.string.isRequired,
 };
 
 export default SampleEventPresentation;

@@ -1,6 +1,6 @@
 import {
   createStore,
-  applyMiddleware
+  applyMiddleware,
 } from "redux";
 import thunk from "redux-thunk";
 
@@ -9,7 +9,7 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import dataApp from "../reducers/reducers";
 import { QUERY_TYPE, getQueryTypeNameOptions } from "../util/queryUtil";
 
-let dataStore = {
+const dataStore = {
   urlParams: {
     parsed: false,
     fetch: false,
@@ -55,7 +55,9 @@ let dataStore = {
     links: [],
   },
   initialColumns: [
-    { headerName: "table", field: "table", sortable: true, resizable: true, filter: true },
+    {
+      headerName: "table", field: "table", sortable: true, resizable: true, filter: true,
+    },
     {
       headerName: "fate date",
       field: "fate_date",
@@ -63,10 +65,14 @@ let dataStore = {
       sortable: true,
       resizable: true,
       sort: "asc",
-      sortingOrder: ["asc", "desc"]
+      sortingOrder: ["asc", "desc"],
     },
-    { headerName: "fate", field: "fate", sortable: true, resizable: true, filter: true },
-    { headerName: "fate location", field: "fate_location", sortable: true, resizable: true, filter: true },
+    {
+      headerName: "fate", field: "fate", sortable: true, resizable: true, filter: true,
+    },
+    {
+      headerName: "fate location", field: "fate_location", sortable: true, resizable: true, filter: true,
+    },
   ],
   tableDefinition: [],
   tableData: [],
@@ -74,24 +80,23 @@ let dataStore = {
   sampleClassDesc: new Map(),
 };
 
-export const configureInitialStore = () => {
-  return configureStore(dataStore);
-}
-
 export const configureStore = (state) => {
-  let middlewares = [
-    thunk
+  const middlewares = [
+    thunk,
   ];
   if (NeonEnvironment.isDevEnv) {
+    // eslint-disable-next-line global-require
     const { logger } = require("redux-logger");
     middlewares.push(logger);
   }
 
-  let store = createStore(
+  const store = createStore(
     dataApp,
     state,
-    applyMiddleware(...middlewares)
+    applyMiddleware(...middlewares),
   );
 
   return store;
-}
+};
+
+export const configureInitialStore = () => configureStore(dataStore);

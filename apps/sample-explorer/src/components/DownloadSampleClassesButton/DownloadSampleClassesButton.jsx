@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
@@ -6,7 +7,7 @@ import DownloadIcon from '@mui/icons-material/SaveAlt';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-const DownloadSampleClassesButton = (props) => {
+function DownloadSampleClassesButton(props) {
   const {
     sampleClassDesc,
     onDownloadSupportedClassesClick,
@@ -32,6 +33,12 @@ const DownloadSampleClassesButton = (props) => {
       <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
     </Button>
   );
+}
+
+DownloadSampleClassesButton.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  sampleClassDesc: PropTypes.object.isRequired,
+  onDownloadSupportedClassesClick: PropTypes.func.isRequired,
 };
 
 export default DownloadSampleClassesButton;

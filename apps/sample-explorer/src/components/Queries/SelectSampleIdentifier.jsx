@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,17 +16,17 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      minWidth: '240px'
+      minWidth: '240px',
     },
   },
 }));
 
-const SelectSampleIdentifier = (props) => {
+function SelectSampleIdentifier(props) {
   const {
     sampleClassDesc,
     onSetQueryType,
     onDownloadSupportedClassesClick,
-    query: { queryType, queryTypeOptions,  },
+    query: { queryType, queryTypeOptions },
   } = props;
 
   const classes = useStyles(Theme);
@@ -48,13 +49,29 @@ const SelectSampleIdentifier = (props) => {
             const url = `${NeonEnvironment.getFullApiPath('samples')}/supportedClasses`;
             onDownloadSupportedClassesClick(url, true, false);
           }
-        }}>
-        {queryTypeOptions.map(option => (
+        }}
+      >
+        {queryTypeOptions.map((option) => (
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}
       </Select>
     </FormControl>
   );
+}
+
+SelectSampleIdentifier.propTypes = {
+  sampleClassDesc: PropTypes.instanceOf(Map).isRequired,
+  onSetQueryType: PropTypes.func.isRequired,
+  onDownloadSupportedClassesClick: PropTypes.func.isRequired,
+  query: PropTypes.shape({
+    queryType: PropTypes.string.isRequired,
+    queryTypeOptions: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+  }).isRequired,
 };
 
 export default SelectSampleIdentifier;

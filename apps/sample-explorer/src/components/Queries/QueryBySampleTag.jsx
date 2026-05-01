@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
@@ -11,12 +12,12 @@ const useStyles = makeStyles((theme) => ({
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      minWidth: '440px'
+      minWidth: '440px',
     },
   },
 }));
 
-const QueryBySampleTag = (props) => {
+function QueryBySampleTag(props) {
   const {
     onSetQuerySampleTag,
     query: { sampleTag, queryErrorStr, queryIsLoading },
@@ -38,6 +39,15 @@ const QueryBySampleTag = (props) => {
       data-selenium="sample-search-form.sample-tag"
     />
   );
+}
+
+QueryBySampleTag.propTypes = {
+  query: PropTypes.shape({
+    sampleTag: PropTypes.string,
+    queryErrorStr: PropTypes.string,
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
+  onSetQuerySampleTag: PropTypes.func.isRequired,
 };
 
 export default QueryBySampleTag;

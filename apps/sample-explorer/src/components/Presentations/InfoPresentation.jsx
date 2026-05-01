@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -36,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InfoPresentation = (props) => {
+function InfoPresentation(props) {
   const classes = useStyles(Theme);
   const exploreDataProductsLink = (
     <Link href={RouteService.getDataProductExplorePath()} underline="hover">
@@ -131,8 +132,9 @@ const InfoPresentation = (props) => {
                 <Typography variant="body1" gutterBottom>
                   Duplicate tags may exist in different sample classes. If your query for a tag
                   returns only one class then no further action is needed. If your query for a tag
-                  returns samples of different classes then <b>download and consult the current list
-                  of supported sample classes</b> to determine the class of interest.
+                  returns samples of different classes then
+                  <b> download and consult the current list of supported sample classes </b>
+                  to determine the class of interest.
                 </Typography>
               </Grid>
             </Grid>
@@ -142,6 +144,6 @@ const InfoPresentation = (props) => {
       <DownloadSampleClassesButton {...props} />
     </div>
   );
-};
+}
 
 export default InfoPresentation;

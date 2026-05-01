@@ -1,33 +1,45 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 
 class SampleBreadcrumbPresentation extends Component {
-
   render() {
-
-    //  let liStyle = {
-    //     //  color: "blue",
-    //      textDecorationLine: "underline"
-    //  }
-
-    let endpoint = this.props.endpoint;
-    let onQueryClick = this.props.onQueryClick;
+    const { endpoint, onQueryClick, uuidBreadcrumbs } = this.props;
     return (
-      <div id="sample-breadcrumb-presentation" >
+      <div id="sample-breadcrumb-presentation">
         <p>
           <b>Sample Bread Crumb:</b>
-          <br></br>
+          <br />
         </p>
         <ul>
-          {this.props.uuidBreadcrumbs.map(function (breadcrumb, i) {
-            return <li key={i} onClick={() => {
-              let url = endpoint + "sampleUuid=" + breadcrumb;
-              return onQueryClick(url)
-            }}>{breadcrumb}</li>;
-          })}
+          {
+            uuidBreadcrumbs.map((breadcrumb, i) => {
+              const clickHandler = () => {
+                const url = `${endpoint}sampleUuid=${breadcrumb}`;
+                return onQueryClick(url);
+              };
+              const item = (
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                <li
+                  key={i}
+                  onClick={clickHandler}
+                  onKeyDown={clickHandler}
+                >
+                  {breadcrumb}
+                </li>
+              );
+              return item;
+            })
+          }
         </ul>
       </div>
-    )
+    );
   }
 }
+
+SampleBreadcrumbPresentation.propTypes = {
+  endpoint: PropTypes.string.isRequired,
+  onQueryClick: PropTypes.func.isRequired,
+  uuidBreadcrumbs: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default SampleBreadcrumbPresentation;

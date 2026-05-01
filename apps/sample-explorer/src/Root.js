@@ -7,12 +7,14 @@ import App from "./components/App";
 
 import { configureInitialStore } from "./store/store";
 
-const Root = () => (
-  <Provider store={configureInitialStore()}>
-    <NeonRouter cleanPath={false} disableRedirect>
-      <App />
-    </NeonRouter>
-  </Provider>
-);
+function Root() {
+  return (
+    <Provider store={configureInitialStore()}>
+      <NeonRouter cleanPath={false} disableRedirect>
+        <App />
+      </NeonRouter>
+    </Provider>
+  );
+}
 
 export default Root;

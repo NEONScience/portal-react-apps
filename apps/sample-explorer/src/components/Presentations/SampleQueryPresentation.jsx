@@ -1,4 +1,6 @@
+/* eslint-disable react/forbid-prop-types */
 import React, { useEffect } from "react";
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -22,7 +24,7 @@ import DownloadSampleClassesButton from '../DownloadSampleClassesButton/Download
 
 import { QUERY_TYPE } from "../../util/queryUtil";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   row: {
     display: 'flex',
     flexDirection: 'row',
@@ -31,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     '& > *': {
       margin: theme.spacing(0, 2, 2, 0),
-    }
+    },
   },
   searchIcon: {
     marginLeft: Theme.spacing(1.5),
@@ -39,7 +41,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SampleQueryPresentation = (props) => {
+function SampleQueryPresentation(props) {
   const {
     query: {
       queryType,
@@ -63,22 +65,25 @@ const SampleQueryPresentation = (props) => {
   const submitQuery = () => {
     let url = NeonEnvironment.getFullApiPath('samples');
     switch (queryType) {
-      case QUERY_TYPE.SAMPLE_TAG:
+      case QUERY_TYPE.SAMPLE_TAG: {
         const appliedSampleTag = exists(sampleTag) ? sampleTag.trim() : null;
         const classUrl = `${url}/classes?sampleTag=${encodeURIComponent(appliedSampleTag)}`;
         const viewUrl = `${url}/view?sampleTag=${encodeURIComponent(appliedSampleTag)}`;
         const appliedSampleClass = exists(sampleClass) ? sampleClass : null;
         return onQuerySampleClassClick(classUrl, viewUrl, cacheControl, appliedSampleClass);
-      case QUERY_TYPE.BARCODE:
+      }
+      case QUERY_TYPE.BARCODE: {
         const appliedBarcode = exists(barcode) ? barcode.trim() : null;
         url = `${url}/view?barcode=${encodeURIComponent(appliedBarcode)}`;
         return onQueryClick(url, cacheControl);
-      case QUERY_TYPE.ARCHIVE_GUID:
+      }
+      case QUERY_TYPE.ARCHIVE_GUID: {
         const appliedArchiveGuid = exists(archiveGuid) ? archiveGuid.trim() : null;
         url = `${url}/view?archiveGuid=${encodeURIComponent(appliedArchiveGuid)}`;
         return onQueryClick(url, cacheControl);
+      }
       default:
-        break;
+        return undefined;
     }
   };
 
@@ -151,6 +156,24 @@ const SampleQueryPresentation = (props) => {
       </div>
     </div>
   );
+}
+
+SampleQueryPresentation.propTypes = {
+  query: PropTypes.shape({
+    queryType: PropTypes.string,
+    queryErrorStr: PropTypes.string,
+    sampleClass: PropTypes.string,
+    barcode: PropTypes.string,
+    sampleTag: PropTypes.string,
+    archiveGuid: PropTypes.string,
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
+  cacheControl: PropTypes.object.isRequired,
+  onQueryClick: PropTypes.func.isRequired,
+  onQuerySampleClassClick: PropTypes.func.isRequired,
+  onQuerySampleFromUrl: PropTypes.func.isRequired,
+  urlParams: PropTypes.object.isRequired,
+  onSetUrlParams: PropTypes.func.isRequired,
 };
 
 export default SampleQueryPresentation;

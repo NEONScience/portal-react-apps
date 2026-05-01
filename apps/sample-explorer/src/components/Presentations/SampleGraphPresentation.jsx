@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import Typography from "@mui/material/Typography";
 import makeStyles from '@mui/styles/makeStyles';
@@ -8,7 +9,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import SampleNetwork from "../SampleNetwork/SampleNetwork";
 import { GRAPH_COLORS } from "../../util/appUtil";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   keyContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -27,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const SampleGraphPresentation = (props) => {
+function SampleGraphPresentation(props) {
   const { onQueryClick, graphData } = props;
   const classes = useStyles(Theme);
 
@@ -42,9 +43,9 @@ const SampleGraphPresentation = (props) => {
       <div className={classes.keyContainer}>
         <div className={classes.keyElement}>
           <svg height="20" width="20">
-            <circle cx="10" cy="10" r="10" style={{ fill: GRAPH_COLORS.NODES.FOCUS }}/>
+            <circle cx="10" cy="10" r="10" style={{ fill: GRAPH_COLORS.NODES.FOCUS }} />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Focus Sample
           </Typography>
         </div>
@@ -60,7 +61,7 @@ const SampleGraphPresentation = (props) => {
           <svg height="20" width="20">
             <polygon points="10,0 20,20 0,20" style={{ fill: GRAPH_COLORS.NODES.CHILD }} />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Child Sample
           </Typography>
         </div>
@@ -68,7 +69,7 @@ const SampleGraphPresentation = (props) => {
           <svg height="20" width="20">
             <polygon points="10,0 17,10 10,20 3,10 " style={{ fill: GRAPH_COLORS.NODES.PREVIOUS }} />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Previous Sample
           </Typography>
         </div>
@@ -76,6 +77,12 @@ const SampleGraphPresentation = (props) => {
       <SampleNetwork onNodeClick={onQueryClick} graphData={graphData} />
     </div>
   );
+}
+
+SampleGraphPresentation.propTypes = {
+  onQueryClick: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  graphData: PropTypes.arrayOf(PropTypes.any).isRequired,
 };
 
 export default SampleGraphPresentation;

@@ -1,5 +1,5 @@
 import React, { useReducer } from 'react';
-import DataGrid from '../DataGrid/DataGrid';
+
 import { fetch as fetchPolyfill } from "whatwg-fetch";
 
 import Alert from '@mui/material/Alert';
@@ -17,6 +17,7 @@ import DownloadIcon from '@mui/icons-material/SaveAlt';
 import NeonApi from "portal-core-components/lib/components/NeonApi";
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+import DataGrid from '../DataGrid/DataGrid';
 
 const fileDownload = require("js-file-download");
 const { Parser } = require("json2csv");
@@ -27,32 +28,32 @@ const COLUMN_DEFS = [
     field: "name",
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
   {
     headerName: "SMS Field Description",
     field: "description",
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
   {
     headerName: "SMS Field Ontology Mapping",
     field: "ontologyMapping",
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
 ];
 
 const downloadFields = (fields, dispatch) => {
-  let smsFieldHeaders = [
+  const smsFieldHeaders = [
     "SMS Field Name",
     "SMS Field Description",
     "SMS Field Ontology Mapping",
   ];
   dispatch({ type: 'downloading' });
-  let fieldsCsvData = [];
+  const fieldsCsvData = [];
   fields.forEach((value) => {
     fieldsCsvData.push({
       "SMS Field Name": value.name,
@@ -61,11 +62,12 @@ const downloadFields = (fields, dispatch) => {
     });
   });
   try {
-    let fieldsParser = new Parser({ fields: smsFieldHeaders });
-    let fieldsCsvResult = fieldsParser.parse(fieldsCsvData);
+    const fieldsParser = new Parser({ fields: smsFieldHeaders });
+    const fieldsCsvResult = fieldsParser.parse(fieldsCsvData);
     fileDownload(fieldsCsvResult, "Sample-Explorer-SMS-Fields.csv");
     dispatch({ type: 'downloaded' });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
     dispatch({ type: 'downloadError' });
   }
@@ -73,17 +75,16 @@ const downloadFields = (fields, dispatch) => {
 
 const checkStatus = (response) => {
   if (typeof response === "undefined") {
-    let error = new Error("Error occurred");
+    const error = new Error("Error occurred");
     error.response = null;
     throw error;
   }
   if (response.status >= 200 && response.status < 300) {
     return response;
-  } else {
-    let error = new Error(response.statusText);
-    error.response = response;
-    throw error;
   }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
 };
 
 const getFetch = () => {
@@ -101,17 +102,17 @@ const fetchFields = (dispatch) => {
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     headers: {
       Accept: "application/json",
-      ...NeonApi.getApiTokenHeader()
+      ...NeonApi.getApiTokenHeader(),
     },
   };
   const url = `${NeonEnvironment.getFullApiPath('samples')}/supported-sms-fields`;
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
   dispatch({ type: 'fetchingFields' });
   fetchFunc(url, fetchInit)
     .then(checkStatus)
     .then((response) => {
       if (!response.ok) {
-        var error = new Error(response.statusText);
+        const error = new Error(response.statusText);
         error.response = response;
         throw error;
       }
@@ -127,12 +128,13 @@ const fetchFields = (dispatch) => {
       dispatch({ type: 'fetchCompleted', fields });
     })
     .catch((error) => {
+      // eslint-disable-next-line no-console
       console.error(error);
       dispatch({ type: 'fetchError' });
     });
 };
 
-const SampleSmsFieldsDialog = () => {
+function SampleSmsFieldsDialog() {
   const initialState = {
     dialogOpen: false,
     fields: [],
@@ -140,7 +142,7 @@ const SampleSmsFieldsDialog = () => {
     isErrorState: false,
     isDownloading: false,
   };
-  const reducer = (prevState, action) =>{
+  const reducer = (prevState, action) => {
     const next = { ...prevState };
     switch (action.type) {
       case 'dialogOpen':
@@ -179,6 +181,7 @@ const SampleSmsFieldsDialog = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const renderErrors = () => {
     if (!state.isErrorState) {
+      // eslint-disable-next-line react/jsx-no-useless-fragment
       return <React.Fragment />;
     }
     return (
@@ -260,6 +263,6 @@ const SampleSmsFieldsDialog = () => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default SampleSmsFieldsDialog;

@@ -1,11 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   grid: {
     display: 'flex',
     flexDirection: 'row',
@@ -14,14 +15,14 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     '& > div': {
       margin: theme.spacing(0, 6, 3, 0),
-    }
+    },
   },
   subtitle: {
     marginBottom: theme.spacing(1),
   },
 }));
 
-const SampleInfoPresentation = (props) => {
+function SampleInfoPresentation(props) {
   const {
     search: {
       sampleTag,
@@ -86,6 +87,20 @@ const SampleInfoPresentation = (props) => {
       </div>
     </div>
   );
+}
+
+SampleInfoPresentation.propTypes = {
+  search: PropTypes.shape({
+    sampleTag: PropTypes.string,
+    sampleClass: PropTypes.string,
+    barcode: PropTypes.string,
+    archiveGuid: PropTypes.string,
+  }).isRequired,
+  query: PropTypes.shape({
+    queryErrorStr: PropTypes.string,
+  }).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  sampleClassDesc: PropTypes.object.isRequired,
 };
 
 export default SampleInfoPresentation;

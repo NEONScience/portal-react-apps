@@ -1,11 +1,11 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import TextField from "@mui/material/TextField";
 
 import { getQueryTypeName, QUERY_TYPE } from "../../util/queryUtil";
 
-const QueryBarcodeGuid = (props) => {
-
+function QueryBarcodeGuid(props) {
   const {
     query: {
       queryType,
@@ -17,7 +17,6 @@ const QueryBarcodeGuid = (props) => {
     onSetQueryArchiveGuid,
   } = props;
 
-  console.log(queryType);
   let currentValue = '';
   switch (queryType) {
     case QUERY_TYPE.ARCHIVE_GUID:
@@ -54,6 +53,17 @@ const QueryBarcodeGuid = (props) => {
       }}
     />
   );
+}
+
+QueryBarcodeGuid.propTypes = {
+  query: PropTypes.shape({
+    queryType: PropTypes.string.isRequired,
+    barcode: PropTypes.string,
+    archiveGuid: PropTypes.string,
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
+  onSetQueryBarcode: PropTypes.func.isRequired,
+  onSetQueryArchiveGuid: PropTypes.func.isRequired,
 };
 
 export default QueryBarcodeGuid;

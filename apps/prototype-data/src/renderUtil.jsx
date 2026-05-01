@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -22,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// eslint-disable-next-line max-len
 export const getSkeleton = (height = 10, width = 100, marginBottom = 0, widthIsPercent = true, variant = 'text') => {
   let widthValue = width || 100;
   if (Array.isArray(width) && width.length === 2) {
@@ -52,7 +50,6 @@ export const getDoiDisplay = (doi) => {
 export const DoiDetail = (props) => {
   const classes = useStyles(Theme);
   const { doi } = props;
-  // eslint-disable-next-line react/destructuring-assignment
   const hasDoi = doi && doi.url;
   if (!hasDoi) {
     return (
@@ -61,7 +58,6 @@ export const DoiDetail = (props) => {
       </Typography>
     );
   }
-  // eslint-disable-next-line react/destructuring-assignment
   const doiId = getDoiDisplay(doi);
   return (
     <List dense style={{ margin: 0, padding: 0 }}>

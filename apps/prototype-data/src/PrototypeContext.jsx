@@ -1,4 +1,4 @@
-/* eslint-disable import/no-unresolved, no-unused-vars */
+/* eslint-disable no-unused-vars */
 import React, {
   createContext,
   useContext,

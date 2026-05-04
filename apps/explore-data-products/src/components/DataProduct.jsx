@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-one-expression-per-line, jsx-a11y/anchor-is-valid */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { ReplaySubject } from 'rxjs';
@@ -18,6 +18,8 @@ import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
 import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
 import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
+import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
+import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
@@ -111,6 +113,7 @@ const DataProduct = React.memo((props) => {
     currentProducts: { release: currentRelease },
   } = state;
   const products = getCurrentProductsByRelease(state);
+  const [selectedVis, setSelectedVis] = useState(VISUALIZATIONS.TIME_SERIES_VIEWER);
 
   if (!products[productCode]) { return null; }
 
@@ -139,15 +142,14 @@ const DataProduct = React.memo((props) => {
 
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+    saeDataProducts: saeDataProductsJSON = { productCodes: [] },
   } = neonContextState.data;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
-
-  const {
-    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
-  } = neonContextState.data;
   const { productCodes: aopProductCodes } = aopDataProductsJSON;
   const isAopViewerProduct = aopProductCodes.includes(productCode);
-
+  const { productCodes: saeProductCodes } = saeDataProductsJSON;
+  const isSaeViewerProduct = saeProductCodes.includes(productCode);
   const isBundleChild = bundle.isChild && bundleParentProductData;
   let siteCodes = [];
   if (isBundleChild) {
@@ -167,7 +169,7 @@ const DataProduct = React.memo((props) => {
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
 
-  const hasVisualization = hasTimeSeriesData || isAopViewerProduct;
+  const hasVisualization = hasTimeSeriesData || isAopViewerProduct || isSaeViewerProduct;
 
   let timeRange = null;
   if (hasData) {
@@ -301,9 +303,36 @@ const DataProduct = React.memo((props) => {
     productCode,
   });
 
+  function getVisList() {
+    const visList = [];
+    if (hasTimeSeriesData) {
+      visList.push(VISUALIZATIONS.TIME_SERIES_VIEWER);
+    }
+    if (isSaeViewerProduct) {
+      visList.push(VISUALIZATIONS.SAE_DATA_VIEWER);
+    }
+    if (isAopViewerProduct) {
+      visList.push(VISUALIZATIONS.AOP_DATA_VIEWER);
+    }
+    return visList;
+  }
+  const visList = getVisList();
+
   const aopViewerButton = hasData && isAopViewerProduct
     ? (
-      <AopGeeDataViewer isFullWidth />
+      <AopGeeDataViewer
+        name="aop-visuialization-button"
+        isFullWidth
+      />
+    ) : null;
+
+  const saeViewerButton = hasData && isSaeViewerProduct
+    ? (
+      <SaeDataViewerButton
+        isFullWidth
+        product={productCode}
+        name="sae-visuialization-button"
+      />
     ) : null;
 
   const viewTimeSeriesDataButton = hasTimeSeriesData
@@ -321,6 +350,63 @@ const DataProduct = React.memo((props) => {
         {VISUALIZATIONS.TIME_SERIES_VIEWER.name}
       </Button>
     ) : null;
+
+  function getVizByName(visName) {
+    const viz = visList.find((val) => (val.name === visName));
+    return viz ?? null;
+  }
+
+  function handleSplitButtonClick(option) {
+    const viz = getVizByName(option);
+    if (viz.key === 'TIME_SERIES_VIEWER') {
+      handleChangeVisualization(viz.key);
+    } else if (viz.key === 'SAE_DATA_VIEWER') {
+      const url = RouteService.getSaeViewerUrlPath(productCode);
+      window.open(url, '_blank', 'noreferrer');
+    }
+  }
+
+  function renderVisuialization() {
+    if (visList.length > 1) {
+      const selName = selectedVis ? selectedVis.name : '';
+      const vizIcon = selectedVis ? (<selectedVis.icon />) : null;
+      return (
+        <SplitButton
+          styleOverrides={{ padding: '6px 0px' }}
+          isFullWidth
+          name="visuialization-split-button"
+          selectedOption={selName}
+          onChange={(option) => (
+            setSelectedVis(getVizByName(option))
+          )}
+          selectedOptionDisplayCallback={(selOption) => (
+            selOption
+          )}
+          options={visList.map((val) => (val.name))}
+          onClick={(option) => (handleSplitButtonClick(option))}
+          buttonGroupProps={{
+            variant: 'outlined',
+            color: 'primary',
+          }}
+          buttonMenuProps={{
+            color: 'primary',
+          }}
+          buttonProps={{
+            color: 'primary',
+            endIcon: vizIcon,
+          }}
+        />
+      );
+    }
+
+    return (
+      <>
+        {viewTimeSeriesDataButton}
+        {aopViewerButton}
+        {saeViewerButton}
+      </>
+    );
+  }
 
   const productDetailsButton = (
     <Button
@@ -388,8 +474,7 @@ const DataProduct = React.memo((props) => {
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data
               </Typography>
-              {viewTimeSeriesDataButton}
-              {aopViewerButton}
+              {renderVisuialization()}
             </Grid>
           )}
         </Grid>

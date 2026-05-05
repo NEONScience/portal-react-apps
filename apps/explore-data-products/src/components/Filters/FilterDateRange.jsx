@@ -7,7 +7,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-// import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';

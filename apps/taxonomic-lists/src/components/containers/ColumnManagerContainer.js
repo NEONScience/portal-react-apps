@@ -3,28 +3,26 @@ import ColumnManagerPresentation from "../presentations/ColumnManagerPresentatio
 import {
   setTaxonColumns,
   taxonColumnVisibilityChanged,
-  toggleColumnManagerVisibility
+  toggleColumnManagerVisibility,
 } from "../../actions/actions";
 
 const mapStateToProps = (state) => ({
   columnManagerVisible: state.columnManagerVisible,
-  columns: state.taxonColumns
+  columns: state.taxonColumns,
 });
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onSetColumns: (columns) => {
-      dispatch(setTaxonColumns(columns));
-    },
-    onColumnVisibilityChanged: (event) => {
-      dispatch(taxonColumnVisibilityChanged(event.target.name, event.target.checked));
-    },
-    onToggleColumnManagerVisibility: () => {
-      dispatch(toggleColumnManagerVisibility());
-    },
-  }
-};
+const mapDispatchToProps = (dispatch) => ({
+  onSetColumns: (columns) => {
+    dispatch(setTaxonColumns(columns));
+  },
+  onColumnVisibilityChanged: (event) => {
+    dispatch(taxonColumnVisibilityChanged(event.target.name, event.target.checked));
+  },
+  onToggleColumnManagerVisibility: () => {
+    dispatch(toggleColumnManagerVisibility());
+  },
+});
 
-const ColumnManagerContainer = connect(mapStateToProps, mapDispatchToProps)(ColumnManagerPresentation)
+const ColumnManagerContainer = connect(mapStateToProps, mapDispatchToProps)(ColumnManagerPresentation);
 
 export default ColumnManagerContainer;

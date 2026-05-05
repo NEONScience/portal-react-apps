@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -22,7 +23,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const ColumnManager = (props) => {
+function ColumnManager(props) {
   const {
     columns,
     onSetColumns,
@@ -35,12 +36,12 @@ const ColumnManager = (props) => {
   const renderColumnDisplay = () => {
     if (!columns) { return null; }
 
-    let tableRows = {};
-    let displayGroupLabels = {};
+    const tableRows = {};
+    const displayGroupLabels = {};
     let workingTableRows = null;
     let workingGroupLabel = null;
 
-    columns.forEach((column, index) => {
+    columns.forEach((column) => {
       if (!column.title) { return; }
 
       workingTableRows = tableRows[column.columnDisplayGroup];
@@ -58,23 +59,23 @@ const ColumnManager = (props) => {
           key={`${column.title}-${column.queryName}`}
           style={{ display: 'flex' }}
           data-selenium="column-manager-dialog.column-option"
-          control={
+          control={(
             <Checkbox
               checked={column.visible}
               onChange={onColumnVisibilityChanged}
               name={column.queryName}
               color="primary"
             />
-          }
+          )}
           label={column.title}
-        />
+        />,
       );
 
       tableRows[column.columnDisplayGroup] = workingTableRows;
     });
 
     const columnSections = Object.keys(tableRows).reduce((acc, value, index) => {
-      let labelKey = getColumnDisplayGroupLabel(value);
+      const labelKey = getColumnDisplayGroupLabel(value);
       acc.push(
         <Grid key={index} item xs={12} sm={6} md={3}>
           {!displayGroupLabels[labelKey] ? null : (
@@ -85,7 +86,7 @@ const ColumnManager = (props) => {
           <div className={displayGroupLabels[labelKey] ? null : classes.paddedSection}>
             {tableRows[value]}
           </div>
-        </Grid>
+        </Grid>,
       );
       delete displayGroupLabels[labelKey];
       return acc;
@@ -132,6 +133,15 @@ const ColumnManager = (props) => {
       </DialogActions>
     </Dialog>
   );
+}
+
+ColumnManager.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  columns: PropTypes.array.isRequired,
+  onSetColumns: PropTypes.func.isRequired,
+  columnManagerVisible: PropTypes.bool.isRequired,
+  onColumnVisibilityChanged: PropTypes.func.isRequired,
+  onToggleColumnManagerVisibility: PropTypes.func.isRequired,
 };
 
 export default ColumnManager;

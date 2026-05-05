@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import React from "react";
+import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
@@ -18,7 +19,7 @@ import "datatables.net-bs/css/dataTables.bootstrap.css";
    (as other tables in react apps are currently). Until that happens this set of CSS overrides
    maintains close-enough visual parity with the current theme.
 */
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     '& .btn': {
       color: '#fff',
@@ -69,7 +70,7 @@ const useStyles = makeStyles(theme => ({
         '&.datatable-row-container': {
           overflowX: 'scroll',
         },
-      }
+      },
     },
     '& .dataTables_filter > label': {
       margin: 0,
@@ -159,7 +160,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const DataTablePresentation = (props) => {
+function DataTablePresentation(props) {
   const { taxonQuery, columns, onToggleColumnManagerVisibility } = props;
   const classes = useStyles(Theme);
   return (
@@ -171,6 +172,14 @@ const DataTablePresentation = (props) => {
       />
     </div>
   );
+}
+
+DataTablePresentation.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types
+  taxonQuery: PropTypes.object.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  columns: PropTypes.array.isRequired,
+  onToggleColumnManagerVisibility: PropTypes.func.isRequired,
 };
 
 export default DataTablePresentation;

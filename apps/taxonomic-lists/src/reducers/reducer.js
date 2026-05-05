@@ -1,41 +1,42 @@
 import { ActionType } from "../actions/actions";
 
+// eslint-disable-next-line default-param-last
 const dataApp = (state = {}, action) => {
-  let update
+  let update;
   switch (action.type) {
     case ActionType.SET_TAXON_TYPES:
       update = {
         ...state,
-        taxonTypes: action.taxonTypes
-      }
+        taxonTypes: action.taxonTypes,
+      };
       return update;
     case ActionType.SET_LOCATIONS:
       update = {
         ...state,
-        locations: action.locations
-      }
+        locations: action.locations,
+      };
       return update;
     case ActionType.FILTER_VALUE_CHANGED:
       update = {
         ...state,
         taxonQuery: {
           ...state.taxonQuery,
-          [action.prop]: action.value
-        }
-      }
-      return update
+          [action.prop]: action.value,
+        },
+      };
+      return update;
     case ActionType.TOGGLE_COLUMN_MANAGER_VISIBILITY:
       update = {
         ...state,
-        columnManagerVisible: !state.columnManagerVisible
-      }
-      return update
+        columnManagerVisible: !state.columnManagerVisible,
+      };
+      return update;
     case ActionType.SET_TAXON_COLUMNS:
       update = {
         ...state,
-        taxonColumns: action.columns
-      }
-      return update
+        taxonColumns: action.columns,
+      };
+      return update;
     case ActionType.TAXON_COLUMN_VISIBILITY_CHANGED:
       update = {
         ...state,
@@ -43,15 +44,15 @@ const dataApp = (state = {}, action) => {
           if (action.queryName === column.queryName) {
             return {
               ...column,
-              visible: action.visible
-            }
+              visible: action.visible,
+            };
           }
-          return column
-        })
-      }
-      return update
+          return column;
+        }),
+      };
+      return update;
     default:
-      return state
+      return state;
   }
 };
 

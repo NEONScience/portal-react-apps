@@ -10,11 +10,11 @@ import Theme from 'portal-core-components/lib/components/Theme';
 /**
  * Style the component using the imported theme
  */
-const useStyles = makeStyles((theme) => ({
-    linkList: {
-        listStyleType: 'none',
-        padding: Theme.spacing(3),
-    },
+const useStyles = makeStyles(() => ({
+  linkList: {
+    listStyleType: 'none',
+    padding: Theme.spacing(3),
+  },
 }));
 
 /**
@@ -22,64 +22,67 @@ const useStyles = makeStyles((theme) => ({
  * @param dataProducts An array of data product objects
  * @returns The component
  */
-const DataProductLinks = (props: any) => {
+function DataProductLinks({ props }: any) {
+  const { dataProducts } = props;
+  const classes = useStyles(Theme);
 
-    const dataProducts = props.props.dataProducts;
-    const classes = useStyles(Theme);
+  /* Define state for the popover */
+  const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
 
-    /* Define state for the popover */
-    const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);
+  /* Handle button click events for the popover */
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElement(event.currentTarget);
+  };
 
-    /* Handle button click events for the popover */
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorElement(event.currentTarget);
-    };
+  /* Close the popover using the state method */
+  const handleClose = () => {
+    setAnchorElement(null);
+  };
 
-    /* Close the popover using the state method */
-    const handleClose = () => {
-        setAnchorElement(null);
-    };
-
-    /* Return the component */
-    const open = Boolean(anchorElement);
-    const id = open ? 'view-data-products-popover' : undefined;
-    if (typeof dataProducts === 'object' && Array.isArray(dataProducts) && dataProducts.length > 0) {
-        return (
-            <div>
-                <Button
-                    aria-describedby={id}
-                    variant="contained"
-                    onClick={handleClick}
-                    style={{ minWidth: '183px' }}
+  /* Return the component */
+  const open = Boolean(anchorElement);
+  const id = open ? 'view-data-products-popover' : undefined;
+  if (typeof dataProducts === 'object' && Array.isArray(dataProducts) && dataProducts.length > 0) {
+    return (
+      <div>
+        <Button
+          aria-describedby={id}
+          variant="contained"
+          onClick={handleClick}
+          style={{ minWidth: '183px' }}
+        >
+          View Data Products
+        </Button>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorElement}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+        >
+          <ul className={classes.linkList}>
+            {dataProducts.map((dataProduct: any) => (
+              <li key={dataProduct.dataProductCode}>
+                <Link
+                  href={RouteService.getProductDetailPath(dataProduct.dataProductCode)}
+                  underline="hover"
                 >
-                    View Data Products
-                </Button>
-                <Popover
-                    id={id}
-                    open={open}
-                    anchorEl={anchorElement}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                >
-                    <ul className={classes.linkList}>
-                        {dataProducts.map((dataProduct: any) => (
-                            <li key={dataProduct.dataProductCode}>
-                                <Link
-                                    href={RouteService.getProductDetailPath(dataProduct.dataProductCode)}
-                                    underline="hover">
-                                    {dataProduct.dataProductCode}
-                                </Link> - {dataProduct.dataProductName}
-                            </li>
-                        ))}
-                    </ul>
-                </Popover>
-            </div>
-        );
-    }
-    return null;
+                  {dataProduct.dataProductCode}
+                </Link>
+                {' '}
+                -
+                {dataProduct.dataProductName}
+              </li>
+            ))}
+          </ul>
+        </Popover>
+      </div>
+    );
+  }
+  return null;
 }
 
 /* Export the component */

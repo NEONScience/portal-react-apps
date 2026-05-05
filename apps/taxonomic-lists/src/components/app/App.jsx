@@ -1,15 +1,15 @@
 import React from "react";
 
+import NeonPage from "portal-core-components/lib/components/NeonPage";
+
+import RouteService from 'portal-core-components/lib/service/RouteService';
+
 import InfoPresentation from "../presentations/InfoPresentation";
 import ControlPresentation from "../presentations/ControlPresentation";
 import ColumnManagerContainer from "../containers/ColumnManagerContainer";
 import DataTableContainer from "../containers/DataTableContainer";
 
-import NeonPage from "portal-core-components/lib/components/NeonPage";
-
-import RouteService from 'portal-core-components/lib/service/RouteService';
-
-const App = () => {
+function App() {
   const breadcrumbs = [
     { name: 'Data', href: RouteService.getDataSamplesDataPath() },
     { name: 'Samples & Specimens', href: RouteService.getSamplesPath() },
@@ -27,6 +27,6 @@ const App = () => {
       <DataTableContainer />
     </NeonPage>
   );
-};
+}
 
 export default App;

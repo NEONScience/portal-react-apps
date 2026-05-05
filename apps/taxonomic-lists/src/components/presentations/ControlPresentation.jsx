@@ -8,7 +8,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import FilterContainer from "../containers/FilterContainer";
 import DownloadContainer from "../containers/DownloadContainer";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   outerContainer: {
     marginBottom: '20px',
     '@media (min-width:968px)': {
@@ -28,10 +28,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const ControlPresentation = () => {
+function ControlPresentation() {
   const classes = useStyles(Theme);
   return (
-    <div className={classes.outerContainer} >
+    <div className={classes.outerContainer}>
       <Typography variant="h5" id="taxon-type-title" className={classes.taxonTypeTitle}>
         Taxon Type
       </Typography>
@@ -45,6 +45,6 @@ const ControlPresentation = () => {
       </div>
     </div>
   );
-};
+}
 
 export default ControlPresentation;

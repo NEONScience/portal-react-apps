@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const InfoPresentation = () => {
+function InfoPresentation() {
   const classes = useStyles(Theme);
   return (
     <div data-selenium="info-section">
@@ -69,7 +69,9 @@ const InfoPresentation = () => {
                 </li>
               </ol>
               <Typography variant="body1">
-                These lists are <strong>not</strong> species checklists, or lists of taxa that have been
+                These lists are
+                <strong> not </strong>
+                species checklists, or lists of taxa that have been
                 observed in the field. The availability and accuracy of source data varies by taxonomic group.
                 NEON anticipates these lists will be updated and refined over time.
               </Typography>
@@ -96,6 +98,6 @@ const InfoPresentation = () => {
       </Accordion>
     </div>
   );
-};
+}
 
 export default InfoPresentation;

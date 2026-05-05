@@ -9,12 +9,12 @@ const taxonTypes = [
   { value: "MOSQUITO_PATHOGENS", label: "Mosquito Pathogens" },
   { value: "SMALL_MAMMAL", label: "Small Mammal" },
   { value: "PLANT", label: "Plant" },
-  { value: "TICK", label: "Tick" }
+  { value: "TICK", label: "Tick" },
 ];
 
 const DEFAULT_TAXON_TYPE = "ALGAE";
 
 export {
   taxonTypes,
-  DEFAULT_TAXON_TYPE
+  DEFAULT_TAXON_TYPE,
 };

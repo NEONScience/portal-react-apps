@@ -1,6 +1,6 @@
 import {
   createStore,
-  applyMiddleware
+  applyMiddleware,
 } from "redux";
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
@@ -10,7 +10,7 @@ import { getTaxonApiPath } from "../api/taxon";
 import { DEFAULT_TAXON_TYPE } from "../api/taxonTypes";
 import { getColumns } from "../api/dataTableColumns";
 
-let dataStore = {
+const dataStore = {
   taxonTypes: [],
   locations: [],
   taxonColumns: getColumns(),
@@ -18,20 +18,21 @@ let dataStore = {
   taxonQuery: {
     rootApiUrl: getTaxonApiPath(),
     taxonTypeCode: DEFAULT_TAXON_TYPE,
-    locationName: null
-  }
+    locationName: null,
+  },
 };
 
-let middlewares = [];
+const middlewares = [];
 if (NeonEnvironment.isDevEnv) {
+  // eslint-disable-next-line global-require
   const { logger } = require("redux-logger");
   middlewares.push(logger);
 }
 
-let store = createStore(
+const store = createStore(
   dataApp,
   dataStore,
-  applyMiddleware(...middlewares)
+  applyMiddleware(...middlewares),
 );
 
-export { store };
+export default store;

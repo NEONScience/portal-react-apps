@@ -81,17 +81,16 @@ const Citation = (props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          {/* NOTE: Tooltip is breaking CopyToClipboard as of MUI v5!
-            <Tooltip
-            placement="bottom-start"
-            title="Click to copy the above citation to the clipboard"
-          > */}
           <CopyToClipboard text={citationText}>
-            <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
-              Copy
-            </Button>
+            <Tooltip
+              placement="bottom-start"
+              title="Click to copy the above citation to the clipboard"
+            >
+              <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+                Copy
+              </Button>
+            </Tooltip>
           </CopyToClipboard>
-          {/* </Tooltip> */}
           {DataCiteService.getPrototypeDatasetFormats().map((format) => (
             <Tooltip
               key={format.shortName}

@@ -643,18 +643,17 @@ const DatasetDetails = (props) => {
       return null;
     }
     return (
-      // NOTE: Tooltip is breaking CopyToClipboard as of MUI v5!
-      // <Tooltip
-      //   style={{ flex: 0 }}
-      //   placement="left"
-      //   title={`Copy DOI URL (${doi.url})`}
-      // >
       <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
-        <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
-          Copy
-        </Button>
+        <Tooltip
+          style={{ flex: 0 }}
+          placement="left"
+          title={`Copy DOI URL (${doi.url})`}
+        >
+          <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
+            Copy
+          </Button>
+        </Tooltip>
       </CopyToClipboard>
-      // </Tooltip>
     );
   };
 

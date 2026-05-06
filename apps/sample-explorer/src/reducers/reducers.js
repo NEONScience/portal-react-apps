@@ -341,6 +341,10 @@ const reducer = (state = {}, action) => {
             update = {
               ...state,
               visitedSamples,
+              query: {
+                ...state.query,
+                queryIsLoading: false,
+              },
             };
             return update;
           }

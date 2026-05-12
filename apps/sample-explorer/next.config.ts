@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   basePath: '/sample-explorer',
   trailingSlash: false,
   reactStrictMode: false,
+  transpilePackages: ['portal-core-components/lib'],
 };
 
 export default nextConfig;

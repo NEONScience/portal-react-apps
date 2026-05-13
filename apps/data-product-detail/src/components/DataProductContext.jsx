@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, {
   createContext,
   useContext,
@@ -807,6 +808,7 @@ const reducer = (state, action) => {
       /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
+      // eslint-disable-next-line max-len
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
       if (!newState.data.bundleParentReleases[action.bundleParent]) {
         newState.data.bundleParentReleases[action.bundleParent] = {};

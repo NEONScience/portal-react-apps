@@ -146,7 +146,6 @@ const transformOptions = (
 ): SiteSelectDataOption[] => (
   sites
     .map((value: SiteSelectOption): SiteSelectDataOption => (
-      // eslint-disable-next-line no-use-before-define
       transformOption(value, states, domains)
     ))
     .filter((a: SiteSelectDataOption): boolean => exists(a) && isStringNonEmpty(a.stateName))

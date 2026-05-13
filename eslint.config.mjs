@@ -99,10 +99,6 @@ export default defineConfig([
   ...compat.extends('airbnb'),
   {
     ignores: [
-      'src/lib_components/**/*.d.ts',
-      'src/lib_components/remoteAssets/**',
-      'src/lib_components/vendor/',
-      'src/sampleData/',
       'src/**/__tests__',
       'src/**/__mocks__',
       'lib/',
@@ -159,17 +155,8 @@ export default defineConfig([
     rules,
   },
   {
-    files: ['src/lib_components/workers/*.js'],
-    rules: {
-      'prefer-object-spread': 'off',
-    },
-  },
-  {
     files: [
-      'src/lib_components/**/*/StyleGuide.*',
       'src/App.jsx',
-      'src/components/*',
-      'src/__mocks__/*',
     ],
     rules: {
       'import/extensions': 'off',

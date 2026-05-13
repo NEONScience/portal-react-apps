@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
@@ -45,7 +45,8 @@ function InfoPresentation() {
           <Grid container spacing={3}>
             <Grid item xs={12} lg={6}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
-                Taxonomic lists are compiled from a variety of published sources and are used primarily by
+                Taxonomic lists are compiled from a variety of published sources
+                and are used primarily by
                 staff scientists to:
               </Typography>
               <ol className={classes.ol}>
@@ -72,25 +73,30 @@ function InfoPresentation() {
                 These lists are
                 <strong> not </strong>
                 species checklists, or lists of taxa that have been
-                observed in the field. The availability and accuracy of source data varies by taxonomic group.
+                observed in the field. The availability and accuracy of source data
+                varies by taxonomic group.
                 NEON anticipates these lists will be updated and refined over time.
               </Typography>
             </Grid>
             <Grid item xs={12} lg={6}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
-                In general, NEON field staff (aka parataxonomists) are limited to selecting only taxa whose
-                geographic range extends over the sampling location. NEON staff may use either the accepted
-                scientific name or any known synonym, but, for consistency, nomenclature provided on the data
-                portal reflects the accepted name and its corresponding higher taxonomy (rather than the
-                synonym selected).
+                In general, NEON field staff (aka parataxonomists) are limited to selecting
+                only taxa whose geographic range extends over the sampling location. NEON
+                staff may use either the accepted
+                scientific name or any known synonym, but, for consistency,
+                nomenclature provided on the data
+                portal reflects the accepted name and its corresponding
+                higher taxonomy (rather than the synonym selected).
               </Typography>
               <Typography variant="body1">
                 Expert taxonomists contracted by NEON are permitted to return data with
-                taxonomic identifications unconstrained by expected geographic range. Expanded data packages
-                contain the exact nomenclature provided by the expert taxonomist, including their assignment
-                of higher taxonomy. Basic packages reflect the accepted name (according to the NEON taxon
-                list) and its corresponding higher taxonomy. See individual data products and their associated
-                documentation for further details.
+                taxonomic identifications unconstrained by expected geographic range.
+                Expanded data packages contain the exact nomenclature provided by
+                the expert taxonomist, including their assignment
+                of higher taxonomy. Basic packages reflect the accepted name
+                (according to the NEON taxon
+                list) and its corresponding higher taxonomy. See individual
+                data products and their associated documentation for further details.
               </Typography>
             </Grid>
           </Grid>

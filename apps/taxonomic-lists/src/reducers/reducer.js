@@ -1,4 +1,4 @@
-import { ActionType } from "../actions/actions";
+import { ActionType } from '../actions/actions';
 
 // eslint-disable-next-line default-param-last
 const dataApp = (state = {}, action) => {

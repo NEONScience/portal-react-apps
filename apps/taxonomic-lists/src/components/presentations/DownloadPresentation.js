@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
-import Download from "../download/Download";
+import Download from '../download/Download';
 
 function DownloadPresentation(props) {
   const { taxonQuery } = props;

@@ -1,6 +1,6 @@
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 
-import { taxonTypes } from "./taxonTypes";
+import { taxonTypes } from './taxonTypes';
 
 /**
  * Gets the taxon API endpoint path
@@ -43,5 +43,5 @@ export const getTaxonTypeLabel = (taxonTypeCode) => {
     return taxonTypeLabel.label;
   }
 
-  return "";
+  return '';
 };

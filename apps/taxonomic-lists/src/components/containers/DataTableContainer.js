@@ -1,6 +1,6 @@
-import { connect } from "react-redux";
-import DataTablePresentation from "../presentations/DataTablePresentation";
-import { toggleColumnManagerVisibility } from "../../actions/actions";
+import { connect } from 'react-redux';
+import DataTablePresentation from '../presentations/DataTablePresentation';
+import { toggleColumnManagerVisibility } from '../../actions/actions';
 
 const mapStateToProps = (state) => ({
   taxonQuery: state.taxonQuery,

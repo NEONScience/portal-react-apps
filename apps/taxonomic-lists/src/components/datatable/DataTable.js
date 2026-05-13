@@ -1,22 +1,24 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable react/no-unused-class-component-methods */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable max-len */
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-import NeonEnvironment from "portal-core-components/lib/components/NeonEnvironment/NeonEnvironment";
-import NeonApi from "portal-core-components/lib/components/NeonApi";
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
+import NeonApi from 'portal-core-components/lib/components/NeonApi';
 
-import "./DataTable.css";
+import './DataTable.css';
 
-const _ = require("lodash");
-const $ = require("jquery");
-$.DataTable = require("datatables.net-responsive-bs");
+const _ = require('lodash');
+const $ = require('jquery');
+$.DataTable = require('datatables.net-responsive-bs');
 
 const DataTableUpdateType = {
-  FULL: "FULL",
-  COLUMN_VISIBILITY: "COLUMN_VISIBILITY",
+  FULL: 'FULL',
+  COLUMN_VISIBILITY: 'COLUMN_VISIBILITY',
 };
 
 class DataTable extends Component {
@@ -105,11 +107,11 @@ class DataTable extends Component {
   getDataTableAjax() {
     const that = this;
     return {
-      type: "POST",
-      cache: "false",
+      type: 'POST',
+      cache: 'false',
 
       // The text/plain here prevents preflight request on POST
-      contentType: "text/plain",
+      contentType: 'text/plain',
 
       headers: NeonApi.getApiTokenHeader(),
 
@@ -123,7 +125,7 @@ class DataTable extends Component {
       },
       error(jqXHR, statusText, error) {
         // Prevent table reset on aborted requests
-        if (error === "abort") {
+        if (error === 'abort') {
           return;
         }
         that.clearTableData();
@@ -146,10 +148,10 @@ class DataTable extends Component {
     const table = $(this.dataTable).DataTable();
 
     const input = $(
-      `<input type="filter" `
+      '<input type="filter" '
           + `query-name="${queryName}" `
           + `col-index="${index.toString()}" `
-          + `class="input-sm form-control" `
+          + 'class="input-sm form-control" '
           + `data-selenium="table-section.column-filter.${queryName}" />`,
     );
 
@@ -157,16 +159,16 @@ class DataTable extends Component {
       that.debounceColumnFilterMethod(e, tableParam, queryNameParam, term);
     }, table.settings()[0].searchDelay);
 
-    input.off("click").on("click", (e) => {
+    input.off('click').on('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
     });
-    input.off("keyup cut paste").on("keyup cut paste", (e) => {
+    input.off('keyup cut paste').on('keyup cut paste', (e) => {
       e.preventDefault();
       e.stopPropagation();
       method(e, table, queryName, input.val());
     });
-    input.off("cut paste").on("cut paste", (e) => {
+    input.off('cut paste').on('cut paste', (e) => {
       method(e, table, queryName, input.val());
     });
 
@@ -174,11 +176,11 @@ class DataTable extends Component {
   }
 
   clearSearch() {
-    $(this.dataTable).DataTable().search("");
+    $(this.dataTable).DataTable().search('');
   }
 
   clearColumnOrders() {
-    $(this.dataTable).DataTable().order([0, "asc"]);
+    $(this.dataTable).DataTable().order([0, 'asc']);
   }
 
   clearFilters() {
@@ -186,7 +188,7 @@ class DataTable extends Component {
 
     this.queryFilter.filterColumns = {};
     table.settings().init().columns.forEach((column, index) => {
-      $(table.column(index).header()).find("input[type=\"filter\"]").each((filterIndex, filter) => {
+      $(table.column(index).header()).find('input[type="filter"]').each((filterIndex, filter) => {
         $(filter).val(null);
       });
     });
@@ -198,8 +200,8 @@ class DataTable extends Component {
       recordsFiltered: 0,
       data: [],
     });
-    $(`#${this.dataTable.id}_processing`).css("display", "none");
-    $(this.dataTable).find("td.dataTables_empty").attr("colspan", "100");
+    $(`#${this.dataTable.id}_processing`).css('display', 'none');
+    $(this.dataTable).find('td.dataTables_empty').attr('colspan', '100');
   }
 
   resetQueryFilter() {
@@ -217,7 +219,7 @@ class DataTable extends Component {
   initDataTableActions() {
     const that = this;
 
-    $(this.dataTable).DataTable().on("preXhr", (e, d) => {
+    $(this.dataTable).DataTable().on('preXhr', (e, d) => {
       const dt = $(that.dataTable).DataTable();
       const { ajax } = d;
 
@@ -241,32 +243,32 @@ class DataTable extends Component {
 
     this.debounceSearch();
 
-    $("div.toggle-columns").prepend(
-      "<button id=\"showDisplayColumns\" class=\"btn btn-show-display-columns\" data-selenium=\"table-section.table-columns-button\">"
-        + "<span>Table Columns</span>"
-        + "<i class=\"fa fa-columns\"></i>"
-      + "</button>",
+    $('div.toggle-columns').prepend(
+      '<button id="showDisplayColumns" class="btn btn-show-display-columns" data-selenium="table-section.table-columns-button">'
+        + '<span>Table Columns</span>'
+        + '<i class="fa fa-columns"></i>'
+      + '</button>',
     );
 
-    $("#showDisplayColumns").on("click", () => {
+    $('#showDisplayColumns').on('click', () => {
       that.handleToggleColumnManagerVisibility();
     });
 
-    $("div.toggle-columns").prepend(
-      "<button id=\"btnResetFilters\" class=\"btn btn-reset-filters\" data-selenium=\"table-section.reset-filters-button\">"
-        + "<span>Reset Filters</span>"
-        + "<i class=\"fa fa-times\"></i>"
-      + "</button>",
+    $('div.toggle-columns').prepend(
+      '<button id="btnResetFilters" class="btn btn-reset-filters" data-selenium="table-section.reset-filters-button">'
+        + '<span>Reset Filters</span>'
+        + '<i class="fa fa-times"></i>'
+      + '</button>',
     );
 
-    $("#btnResetFilters").on("click", () => {
+    $('#btnResetFilters').on('click', () => {
       that.resetQueryFilter();
     });
   }
 
   initDataTableColumnFilters() {
     const that = this;
-    $(this.dataTable).find("thead th").each((index, tableHeaderCol) => {
+    $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
       that.prohibitColumnHeaderKeyEvents(tableHeaderCol);
       const col = that.findColumnByTitle(tableHeaderCol.innerHTML);
       if (col) {
@@ -285,7 +287,7 @@ class DataTable extends Component {
            + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
       // eslint-disable-next-line react/destructuring-assignment
       columns: this.props.columns,
-      order: [[0, "asc"]],
+      order: [[0, 'asc']],
       pageLength: 100,
       lengthMenu: [10, 50, 100],
       ordering: true,
@@ -294,8 +296,8 @@ class DataTable extends Component {
       deferLoading: 0,
       processing: true,
       language: {
-        search: "Keyword Search:",
-        processing: "<i class=\"fa fa-circle-o-notch fa-spin fa-2x fa-fw margin-bottom\"></i>",
+        search: 'Keyword Search:',
+        processing: '<i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw margin-bottom"></i>',
       },
       serverSide: true,
       ajax: that.getDataTableAjax(),
@@ -303,7 +305,7 @@ class DataTable extends Component {
   }
 
   prohibitColumnHeaderKeyEvents(header) {
-    $(header).off("keydown keypress keyup");
+    $(header).off('keydown keypress keyup');
   }
 
   findColumnByTitle(title) {
@@ -351,11 +353,11 @@ class DataTable extends Component {
           delete this.queryFilter.filterColumns[foundColumn.column.queryName];
         }
 
-        $(this.dataTable).find("thead th").each((index, tableHeaderCol) => {
+        $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
           that.prohibitColumnHeaderKeyEvents(tableHeaderCol);
           const col = that.findColumnByTitle(tableHeaderCol.innerHTML);
           if (col) {
-            if (tableHeaderCol.innerHTML.toString().indexOf("<input") < 0) {
+            if (tableHeaderCol.innerHTML.toString().indexOf('<input') < 0) {
               $(tableHeaderCol).append(that.getColumnFilterInput(foundColumn.column.queryName, foundColumn.index));
               return false;
             }
@@ -368,7 +370,7 @@ class DataTable extends Component {
 
   debounceSearchMethod(e, api, term) {
     let testTerm = null;
-    if ((typeof term !== "undefined") && (term !== null) && (term.trim().length > 0)) {
+    if ((typeof term !== 'undefined') && (term !== null) && (term.trim().length > 0)) {
       testTerm = term.trim();
     }
 
@@ -380,8 +382,8 @@ class DataTable extends Component {
 
   debounceSearch() {
     const table = $(this.dataTable);
-    const filterContainer = $.find("div.dataTables_filter");
-    const input = $(filterContainer).find("input[type=\"search\"]");
+    const filterContainer = $.find('div.dataTables_filter');
+    const input = $(filterContainer).find('input[type="search"]');
     const api = table.DataTable();
 
     const that = this;
@@ -389,7 +391,7 @@ class DataTable extends Component {
       that.debounceSearchMethod(e, apiParam, term);
     }, api.settings()[0].searchDelay);
 
-    input.off().on("keyup cut paste", (e) => {
+    input.off().on('keyup cut paste', (e) => {
       method(e, api, input.val());
     });
   }
@@ -398,7 +400,7 @@ class DataTable extends Component {
     let testTerm = null;
     let update = false;
 
-    if ((typeof term !== "undefined") && (term !== null) && (term.trim().length > 0)) {
+    if ((typeof term !== 'undefined') && (term !== null) && (term.trim().length > 0)) {
       testTerm = term.trim();
     }
 
@@ -424,7 +426,7 @@ class DataTable extends Component {
 
     this.queryFilter.search.term = null;
     this.queryFilter.search.columns = [];
-    if ((typeof searchTerm !== "undefined") && (searchTerm !== null) && (searchTerm.trim().length > 0)) {
+    if ((typeof searchTerm !== 'undefined') && (searchTerm !== null) && (searchTerm.trim().length > 0)) {
       this.queryFilter.search.term = searchTerm.trim();
       table.settings().init().columns.forEach((col) => {
         if (col.queryName) { // && col.visible) {
@@ -445,7 +447,7 @@ class DataTable extends Component {
 
   render() {
     const tableStyle = {
-      width: "100%",
+      width: '100%',
     };
 
     return (

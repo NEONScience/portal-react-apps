@@ -1,5 +1,5 @@
-import { connect } from "react-redux";
-import DownloadPresentation from "../presentations/DownloadPresentation";
+import { connect } from 'react-redux';
+import DownloadPresentation from '../presentations/DownloadPresentation';
 
 const mapStateToProps = (state) => ({
   taxonQuery: state.taxonQuery,

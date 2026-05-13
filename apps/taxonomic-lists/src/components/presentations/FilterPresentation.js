@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
-import FilterTaxonType from "../filters/FilterTaxonType";
+import FilterTaxonType from '../filters/FilterTaxonType';
 
 function FilterPresentation(props) {
   const {

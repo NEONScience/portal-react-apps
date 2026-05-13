@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -11,9 +11,9 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
-import Typography from "@mui/material/Typography";
+import Typography from '@mui/material/Typography';
 
-import { getColumns, getColumnDisplayGroupLabel } from "../../api/dataTableColumns";
+import { getColumns, getColumnDisplayGroupLabel } from '../../api/dataTableColumns';
 
 const useStyles = makeStyles(() => ({
   paddedSection: {
@@ -77,6 +77,7 @@ function ColumnManager(props) {
     const columnSections = Object.keys(tableRows).reduce((acc, value, index) => {
       const labelKey = getColumnDisplayGroupLabel(value);
       acc.push(
+        // eslint-disable-next-line react/no-array-index-key
         <Grid key={index} item xs={12} sm={6} md={3}>
           {!displayGroupLabels[labelKey] ? null : (
             <Typography variant="subtitle2" gutterBottom style={{ whiteSpace: 'nowrap' }}>

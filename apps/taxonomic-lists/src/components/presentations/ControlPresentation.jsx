@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import FilterContainer from "../containers/FilterContainer";
-import DownloadContainer from "../containers/DownloadContainer";
+import FilterContainer from '../containers/FilterContainer';
+import DownloadContainer from '../containers/DownloadContainer';
 
 const useStyles = makeStyles((theme) => ({
   outerContainer: {

@@ -1,16 +1,15 @@
-/* eslint-disable max-len */
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import DataTable from "../datatable/DataTable";
+import DataTable from '../datatable/DataTable';
 
-import "bootstrap/dist/css/bootstrap.css";
-import "datatables.net-bs/js/dataTables.bootstrap";
-import "datatables.net-bs/css/dataTables.bootstrap.css";
+import 'bootstrap/dist/css/bootstrap.css';
+import 'datatables.net-bs/js/dataTables.bootstrap';
+import 'datatables.net-bs/css/dataTables.bootstrap.css';
 
 /**
    CSS Overrides

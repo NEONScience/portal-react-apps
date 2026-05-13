@@ -1,10 +1,11 @@
-import { connect } from "react-redux";
-import ColumnManagerPresentation from "../presentations/ColumnManagerPresentation";
+/* eslint-disable max-len */
+import { connect } from 'react-redux';
+import ColumnManagerPresentation from '../presentations/ColumnManagerPresentation';
 import {
   setTaxonColumns,
   taxonColumnVisibilityChanged,
   toggleColumnManagerVisibility,
-} from "../../actions/actions";
+} from '../../actions/actions';
 
 const mapStateToProps = (state) => ({
   columnManagerVisible: state.columnManagerVisible,

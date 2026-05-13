@@ -1,10 +1,10 @@
-import { connect } from "react-redux";
-import FilterPresentation from "../presentations/FilterPresentation";
+import { connect } from 'react-redux';
+import FilterPresentation from '../presentations/FilterPresentation';
 import {
   setTaxonTypes,
   setLocations,
   filterValueChanged,
-} from "../../actions/actions";
+} from '../../actions/actions';
 
 const mapStateToProps = (state) => ({
   taxonTypes: state.taxonTypes,

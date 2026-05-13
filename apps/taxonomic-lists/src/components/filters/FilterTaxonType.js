@@ -1,15 +1,14 @@
 /* eslint-disable react/prop-types */
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-// eslint-disable-next-line import/no-named-as-default, import/no-named-as-default-member
-import DataProductLinks from "./DataProductLinks";
+import DataProductLinks from './DataProductLinks';
 
-import { taxonTypes } from "../../api/taxonTypes";
+import { taxonTypes } from '../../api/taxonTypes';
 
 class FilterTaxonType extends Component {
   constructor(props) {
@@ -29,7 +28,7 @@ class FilterTaxonType extends Component {
       taxonTypeCode: 'ALGAE',
       dataProductData: [],
     };
-    this.FILTER_PROP = "taxonTypeCode";
+    this.FILTER_PROP = 'taxonTypeCode';
   }
 
   componentDidMount() {

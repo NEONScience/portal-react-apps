@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/next-script-for-ga */
+/* eslint-disable @next/next/no-css-tags */
+/* eslint-disable @next/next/no-sync-scripts */
 /* eslint-disable react/no-danger */
 
 import React from 'react';

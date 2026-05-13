@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
-import ColumnManager from "../columnmanager/ColumnManager";
+import ColumnManager from '../columnmanager/ColumnManager';
 
 function ColumnManagerPresentation(props) {
   const containerStyle = {};

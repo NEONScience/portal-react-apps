@@ -37,5 +37,19 @@
     "ci:prod": "yarn install --immutable",
     "build:docker-clean": "docker image rm portal-react-apps:latest-builder-base",
     "build:docker-all": "docker buildx bake --set *.args.YARN_VERSION=$npm_package_config_yarnVersion --file docker-bake-build.hcl"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^9.39.4",
+    "@next/eslint-plugin-next": "^16.2.1",
+    "@types/eslint-plugin-jsx-a11y": "^6",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
+    "eslint": "^9.39.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.4.0"
   }
 }

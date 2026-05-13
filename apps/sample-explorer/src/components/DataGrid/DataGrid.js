@@ -1,11 +1,11 @@
 /* eslint-disable react/no-unused-state */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable react/destructuring-assignment */
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-balham.css";
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-balham.css';
 
 class DataGrid extends Component {
   constructor(props) {
@@ -19,7 +19,7 @@ class DataGrid extends Component {
   }
 
   componentDidUpdate() {
-    if (this.api !== null && typeof this.api !== "undefined") {
+    if (this.api !== null && typeof this.api !== 'undefined') {
       this.handleLoading();
       this.api.updateGridOptions({ columnDefs: this.props.columnDefs });
       this.api.redrawRows();
@@ -31,7 +31,7 @@ class DataGrid extends Component {
   }
 
   handleLoading() {
-    this.api.setGridOption("loading", this.props.isLoading === true);
+    this.api.setGridOption('loading', this.props.isLoading === true);
   }
 
   onGridReady(params) {
@@ -42,8 +42,8 @@ class DataGrid extends Component {
 
   render() {
     const containerStyle = {
-      height: "280px",
-      width: "100%",
+      height: '280px',
+      width: '100%',
     };
     if (typeof this.props.height === 'string') {
       containerStyle.height = this.props.height;

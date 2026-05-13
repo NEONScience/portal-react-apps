@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import Typography from "@mui/material/Typography";
+import Typography from '@mui/material/Typography';
 import makeStyles from '@mui/styles/makeStyles';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import SampleNetwork from "../SampleNetwork/SampleNetwork";
-import { GRAPH_COLORS } from "../../util/appUtil";
+import SampleNetwork from '../SampleNetwork/SampleNetwork';
+import { GRAPH_COLORS } from '../../util/appUtil';
 
 const useStyles = makeStyles((theme) => ({
   keyContainer: {
@@ -38,7 +38,8 @@ function SampleGraphPresentation(props) {
         Sample Graph
       </Typography>
       <Typography variant="subtitle1">
-        Network graph displaying sample relationships. Navigate the sample network by clicking the nodes.
+        Network graph displaying sample relationships. Navigate the sample
+        network by clicking the nodes.
       </Typography>
       <div className={classes.keyContainer}>
         <div className={classes.keyElement}>

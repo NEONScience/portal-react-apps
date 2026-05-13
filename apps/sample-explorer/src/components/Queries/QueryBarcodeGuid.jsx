@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 import PropTypes from 'prop-types';
 
-import TextField from "@mui/material/TextField";
+import TextField from '@mui/material/TextField';
 
-import { getQueryTypeName, QUERY_TYPE } from "../../util/queryUtil";
+import { getQueryTypeName, QUERY_TYPE } from '../../util/queryUtil';
 
 function QueryBarcodeGuid(props) {
   const {

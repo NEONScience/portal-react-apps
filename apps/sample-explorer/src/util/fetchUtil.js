@@ -1,9 +1,9 @@
-import { fetch as fetchPolyfill } from "whatwg-fetch";
+import { fetch as fetchPolyfill } from 'whatwg-fetch';
 
-import NeonApi from "portal-core-components/lib/components/NeonApi";
+import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { exists } from "portal-core-components/lib/util/typeUtil";
-import { handleError } from "./actionUtil";
+import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { handleError } from './actionUtil';
 
 import {
   queryIsRunning,
@@ -14,13 +14,13 @@ import {
   downloadIsRunning,
   downloadHasCompleted,
   downloadHasErrored,
-} from "../actions/actions";
-import { buildViewUrl } from "./appUtil";
-import { QUERY_TYPE } from "./queryUtil";
+} from '../actions/actions';
+import { buildViewUrl } from './appUtil';
+import { QUERY_TYPE } from './queryUtil';
 
 const checkStatus = (response) => {
-  if (typeof response === "undefined") {
-    const error = new Error("Error occurred");
+  if (typeof response === 'undefined') {
+    const error = new Error('Error occurred');
     error.response = null;
     throw error;
   }
@@ -34,7 +34,7 @@ const checkStatus = (response) => {
 
 const getFetch = () => {
   let fetchFunc = fetch;
-  if (typeof fetchFunc === "undefined") {
+  if (typeof fetchFunc === 'undefined') {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
@@ -42,18 +42,18 @@ const getFetch = () => {
 
 export const querySample = (url, cacheControl) => {
   const fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
   };
-  if (cacheControl === "no-cache") {
-    fetchHeaders["cache-control"] = cacheControl;
+  if (cacheControl === 'no-cache') {
+    fetchHeaders['cache-control'] = cacheControl;
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
     mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
   const fetchFunc = getFetch();
@@ -73,8 +73,8 @@ export const querySample = (url, cacheControl) => {
       .then((response) => response.json())
       .then((json) => dispatch(queryHasCompleted(json)))
       .catch((error) => {
-        if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-          dispatch(queryHasErrored("500"));
+        if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
@@ -84,15 +84,15 @@ export const querySample = (url, cacheControl) => {
 
 export const querySampleTagClasses = (classUrl) => {
   const fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
   };
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
-    mode: "cors",
+    mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
   const fetchFunc = getFetch();
@@ -112,10 +112,10 @@ export const querySampleTagClasses = (classUrl) => {
         dispatch(querySampleClassHasCompleted(json));
       })
       .catch((error) => {
-        if (typeof error === "undefined"
-            || typeof error.response === "undefined"
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
             || error.response === null) {
-          dispatch(queryHasErrored("500"));
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
@@ -125,18 +125,18 @@ export const querySampleTagClasses = (classUrl) => {
 
 export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) => {
   const fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
   };
-  if (cacheControl === "no-cache") {
-    fetchHeaders["cache-control"] = cacheControl;
+  if (cacheControl === 'no-cache') {
+    fetchHeaders['cache-control'] = cacheControl;
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
-    mode: "cors",
+    mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
   const fetchFunc = getFetch();
@@ -172,10 +172,10 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
         }
       })
       .catch((error) => {
-        if (typeof error === "undefined"
-            || typeof error.response === "undefined"
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
             || error.response === null) {
-          dispatch(queryHasErrored("500"));
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
@@ -207,14 +207,14 @@ export const querySampleFromUrlDispatch = (urlParams) => {
 
 export const querySupportedSampleClasses = (url, query, download) => {
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      Accept: "application/json;charset=UTF-8; text/plain",
+      Accept: 'application/json;charset=UTF-8; text/plain',
       ...NeonApi.getApiTokenHeader(),
     },
-    mode: "cors",
+    mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
   if (query) {
@@ -233,8 +233,8 @@ export const querySupportedSampleClasses = (url, query, download) => {
         .then((response) => response.json())
         .then((json) => dispatch(querySupportedSampleClassHasCompleted(json, download)))
         .catch((error) => {
-          if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-            dispatch(queryHasErrored("500"));
+          if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+            dispatch(queryHasErrored('500'));
           } else {
             handleError(dispatch, queryHasErrored, error);
           }
@@ -248,20 +248,20 @@ export const querySupportedSampleClasses = (url, query, download) => {
 
 export const downloadSamples = (downloadType, url, cacheControl) => {
   const fetchHeaders = new Headers();
-  fetchHeaders.append("Accept", "application/json;charset=UTF-8");
-  fetchHeaders.append("Accept", "text/plain");
-  if (cacheControl === "no-cache") {
-    fetchHeaders.append("cache-control", cacheControl);
+  fetchHeaders.append('Accept', 'application/json;charset=UTF-8');
+  fetchHeaders.append('Accept', 'text/plain');
+  if (cacheControl === 'no-cache') {
+    fetchHeaders.append('cache-control', cacheControl);
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: {
       ...fetchHeaders,
       ...NeonApi.getApiTokenHeader(),
     },
-    mode: "cors",
+    mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
   const fetchFunc = getFetch();
@@ -282,8 +282,8 @@ export const downloadSamples = (downloadType, url, cacheControl) => {
       .then((response) => response.json())
       .then((json) => dispatch(downloadHasCompleted(downloadType, json)))
       .catch((error) => {
-        if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-          dispatch(downloadHasErrored("500"));
+        if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+          dispatch(downloadHasErrored('500'));
         } else {
           handleError(dispatch, downloadHasErrored, error);
         }

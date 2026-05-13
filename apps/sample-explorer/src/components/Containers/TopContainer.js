@@ -1,5 +1,5 @@
-import { connect } from "react-redux";
-import TopPresentation from "../Presentations/TopPresentation";
+import { connect } from 'react-redux';
+import TopPresentation from '../Presentations/TopPresentation';
 import {
   downloadVisitedSamples,
   resetDownloadState,
@@ -10,7 +10,7 @@ import {
   setQueryType,
   setUrlParams,
   querySampleFromUrl,
-} from "../../actions/actions";
+} from '../../actions/actions';
 
 import {
   querySample,
@@ -19,7 +19,7 @@ import {
   querySupportedSampleClasses,
   querySampleFromUrlDispatch,
   querySampleTagClasses,
-} from "../../util/fetchUtil";
+} from '../../util/fetchUtil';
 
 // TODO(RJL): clean all unused state
 // bind state to properties

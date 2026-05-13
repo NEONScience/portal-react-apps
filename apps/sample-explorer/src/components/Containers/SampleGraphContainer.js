@@ -1,7 +1,7 @@
-import { connect } from "react-redux";
-import SampleGraphPresentation from "../Presentations/SampleGraphPresentation";
+import { connect } from 'react-redux';
+import SampleGraphPresentation from '../Presentations/SampleGraphPresentation';
 
-import { querySample } from "../../util/fetchUtil";
+import { querySample } from '../../util/fetchUtil';
 
 const mapStateToProps = (state) => ({
   sampleUuid: state.sampleUuid,

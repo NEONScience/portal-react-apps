@@ -29,10 +29,10 @@ function TopPresentation(props) {
       <InfoPresentation {...props} />
       <SampleQueryPresentation {...props} />
       {queryErrorStr !== 'success' ? null : (
-        <React.Fragment>
+        <>
           <SampleEventPresentation {...props} />
           <SampleGraphContainer />
-        </React.Fragment>
+        </>
       )}
     </NeonPage>
   );

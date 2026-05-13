@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -10,7 +10,7 @@ import Select from '@mui/material/Select';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-import { QUERY_TYPE } from "../../util/queryUtil";
+import { QUERY_TYPE } from '../../util/queryUtil';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -54,6 +54,7 @@ function QueryBySampleTagAndClass(props) {
       <Select
         variant="standard"
         labelId="select-sample-class-label"
+        // eslint-disable-next-line react-hooks/refs
         label={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
         data-gtm="sample-search-form.select-sample-class"
         data-selenium="sample-search-form.select-sample-class"

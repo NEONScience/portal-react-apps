@@ -1,7 +1,7 @@
 import {
   SAMPLE_ID_LIST_EXCEPTION,
   SAMPLE_ID_LIST_EXCEPTION_MESSAGE,
-} from "./constants";
+} from './constants';
 
 // eslint-disable-next-line import/prefer-default-export
 export const handleError = (dispatch, action, error) => {

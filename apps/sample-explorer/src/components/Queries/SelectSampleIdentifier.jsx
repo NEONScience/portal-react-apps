@@ -1,4 +1,5 @@
-import React, { useRef } from "react";
+/* eslint-disable react-hooks/refs */
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';

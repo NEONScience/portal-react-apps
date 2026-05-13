@@ -1,6 +1,6 @@
 import React, { useReducer } from 'react';
 
-import { fetch as fetchPolyfill } from "whatwg-fetch";
+import { fetch as fetchPolyfill } from 'whatwg-fetch';
 
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -14,32 +14,32 @@ import Grid from '@mui/material/Grid';
 import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import NeonApi from "portal-core-components/lib/components/NeonApi";
+import fileDownload from 'js-file-download';
+import { Parser } from 'json2csv';
+
+import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 import DataGrid from '../DataGrid/DataGrid';
 
-const fileDownload = require("js-file-download");
-const { Parser } = require("json2csv");
-
 const COLUMN_DEFS = [
   {
-    headerName: "SMS Field Name",
-    field: "name",
+    headerName: 'SMS Field Name',
+    field: 'name',
     sortable: true,
     resizable: true,
     filter: true,
   },
   {
-    headerName: "SMS Field Description",
-    field: "description",
+    headerName: 'SMS Field Description',
+    field: 'description',
     sortable: true,
     resizable: true,
     filter: true,
   },
   {
-    headerName: "SMS Field Ontology Mapping",
-    field: "ontologyMapping",
+    headerName: 'SMS Field Ontology Mapping',
+    field: 'ontologyMapping',
     sortable: true,
     resizable: true,
     filter: true,
@@ -48,23 +48,23 @@ const COLUMN_DEFS = [
 
 const downloadFields = (fields, dispatch) => {
   const smsFieldHeaders = [
-    "SMS Field Name",
-    "SMS Field Description",
-    "SMS Field Ontology Mapping",
+    'SMS Field Name',
+    'SMS Field Description',
+    'SMS Field Ontology Mapping',
   ];
   dispatch({ type: 'downloading' });
   const fieldsCsvData = [];
   fields.forEach((value) => {
     fieldsCsvData.push({
-      "SMS Field Name": value.name,
-      "SMS Field Description": value.description,
-      "SMS Field Ontology Mapping": value.ontologyMapping,
+      'SMS Field Name': value.name,
+      'SMS Field Description': value.description,
+      'SMS Field Ontology Mapping': value.ontologyMapping,
     });
   });
   try {
     const fieldsParser = new Parser({ fields: smsFieldHeaders });
     const fieldsCsvResult = fieldsParser.parse(fieldsCsvData);
-    fileDownload(fieldsCsvResult, "Sample-Explorer-SMS-Fields.csv");
+    fileDownload(fieldsCsvResult, 'Sample-Explorer-SMS-Fields.csv');
     dispatch({ type: 'downloaded' });
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -74,8 +74,8 @@ const downloadFields = (fields, dispatch) => {
 };
 
 const checkStatus = (response) => {
-  if (typeof response === "undefined") {
-    const error = new Error("Error occurred");
+  if (typeof response === 'undefined') {
+    const error = new Error('Error occurred');
     error.response = null;
     throw error;
   }
@@ -89,7 +89,7 @@ const checkStatus = (response) => {
 
 const getFetch = () => {
   let fetchFunc = fetch;
-  if (typeof fetchFunc === "undefined") {
+  if (typeof fetchFunc === 'undefined') {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
@@ -97,11 +97,11 @@ const getFetch = () => {
 
 const fetchFields = (dispatch) => {
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     headers: {
-      Accept: "application/json",
+      Accept: 'application/json',
       ...NeonApi.getApiTokenHeader(),
     },
   };
@@ -182,7 +182,7 @@ function SampleSmsFieldsDialog() {
   const renderErrors = () => {
     if (!state.isErrorState) {
       // eslint-disable-next-line react/jsx-no-useless-fragment
-      return <React.Fragment />;
+      return <></>;
     }
     return (
       <Grid container spacing={3}>

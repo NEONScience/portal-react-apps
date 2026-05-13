@@ -1,9 +1,10 @@
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 /**
  * Determines if the current location has search params
  */
-export const hasParams = () => exists(window.location.search) && (window.location.search.length > 0);
+export const hasParams = () => exists(window.location.search)
+  && (window.location.search.length > 0);
 
 /**
  * Parse the URL search params into an object lookup
@@ -18,11 +19,11 @@ export const parseParams = (paramNames) => {
     parseAll = true;
   }
   let params = null;
-  if (typeof URLSearchParams === "undefined") {
+  if (typeof URLSearchParams === 'undefined') {
     // eslint-disable-next-line no-console
-    console.log("using URLSearchParams polyfill");
-    // eslint-disable-next-line global-require
-    require("url-search-params-polyfill");
+    console.log('using URLSearchParams polyfill');
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    require('url-search-params-polyfill');
     params = new URLSearchParams(window.location.search);
   } else {
     params = new URLSearchParams(window.location.search);

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class SampleBreadcrumbPresentation extends Component {
@@ -20,6 +20,7 @@ class SampleBreadcrumbPresentation extends Component {
               const item = (
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
                 <li
+                  // eslint-disable-next-line react/no-array-index-key
                   key={i}
                   onClick={clickHandler}
                   onKeyDown={clickHandler}

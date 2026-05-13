@@ -1,5 +1,5 @@
 /* eslint-disable react/forbid-prop-types */
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -7,22 +7,22 @@ import makeStyles from '@mui/styles/makeStyles';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
-import Button from "@mui/material/Button";
+import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from "@mui/material/Typography";
+import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
-import SelectSampleIdentifier from "../Queries/SelectSampleIdentifier";
-import QueryBySampleTag from "../Queries/QueryBySampleTag";
-import QueryBarcodeGuid from "../Queries/QueryBarcodeGuid";
-import QueryBySampleTagAndClass from "../Queries/QueryBySampleTagAndClass";
+import SelectSampleIdentifier from '../Queries/SelectSampleIdentifier';
+import QueryBySampleTag from '../Queries/QueryBySampleTag';
+import QueryBarcodeGuid from '../Queries/QueryBarcodeGuid';
+import QueryBySampleTagAndClass from '../Queries/QueryBySampleTagAndClass';
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
 
-import { QUERY_TYPE } from "../../util/queryUtil";
+import { QUERY_TYPE } from '../../util/queryUtil';
 
 const useStyles = makeStyles((theme) => ({
   row: {
@@ -140,15 +140,15 @@ function SampleQueryPresentation(props) {
             data-selenium="sample-search-form.submit-button"
           >
             {queryIsLoading ? (
-              <React.Fragment>
+              <>
                 Searching...
                 <CircularProgress size={24} className={classes.searchIcon} />
-              </React.Fragment>
+              </>
             ) : (
-              <React.Fragment>
+              <>
                 Search
                 <SearchIcon fontSize="small" className={classes.searchIcon} />
-              </React.Fragment>
+              </>
             )}
           </Button>
         </div>

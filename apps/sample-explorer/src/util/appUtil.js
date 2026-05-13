@@ -3,7 +3,7 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import Theme from 'portal-core-components/lib/components/Theme';
 import { Parser } from 'json2csv';
 
-import { QUERY_TYPE } from "./queryUtil";
+import { QUERY_TYPE } from './queryUtil';
 
 export const buildViewUrl = (queryType, param) => {
   let url = NeonEnvironment.getFullApiPath('samples');
@@ -24,7 +24,7 @@ export const buildViewUrl = (queryType, param) => {
 };
 
 export const addEntry = (title, entries) => {
-  for (let i = 0; i < entries.length; i++) {
+  for (let i = 0; i < entries.length; i += 1) {
     if (title === entries[i].field) {
       return false;
     }
@@ -44,31 +44,31 @@ export const checkFields = (sampleView) => {
   let sampleTag;
   let barcode;
   let archiveGuid;
-  if (typeof sampleView.sampleUuid === "undefined" || sampleView.sampleUuid === null) {
+  if (typeof sampleView.sampleUuid === 'undefined' || sampleView.sampleUuid === null) {
     sampleUuid = null;
   } else {
     sampleUuid = sampleView.sampleUuid;
   }
 
-  if (typeof sampleView.sampleClass === "undefined" || sampleView.sampleClass === null) {
+  if (typeof sampleView.sampleClass === 'undefined' || sampleView.sampleClass === null) {
     sampleClass = null;
   } else {
     sampleClass = sampleView.sampleClass;
   }
 
-  if (typeof sampleView.sampleTag === "undefined" || sampleView.sampleTag === null) {
+  if (typeof sampleView.sampleTag === 'undefined' || sampleView.sampleTag === null) {
     sampleTag = null;
   } else {
     sampleTag = sampleView.sampleTag;
   }
 
-  if (typeof sampleView.barcode === "undefined" || sampleView.barcode === null) {
+  if (typeof sampleView.barcode === 'undefined' || sampleView.barcode === null) {
     barcode = null;
   } else {
     barcode = sampleView.barcode;
   }
 
-  if (typeof sampleView.archiveGuid === "undefined" || sampleView.archiveGuid === null) {
+  if (typeof sampleView.archiveGuid === 'undefined' || sampleView.archiveGuid === null) {
     archiveGuid = null;
   } else {
     archiveGuid = sampleView.archiveGuid;
@@ -81,20 +81,20 @@ export const checkFields = (sampleView) => {
 
 export const createEventTable = (sampleView, tableDefinition) => {
   let events = [];
-  if (typeof sampleView.sampleEvents !== "undefined"
+  if (typeof sampleView.sampleEvents !== 'undefined'
     || sampleView.sampleEvents !== null) {
     events = sampleView.sampleEvents;
   }
 
   const fields = [];
-  for (let e = 0; e < events.length; e++) {
-    if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
-      console.log("We have an event with no SMS Field Entries.  This should not happen.");
+  for (let e = 0; e < events.length; e += 1) {
+    if (typeof events[e].smsFieldEntries === 'undefined' || events[e].smsFieldEntries === null) {
+      console.log('We have an event with no SMS Field Entries.  This should not happen.');
     } else {
-      for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
+      for (let sms = 0; sms < events[e].smsFieldEntries.length; sms += 1) {
         const smsTitle = events[e].smsFieldEntries[sms].smsKey;
-        if ((smsTitle !== "fate_date") && (smsTitle !== "fate_location")
-          && (smsTitle !== "fate")) {
+        if ((smsTitle !== 'fate_date') && (smsTitle !== 'fate_location')
+          && (smsTitle !== 'fate')) {
           if (addEntry(smsTitle, fields)) {
             // let newField = { title: smsTitle, data: smsTitle }
             const newField = {
@@ -116,25 +116,25 @@ export const createEventTable = (sampleView, tableDefinition) => {
 
   // create new table rows and data
   const tableDatafromJson = [];
-  for (let e = 0; e < events.length; e++) {
+  for (let e = 0; e < events.length; e += 1) {
     let tableRow = {};
     // let tableNameEntry = {["ingestTableName"]: events[e].ingestTableName}
     const tableNameEntry = { table: events[e].ingestTableName };
     tableRow = Object.assign(tableRow, tableNameEntry);
-    for (let f = 0; f < tableDefinition.length; f++) {
-      if (tableDefinition[f].field !== "table") {
+    for (let f = 0; f < tableDefinition.length; f += 1) {
+      if (tableDefinition[f].field !== 'table') {
         const fieldKey = tableDefinition[f].field;
         let found = false;
-        if (typeof events[e].smsFieldEntries === "undefined"
+        if (typeof events[e].smsFieldEntries === 'undefined'
           || events[e].smsFieldEntries === null) {
-          console.log("We have an event with no SMS Field Entries.  This should not happen.");
+          console.log('We have an event with no SMS Field Entries.  This should not happen.');
         } else {
-          for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
+          for (let sms = 0; sms < events[e].smsFieldEntries.length; sms += 1) {
             const smsTitle = events[e].smsFieldEntries[sms].smsKey;
             let smsData = events[e].smsFieldEntries[sms].smsValue;
             if (smsTitle === fieldKey) {
-              if (smsData === "") {
-                smsData = "n/a";
+              if (smsData === '') {
+                smsData = 'n/a';
               }
               const dataEntry = { [smsTitle]: smsData };
               tableRow = Object.assign(tableRow, dataEntry);
@@ -143,7 +143,7 @@ export const createEventTable = (sampleView, tableDefinition) => {
             }
           }
           if (found === false) {
-            const na = "n/a";
+            const na = 'n/a';
             const dataEntry = { [fieldKey]: na };
             tableRow = Object.assign(tableRow, dataEntry);
           }
@@ -176,11 +176,11 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
   let parentSamples = [];
   let childSamples = [];
 
-  if (typeof sampleView.parentSampleIdentifiers !== "undefined" && sampleView.parentSampleIdentifiers !== null) {
+  if (typeof sampleView.parentSampleIdentifiers !== 'undefined' && sampleView.parentSampleIdentifiers !== null) {
     parentSamples = sampleView.parentSampleIdentifiers;
   }
 
-  if (typeof sampleView.childSampleIdentifiers !== "undefined" && sampleView.childSampleIdentifiers !== null) {
+  if (typeof sampleView.childSampleIdentifiers !== 'undefined' && sampleView.childSampleIdentifiers !== null) {
     childSamples = sampleView.childSampleIdentifiers;
   }
 
@@ -220,7 +220,7 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
   // x: xF, y: yF});
   let vIdx = 1;
   let increment = yChildIncrement;
-  for (let i = 0; i < childSamples.length; i++) {
+  for (let i = 0; i < childSamples.length; i += 1) {
     const xC = xF + xIncrement;
     increment *= -1;
     const yC = yF + (vIdx * increment);
@@ -237,15 +237,16 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
       y: yC,
       symbolType: 'triangle',
     });
-    newLinks.push({ source: sampleView.sampleUuid, target: childSamples[i].sampleUuid, color: GRAPH_COLORS.LINKS });
-    // newNodes.push({id: displayName, nodeid: childSamples[i].sampleUuid, fill: "green",
-    // size: nodeSize, x: xC, y: yC});
-    // newLinks.push({source: centralSample, target: displayName});
+    newLinks.push({
+      source: sampleView.sampleUuid,
+      target: childSamples[i].sampleUuid,
+      color: GRAPH_COLORS.LINKS,
+    });
   }
 
   vIdx = 1;
   increment = yParentIncrement;
-  for (let i = 0; i < parentSamples.length; i++) {
+  for (let i = 0; i < parentSamples.length; i += 1) {
     const xP = xF - xIncrement;
     increment *= -1;
     const yP = yF + (vIdx * increment);
@@ -262,15 +263,16 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
       y: yP,
       symbolType: 'square',
     });
-    newLinks.push({ source: sampleView.sampleUuid, target: parentSamples[i].sampleUuid, color: GRAPH_COLORS.LINKS });
-    // newNodes.push({id: displayName, nodeid: parentSamples[i].sampleUuid, fill: "blue",
-    // size: nodeSize, x: xP, y: yP});
-    // newLinks.push({source: centralSample, target: displayName});
+    newLinks.push({
+      source: sampleView.sampleUuid,
+      target: parentSamples[i].sampleUuid,
+      color: GRAPH_COLORS.LINKS,
+    });
   }
 
   // mark previous focus sample in green to keep track of it
-  for (let i = 0; i < newNodes.length; i++) {
-    for (let bc = 0; bc < uuidBreadcrumbs.length; bc++) {
+  for (let i = 0; i < newNodes.length; i += 1) {
+    for (let bc = 0; bc < uuidBreadcrumbs.length; bc += 1) {
       if ((uuidBreadcrumbs.length !== 1) && (newNodes[i].id === uuidBreadcrumbs[bc])
         && newNodes[i].id !== sampleView.sampleUuid) {
         newNodes[i].color = GRAPH_COLORS.NODES.PREVIOUS;
@@ -285,48 +287,48 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
 
 export const createCsv = (samples) => {
   const headers = [
-    "sampleUuid",
-    "sampleClass",
-    "sampleTag",
-    "barcode",
-    "archiveGuid",
-    "parentSampleUuids",
-    "childSampleUuids",
+    'sampleUuid',
+    'sampleClass',
+    'sampleTag',
+    'barcode',
+    'archiveGuid',
+    'parentSampleUuids',
+    'childSampleUuids',
   ];
   const csvData = [];
-  if (typeof samples === "undefined" || samples === null || samples.length === 0) {
-    console.log("No Samples.  This should not happen.");
+  if (typeof samples === 'undefined' || samples === null || samples.length === 0) {
+    console.log('No Samples.  This should not happen.');
   } else {
-    for (let i = 0; i < samples.length; i++) {
+    for (let i = 0; i < samples.length; i += 1) {
       let sampleInfoRow = [];
       sampleInfoRow = Object.assign(sampleInfoRow, { sampleUuid: samples[i].sampleUuid });
       sampleInfoRow = Object.assign(sampleInfoRow, { sampleClass: samples[i].sampleClass });
       sampleInfoRow = Object.assign(sampleInfoRow, { sampleTag: samples[i].sampleTag });
 
-      if (typeof samples[i].barcode === "undefined" || samples[i].barcode === null) {
-        sampleInfoRow = Object.assign(sampleInfoRow, { barcode: "" });
+      if (typeof samples[i].barcode === 'undefined' || samples[i].barcode === null) {
+        sampleInfoRow = Object.assign(sampleInfoRow, { barcode: '' });
       } else {
         sampleInfoRow = Object.assign(sampleInfoRow, { barcode: samples[i].barcode });
       }
 
-      if (typeof samples[i].archiveGuid === "undefined" || samples[i].archiveGuid === null) {
-        sampleInfoRow = Object.assign(sampleInfoRow, { archiveGuid: "" });
+      if (typeof samples[i].archiveGuid === 'undefined' || samples[i].archiveGuid === null) {
+        sampleInfoRow = Object.assign(sampleInfoRow, { archiveGuid: '' });
       } else {
         sampleInfoRow = Object.assign(sampleInfoRow, { archiveGuid: samples[i].archiveGuid });
       }
 
       // handle parent samples
-      if (typeof samples[i].parentSampleIdentifiers === "undefined"
+      if (typeof samples[i].parentSampleIdentifiers === 'undefined'
         || samples[i].parentSampleIdentifiers === null) {
-        sampleInfoRow = Object.assign(sampleInfoRow, { parentSampleUuids: "" });
+        sampleInfoRow = Object.assign(sampleInfoRow, { parentSampleUuids: '' });
       } else {
         const parentSamples = samples[i].parentSampleIdentifiers;
         const parentUuids = [];
-        for (let p = 0; p < parentSamples.length; p++) {
+        for (let p = 0; p < parentSamples.length; p += 1) {
           parentUuids.push(parentSamples[p].sampleUuid);
         }
 
-        const parentStr = parentUuids.join(" ; ");
+        const parentStr = parentUuids.join(' ; ');
 
         const parentEntry = { parentSampleUuids: parentStr };
 
@@ -334,36 +336,36 @@ export const createCsv = (samples) => {
       }
 
       // handle child samples
-      if (typeof samples[i].childSampleIdentifiers === "undefined" || samples[i].childSampleIdentifiers === null) {
-        sampleInfoRow = Object.assign(sampleInfoRow, { childSampleUuids: "" });
+      if (typeof samples[i].childSampleIdentifiers === 'undefined' || samples[i].childSampleIdentifiers === null) {
+        sampleInfoRow = Object.assign(sampleInfoRow, { childSampleUuids: '' });
       } else {
         const childSamples = samples[i].childSampleIdentifiers;
         const childUuids = [];
-        for (let p = 0; p < childSamples.length; p++) {
+        for (let p = 0; p < childSamples.length; p += 1) {
           childUuids.push(childSamples[p].sampleUuid);
         }
 
-        const childStr = childUuids.join(" ; ");
+        const childStr = childUuids.join(' ; ');
 
         const childEntry = { childSampleUuids: childStr };
 
         sampleInfoRow = Object.assign(sampleInfoRow, childEntry);
       }
       // handle sample events
-      if (typeof samples[i].sampleEvents === "undefined" || samples[i].sampleEvents === null) {
+      if (typeof samples[i].sampleEvents === 'undefined' || samples[i].sampleEvents === null) {
         csvData.push(sampleInfoRow);
       } else {
         const events = samples[i].sampleEvents;
-        for (let e = 0; e < events.length; e++) {
-          if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
-            console.log("We have an event with no SMS Field Entries.  This should not happen.");
+        for (let e = 0; e < events.length; e += 1) {
+          if (typeof events[e].smsFieldEntries === 'undefined' || events[e].smsFieldEntries === null) {
+            console.log('We have an event with no SMS Field Entries.  This should not happen.');
           } else {
             const tableName = events[e].ingestTableName;
             if (!(headers.indexOf('table') > -1)) {
               headers.push('table');
             }
             let event = { table: tableName };
-            for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
+            for (let sms = 0; sms < events[e].smsFieldEntries.length; sms += 1) {
               const field = events[e].smsFieldEntries[sms].smsKey;
               if (!(headers.indexOf(field) > -1)) {
                 headers.push(field);

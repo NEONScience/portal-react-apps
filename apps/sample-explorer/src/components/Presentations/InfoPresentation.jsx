@@ -123,7 +123,8 @@ function InfoPresentation(props) {
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   In NEON data files, sample identifiers appear under field names ending in
-                  either <tt>ID</tt> or <tt>IDList</tt> (e.g. <tt>sampleID</tt>, <tt>sampleIDList</tt>).
+                  either <tt>ID</tt> or <tt>IDList </tt>
+                  (e.g. <tt>sampleID</tt>, <tt>sampleIDList</tt>).
                   In the case of a list, sample tags will be separated by pipes,
                   e.g. <tt>TALL_033.20200805.0604|TALL_034.20200805.0621</tt>. Lists are not
                   searchable as whole lists; each sample identifier in a list must be searched for

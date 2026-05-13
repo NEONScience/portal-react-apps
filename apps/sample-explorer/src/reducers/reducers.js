@@ -1,4 +1,7 @@
-import { SAMPLE_ID_LIST_EXCEPTION_MESSAGE } from "../util/constants";
+import fileDownload from 'js-file-download';
+import { Parser } from 'json2csv';
+
+import { SAMPLE_ID_LIST_EXCEPTION_MESSAGE } from '../util/constants';
 import {
   SET_QUERY_SAMPLE_TAG,
   SET_QUERY_SAMPLE_CLASS,
@@ -17,7 +20,7 @@ import {
   DOWNLOAD_FAILED,
   QUERY_SUCCESSFUL,
   QUERY_SAMPLE_FROM_URL,
-} from "../actions/actions";
+} from '../actions/actions';
 
 import {
   createCsv,
@@ -25,12 +28,9 @@ import {
   addBreadcrumb,
   createSampleGraph,
   createEventTable,
-} from "../util/appUtil";
-import { parseParams, applyParams, hasParams } from "../util/paramUtil";
-import { detectIdTypeParam, validateParamQuery } from "../util/queryUtil";
-
-const fileDownload = require("js-file-download");
-const { Parser } = require("json2csv");
+} from '../util/appUtil';
+import { parseParams, applyParams, hasParams } from '../util/paramUtil';
+import { detectIdTypeParam, validateParamQuery } from '../util/queryUtil';
 
 // eslint-disable-next-line default-param-last
 const reducer = (state = {}, action) => {
@@ -48,11 +48,11 @@ const reducer = (state = {}, action) => {
         };
       }
       const params = [
-        "idType",
-        "sampleTag",
-        "sampleClass",
-        "archiveGuid",
-        "barcode",
+        'idType',
+        'sampleTag',
+        'sampleClass',
+        'archiveGuid',
+        'barcode',
       ];
       let urlParamsUpdate = {
         ...state.urlParams,
@@ -137,20 +137,20 @@ const reducer = (state = {}, action) => {
       const errorString = action.error;
       let errorDisplay;
 
-      if (errorString.includes("400")) {
-        errorDisplay = "Bad Request. Make sure you have entered the required fields...";
-      } else if (errorString.includes("404")) {
-        if (errorString.includes("Sample Class is not supported")) {
-          errorDisplay = "Currently this Sample Class is not supported...";
+      if (errorString.includes('400')) {
+        errorDisplay = 'Bad Request. Make sure you have entered the required fields...';
+      } else if (errorString.includes('404')) {
+        if (errorString.includes('Sample Class is not supported')) {
+          errorDisplay = 'Currently this Sample Class is not supported...';
         } else {
-          errorDisplay = "Sample Not Found. You may have entered an incorrect identifier...";
+          errorDisplay = 'Sample Not Found. You may have entered an incorrect identifier...';
         }
-      } else if (errorString.includes("500")) {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff...";
+      } else if (errorString.includes('500')) {
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff...";
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       }
 
       const visitedSamples = {
@@ -165,10 +165,10 @@ const reducer = (state = {}, action) => {
           queryIsLoading: false,
           queryErrorStr: errorDisplay,
         },
-        sampleUuid: "",
-        previousSampleUuid: "",
+        sampleUuid: '',
+        previousSampleUuid: '',
         visitedSamples,
-        cacheControl: "",
+        cacheControl: '',
       };
       return update;
     }
@@ -184,16 +184,16 @@ const reducer = (state = {}, action) => {
     }
     case DOWNLOAD_VISITED_SAMPLES: {
       const visitedSamplesJson = JSON.stringify(action.samples);
-      let file = "neon-samples";
+      let file = 'neon-samples';
       if (action.samples.length === 1) {
         file = `${action.samples[0].sampleTag}-${action.samples[0].sampleClass}`;
       }
       const fileType = action.downloadType;
       switch (fileType) {
-        case "json":
+        case 'json':
           fileDownload(visitedSamplesJson, `${file}.json`);
           break;
-        case "csv": {
+        case 'csv': {
           const csv = createCsv(action.samples);
           fileDownload(csv, `${file}.csv`);
           break;
@@ -211,17 +211,17 @@ const reducer = (state = {}, action) => {
       } else {
         const sampleClassArr = action.payload.data.entries;
         sampleClasses = new Map();
-        for (let i = 0; i < sampleClassArr.length; i++) {
+        for (let i = 0; i < sampleClassArr.length; i += 1) {
           sampleClasses.set(sampleClassArr[i].key, sampleClassArr[i].value);
         }
       }
 
-      const headers = ["Sample Class", "Description"];
+      const headers = ['Sample Class', 'Description'];
       const csvData = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of sampleClasses) {
         let row = [];
-        row = Object.assign(row, { "Sample Class": key });
+        row = Object.assign(row, { 'Sample Class': key });
         row = Object.assign(row, { Description: value });
         csvData.push(row);
       }
@@ -229,7 +229,7 @@ const reducer = (state = {}, action) => {
       if (action.download) {
         const jsonParser = new Parser({ fields: headers });
         const csvResult = jsonParser.parse(csvData);
-        fileDownload(csvResult, "Supported_Sample_Classes.csv");
+        fileDownload(csvResult, 'Supported_Sample_Classes.csv');
       }
 
       update = {
@@ -252,12 +252,12 @@ const reducer = (state = {}, action) => {
     }
     case DOWNLOAD_SUCCESSFUL: {
       const downloadJson = JSON.stringify(action.json.data);
-      const fileName = "neon-samples";
+      const fileName = 'neon-samples';
       switch (action.downloadType) {
-        case "json":
+        case 'json':
           fileDownload(downloadJson, `${fileName}.json`);
           break;
-        case "csv": {
+        case 'csv': {
           const csv = createCsv(action.json.data.sampleViews);
           fileDownload(csv, `${fileName}.csv`);
           break;
@@ -267,8 +267,8 @@ const reducer = (state = {}, action) => {
       }
       update = {
         ...state,
-        downloadErrorStr: "",
-        cacheControl: "",
+        downloadErrorStr: '',
+        cacheControl: '',
       };
       return update;
     }
@@ -282,46 +282,46 @@ const reducer = (state = {}, action) => {
     case RESET_DOWNLOAD_STATE: {
       update = {
         ...state,
-        downloadErrorStr: "",
+        downloadErrorStr: '',
       };
       return update;
     }
     case DOWNLOAD_FAILED: {
       const errorString = action.error;
       let errorDisplay;
-      if (errorString.includes("400")) {
-        errorDisplay = "Bad Request. Make sure you have entered the required fields...";
-      } else if (errorString.includes("Degree of Sample Network search required.")) {
-        errorDisplay = "Degree of Sample Network search required.  1 - n";
-      } else if (errorString.includes("404")) {
-        if (errorString.includes("Sample Class is not supported")) {
-          errorDisplay = "Currently this Sample Class is not supported...";
+      if (errorString.includes('400')) {
+        errorDisplay = 'Bad Request. Make sure you have entered the required fields...';
+      } else if (errorString.includes('Degree of Sample Network search required.')) {
+        errorDisplay = 'Degree of Sample Network search required.  1 - n';
+      } else if (errorString.includes('404')) {
+        if (errorString.includes('Sample Class is not supported')) {
+          errorDisplay = 'Currently this Sample Class is not supported...';
         } else {
-          errorDisplay = "Sample Not Found. You may have entered an incorrect identifier...";
+          errorDisplay = 'Sample Not Found. You may have entered an incorrect identifier...';
         }
-      } else if (errorString.includes("500")) {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff...";
+      } else if (errorString.includes('500')) {
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff...";
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       }
 
       update = {
         ...state,
         downloadErrorStr: errorDisplay,
-        cacheControl: "",
+        cacheControl: '',
       };
       return update;
     }
     case QUERY_SUCCESSFUL: {
       const { data } = action.payload;
       // TODO: more than one match to sample query...
-      if (typeof data.sampleViews === "undefined" || data.sampleViews === null) {
+      if (typeof data.sampleViews === 'undefined' || data.sampleViews === null) {
         // eslint-disable-next-line no-console
-        console.log("No Sample Views.  This should not happen.");
+        console.log('No Sample Views.  This should not happen.');
       } else {
-        for (let i = 0; i < data.sampleViews.length; i++) {
+        for (let i = 0; i < data.sampleViews.length; i += 1) {
           const fieldDatum = checkFields(data.sampleViews[i]);
           const sampleUuid = fieldDatum.uuid;
           const sampleClass = fieldDatum.class;
@@ -336,7 +336,8 @@ const reducer = (state = {}, action) => {
             visitedSamples.sampleViews.push(data.sampleViews[i]);
           }
 
-          // check to make sure this is a new query.  if not new just return the existing information
+          // check to make sure this is a new query.
+          // if not new just return the existing information
           if (sampleUuid === previousSampleUuid) {
             update = {
               ...state,
@@ -377,7 +378,7 @@ const reducer = (state = {}, action) => {
             query: {
               ...state.query,
               queryIsLoading: false,
-              queryErrorStr: "success",
+              queryErrorStr: 'success',
               sampleClass,
             },
             search: {
@@ -396,7 +397,7 @@ const reducer = (state = {}, action) => {
             tableData,
             uuidBreadcrumbs,
             visitedSamples,
-            cacheControl: "",
+            cacheControl: '',
             graphData: {
               nodes: newNodes,
               links: newLinks,

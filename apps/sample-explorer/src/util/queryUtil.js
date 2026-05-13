@@ -1,21 +1,21 @@
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 export const QUERY_TYPE = {
-  UNSET: "unset",
-  SAMPLE_TAG: "sampleTag",
-  ARCHIVE_GUID: "archiveGuid",
-  BARCODE: "barcode",
+  UNSET: 'unset',
+  SAMPLE_TAG: 'sampleTag',
+  ARCHIVE_GUID: 'archiveGuid',
+  BARCODE: 'barcode',
 };
 
 export const getQueryTypeName = (queryType) => {
   switch (queryType) {
     case QUERY_TYPE.ARCHIVE_GUID:
-      return "Archive Guid";
+      return 'Archive Guid';
     case QUERY_TYPE.BARCODE:
-      return "Barcode";
+      return 'Barcode';
     case QUERY_TYPE.SAMPLE_TAG:
     default:
-      return "Sample Tag";
+      return 'Sample Tag';
   }
 };
 

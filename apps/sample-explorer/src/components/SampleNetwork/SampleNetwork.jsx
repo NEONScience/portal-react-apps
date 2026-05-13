@@ -4,18 +4,18 @@ import React, {
   useEffect,
   useCallback,
   useLayoutEffect,
-} from "react";
+} from 'react';
 import PropTypes from 'prop-types';
 
-import { Graph } from "react-d3-graph";
+import { Graph } from 'react-d3-graph';
 
 import makeStyles from '@mui/styles/makeStyles';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from 'portal-core-components/lib/util/typeUtil';
 
-import { GRAPH_COLORS } from "../../util/appUtil";
+import { GRAPH_COLORS } from '../../util/appUtil';
 
 const useStyles = makeStyles(() => ({
   container: {
@@ -105,14 +105,14 @@ function SampleNetwork(props) {
     nodeHighlightBehavior: true,
     node: {
       highlightFontSize: 12,
-      highlightFontWeight: "bold",
+      highlightFontWeight: 'bold',
       fontSize: 12,
-      highlightStrokeColor: "#000000",
-      labelProperty: "sampleName",
+      highlightStrokeColor: '#000000',
+      labelProperty: 'sampleName',
     },
     link: {
       color: GRAPH_COLORS.LINKS,
-      highlightColor: "#000000",
+      highlightColor: '#000000',
     },
   };
 

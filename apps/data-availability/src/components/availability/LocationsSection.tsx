@@ -125,10 +125,10 @@ const LocationsSection: React.FC = (): JSX.Element => {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     if (!selectedViewMode) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     let text = '';
     switch (selectedViewMode.value) {
@@ -184,7 +184,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 const LocationsSectionMemo = (): JSX.Element => (
   useMemo(
     () => (<LocationsSection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useLocationsSelector()],
   )
 );

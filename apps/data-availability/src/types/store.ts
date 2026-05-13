@@ -25,6 +25,7 @@ export interface BaseStoreAppState {
   focalSiteFetchState: AsyncState<Nullable<Site>>;
   focalSite: Nullable<Site>;
 
+  // eslint-disable-next-line max-len
   focalProductReleaseDoiFetchState: AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>;
   focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
   focalProductReleaseTombAvaFetchState: AsyncState<Nullable<DataProductReleaseTombAva>>;

@@ -130,6 +130,7 @@ const findAppliedRelease = (state: BaseStoreAppState): Nullable<Release> => {
   }
   if (existsNonEmpty(releases)) {
     const sortedReleases: Release[] = ReleaseService.sortReleases(releases);
+    // eslint-disable-next-line prefer-destructuring
     appliedRelease = sortedReleases[0];
   }
   return appliedRelease;
@@ -348,7 +349,7 @@ const AppStateSelector = {
     ): AvailabilitySectionState => ({
       focalProductFetchState: state.focalProductFetchState.asyncState,
       focalProduct: bundledProduct,
-      appliedRelease: appliedRelease,
+      appliedRelease,
       delineateAvaRelease: shouldDelineateAvaRelease(state.selectedRelease),
       fetchProductReleaseDoi: shouldFetchDoi(state),
       focalProductReleaseDoiFetchState: state.focalProductReleaseDoiFetchState.asyncState,

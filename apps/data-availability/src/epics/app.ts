@@ -279,6 +279,7 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   },
 });
 
+// eslint-disable-next-line max-len
 const fetchFocalProductReleaseDoiEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
@@ -317,6 +318,7 @@ const fetchFocalProductReleaseDoiEpic = EpicService.createEpicFromProps<AppActio
   },
 });
 
+// eslint-disable-next-line max-len
 const fetchFocalProductReleaseTombAvaEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,

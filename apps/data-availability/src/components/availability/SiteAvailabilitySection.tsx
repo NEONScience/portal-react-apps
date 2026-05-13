@@ -103,7 +103,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
       return skeleton;
     }
     if ((dataProducts.length <= 0) && isComplete) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     const availableProducts = dataProducts.length;
     const availableDates: AvailableDateRange = computeAvailableDateRangeSite(
@@ -162,7 +162,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
 const SiteAvailabilitySectionMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteAvailabilitySection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAvailabilitySelector()],
   )
 );

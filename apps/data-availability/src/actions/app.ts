@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Nullable } from 'portal-core-components/lib/types/core';
 import {
   DataProduct,

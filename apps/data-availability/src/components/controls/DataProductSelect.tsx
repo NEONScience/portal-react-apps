@@ -219,6 +219,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
             hasManyParents = true;
             parentCodeMessage = parentCodes.join(', ');
           } else {
+            // eslint-disable-next-line prefer-destructuring
             parentCodeMessage = parentCodes[0];
           }
           bundleMessage = `This data product (${value.productCode}) is
@@ -250,6 +251,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         (
+          // eslint-disable-next-line react/no-array-index-key
           <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
             {slice.text}
           </span>
@@ -258,7 +260,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     ));
     return (
       <li {...props} key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
-        {!bundle ? <React.Fragment /> : <BundleListItemIcon isSplit={hasManyParents} />}
+        {!bundle ? <>&nbsp;</> : <BundleListItemIcon isSplit={hasManyParents} />}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
@@ -301,7 +303,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            // @ts-ignore
+            // @ts-expect-error - verify type of option in order to access productScienceTeam
             const [secondaryMessage]: string = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
@@ -355,15 +357,15 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   const renderBundle = (): JSX.Element => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     const bundle = findBundle(releaseBundles, initialProduct.productCode);
     if (!bundle) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     const parent: DataProductParent|undefined = findForwardParent(bundle);
     if (!parent || !parent.forwardAvailability) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     let focalProductName = '';
     if (exists(focalBundleProduct)
@@ -443,7 +445,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 const DataProductSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<DataProductSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useDataProductSelectSelector()],
   )
 );

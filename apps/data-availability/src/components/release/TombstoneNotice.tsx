@@ -38,7 +38,7 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
   if (!(isTombstoned === true)
       || !exists(focalProductReleaseDoi)
       || (Array.isArray(focalProductReleaseDoi) && (focalProductReleaseDoi.length <= 0))) {
-    return <></>;
+    return <>&nbsp;</>;
   }
   let citationReleases: DataProductReleaseDoi[] = [];
   if (!Array.isArray(focalProductReleaseDoi)) {

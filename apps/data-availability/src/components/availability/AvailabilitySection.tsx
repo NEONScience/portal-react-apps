@@ -87,6 +87,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
   const isLoading = (focalProductFetchState === AsyncStateType.IDLE)
     || (focalProductFetchState === AsyncStateType.WORKING)
     || ((focalProductReleaseDoiFetchState === AsyncStateType.WORKING) || fetchProductReleaseDoi)
+    // eslint-disable-next-line max-len
     || ((focalProductReleaseTombAvaFetchState === AsyncStateType.WORKING) || fetchProductReleaseTombAva);
   const isComplete = ((focalProductFetchState === AsyncStateType.FULLFILLED)
       || (focalProductFetchState === AsyncStateType.FAILED))
@@ -169,7 +170,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<React.Fragment />);
+      return (<>&nbsp;</>);
     }
     const availableSites = siteCodes.length;
     const availableDates: AvailableDateRange = isTombstoned
@@ -240,7 +241,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
 const AvailabilitySectionMemo = (): JSX.Element => (
   useMemo(
     () => (<AvailabilitySection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAvailabilitySelector()],
   )
 );

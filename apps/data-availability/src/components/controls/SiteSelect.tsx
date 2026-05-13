@@ -125,6 +125,20 @@ interface SiteSelectDataOption extends SiteSelectOption {
   stateName: string;
 }
 
+const transformOption = (
+  value: SiteSelectOption,
+  states: Record<string, unknown>,
+  domains: Record<string, unknown>,
+): SiteSelectDataOption => ({
+  ...value,
+  stateName: exists(states[value.stateCode])
+    ? (states[value.stateCode] as Record<string, unknown>).name as string
+    : value.stateCode,
+  domainName: exists(domains[value.domainCode])
+    ? (domains[value.domainCode] as Record<string, unknown>).name as string
+    : value.domainCode,
+});
+
 const transformOptions = (
   sites: SiteSelectOption[],
   states: Record<string, unknown>,
@@ -140,20 +154,6 @@ const transformOptions = (
       a.stateName.localeCompare(b.stateName)
     ))
 );
-
-const transformOption = (
-  value: SiteSelectOption,
-  states: Record<string, unknown>,
-  domains: Record<string, unknown>,
-): SiteSelectDataOption => ({
-  ...value,
-  stateName: exists(states[value.stateCode])
-    ? (states[value.stateCode] as Record<string, unknown>).name as string
-    : value.stateCode,
-  domainName: exists(domains[value.domainCode])
-    ? (domains[value.domainCode] as Record<string, unknown>).name as string
-    : value.domainCode,
-});
 
 const SiteSelect: React.FC = (): JSX.Element => {
   const state: SiteSelectState = useSiteSelectSelector();
@@ -236,6 +236,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         (
+          // eslint-disable-next-line react/no-array-index-key
           <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
             {slice.text}
           </span>
@@ -247,7 +248,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
         <ListItemText
           primary={(<div>{renderSlices(primarySlice)}</div>)}
           secondary={(
-            <React.Fragment>
+            <>
               <Typography variant="caption">
                 {renderSlices(codeSlice)}
                 {' - Domain '}
@@ -258,7 +259,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 {'Lat/Lon: '}
                 {renderSlices(locSlice)}
               </Typography>
-            </React.Fragment>
+            </>
           )}
         />
       </li>
@@ -416,7 +417,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 const SiteSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useSiteSelectSelector()],
   )
 );

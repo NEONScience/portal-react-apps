@@ -182,7 +182,7 @@ const App: React.FC = (): JSX.Element => {
     { name: title },
   ];
   const sidebarContent: JSX.Element = (
-    <React.Fragment>
+    <>
       <SidebarFilter
         title="View By:"
         skeleton={isLoading}
@@ -216,7 +216,7 @@ const App: React.FC = (): JSX.Element => {
           handleChangeCb(selectedProduct, selectedSite, nextRelease, releaseBundles);
         }}
       />
-    </React.Fragment>
+    </>
   );
   let sidebarLinks = [];
   switch (selectedViewMode.value) {
@@ -361,7 +361,7 @@ const App: React.FC = (): JSX.Element => {
 const AppMemo = (): JSX.Element => (
   useMemo(
     () => (<App />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAppSelector()],
   )
 );

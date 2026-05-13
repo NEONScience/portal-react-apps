@@ -34,7 +34,8 @@ export const resolveAny = (
 
 export const isEmptyObject = (o: any): boolean => {
   if (!exists(o)) return false;
-  // eslint-disable-next-line guard-for-in
+
+  // eslint-disable-next-line guard-for-in, no-restricted-syntax, no-unreachable-loop
   for (const i in o) return false;
   return (o.constructor === Object);
 };

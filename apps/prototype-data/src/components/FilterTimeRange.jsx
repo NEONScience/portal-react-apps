@@ -57,6 +57,7 @@ const FilterTimeRange = () => {
       currentRange[0] !== activelySlidingTimeRange[0]
         || currentRange[1] !== activelySlidingTimeRange[1]
     ) && !activelySliding) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActivelySlidingTimeRange([...currentRange]);
     }
   }, [

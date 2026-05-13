@@ -43,6 +43,7 @@ const FilterSearch = (props) => {
 
   const filterKey = FILTER_KEYS.SEARCH;
 
+  // eslint-disable-next-line react-hooks/refs
   const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
     if (applyValueToInput) {
       searchRef.current.querySelector('input').value = searchTerm;

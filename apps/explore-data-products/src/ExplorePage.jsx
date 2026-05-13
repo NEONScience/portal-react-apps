@@ -79,6 +79,7 @@ const ExplorePage = (props) => {
 
   // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
+  // eslint-disable-next-line react-hooks/refs
   const scrollHandler = debounce(() => {
     if (productOrder.length <= scrollCutoff) { return; }
     // Y-offset for the TOP of the area in view

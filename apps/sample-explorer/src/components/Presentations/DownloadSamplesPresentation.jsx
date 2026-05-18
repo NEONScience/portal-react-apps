@@ -18,6 +18,7 @@ import CancelIcon from '@material-ui/icons/Close';
 import DownloadIcon from '@material-ui/icons/SaveAlt';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 const DownloadSamplesPresentation = (props) => {
@@ -31,6 +32,10 @@ const DownloadSamplesPresentation = (props) => {
       sampleViews: visitedSampleViews,
     },
   } = props;
+
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  // Check preconditions for initial status
+  const { canAccessData } = neonContextSessionState;
 
   const degreeIsValid = d => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
 
@@ -112,11 +117,14 @@ const DownloadSamplesPresentation = (props) => {
       if (state.degreeType === 'chosen') {
         return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
       } else {
+        const headers = {
+          ...neonContextSessionState.sessionHeaders
+        };
         const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
           + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
           + `&sampleClass=${sampleList[0].sampleClass}`
           + `&degree=${state.degree}`;
-        return onDownloadClick(state.downloadType, url, cacheControl);
+        return onDownloadClick(state.downloadType, url, cacheControl, headers);
       }
     }
   };
@@ -267,7 +275,7 @@ const DownloadSamplesPresentation = (props) => {
           <Button
             color="primary"
             variant="contained"
-            disabled={!state.canDownload}
+            disabled={!state.canDownload || !canAccessData}
             onClick={() => {
               executeDownload();
               dispatch({

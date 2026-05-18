@@ -146,11 +146,11 @@ const reducer = (state = {}, action) => {
         }
 
       } else if (errorString.includes("500")) {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff..."
+        errorDisplay = "Internal Server Error"
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff..."
+        errorDisplay = "Internal Server Error"
       }
 
       let visitedSamples = {
@@ -315,7 +315,7 @@ const reducer = (state = {}, action) => {
       let data = action.payload.data;
       //TODO: more than one match to sample query...
       if (typeof data.sampleViews === "undefined" || data.sampleViews === null) {
-        console.log("No Sample Views.  This should not happen.")
+        console.log("No Sample Views")
       } else {
         for (let i = 0; i < data.sampleViews.length; i++) {
 
@@ -337,7 +337,11 @@ const reducer = (state = {}, action) => {
           if (sampleUuid === previousSampleUuid) {
             update = {
               ...state,
-              visitedSamples: visitedSamples
+              visitedSamples: visitedSamples,
+              query: {
+                ...state.query,
+                queryIsLoading: false,
+              },
             }
             return update;
           } else {

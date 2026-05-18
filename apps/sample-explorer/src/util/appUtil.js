@@ -86,7 +86,7 @@ export const createEventTable = (sampleView, tableDefinition) => {
   let fields = [];
   for (let e = 0; e < events.length; e++) {
     if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
-      console.log("We have an event with no SMS Field Entries.  This should not happen.")
+      console.log("We have an event with no SMS Field Entries")
     } else {
       for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
         let smsTitle = events[e].smsFieldEntries[sms].smsKey;
@@ -123,7 +123,7 @@ export const createEventTable = (sampleView, tableDefinition) => {
         let found = false;
         if (typeof events[e].smsFieldEntries === "undefined" ||
           events[e].smsFieldEntries === null) {
-          console.log("We have an event with no SMS Field Entries.  This should not happen.")
+          console.log("We have an event with no SMS Field Entries")
         } else {
 
           for (let sms = 0; sms < events[e].smsFieldEntries.length; sms++) {
@@ -294,7 +294,7 @@ export const createCsv = (samples) => {
   ];
   let csvData = [];
   if (typeof samples === "undefined" || samples === null || samples.length === 0) {
-    console.log("No Samples.  This should not happen.")
+    console.log("No Samples")
   } else {
     for (let i = 0; i < samples.length; i++) {
 
@@ -356,7 +356,7 @@ export const createCsv = (samples) => {
         let events = samples[i].sampleEvents;
         for (let e = 0; e < events.length; e++) {
           if (typeof events[e].smsFieldEntries === "undefined" || events[e].smsFieldEntries === null) {
-            console.log("We have an event with no SMS Field Entries.  This should not happen.")
+            console.log("We have an event with no SMS Field Entries")
           } else {
             let tableName = events[e].ingestTableName;
             if (!(headers.indexOf('table') > -1)) {

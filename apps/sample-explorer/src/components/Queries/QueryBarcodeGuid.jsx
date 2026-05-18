@@ -17,7 +17,6 @@ const QueryBarcodeGuid = (props) => {
     onSetQueryArchiveGuid,
   } = props;
 
-  console.log(queryType);
   let currentValue = '';
   switch (queryType) {
     case QUERY_TYPE.ARCHIVE_GUID:

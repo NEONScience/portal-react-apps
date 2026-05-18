@@ -3,6 +3,7 @@ import React from "react";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 import SampleNetwork from "../SampleNetwork/SampleNetwork";
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
 const SampleGraphPresentation = (props) => {
   const { onQueryClick, graphData } = props;
   const classes = useStyles(Theme);
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
 
   return (
     <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-graph-section">
@@ -73,7 +75,15 @@ const SampleGraphPresentation = (props) => {
           </Typography>
         </div>
       </div>
-      <SampleNetwork onNodeClick={onQueryClick} graphData={graphData} />
+      <SampleNetwork
+        graphData={graphData}
+        onNodeClick={(url) => {
+          const headers = {
+            ...neonContextSessionState.sessionHeaders
+          };
+          onQueryClick(url, null, headers);
+        }}
+      />
     </div>
   );
 };

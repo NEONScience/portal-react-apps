@@ -12,8 +12,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onQueryClick: (url, cacheControl) => {
-      dispatch(querySample(url, cacheControl));
+    onQueryClick: (url, cacheControl, headers) => {
+      dispatch(querySample(url, cacheControl, headers));
     }
   };
 }

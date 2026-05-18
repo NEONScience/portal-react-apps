@@ -62,7 +62,6 @@ ENTRYPOINT exec ./server \
   -app-web-host=$REACT_APP_NEON_WEB_HOST \
   -app-api-token=$REACT_APP_NEON_SERVICE_API_TOKEN \
   -app-auth-silent-type=$REACT_APP_NEON_AUTH_SILENT_TYPE \
-  -app-cookie-domain=$PORTAL_SERVER_APP_COOKIE_DOMAIN \
   -metadata-type=$PORTAL_WEB_SERVER_METADATA_TYPE \
   -metadata-url=$PORTAL_APP_METADATA_URL \
   -metadata-enforce-release-regex=$METADATA_ENFORCE_RELEASE_REGEX \

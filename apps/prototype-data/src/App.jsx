@@ -1,6 +1,7 @@
 import React from 'react';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
+import NeonThemeProvider from 'portal-core-components/lib/components/NeonPage/NeonThemeProvider';
 
 import PrototypeContext from './PrototypeContext';
 import PrototypePage from './PrototypePage';
@@ -9,7 +10,9 @@ export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <PrototypeContext.Provider>
-        <PrototypePage />
+        <NeonThemeProvider>
+          <PrototypePage />
+        </NeonThemeProvider>
       </PrototypeContext.Provider>
     </NeonRouter>
   );

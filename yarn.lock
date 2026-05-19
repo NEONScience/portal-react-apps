@@ -8272,7 +8272,7 @@ __metadata:
 
 "portal-core-components@github:NEONScience/portal-core-components#next":
   version: 3.0.0-next
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=23982bdaa452b620ae88497465e8b3ffb5d71a02"
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=b2b1ec6c621824a715fb9ef1c207b0904d3d8201"
   dependencies:
     "@emotion/react": "npm:^11.14.0"
     "@emotion/styled": "npm:^11.14.1"
@@ -8365,7 +8365,7 @@ __metadata:
       optional: true
     prettier:
       optional: true
-  checksum: 10c0/f7e985ddc52b6e4ed4e60225cef56d15dafd22b510ae329931424788aaae2030bb50d1cd1916856f934163ffb3e94366273499ac392cfc04402efe85ee0010c5
+  checksum: 10c0/699a92469b22b43fdcdf167dc89882990c9b1622df474b0fd3f99e99c7871856679c0ba41257286b66f8ae83910ae7c5a297925bca5df3ae6dc98deb20e0f8e0
   languageName: node
   linkType: hard
 

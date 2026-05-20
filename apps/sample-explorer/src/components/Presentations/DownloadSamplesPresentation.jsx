@@ -34,7 +34,6 @@ const DownloadSamplesPresentation = (props) => {
   } = props;
 
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
-  // Check preconditions for initial status
   const { canAccessData } = neonContextSessionState;
 
   const degreeIsValid = d => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
@@ -140,10 +139,11 @@ const DownloadSamplesPresentation = (props) => {
             dialogOpen: true,
           });
         }}
+        disabled={!canAccessData}
         style={{ marginBottom: Theme.spacing(3), whiteSpace: 'nowrap' }}
         data-selenium="download-samples-button"
       >
-        Download Sample(s)
+        {canAccessData ? 'Download Sample(s)' : 'Login Required' }
         <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
       </Button>
       <Dialog

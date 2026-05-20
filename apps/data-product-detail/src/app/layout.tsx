@@ -1,10 +1,19 @@
 /* eslint-disable @next/next/next-script-for-ga */
-/* eslint-disable @next/next/no-css-tags */
 /* eslint-disable @next/next/no-sync-scripts */
 /* eslint-disable react/no-danger */
 
 import React from 'react';
 import type { Metadata } from 'next';
+
+import './assets/css/drupal-fonts.css';
+
+// DO NOT REMOVE OR EDIT THIS LINE WITHOUT UPDATING
+// scripts/sync-assets.js
+// This hash will be updated whenever fresh cached
+// assets are fetched.
+// -----------------------------------------------------------------------------
+const DRUPAL_THEME_CSS_ASSET_HASH = 'c12ee9878c2546595e186d8f3917da9c';
+// -----------------------------------------------------------------------------
 
 export const metadata: Metadata = {
   title: 'NEON | Data Product',
@@ -20,18 +29,13 @@ export default function RootLayout({
       <head>
         <title>NEON | Data Product</title>
         <meta name="theme-color" content="#002c77" />
-        <link rel="manifest" href="data-products/manifest.json" />
-        <link rel="shortcut icon" href="data-products/favicon.ico?201912" />
+        <link rel="manifest" href="/data-products/manifest.json" />
+        <link rel="shortcut icon" href="/data-products/favicon.ico?201912" />
         <link rel="preconnect" href="https://www.neonscience.org" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          data-meta="drupal-fonts"
-          href="data-products/assets/css/drupal-fonts.css"
-        />
-        <link
-          rel="stylesheet"
           data-meta="drupal-theme"
-          href="data-products/assets/css/drupal-theme.c12ee9878c2546595e186d8f3917da9c.min.css"
+          href={`/data-products/assets/css/drupal-theme.${DRUPAL_THEME_CSS_ASSET_HASH}.min.css`}
         />
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         {/* <!-- jQuery needed for drupal header --> */}

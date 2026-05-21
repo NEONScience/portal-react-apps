@@ -4,6 +4,7 @@ import React, {
   useContext,
   useReducer,
   useEffect,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 
@@ -412,8 +413,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
-// eslint-disable-next-line default-param-last
-const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) => {
+const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release = null) => {
   const product = getCurrentProductFromState(state, true);
   if (!product || !Array.isArray(product.siteCodes)) { return null; }
   let latestAvailableMonth = null;
@@ -498,8 +498,8 @@ const getProductDoiInfo = (state = DEFAULT_STATE) => {
           }
         });
       } else {
-        // eslint-disable-next-line prefer-destructuring
-        appliedSingleDoiProductCode = bundle.doiProductCode[0];
+        const firstDoiProductCode = bundle.doiProductCode[0];
+        appliedSingleDoiProductCode = firstDoiProductCode;
         if (exists(productReleaseDois[currentRelease])) {
           appliedProductReleaseDoi = productReleaseDois[currentRelease];
         }
@@ -801,15 +801,14 @@ const reducer = (state, action) => {
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseFailed':
-      /* eslint-disable max-len */
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
       newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}; release ${action.release}`;
-      /* eslint-enable max-len */
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
-      // eslint-disable-next-line max-len
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
+      newState
+        .fetches
+        .bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
       if (!newState.data.bundleParentReleases[action.bundleParent]) {
         newState.data.bundleParentReleases[action.bundleParent] = {};
       }
@@ -1117,9 +1116,9 @@ const Provider = (inProps) => {
   /**
      Render
   */
+  const contextValue = useMemo(() => [state, dispatch], [state, dispatch]);
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <Context.Provider value={[state, dispatch]}>
+    <Context.Provider value={contextValue}>
       {children}
     </Context.Provider>
   );

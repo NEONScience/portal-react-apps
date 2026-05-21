@@ -22,7 +22,7 @@ import { AnyObject } from 'portal-core-components/lib/types/core';
 import AppStateSelector from '../../selectors/app';
 import { SiteAvailabilitySectionState } from '../states/AppStates';
 import { Site } from '../../types/store';
-import { useStyles } from '../../styles/overlay';
+import useStyles from '../../styles/overlay';
 import { StylesHook } from '../../types/styles';
 import {
   AvailableDateRange,
@@ -33,24 +33,22 @@ const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
   () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    sidebarDivider: {
-      margin: muiTheme.spacing(3, 0),
-    },
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-    infoTextContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-    summaryStyle: {
-      color: muiTheme.palette.grey[500],
-      lineHeight: '1em',
-      marginBottom: muiTheme.spacing(1),
-    },
-  })) as StylesHook;
+const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+  sidebarDivider: {
+    margin: muiTheme.spacing(3, 0),
+  },
+  infoContainer: {
+    margin: muiTheme.spacing(0, 0, 2, 0),
+  },
+  infoTextContainer: {
+    margin: muiTheme.spacing(0, 0, 2, 0),
+  },
+  summaryStyle: {
+    color: muiTheme.palette.grey[500],
+    lineHeight: '1em',
+    marginBottom: muiTheme.spacing(1),
+  },
+})) as StylesHook;
 
 const useAvailabilitySelector = (): SiteAvailabilitySectionState => useSelector(
   AppStateSelector.siteAvailability,
@@ -162,7 +160,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
 const SiteAvailabilitySectionMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteAvailabilitySection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [useAvailabilitySelector()],
   )
 );

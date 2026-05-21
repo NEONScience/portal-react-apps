@@ -130,8 +130,8 @@ const findAppliedRelease = (state: BaseStoreAppState): Nullable<Release> => {
   }
   if (existsNonEmpty(releases)) {
     const sortedReleases: Release[] = ReleaseService.sortReleases(releases);
-    // eslint-disable-next-line prefer-destructuring
-    appliedRelease = sortedReleases[0];
+    const firstRelease: Release = sortedReleases[0];
+    appliedRelease = firstRelease;
   }
   return appliedRelease;
 };
@@ -373,10 +373,9 @@ const AppStateSelector = {
             : [(state.focalSite as Site).siteCode];
           break;
         case 'DataProduct':
-        default:
+        default: {
           fetchState = state.focalProductFetchState.asyncState;
           focalProduct = findFocalProduct(state);
-          // eslint-disable-next-line no-case-declarations
           const productSiteCodes: Record<string, unknown>[] = !exists(focalProduct)
             ? new Array<Record<string, unknown>>()
             : (focalProduct as DataProduct).siteCodes;
@@ -396,6 +395,7 @@ const AppStateSelector = {
               }
             }
           }
+        }
           break;
       }
       const isFocalProductReleaseWorking = (

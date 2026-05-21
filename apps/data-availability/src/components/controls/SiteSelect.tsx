@@ -44,77 +44,75 @@ import { AppActionCreator } from '../../actions/app';
 import { SiteSelectOption, SiteSelectState } from '../states/AppStates';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    section: {
-      marginBottom: muiTheme.spacing(4),
-    },
-    sectionTitle: {
-      fontWeight: 500,
-      marginBottom: muiTheme.spacing(2),
-    },
-    sectionSubtitle: {
-      marginBottom: muiTheme.spacing(2),
-    },
-    infoCallout: {
-      marginTop: muiTheme.spacing(3),
-    },
-    skeleton: {
-      marginBottom: '16px',
-    },
-    cardSelectedSite: {
-      marginBottom: muiTheme.spacing(2),
-      border: '1px solid #d7d9d9',
-    },
-    cardContentSelectedSite: {
-      padding: muiTheme.spacing(2),
-    },
-    autocompleteInput: {
-      padding: `${muiTheme.spacing(2)} !important`,
-    },
-    autocompletePopupOpen: {
-      transform: 'rotate(0) !important',
-    },
-    autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)} !important`,
-      paddingTop: '6px !important',
-    },
-    autocompleteLabelShrink: {
-      transform: 'translate(6px, -9px) scale(0.75) !important',
-    },
-    siteName: {
-      fontWeight: 600,
-    },
-    siteCodeChip: {
-      color: muiTheme.palette.grey[400],
-      border: `1px solid ${muiTheme.palette.grey[400]}`,
-      backgroundColor: muiTheme.palette.grey[100],
-      fontWeight: 600,
-    },
-    siteDetailsRow: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'space-between',
-    },
-    siteDetailsColumn: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-      flexWrap: 'wrap',
-    },
-    siteDetail: {
-      marginRight: Theme.spacing(4),
-    },
-    startFlex: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-    },
-    searchHighlight: {
-      fontWeight: 700,
-    },
-  })) as StylesHook;
+const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+  section: {
+    marginBottom: muiTheme.spacing(4),
+  },
+  sectionTitle: {
+    fontWeight: 500,
+    marginBottom: muiTheme.spacing(2),
+  },
+  sectionSubtitle: {
+    marginBottom: muiTheme.spacing(2),
+  },
+  infoCallout: {
+    marginTop: muiTheme.spacing(3),
+  },
+  skeleton: {
+    marginBottom: '16px',
+  },
+  cardSelectedSite: {
+    marginBottom: muiTheme.spacing(2),
+    border: '1px solid #d7d9d9',
+  },
+  cardContentSelectedSite: {
+    padding: muiTheme.spacing(2),
+  },
+  autocompleteInput: {
+    padding: `${muiTheme.spacing(2)} !important`,
+  },
+  autocompletePopupOpen: {
+    transform: 'rotate(0) !important',
+  },
+  autocompleteLabel: {
+    paddingLeft: `${muiTheme.spacing(1)} !important`,
+    paddingTop: '6px !important',
+  },
+  autocompleteLabelShrink: {
+    transform: 'translate(6px, -9px) scale(0.75) !important',
+  },
+  siteName: {
+    fontWeight: 600,
+  },
+  siteCodeChip: {
+    color: muiTheme.palette.grey[400],
+    border: `1px solid ${muiTheme.palette.grey[400]}`,
+    backgroundColor: muiTheme.palette.grey[100],
+    fontWeight: 600,
+  },
+  siteDetailsRow: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'space-between',
+  },
+  siteDetailsColumn: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  siteDetail: {
+    marginRight: Theme.spacing(4),
+  },
+  startFlex: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  searchHighlight: {
+    fontWeight: 700,
+  },
+})) as StylesHook;
 
 const useSiteSelectSelector = (): SiteSelectState => useSelector(
   AppStateSelector.siteSelect,
@@ -207,8 +205,14 @@ const SiteSelect: React.FC = (): JSX.Element => {
         handleChangeCb(initialSite, selectedRelease?.release);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch, isComplete],
+    [
+      dispatch,
+      isComplete,
+      hasSite,
+      initialSite,
+      selectedRelease,
+      handleChangeCb,
+    ],
   );
 
   const renderOption = (
@@ -232,11 +236,14 @@ const SiteSelect: React.FC = (): JSX.Element => {
       `${value.siteLatitude}, ${value.siteLongitude}`,
       renderOptionState.inputValue,
     );
+    const makeKey = (text: string): string => `key-${value.siteCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         (
-          // eslint-disable-next-line react/no-array-index-key
-          <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
+          <span
+            key={makeKey(slice.text)}
+            className={slice.found ? classes.searchHighlight : undefined}
+          >
             {slice.text}
           </span>
         )
@@ -416,7 +423,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 const SiteSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [useSiteSelectSelector()],
   )
 );

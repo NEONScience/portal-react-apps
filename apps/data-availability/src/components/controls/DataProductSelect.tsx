@@ -48,71 +48,69 @@ import { DataProductSelectOption, DataProductSelectState } from '../states/AppSt
 import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    section: {
-      marginBottom: muiTheme.spacing(4),
-    },
-    sectionTitle: {
-      fontWeight: 500,
-      marginBottom: muiTheme.spacing(2),
-    },
-    sectionSubtitle: {
-      marginBottom: muiTheme.spacing(2),
-    },
-    infoCallout: {
-      marginTop: muiTheme.spacing(3),
-    },
-    skeleton: {
-      marginBottom: '16px',
-    },
-    callout: {
-      margin: muiTheme.spacing(0.5, 0, 3, 0),
-      backgroundColor: '#ffffff',
-      borderColor: '#d7d9d9',
-    },
-    calloutIcon: {
-      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-      marginRight: muiTheme.spacing(2),
-    },
-    listItemTextProduct: {
-      display: 'inline-block',
-      whiteSpace: 'normal',
-    },
-    cardSelectedProduct: {
-      marginBottom: muiTheme.spacing(2),
-      border: '1px solid #d7d9d9',
-    },
-    cardContentSelectedProduct: {
-      padding: muiTheme.spacing(2),
-    },
-    autocompleteInput: {
-      padding: `${muiTheme.spacing(2)} !important`,
-    },
-    autocompletePopupOpen: {
-      transform: 'rotate(0) !important',
-    },
-    autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)} !important`,
-      paddingTop: '6px !important',
-    },
-    autocompleteLabelShrink: {
-      transform: 'translate(6px, -9px) scale(0.75) !important',
-    },
-    productName: {
-      fontWeight: 600,
-    },
-    productCodeChip: {
-      color: muiTheme.palette.grey[400],
-      border: `1px solid ${muiTheme.palette.grey[400]}`,
-      backgroundColor: muiTheme.palette.grey[100],
-      fontWeight: 600,
-    },
-    searchHighlight: {
-      fontWeight: 700,
-    },
-  })) as StylesHook;
+const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+  section: {
+    marginBottom: muiTheme.spacing(4),
+  },
+  sectionTitle: {
+    fontWeight: 500,
+    marginBottom: muiTheme.spacing(2),
+  },
+  sectionSubtitle: {
+    marginBottom: muiTheme.spacing(2),
+  },
+  infoCallout: {
+    marginTop: muiTheme.spacing(3),
+  },
+  skeleton: {
+    marginBottom: '16px',
+  },
+  callout: {
+    margin: muiTheme.spacing(0.5, 0, 3, 0),
+    backgroundColor: '#ffffff',
+    borderColor: '#d7d9d9',
+  },
+  calloutIcon: {
+    color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
+    marginRight: muiTheme.spacing(2),
+  },
+  listItemTextProduct: {
+    display: 'inline-block',
+    whiteSpace: 'normal',
+  },
+  cardSelectedProduct: {
+    marginBottom: muiTheme.spacing(2),
+    border: '1px solid #d7d9d9',
+  },
+  cardContentSelectedProduct: {
+    padding: muiTheme.spacing(2),
+  },
+  autocompleteInput: {
+    padding: `${muiTheme.spacing(2)} !important`,
+  },
+  autocompletePopupOpen: {
+    transform: 'rotate(0) !important',
+  },
+  autocompleteLabel: {
+    paddingLeft: `${muiTheme.spacing(1)} !important`,
+    paddingTop: '6px !important',
+  },
+  autocompleteLabelShrink: {
+    transform: 'translate(6px, -9px) scale(0.75) !important',
+  },
+  productName: {
+    fontWeight: 600,
+  },
+  productCodeChip: {
+    color: muiTheme.palette.grey[400],
+    border: `1px solid ${muiTheme.palette.grey[400]}`,
+    backgroundColor: muiTheme.palette.grey[100],
+    fontWeight: 600,
+  },
+  searchHighlight: {
+    fontWeight: 700,
+  },
+})) as StylesHook;
 
 const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
   AppStateSelector.dataProductSelect,
@@ -182,8 +180,15 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         handleChangeCb(initialProduct, parentBundle, selectedRelease?.release);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch, isComplete],
+    [
+      dispatch,
+      isComplete,
+      hasProduct,
+      initialProduct,
+      releaseBundles,
+      selectedRelease,
+      handleChangeCb,
+    ],
   );
 
   const getOptionsDisabled = (value: DataProductSelectOption): boolean => {
@@ -214,13 +219,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         if (parentCodes.length <= 0) {
           bundleMessage = `This data product (${value.productCode}) is bundled.`;
         } else {
-          let parentCodeMessage;
+          let [parentCodeMessage] = parentCodes;
           if (parentCodes.length > 1) {
             hasManyParents = true;
             parentCodeMessage = parentCodes.join(', ');
-          } else {
-            // eslint-disable-next-line prefer-destructuring
-            parentCodeMessage = parentCodes[0];
           }
           bundleMessage = `This data product (${value.productCode}) is
             bundled into ${parentCodeMessage}`;
@@ -248,11 +250,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       secondaryMessage,
       renderOptionState.inputValue,
     );
+    const makeKey = (text: string): string => `key-${value.productCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         (
-          // eslint-disable-next-line react/no-array-index-key
-          <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
+          <span
+            key={makeKey(slice.text)}
+            className={slice.found ? classes.searchHighlight : undefined}
+          >
             {slice.text}
           </span>
         )
@@ -445,7 +450,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 const DataProductSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<DataProductSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [useDataProductSelectSelector()],
   )
 );

@@ -24,7 +24,7 @@ import { AnyObject, Nullable, UnknownRecord } from 'portal-core-components/lib/t
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
 import { LocationsSectionState } from '../states/AppStates';
-import { useStyles } from '../../styles/overlay';
+import useStyles from '../../styles/overlay';
 import { StylesHook } from '../../types/styles';
 import { Site } from '../../types/store';
 import { AppActionCreator } from '../../actions/app';
@@ -33,16 +33,14 @@ const SiteMap: React.ExoticComponent<AnyObject> = React.lazy(
   () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 4, 0),
-    },
-    infoTextContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-  })) as StylesHook;
+const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+  infoContainer: {
+    margin: muiTheme.spacing(0, 0, 4, 0),
+  },
+  infoTextContainer: {
+    margin: muiTheme.spacing(0, 0, 2, 0),
+  },
+})) as StylesHook;
 
 const useLocationsSelector = (): LocationsSectionState => useSelector(
   AppStateSelector.locations,
@@ -184,7 +182,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 const LocationsSectionMemo = (): JSX.Element => (
   useMemo(
     () => (<LocationsSection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [useLocationsSelector()],
   )
 );

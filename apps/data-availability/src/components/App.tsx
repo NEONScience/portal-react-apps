@@ -47,33 +47,31 @@ import {
 } from '../types/store';
 import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
-import { useContextReleases } from '../hooks/useContextReleases';
+import useContextReleases from '../hooks/useContextReleases';
 import { determineBundle, findBundle, findForwardParent } from '../util/bundleUtil';
 
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    sidebarDivider: {
-      margin: muiTheme.spacing(3, 0),
-    },
-    introTextContainer: {
-      margin: muiTheme.spacing(0, 0, 3, 0),
-    },
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 4, 0),
-    },
-    callout: {
-      margin: muiTheme.spacing(0.5, 0, 3, 0),
-      backgroundColor: '#ffffff',
-      borderColor: '#d7d9d9',
-    },
-    calloutIcon: {
-      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-      marginRight: muiTheme.spacing(2),
-    },
-  })) as StylesHook;
+const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+  sidebarDivider: {
+    margin: muiTheme.spacing(3, 0),
+  },
+  introTextContainer: {
+    margin: muiTheme.spacing(0, 0, 3, 0),
+  },
+  infoContainer: {
+    margin: muiTheme.spacing(0, 0, 4, 0),
+  },
+  callout: {
+    margin: muiTheme.spacing(0.5, 0, 3, 0),
+    backgroundColor: '#ffffff',
+    borderColor: '#d7d9d9',
+  },
+  calloutIcon: {
+    color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
+    marginRight: muiTheme.spacing(2),
+  },
+})) as StylesHook;
 
 const useAppSelector = (): AppComponentState => useSelector(
   AppStateSelector.app,
@@ -361,7 +359,7 @@ const App: React.FC = (): JSX.Element => {
 const AppMemo = (): JSX.Element => (
   useMemo(
     () => (<App />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [useAppSelector()],
   )
 );

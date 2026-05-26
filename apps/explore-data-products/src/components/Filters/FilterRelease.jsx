@@ -60,14 +60,18 @@ const FilterRelease = (inProps) => {
       Data Product Revisions and Releases
     </Link>
   );
-  /* eslint-disable react/jsx-one-expression-per-line */
+
   const tooltip = (
     <div>
       A data release is a set of data files that is static (unchanging), always available to end
-      users, and citable. See {releasesLink} for more details.
+      users, and citable. See
+      {' '}
+      {releasesLink}
+      {' '}
+      for more details.
     </div>
   );
-  /* eslint-enable react/jsx-one-expression-per-line */
+
   const title = (
     <div className={classes.titleContainer}>
       <Typography variant="h5" component="h3" className={classes.title}>

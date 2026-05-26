@@ -1,5 +1,4 @@
 /* eslint-disable default-param-last */
-/* eslint-disable import/prefer-default-export */
 import JSPDF from 'jspdf';
 import moment from 'moment';
 import camelCase from 'lodash/camelCase';
@@ -339,7 +338,7 @@ const generatePdf = (
   return pdf;
 };
 
-export const downloadCatalog = (
+const downloadCatalog = (
   products,
   productOrder,
   ext = 'csv',
@@ -395,3 +394,5 @@ export const downloadCatalog = (
     document.body.removeChild(link);
   }
 };
+
+export default downloadCatalog;

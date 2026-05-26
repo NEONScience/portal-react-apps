@@ -27,7 +27,7 @@ import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import ExploreContext from '../ExploreContext';
 
 import { FILTER_KEYS, getCurrentProductsByRelease } from '../util/filterUtil';
-import { downloadCatalog } from '../util/catalogUtil';
+import downloadCatalog from '../util/catalogUtil';
 
 const useStyles = makeStyles((theme) => ({
   card: {

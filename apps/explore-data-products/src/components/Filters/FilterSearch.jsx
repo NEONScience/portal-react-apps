@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
@@ -184,10 +183,12 @@ const FilterSearch = (props) => {
               Browse Keywords
             </Typography>
             <Typography variant="body2" className={classes.subtitle}>
-              {/* eslint-disable react/jsx-one-expression-per-line */}
               Click keywords below to add them to your search. Separate search
-              terms will match products with <i>either</i> term.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
+              terms will match products with
+              {' '}
+              <i>either</i>
+              {' '}
+              term.
             </Typography>
           </div>
           <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3), textAlign: 'right' }}>
@@ -270,11 +271,19 @@ const FilterSearch = (props) => {
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>
-        {/* eslint-disable react/jsx-one-expression-per-line */}
-        Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
-        Quote terms to match phrases (e.g. &quot;wind speed&quot;).&nbsp;
-        <Link href="#" onClick={() => setDialogOpen(true)} underline="hover">Browse keywords</Link> for ideas.
-        {/* eslint-enable react/jsx-one-expression-per-line */}
+        Use several terms to match products having
+        {' '}
+        <i>any</i>
+        {' '}
+        term (
+        <i>term OR term</i>
+        ).
+        {' '}
+        Quote terms to match phrases (e.g. &quot;wind speed&quot;).
+        {' '}
+        <Link href="#" onClick={() => setDialogOpen(true)} underline="hover">Browse keywords</Link>
+        {' '}
+        for ideas.
       </Typography>
       {renderDialog()}
     </FilterBase>

@@ -47,8 +47,7 @@ const DataVisualizationDialog = () => {
   const product = products[productCode];
 
   let title = 'Data Visualization';
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  let contents = <></>;
+  let contents = <>&nbsp;</>;
   let appliedDialogBaseClasses;
   const dialogBaseProps = {};
   const open = (

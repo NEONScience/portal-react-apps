@@ -1,4 +1,4 @@
-/* eslint-disable react/jsx-one-expression-per-line, jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -206,7 +206,10 @@ const DataProduct = React.memo((props) => {
           tooltipTitle={(
             <span>
               Availability and metadata shown is for
-              the <b>{currentRelease}</b> release of this product
+              {' '}
+              <b>{currentRelease}</b>
+              {' '}
+              release of this product
             </span>
           )}
         />

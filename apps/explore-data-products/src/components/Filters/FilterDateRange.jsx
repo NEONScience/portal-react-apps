@@ -54,7 +54,6 @@ const FilterDateRange = () => {
       currentRange[0] !== activelySlidingDateRange[0]
         || currentRange[1] !== activelySlidingDateRange[1]
     ) && !activelySliding) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActivelySlidingDateRange([...currentRange]);
     }
   }, [

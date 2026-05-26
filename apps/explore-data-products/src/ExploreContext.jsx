@@ -3,6 +3,7 @@ import React, {
   useContext,
   useReducer,
   useEffect,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 
@@ -421,9 +422,9 @@ const Provider = (inProps) => {
   /**
      Render
   */
+  const contextValue = useMemo(() => [state, dispatch], [state, dispatch]);
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <Context.Provider value={[state, dispatch]}>
+    <Context.Provider value={contextValue}>
       {children}
     </Context.Provider>
   );

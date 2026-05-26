@@ -43,7 +43,6 @@ const FilterSearch = (props) => {
 
   const filterKey = FILTER_KEYS.SEARCH;
 
-  // eslint-disable-next-line react-hooks/refs
   const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
     if (applyValueToInput) {
       searchRef.current.querySelector('input').value = searchTerm;
@@ -76,10 +75,15 @@ const FilterSearch = (props) => {
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>
-        {/* eslint-disable react/jsx-one-expression-per-line */}
-        Use several terms to match datasets having <i>any</i> term (<i>term OR term</i>).&nbsp;
+        Use several terms to match datasets having
+        {' '}
+        <i>any</i>
+        {' '}
+        term (
+        <i>term OR term</i>
+        ).
+        {' '}
         Quote terms to match phrases (e.g. &quot;air pressure&quot;)
-        {/* eslint-enable react/jsx-one-expression-per-line */}
       </Typography>
     </FilterBase>
   );

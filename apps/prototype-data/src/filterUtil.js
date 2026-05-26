@@ -531,8 +531,7 @@ const parseDataset = (rawDataset, neonContextData = {}) => {
   newDataset.filterableValues[FILTER_KEYS.SITES] = (rawDataset.locations || [])
     .map((location) => {
       let siteCode;
-      // eslint-disable-next-line prefer-regex-literals
-      const regex = new RegExp(/^[A-Z]{4}$/);
+      const regex = /^[A-Z]{4}$/;
       if (regex) {
         const matches = regex.exec(location.siteCode);
         const valid = (matches && (matches.length > 0)) || false;

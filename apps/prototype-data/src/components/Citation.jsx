@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -72,7 +71,11 @@ const Citation = (props) => {
   return (
     <div>
       <Typography variant="subtitle2" gutterBottom>
-        Please use this citation in your publications. See {dataPolicyLink} for more info.
+        Please use this citation in your publications. See
+        {' '}
+        {dataPolicyLink}
+        {' '}
+        for more info.
       </Typography>
       <Card>
         <CardContent>

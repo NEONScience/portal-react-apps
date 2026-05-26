@@ -81,6 +81,7 @@ export const checkFields = (sampleView) => {
 
 export const createEventTable = (sampleView, tableDefinition) => {
   let events = [];
+  let tableDef = tableDefinition;
   if (typeof sampleView.sampleEvents !== 'undefined'
     || sampleView.sampleEvents !== null) {
     events = sampleView.sampleEvents;
@@ -96,7 +97,6 @@ export const createEventTable = (sampleView, tableDefinition) => {
         if ((smsTitle !== 'fate_date') && (smsTitle !== 'fate_location')
           && (smsTitle !== 'fate')) {
           if (addEntry(smsTitle, fields)) {
-            // let newField = { title: smsTitle, data: smsTitle }
             const newField = {
               headerName: smsTitle,
               field: smsTitle,
@@ -111,8 +111,7 @@ export const createEventTable = (sampleView, tableDefinition) => {
     }
   }
 
-  // eslint-disable-next-line no-param-reassign
-  tableDefinition = tableDefinition.concat(fields);
+  tableDef = tableDefinition.concat(fields);
 
   // create new table rows and data
   const tableDatafromJson = [];
@@ -121,9 +120,9 @@ export const createEventTable = (sampleView, tableDefinition) => {
     // let tableNameEntry = {["ingestTableName"]: events[e].ingestTableName}
     const tableNameEntry = { table: events[e].ingestTableName };
     tableRow = Object.assign(tableRow, tableNameEntry);
-    for (let f = 0; f < tableDefinition.length; f += 1) {
-      if (tableDefinition[f].field !== 'table') {
-        const fieldKey = tableDefinition[f].field;
+    for (let f = 0; f < tableDef.length; f += 1) {
+      if (tableDef[f].field !== 'table') {
+        const fieldKey = tableDef[f].field;
         let found = false;
         if (typeof events[e].smsFieldEntries === 'undefined'
           || events[e].smsFieldEntries === null) {
@@ -154,7 +153,7 @@ export const createEventTable = (sampleView, tableDefinition) => {
     tableDatafromJson.push(tableRow);
   }
 
-  return { definition: tableDefinition, data: tableDatafromJson };
+  return { definition: tableDef, data: tableDatafromJson };
 };
 
 export const GRAPH_COLORS = {

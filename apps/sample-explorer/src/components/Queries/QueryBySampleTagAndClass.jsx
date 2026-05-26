@@ -54,7 +54,6 @@ function QueryBySampleTagAndClass(props) {
       <Select
         variant="standard"
         labelId="select-sample-class-label"
-        // eslint-disable-next-line react-hooks/refs
         label={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
         data-gtm="sample-search-form.select-sample-class"
         data-selenium="sample-search-form.select-sample-class"

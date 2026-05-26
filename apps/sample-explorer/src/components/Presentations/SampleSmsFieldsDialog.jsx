@@ -181,8 +181,7 @@ function SampleSmsFieldsDialog() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const renderErrors = () => {
     if (!state.isErrorState) {
-      // eslint-disable-next-line react/jsx-no-useless-fragment
-      return <></>;
+      return <>&nbsp;</>;
     }
     return (
       <Grid container spacing={3}>

@@ -218,13 +218,12 @@ const reducer = (state = {}, action) => {
 
       const headers = ['Sample Class', 'Description'];
       const csvData = [];
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of sampleClasses) {
+      sampleClasses.forEach((value, key) => {
         let row = [];
         row = Object.assign(row, { 'Sample Class': key });
         row = Object.assign(row, { Description: value });
         csvData.push(row);
-      }
+      });
 
       if (action.download) {
         const jsonParser = new Parser({ fields: headers });

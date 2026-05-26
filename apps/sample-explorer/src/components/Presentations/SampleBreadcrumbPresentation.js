@@ -12,7 +12,7 @@ class SampleBreadcrumbPresentation extends Component {
         </p>
         <ul>
           {
-            uuidBreadcrumbs.map((breadcrumb, i) => {
+            uuidBreadcrumbs.map((breadcrumb) => {
               const clickHandler = () => {
                 const url = `${endpoint}sampleUuid=${breadcrumb}`;
                 return onQueryClick(url);
@@ -20,8 +20,7 @@ class SampleBreadcrumbPresentation extends Component {
               const item = (
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
                 <li
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={i}
+                  key={breadcrumb}
                   onClick={clickHandler}
                   onKeyDown={clickHandler}
                 >

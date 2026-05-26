@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/refs */
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 

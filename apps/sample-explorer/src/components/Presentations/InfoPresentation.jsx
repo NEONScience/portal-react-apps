@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -78,7 +77,11 @@ function InfoPresentation(props) {
                   such as surface water samples, and some samples may be archived, such as beetles.
                 </Typography>
                 <Typography variant="body1" gutterBottom>
-                  The <b>Sample Events</b> table displays the location of a sample throughout
+                  The
+                  {' '}
+                  <b>Sample Events</b>
+                  {' '}
+                  table displays the location of a sample throughout
                   collection and analysis, as well as a subset of other data related to the sample,
                   such as its condition when received by a facility. If you are interested in
                   requesting an archived sample for your research, this interface can tell you if a
@@ -86,7 +89,10 @@ function InfoPresentation(props) {
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   If your primary interest is in downloadable data for analysis please
-                  visit {exploreDataProductsLink}.
+                  visit
+                  {' '}
+                  {exploreDataProductsLink}
+                  .
                 </Typography>
               </Grid>
 
@@ -97,7 +103,11 @@ function InfoPresentation(props) {
                 <Typography variant="body1" gutterBottom>
                   A sample hierarchy is created when a sample is subsampled, or when multiple
                   samples are pooled, creating child sample(s). Any sample may have parent sample(s)
-                  and/or child sample(s). The <b>Sample Hierarchy Graph</b> allows a user to explore
+                  and/or child sample(s). The
+                  {' '}
+                  <b>Sample Hierarchy Graph</b>
+                  {' '}
+                  allows a user to explore
                   these relationships, e.g. to find all the leaf samples (child samples) collected
                   from a given tree (parent sample).
                 </Typography>
@@ -122,6 +132,7 @@ function InfoPresentation(props) {
                   three identifiers.
                 </Typography>
                 <Typography variant="body1" gutterBottom>
+                  {/* eslint-disable react/jsx-one-expression-per-line */}
                   In NEON data files, sample identifiers appear under field names ending in
                   either <tt>ID</tt> or <tt>IDList </tt>
                   (e.g. <tt>sampleID</tt>, <tt>sampleIDList</tt>).
@@ -129,6 +140,7 @@ function InfoPresentation(props) {
                   e.g. <tt>TALL_033.20200805.0604|TALL_034.20200805.0621</tt>. Lists are not
                   searchable as whole lists; each sample identifier in a list must be searched for
                   individually.
+                  {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                   Duplicate tags may exist in different sample classes. If your query for a tag

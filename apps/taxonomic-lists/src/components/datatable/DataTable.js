@@ -1,20 +1,13 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-this-alias */
-/* eslint-disable react/no-unused-class-component-methods */
-/* eslint-disable class-methods-use-this */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable max-len */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+
+import debounce from 'lodash/debounce';
+import $ from 'jquery';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 
 import './DataTable.css';
-
-const _ = require('lodash');
-const $ = require('jquery');
-$.DataTable = require('datatables.net-responsive-bs');
 
 const DataTableUpdateType = {
   FULL: 'FULL',
@@ -23,10 +16,7 @@ const DataTableUpdateType = {
 
 class DataTable extends Component {
   constructor(props) {
-    // const { columns, taxonQuery } = props;
     super(props);
-    // this.columns = props.columns;
-    // this.taxonQuery = props.taxonQuery;
 
     this.updateType = DataTableUpdateType.FULL;
     this.columnsVisibilityChanged = null;
@@ -105,7 +95,6 @@ class DataTable extends Component {
   }
 
   getDataTableAjax() {
-    const that = this;
     return {
       type: 'POST',
       cache: 'false',
@@ -119,16 +108,16 @@ class DataTable extends Component {
         withCredentials: NeonEnvironment.requireCors(),
       },
 
-      data() {
-        that.updateTaxonQuery();
-        return JSON.stringify(that.queryFilter);
+      data: () => {
+        this.updateTaxonQuery();
+        return JSON.stringify(this.queryFilter);
       },
-      error(jqXHR, statusText, error) {
+      error: (jqXHR, statusText, error) => {
         // Prevent table reset on aborted requests
         if (error === 'abort') {
           return;
         }
-        that.clearTableData();
+        this.clearTableData();
       },
       dataFilter(data) {
         const jsonData = JSON.parse(data);
@@ -143,8 +132,7 @@ class DataTable extends Component {
     };
   }
 
-  getColumnFilterInput(queryName, index) {
-    const that = this;
+  getColumnFilterInput = (queryName, index) => {
     const table = $(this.dataTable).DataTable();
 
     const input = $(
@@ -155,8 +143,8 @@ class DataTable extends Component {
           + `data-selenium="table-section.column-filter.${queryName}" />`,
     );
 
-    const method = _.debounce((e, tableParam, queryNameParam, term) => {
-      that.debounceColumnFilterMethod(e, tableParam, queryNameParam, term);
+    const method = debounce((e, tableParam, queryNameParam, term) => {
+      this.debounceColumnFilterMethod(e, tableParam, queryNameParam, term);
     }, table.settings()[0].searchDelay);
 
     input.off('click').on('click', (e) => {
@@ -173,8 +161,9 @@ class DataTable extends Component {
     });
 
     return input;
-  }
+  };
 
+  // eslint-disable-next-line react/sort-comp
   clearSearch() {
     $(this.dataTable).DataTable().search('');
   }
@@ -195,6 +184,7 @@ class DataTable extends Component {
   }
 
   clearTableData() {
+    // eslint-disable-next-line no-underscore-dangle
     $(this.dataTable).dataTable()._fnAjaxUpdateDraw({
       recordsTotal: 0,
       recordsFiltered: 0,
@@ -216,11 +206,10 @@ class DataTable extends Component {
     $(this.dataTable).DataTable().ajax.reload();
   }
 
-  initDataTableActions() {
-    const that = this;
-
+  initDataTableActions = () => {
     $(this.dataTable).DataTable().on('preXhr', (e, d) => {
-      const dt = $(that.dataTable).DataTable();
+      const { taxonQuery } = this.props;
+      const dt = $(this.dataTable).DataTable();
       const { ajax } = d;
 
       // If another request is active, abort in favor of current
@@ -228,14 +217,14 @@ class DataTable extends Component {
         dt.settings()[0].jqXHR.abort();
       }
 
-      let url = `${that.props.taxonQuery.rootApiUrl
-      }?taxonTypeCode=${that.props.taxonQuery.taxonTypeCode
+      let url = `${taxonQuery.rootApiUrl
+      }?taxonTypeCode=${taxonQuery.taxonTypeCode
       }&verbose=true`
           + `&offset=${dt.page.info().start
           }&limit=${dt.page.info().length}`;
 
-      if (that.props.taxonQuery.locationName) {
-        url += `&locationName=${that.props.taxonQuery.locationName}`;
+      if (taxonQuery.locationName) {
+        url += `&locationName=${taxonQuery.locationName}`;
       }
 
       ajax.url = url;
@@ -251,7 +240,7 @@ class DataTable extends Component {
     );
 
     $('#showDisplayColumns').on('click', () => {
-      that.handleToggleColumnManagerVisibility();
+      this.handleToggleColumnManagerVisibility();
     });
 
     $('div.toggle-columns').prepend(
@@ -262,31 +251,29 @@ class DataTable extends Component {
     );
 
     $('#btnResetFilters').on('click', () => {
-      that.resetQueryFilter();
+      this.resetQueryFilter();
     });
-  }
+  };
 
-  initDataTableColumnFilters() {
-    const that = this;
+  initDataTableColumnFilters = () => {
     $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
-      that.prohibitColumnHeaderKeyEvents(tableHeaderCol);
-      const col = that.findColumnByTitle(tableHeaderCol.innerHTML);
+      this.prohibitColumnHeaderKeyEvents(tableHeaderCol);
+      const col = this.findColumnByTitle(tableHeaderCol.innerHTML);
       if (col) {
-        $(tableHeaderCol).append(that.getColumnFilterInput(col.column.queryName, col.index));
+        $(tableHeaderCol).append(this.getColumnFilterInput(col.column.queryName, col.index));
       }
     });
-  }
+  };
 
-  initDataTable() {
-    const that = this;
+  initDataTable = () => {
+    const { columns } = this.props;
     $(this.dataTable).DataTable({
       dom: "<'row'<'col-xs-12 col-sm-5 col-md-5 col-lg-5 pull-right toggle-columns'>>"
            + "<'row'<'col-sm-6 page-length-container'l><'col-sm-6 keyword-search'f>>"
            + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
            + "<'row'<'col-sm-12 datatable-row-container'tr>>"
            + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-      // eslint-disable-next-line react/destructuring-assignment
-      columns: this.props.columns,
+      columns,
       order: [[0, 'asc']],
       pageLength: 100,
       lengthMenu: [10, 50, 100],
@@ -300,10 +287,11 @@ class DataTable extends Component {
         processing: '<i class="fa fa-circle-o-notch fa-spin fa-2x fa-fw margin-bottom"></i>',
       },
       serverSide: true,
-      ajax: that.getDataTableAjax(),
+      ajax: this.getDataTableAjax(),
     });
-  }
+  };
 
+  // eslint-disable-next-line class-methods-use-this
   prohibitColumnHeaderKeyEvents(header) {
     $(header).off('keydown keypress keyup');
   }
@@ -326,8 +314,7 @@ class DataTable extends Component {
     return col;
   }
 
-  toggleColumnVisibility(cols) {
-    const that = this;
+  toggleColumnVisibility = (cols) => {
     const table = $(this.dataTable).DataTable();
 
     if (!cols || (Object.keys(cols).length <= 0)) {
@@ -354,11 +341,12 @@ class DataTable extends Component {
         }
 
         $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
-          that.prohibitColumnHeaderKeyEvents(tableHeaderCol);
-          const col = that.findColumnByTitle(tableHeaderCol.innerHTML);
+          this.prohibitColumnHeaderKeyEvents(tableHeaderCol);
+          const col = this.findColumnByTitle(tableHeaderCol.innerHTML);
           if (col) {
             if (tableHeaderCol.innerHTML.toString().indexOf('<input') < 0) {
-              $(tableHeaderCol).append(that.getColumnFilterInput(foundColumn.column.queryName, foundColumn.index));
+              $(tableHeaderCol)
+                .append(this.getColumnFilterInput(foundColumn.column.queryName, foundColumn.index));
               return false;
             }
           }
@@ -366,7 +354,7 @@ class DataTable extends Component {
         });
       });
     }
-  }
+  };
 
   debounceSearchMethod(e, api, term) {
     let testTerm = null;
@@ -380,21 +368,20 @@ class DataTable extends Component {
     }
   }
 
-  debounceSearch() {
+  debounceSearch = () => {
     const table = $(this.dataTable);
     const filterContainer = $.find('div.dataTables_filter');
     const input = $(filterContainer).find('input[type="search"]');
     const api = table.DataTable();
 
-    const that = this;
-    const method = _.debounce((e, apiParam, term) => {
-      that.debounceSearchMethod(e, apiParam, term);
+    const method = debounce((e, apiParam, term) => {
+      this.debounceSearchMethod(e, apiParam, term);
     }, api.settings()[0].searchDelay);
 
     input.off().on('keyup cut paste', (e) => {
       method(e, api, input.val());
     });
-  }
+  };
 
   debounceColumnFilterMethod(e, api, queryName, term) {
     let testTerm = null;
@@ -419,10 +406,9 @@ class DataTable extends Component {
     }
   }
 
-  updateTaxonQuery() {
+  updateTaxonQuery = () => {
     const table = $(this.dataTable).DataTable();
     const searchTerm = table.search();
-    const that = this;
 
     this.queryFilter.search.term = null;
     this.queryFilter.search.columns = [];
@@ -430,7 +416,7 @@ class DataTable extends Component {
       this.queryFilter.search.term = searchTerm.trim();
       table.settings().init().columns.forEach((col) => {
         if (col.queryName) { // && col.visible) {
-          that.queryFilter.search.columns.push(col.queryName);
+          this.queryFilter.search.columns.push(col.queryName);
         }
       });
     }
@@ -440,10 +426,10 @@ class DataTable extends Component {
     order.forEach(([columnIndex, sortDirection]) => {
       const { queryName } = table.settings().init().columns[columnIndex];
       if (queryName) {
-        that.queryFilter.orderByColumns[queryName] = sortDirection;
+        this.queryFilter.orderByColumns[queryName] = sortDirection;
       }
     });
-  }
+  };
 
   render() {
     const tableStyle = {

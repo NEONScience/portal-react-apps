@@ -174,10 +174,16 @@ function DataTablePresentation(props) {
 }
 
 DataTablePresentation.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  taxonQuery: PropTypes.object.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  columns: PropTypes.array.isRequired,
+  taxonQuery: PropTypes.shape({
+    taxonTypeCode: PropTypes.string,
+    locationName: PropTypes.string,
+    rootApiUrl: PropTypes.string,
+  }).isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    queryName: PropTypes.string,
+    title: PropTypes.string,
+    visible: PropTypes.bool,
+  })).isRequired,
   onToggleColumnManagerVisibility: PropTypes.func.isRequired,
 };
 

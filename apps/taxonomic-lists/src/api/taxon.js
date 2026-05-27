@@ -32,11 +32,11 @@ export const getTaxonTypes = () => taxonTypes;
  */
 export const getTaxonTypeLabel = (taxonTypeCode) => {
   const taxonTypeLabel = taxonTypes.reduce((acc, taxonType) => {
+    let newAcc = acc;
     if (taxonType.value === taxonTypeCode) {
-      // eslint-disable-next-line no-param-reassign
-      acc = taxonType;
+      newAcc = taxonType;
     }
-    return acc;
+    return newAcc;
   }, null);
 
   if (taxonTypeLabel && taxonTypeLabel.label) {

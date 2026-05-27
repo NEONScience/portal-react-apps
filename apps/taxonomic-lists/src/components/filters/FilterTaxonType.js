@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -120,5 +120,11 @@ class FilterTaxonType extends Component {
     );
   }
 }
+
+FilterTaxonType.propTypes = {
+  onFilterValueChanged: PropTypes.func.isRequired,
+  onSetTaxonTypes: PropTypes.func,
+  selectedValue: PropTypes.string,
+};
 
 export default FilterTaxonType;

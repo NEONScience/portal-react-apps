@@ -12,8 +12,11 @@ function DownloadPresentation(props) {
 }
 
 DownloadPresentation.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  taxonQuery: PropTypes.object.isRequired,
+  taxonQuery: PropTypes.shape({
+    taxonTypeCode: PropTypes.string,
+    locationName: PropTypes.string,
+    rootApiUrl: PropTypes.string,
+  }).isRequired,
 };
 
 export default DownloadPresentation;

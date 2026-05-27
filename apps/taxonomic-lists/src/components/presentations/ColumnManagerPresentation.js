@@ -15,7 +15,6 @@ function ColumnManagerPresentation(props) {
   if (!columnManagerVisible) {
     containerStyle.display = 'none';
   }
-
   return (
     <div style={containerStyle}>
       <ColumnManager
@@ -31,8 +30,18 @@ function ColumnManagerPresentation(props) {
 
 ColumnManagerPresentation.propTypes = {
   columnManagerVisible: PropTypes.bool.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  columns: PropTypes.array.isRequired,
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    bVisible: PropTypes.bool,
+    columnDisplayGroup: PropTypes.string,
+    data: PropTypes.string,
+    defaultContent: PropTypes.string,
+    mData: PropTypes.string,
+    queryName: PropTypes.string,
+    sDefaultContent: PropTypes.string,
+    sTitle: PropTypes.string,
+    title: PropTypes.string,
+    visible: PropTypes.bool,
+  })).isRequired,
   onSetColumns: PropTypes.func.isRequired,
   onColumnVisibilityChanged: PropTypes.func.isRequired,
   onToggleColumnManagerVisibility: PropTypes.func.isRequired,

@@ -22,10 +22,15 @@ function FilterPresentation(props) {
 }
 
 FilterPresentation.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  taxonTypes: PropTypes.array.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  taxonQuery: PropTypes.object.isRequired,
+  taxonTypes: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    value: PropTypes.string,
+  })).isRequired,
+  taxonQuery: PropTypes.shape({
+    taxonTypeCode: PropTypes.string,
+    locationName: PropTypes.string,
+    rootApiUrl: PropTypes.string,
+  }).isRequired,
   onSetTaxonTypes: PropTypes.func.isRequired,
   onFilterValueChanged: PropTypes.func.isRequired,
 };

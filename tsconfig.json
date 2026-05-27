@@ -36,6 +36,7 @@
     "dist",
     "test",
     "build",
+    "**/build",
     "scripts",
     "acceptance-tests",
     "webpack",

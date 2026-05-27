@@ -18,6 +18,13 @@ import importPlugin from 'eslint-plugin-import';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const DATA_AVAILABILITY_APP_DIR = 'apps/data-availability';
+const DATA_PRODUCT_DETAIL_APP_DIR = 'apps/data-product-detail';
+const EXPLORE_APP_DIR = 'apps/explore-data-products';
+const PROTOTYPE_DATA_DIR = 'apps/prototype-data';
+const SAMPLE_EXPLORER_DIR = 'apps/sample-explorer';
+const TAXONOMIC_LISTS_DIR = 'apps/taxonomic-lists';
+
 const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
@@ -61,6 +68,7 @@ const rules = {
   ...nextPlugin.configs['core-web-vitals'].rules,
 
   '@next/next/no-img-element': 'off',
+  '@next/next/no-html-link-for-pages': 'off',
 
   '@typescript-eslint/no-shadow': 'error',
   '@typescript-eslint/no-use-before-define': 'warn',
@@ -93,27 +101,111 @@ const rules = {
   'no-shadow': 'off',
   'no-restricted-exports': 'off',
   'no-unused-vars': 'off',
+  'max-len': ['error', { code: 120 }],
 };
+
+const buildAppConfig = (appDir) => ([
+  {
+    files: [
+      `./${appDir}/*.{js,mjs}`,
+    ],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: jsPlugins,
+    settings,
+    rules: {
+      ...jsRules,
+      'import/no-extraneous-dependencies': [
+        'error',
+        { packageDir: `./${appDir}/`, devDependencies: true },
+      ],
+    },
+  },
+  {
+    files: [
+      `./${appDir}/src/**/*.{ts,tsx,js,jsx}`,
+    ],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: `${__dirname}/${appDir}/`,
+        ecmaFeatures: {
+          impliedStrict: true,
+          jsx: true,
+          experimentalObjectRestSpread: true,
+        },
+      },
+      globals: {
+        ...globals.browser,
+      },
+    },
+    plugins: tsPlugins,
+    settings,
+    rules: {
+      ...rules,
+      'import/no-extraneous-dependencies': [
+        'error',
+        { packageDir: `./${appDir}/` },
+      ],
+    },
+  },
+  {
+    files: [
+      `./${appDir}/next.config.ts`,
+    ],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parserOptions: {
+        project: './tsconfig.json',
+        tsconfigRootDir: `${__dirname}/${appDir}/`,
+        ecmaFeatures: {
+          impliedStrict: true,
+          jsx: true,
+          experimentalObjectRestSpread: true,
+        },
+      },
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: tsPlugins,
+    settings,
+    rules: {
+      ...rules,
+      'import/no-extraneous-dependencies': [
+        'error',
+        { packageDir: `./${appDir}/`, devDependencies: true },
+      ],
+    },
+  },
+]);
 
 export default defineConfig([
   ...compat.extends('airbnb'),
   {
     ignores: [
-      'src/**/__tests__',
-      'src/**/__mocks__',
-      'lib/',
-      '.next/',
-      'build/',
+      'apps/**/src/**/__tests__',
+      'apps/**/src/**/__mocks__',
+      'apps/**/lib/',
+      'apps/**/.next/',
+      'apps/**/build/',
+      'apps/**/node_modules/',
       'node_modules/',
       'test-coverage/',
     ],
   },
   {
-    files: [
-      '*.{js,mjs}',
-      'scripts/**/*.{js,mjs}',
-      'test/**/*.{js,mjs}',
-    ],
+    files: ['*.{js,mjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -131,41 +223,10 @@ export default defineConfig([
       ],
     },
   },
-  {
-    files: ['src/**/*.{ts,tsx,js,jsx}'],
-    languageOptions: {
-      parser: tsParser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
-        ecmaFeatures: {
-          impliedStrict: true,
-          jsx: true,
-          experimentalObjectRestSpread: true,
-        },
-      },
-      globals: {
-        ...globals.browser,
-      },
-    },
-    plugins: tsPlugins,
-    settings,
-    rules,
-  },
-  {
-    files: [
-      'src/App.jsx',
-    ],
-    rules: {
-      'import/extensions': 'off',
-      'import/no-unresolved': 'off',
-      'import/no-extraneous-dependencies': 'off',
-
-      'react/jsx-one-expression-per-line': 'off',
-
-      'max-len': 'off',
-    },
-  },
+  ...buildAppConfig(DATA_AVAILABILITY_APP_DIR),
+  ...buildAppConfig(DATA_PRODUCT_DETAIL_APP_DIR),
+  ...buildAppConfig(EXPLORE_APP_DIR),
+  ...buildAppConfig(PROTOTYPE_DATA_DIR),
+  ...buildAppConfig(SAMPLE_EXPLORER_DIR),
+  ...buildAppConfig(TAXONOMIC_LISTS_DIR),
 ]);

@@ -5,8 +5,10 @@
   },
   "include": [
     "./src/**/*",
-    "next-env.d.ts",
-    "app/**/*",
-    "next.config.ts",
+    "./src/*.d.ts",
+    "./next-env.d.ts",
+    ".next/types/**/*.ts",
+    "build/types/**/*.ts",
+    "next.config.ts"
   ]
 }

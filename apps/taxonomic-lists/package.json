@@ -19,7 +19,6 @@
     "datatables.net-responsive-bs": "^2.5.1",
     "jquery": "3.7.1",
     "lodash": "^4.17.21",
-    "next": "^16.2.1",
     "portal-core-components": "github:NEONScience/portal-core-components#next",
     "prop-types": "^15.8.1",
     "react": "^19.2.5",
@@ -52,6 +51,7 @@
     "eslint": "^9.39.4",
     "express": "^4.19.2",
     "jsdom": "^29.0.1",
+    "next": "^16.2.1",
     "prettier": "^3.8.1",
     "typescript": "~5.9.3"
   },

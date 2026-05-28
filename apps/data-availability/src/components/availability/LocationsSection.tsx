@@ -118,15 +118,15 @@ const LocationsSection: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderInfo = (): JSX.Element => {
+  const renderInfo = (): JSX.Element | null => {
     if (viewModeSwitching) {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<>&nbsp;</>);
+      return null;
     }
     if (!selectedViewMode) {
-      return (<>&nbsp;</>);
+      return null;
     }
     let text = '';
     switch (selectedViewMode.value) {

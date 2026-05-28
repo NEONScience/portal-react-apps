@@ -265,7 +265,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     ));
     return (
       <li {...props} key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
-        {!bundle ? <>&nbsp;</> : <BundleListItemIcon isSplit={hasManyParents} />}
+        {!bundle ? null : <BundleListItemIcon isSplit={hasManyParents} />}
         <ListItemText
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
@@ -360,17 +360,17 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderBundle = (): JSX.Element => {
+  const renderBundle = (): JSX.Element | null => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
-      return (<>&nbsp;</>);
+      return null;
     }
     const bundle = findBundle(releaseBundles, initialProduct.productCode);
     if (!bundle) {
-      return (<>&nbsp;</>);
+      return null;
     }
     const parent: DataProductParent|undefined = findForwardParent(bundle);
     if (!parent || !parent.forwardAvailability) {
-      return (<>&nbsp;</>);
+      return null;
     }
     let focalProductName = '';
     if (exists(focalBundleProduct)

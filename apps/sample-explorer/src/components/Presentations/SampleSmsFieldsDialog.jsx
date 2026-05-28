@@ -181,7 +181,7 @@ function SampleSmsFieldsDialog() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const renderErrors = () => {
     if (!state.isErrorState) {
-      return <>&nbsp;</>;
+      return null;
     }
     return (
       <Grid container spacing={3}>

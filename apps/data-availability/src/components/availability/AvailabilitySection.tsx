@@ -163,12 +163,12 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderSummary = (): JSX.Element => {
+  const renderSummary = (): JSX.Element | null => {
     if ((siteCodes.length <= 0) && isLoading) {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<>&nbsp;</>);
+      return null;
     }
     const availableSites = siteCodes.length;
     const availableDates: AvailableDateRange = isTombstoned

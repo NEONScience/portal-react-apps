@@ -96,12 +96,12 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderSummary = (): JSX.Element => {
+  const renderSummary = (): JSX.Element | null => {
     if ((dataProducts.length <= 0) && isLoading) {
       return skeleton;
     }
     if ((dataProducts.length <= 0) && isComplete) {
-      return (<>&nbsp;</>);
+      return null;
     }
     const availableProducts = dataProducts.length;
     const availableDates: AvailableDateRange = computeAvailableDateRangeSite(

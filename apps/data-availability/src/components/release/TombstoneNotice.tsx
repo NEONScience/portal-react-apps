@@ -31,14 +31,14 @@ const useTombstoneNoticdSelector = (): TombstoneNoticeState => useSelector(
   AppStateSelector.tombstoneNotice,
 );
 
-const TombstoneNotice: React.FC = (): JSX.Element => {
+const TombstoneNotice: React.FC = (): JSX.Element | null => {
   const state: TombstoneNoticeState = useTombstoneNoticdSelector();
   const classes = useStyles(Theme);
   const { isTombstoned, focalProductReleaseDoi }: TombstoneNoticeState = state;
   if (!(isTombstoned === true)
       || !exists(focalProductReleaseDoi)
       || (Array.isArray(focalProductReleaseDoi) && (focalProductReleaseDoi.length <= 0))) {
-    return <>&nbsp;</>;
+    return null;
   }
   let citationReleases: DataProductReleaseDoi[] = [];
   if (!Array.isArray(focalProductReleaseDoi)) {

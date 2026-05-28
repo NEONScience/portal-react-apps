@@ -47,7 +47,7 @@ const DataVisualizationDialog = () => {
   const product = products[productCode];
 
   let title = 'Data Visualization';
-  let contents = <>&nbsp;</>;
+  let contents = null;
   let appliedDialogBaseClasses;
   const dialogBaseProps = {};
   const open = (

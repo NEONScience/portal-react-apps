@@ -12583,7 +12583,7 @@ __metadata:
 
 "portal-core-components@github:NEONScience/portal-core-components#data-access":
   version: 2.17.0
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=c5777799015bee7427133817e79042c2d540e203"
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=ae9815ed9eba5c058b4a64d0fe4961371271336d"
   dependencies:
     "@date-io/moment": "npm:^1.3.13"
     "@fortawesome/fontawesome-svg-core": "npm:^6.6.0"
@@ -12670,7 +12670,7 @@ __metadata:
       optional: true
     worker-loader:
       optional: true
-  checksum: 10c0/697ed507152bb1c0bc5ca1b6aedd7f043bf2dfb5c83449af2c70d70e667fd9ad475689877afc5e49a2d1f5f20a000faa0a5ac067922822d1efe67b9422de76c6
+  checksum: 10c0/b2ff9a78367ca84f259fe0ca687a8319a11fd8a2068586b7806de05bc32e4357d838aa7f4d919333106d04fbc2fa2f708ec2f70e09e32ae055b2c595088831fa
   languageName: node
   linkType: hard
 

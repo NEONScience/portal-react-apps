@@ -182,7 +182,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 const LocationsSectionMemo = (): JSX.Element => (
   useMemo(
     () => (<LocationsSection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useLocationsSelector()],
   )
 );

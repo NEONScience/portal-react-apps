@@ -90,7 +90,9 @@ const FilterDomain = (inProps) => {
               value={filterItem.value}
               subtitle={filterItem.subtitle}
               count={filterItem.count}
-              countTitle={`{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`}
+              countTitle={
+              `{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`
+              }
               checked={filterValues[filterKey].includes(filterItem.value)}
               {...checkboxProps}
             />

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 
 import debounce from 'lodash/debounce';
 
@@ -58,24 +58,26 @@ const ExploreDatasets = () => {
 
   // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
-  const scrollHandler = debounce(() => {
-    if (datasetsOrder.length <= scrollCutoff) { return; }
-    // Y-offset for the TOP of the area in view
-    const scrollOffset = (
-      window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
-    );
-    // Y-offset for the BOTTOM of the area in view
-    const scrollBottom = window.innerHeight + scrollOffset;
-    // Y-offset for the absolute bottom of the document
-    const documentBottom = document.documentElement.offsetHeight;
-    // Y-offset for the TOP of the lazy loader
-    const lazyLoaderOffset = lazyLoaderRef.current
-      ? lazyLoaderRef.current.offsetTop
-      : documentBottom - SCROLL_PADDING;
-    if (scrollBottom > lazyLoaderOffset) {
-      dispatch({ type: 'incrementScrollCutoff' });
-    }
-  }, DEBOUNCE_MILLISECONDS);
+  const scrollHandler = useCallback(() => {
+    debounce(() => {
+      if (datasetsOrder.length <= scrollCutoff) { return; }
+      // Y-offset for the TOP of the area in view
+      const scrollOffset = (
+        window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+      );
+      // Y-offset for the BOTTOM of the area in view
+      const scrollBottom = window.innerHeight + scrollOffset;
+      // Y-offset for the absolute bottom of the document
+      const documentBottom = document.documentElement.offsetHeight;
+      // Y-offset for the TOP of the lazy loader
+      const lazyLoaderOffset = lazyLoaderRef.current
+        ? lazyLoaderRef.current.offsetTop
+        : documentBottom - SCROLL_PADDING;
+      if (scrollBottom > lazyLoaderOffset) {
+        dispatch({ type: 'incrementScrollCutoff' });
+      }
+    }, DEBOUNCE_MILLISECONDS)();
+  }, [datasetsOrder.length, scrollCutoff, dispatch]);
   useEffect(() => {
     window.addEventListener('scroll', scrollHandler);
     window.addEventListener('resize', scrollHandler);

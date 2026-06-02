@@ -43,10 +43,7 @@ const FilterSearch = (props) => {
 
   const filterKey = FILTER_KEYS.SEARCH;
 
-  const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
-    if (applyValueToInput) {
-      searchRef.current.querySelector('input').value = searchTerm;
-    }
+  const debouncedSearch = debounce((searchTerm) => {
     const terms = parseSearchTerms(searchTerm);
     if (!terms.length) { dispatch({ type: 'resetFilter', filterKey }); }
     // Push an event with latest term to Google Tag Manager

@@ -106,6 +106,8 @@ const FilterSearch = (props) => {
   const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const belowLg = useMediaQuery(Theme.breakpoints.down('lg'));
 
+  // using the recommended useCallback to wrap debounce causes the it to operate incorrectly
+  // eslint-disable-next-line react-hooks/refs
   const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
     if (applyValueToInput) {
       searchRef.current.querySelector('input').value = searchTerm;
@@ -285,6 +287,7 @@ const FilterSearch = (props) => {
         {' '}
         for ideas.
       </Typography>
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderDialog()}
     </FilterBase>
   );

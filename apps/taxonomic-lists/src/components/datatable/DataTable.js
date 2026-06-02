@@ -233,7 +233,8 @@ class DataTable extends Component {
     this.debounceSearch();
 
     $('div.toggle-columns').prepend(
-      '<button id="showDisplayColumns" class="btn btn-show-display-columns" data-selenium="table-section.table-columns-button">'
+      '<button id="showDisplayColumns" class="btn btn-show-display-columns" '
+      + 'data-selenium="table-section.table-columns-button">'
         + '<span>Table Columns</span>'
         + '<i class="fa fa-columns"></i>'
       + '</button>',
@@ -244,7 +245,8 @@ class DataTable extends Component {
     });
 
     $('div.toggle-columns').prepend(
-      '<button id="btnResetFilters" class="btn btn-reset-filters" data-selenium="table-section.reset-filters-button">'
+      '<button id="btnResetFilters" class="btn btn-reset-filters" '
+        + 'data-selenium="table-section.reset-filters-button">'
         + '<span>Reset Filters</span>'
         + '<i class="fa fa-times"></i>'
       + '</button>',

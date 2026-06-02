@@ -359,7 +359,7 @@ const App: React.FC = (): JSX.Element => {
 const AppMemo = (): JSX.Element => (
   useMemo(
     () => (<App />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAppSelector()],
   )
 );

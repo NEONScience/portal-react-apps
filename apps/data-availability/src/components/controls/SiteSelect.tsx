@@ -423,7 +423,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 const SiteSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useSiteSelectSelector()],
   )
 );

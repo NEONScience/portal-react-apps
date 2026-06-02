@@ -450,7 +450,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 const DataProductSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<DataProductSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useDataProductSelectSelector()],
   )
 );

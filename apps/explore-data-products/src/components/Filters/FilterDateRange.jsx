@@ -54,7 +54,9 @@ const FilterDateRange = () => {
       currentRange[0] !== activelySlidingDateRange[0]
         || currentRange[1] !== activelySlidingDateRange[1]
     ) && !activelySliding) {
-      setActivelySlidingDateRange([...currentRange]);
+      setTimeout(() => {
+        setActivelySlidingDateRange([...currentRange]);
+      }, 0);
     }
   }, [
     activelySliding,

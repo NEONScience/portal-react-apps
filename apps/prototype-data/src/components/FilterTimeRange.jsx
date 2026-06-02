@@ -57,7 +57,9 @@ const FilterTimeRange = () => {
       currentRange[0] !== activelySlidingTimeRange[0]
         || currentRange[1] !== activelySlidingTimeRange[1]
     ) && !activelySliding) {
-      setActivelySlidingTimeRange([...currentRange]);
+      setTimeout(() => {
+        setActivelySlidingTimeRange([...currentRange]);
+      }, 0);
     }
   }, [
     activelySliding,

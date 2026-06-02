@@ -239,7 +239,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
 const AvailabilitySectionMemo = (): JSX.Element => (
   useMemo(
     () => (<AvailabilitySection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAvailabilitySelector()],
   )
 );

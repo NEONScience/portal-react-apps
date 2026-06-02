@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { connect } from 'react-redux';
 import ColumnManagerPresentation from '../presentations/ColumnManagerPresentation';
 import {

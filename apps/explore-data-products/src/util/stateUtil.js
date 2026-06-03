@@ -41,7 +41,7 @@ export const APP_STATUS = {
 // We present the same info in a more visible callout, so we actively scrub it
 // from short descriptions.
 const EXCISE_BUNDLE_BLURBS = [
-  // eslint-disable-next-line max-len
+  // eslint-disable-next-line max-len, @stylistic/max-len
   ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
 ];
 

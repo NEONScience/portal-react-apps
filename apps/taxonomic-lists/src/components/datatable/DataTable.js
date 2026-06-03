@@ -270,11 +270,13 @@ class DataTable extends Component {
   initDataTable = () => {
     const { columns } = this.props;
     $(this.dataTable).DataTable({
+      /* eslint-disable @stylistic/quotes */
       dom: "<'row'<'col-xs-12 col-sm-5 col-md-5 col-lg-5 pull-right toggle-columns'>>"
            + "<'row'<'col-sm-6 page-length-container'l><'col-sm-6 keyword-search'f>>"
            + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
            + "<'row'<'col-sm-12 datatable-row-container'tr>>"
            + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+      /* eslint-enable @stylistic/quotes */
       columns,
       order: [[0, 'asc']],
       pageLength: 100,

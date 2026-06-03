@@ -89,7 +89,7 @@ const FilterDomain = (inProps) => {
               value={filterItem.value}
               subtitle={filterItem.subtitle}
               count={filterItem.count}
-              // eslint-disable-next-line max-len
+              // eslint-disable-next-line max-len, @stylistic/max-len
               countTitle={`{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`}
               checked={filterValues[filterKey].includes(filterItem.value)}
               {...checkboxProps}

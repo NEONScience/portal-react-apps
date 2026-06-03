@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+/* eslint-disable @stylistic/max-len */
 
 import AsyncFlow from 'portal-core-components/lib/flow/AsyncFlow';
 import {

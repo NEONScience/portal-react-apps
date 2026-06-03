@@ -14,6 +14,7 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import nextPlugin from '@next/eslint-plugin-next';
 import importPlugin from 'eslint-plugin-import';
+import stylisticPluginJs from '@stylistic/eslint-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ const jsPlugins = {
   'react-hooks': reactHooksPlugin,
   import: importPlugin,
   'jsx-a11y': jsxA11yPlugin,
+  '@stylistic': stylisticPluginJs,
 };
 const tsPlugins = {
   ...jsPlugins,
@@ -66,7 +68,7 @@ const rules = {
   ...reactHooksPlugin.configs.recommended.rules,
   ...nextPlugin.configs.recommended.rules,
   ...nextPlugin.configs['core-web-vitals'].rules,
-
+  ...stylisticPluginJs.configs.recommended.rules,
   '@next/next/no-img-element': 'off',
   '@next/next/no-html-link-for-pages': 'off',
 
@@ -102,6 +104,43 @@ const rules = {
   'no-restricted-exports': 'off',
   'no-unused-vars': 'off',
   'max-len': ['error', { code: 120 }],
+
+  '@stylistic/max-len': ['error', { code: 120 }],
+  '@stylistic/semi': ['error', 'always'],
+  '@stylistic/quote-props': 'off',
+  '@stylistic/space-infix-ops': 'off',
+  '@stylistic/arrow-parens': 'off',
+  '@stylistic/member-delimiter-style': [
+    'error',
+    {
+      multiline: {
+        delimiter: 'semi',
+        requireLast: true,
+      },
+      singleline: {
+        delimiter: 'semi',
+        requireLast: false,
+      },
+    },
+  ],
+  '@stylistic/jsx-one-expression-per-line': 'off',
+  '@stylistic/linebreak-style': ['error', 'unix'],
+  '@stylistic/no-extra-parens': 'off',
+  '@stylistic/no-shadow': 'off',
+  '@stylistic/no-restricted-exports': 'off',
+  '@stylistic/no-unused-vars': 'off',
+  '@stylistic/max-statements-per-line': 'off',
+  '@stylistic/multiline-ternary': 'off',
+  '@stylistic/indent-binary-ops': 'off',
+  '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+  '@stylistic/quotes': ['error', 'single'],
+  '@stylistic/indent': [
+    'error',
+    2,
+    {
+      ignoredNodes: ['TSInterfaceDeclaration'],
+    },
+  ],
 };
 
 const buildAppConfig = (appDir) => ([

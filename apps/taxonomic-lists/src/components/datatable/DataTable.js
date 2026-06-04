@@ -9,6 +9,9 @@ import NeonApi from 'portal-core-components/lib/components/NeonApi';
 
 import './DataTable.css';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+$.DataTable = require('datatables.net-responsive-bs');
+
 const DataTableUpdateType = {
   FULL: 'FULL',
   COLUMN_VISIBILITY: 'COLUMN_VISIBILITY',

@@ -107,10 +107,10 @@ const FilterSearch = (props) => {
   const belowLg = useMediaQuery(Theme.breakpoints.down('lg'));
 
   // using the recommended useCallback to wrap debounce causes the it to operate incorrectly
-  // eslint-disable-next-line react-hooks/refs
-  const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
+  const debouncedSearch = debounce((searchTerm, searchRefCurrent, applyValueToInput = false) => {
     if (applyValueToInput) {
-      searchRef.current.querySelector('input').value = searchTerm;
+      const localSearchRefCurrent = searchRefCurrent;
+      localSearchRefCurrent.querySelector('input').value = searchTerm;
     }
     if (searchTerm.length) {
       localStorage.setItem('search', searchTerm);
@@ -151,7 +151,7 @@ const FilterSearch = (props) => {
         search = search.length ? `${search} ${term}` : term;
       }
       dialogSearchRef.current.querySelector('input').value = search;
-      debouncedSearch(search, true);
+      debouncedSearch(search, searchRef.current, true);
     };
 
     let columns = 4;
@@ -201,7 +201,7 @@ const FilterSearch = (props) => {
               defaultValue={searchRef.current ? searchRef.current.querySelector('input').value : ''}
               placeholder={placeholder}
               style={{ marginBottom: 0 }}
-              onChange={(event) => debouncedSearch(event.target.value, true)}
+              onChange={(event) => debouncedSearch(event.target.value, searchRef.current, true)}
               InputProps={{
                 ref: dialogSearchRef,
                 'aria-label': 'search',
@@ -264,7 +264,7 @@ const FilterSearch = (props) => {
         variant="outlined"
         defaultValue={defaultValue}
         placeholder={placeholder}
-        onChange={(event) => debouncedSearch(event.target.value)}
+        onChange={(event) => debouncedSearch(event.target.value, searchRef.current)}
         InputProps={{
           ref: searchRef,
           'aria-label': 'search',

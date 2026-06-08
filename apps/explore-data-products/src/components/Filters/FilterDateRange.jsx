@@ -49,21 +49,13 @@ const FilterDateRange = () => {
   const sliderValue = activelySlidingDateRange.map((x, i) => (
     selectableRange.indexOf(x || currentRange[i])
   ));
-  useEffect(() => {
-    if ((
-      currentRange[0] !== activelySlidingDateRange[0]
-        || currentRange[1] !== activelySlidingDateRange[1]
-    ) && !activelySliding) {
-      setTimeout(() => {
-        setActivelySlidingDateRange([...currentRange]);
-      }, 0);
-    }
-  }, [
-    activelySliding,
-    activelySlidingDateRange,
-    setActivelySlidingDateRange,
-    currentRange,
-  ]);
+
+  if ((
+    currentRange[0] !== activelySlidingDateRange[0]
+      || currentRange[1] !== activelySlidingDateRange[1]
+  ) && !activelySliding) {
+    setActivelySlidingDateRange([...currentRange]);
+  }
 
   const filterBaseProps = {
     title: 'Available Dates',

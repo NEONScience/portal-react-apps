@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     color: theme.palette.grey[700],
     fontSize: '0.7rem',
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: '0.85rem',

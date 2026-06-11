@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     borderColor: alpha(theme.palette.primary.main, 0.4),
     borderStyle: 'dotted',
+    backgroundColor: 'transparent',
   },
   keywordChipIcon: {
     width: '0.75em',

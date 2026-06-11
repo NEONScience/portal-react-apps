@@ -59,7 +59,7 @@ const FilterSearch = (props) => {
         fullWidth
         name={filterKey}
         margin="dense"
-        variant="outlined"
+        size="small"
         defaultValue=""
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value)}

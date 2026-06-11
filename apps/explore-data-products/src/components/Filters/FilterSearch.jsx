@@ -106,7 +106,6 @@ const FilterSearch = (props) => {
   const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
   const belowLg = useMediaQuery(Theme.breakpoints.down('lg'));
 
-  // using the recommended useCallback to wrap debounce causes the it to operate incorrectly
   const debouncedSearch = debounce((searchTerm, searchRefCurrent, applyValueToInput = false) => {
     if (applyValueToInput) {
       const localSearchRefCurrent = searchRefCurrent;
@@ -261,7 +260,7 @@ const FilterSearch = (props) => {
         fullWidth
         name={filterKey}
         margin="dense"
-        variant="outlined"
+        size="small"
         defaultValue={defaultValue}
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value, searchRef.current)}

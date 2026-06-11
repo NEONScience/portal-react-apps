@@ -59,7 +59,6 @@ const Sort = () => {
       <Typography variant="h6" component="h4" className={classes.title}>Sort</Typography>
       <FormControl variant="outlined">
         <Select
-          variant="standard"
           value={method}
           aria-label="Sort Method"
           className={classes.select}

@@ -413,6 +413,7 @@ const IssueLogDetail = () => {
   const localization = {
     pagination: {
       labelRowsSelect: 'top-level issues',
+      labelRowsPerPage: null,
     },
     toolbar: {
       searchPlaceholder: 'Search issues',

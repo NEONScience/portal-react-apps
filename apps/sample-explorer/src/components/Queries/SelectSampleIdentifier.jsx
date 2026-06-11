@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -31,21 +31,12 @@ function SelectSampleIdentifier(props) {
 
   const classes = useStyles(Theme);
 
-  const labelRef = useRef(null);
-  const [labelWidth, setLabelWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    if (!labelRef.current) return;
-    setLabelWidth(labelRef.current.offsetWidth + 8);
-  }, []);
-
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <InputLabel id="select-identifier-type-label" ref={labelRef}>Identifier Type</InputLabel>
+      <InputLabel id="select-identifier-type-label">Identifier Type</InputLabel>
       <Select
-        variant="standard"
         labelId="select-identifier-type-label"
-        label={labelWidth}
+        label="Identifier Type"
         data-gtm="sample-search-form.select-identifier-type"
         data-selenium="sample-search-form.select-identifier-type"
         value={queryType}

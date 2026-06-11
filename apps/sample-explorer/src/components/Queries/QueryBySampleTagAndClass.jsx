@@ -1,4 +1,4 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import makeStyles from '@mui/styles/makeStyles';
@@ -40,14 +40,6 @@ function QueryBySampleTagAndClass(props) {
 
   const classes = useStyles(Theme);
 
-  const labelRef = useRef(null);
-  const [labelWidth, setLabelWidth] = useState(0);
-
-  useLayoutEffect(() => {
-    if (!labelRef.current) return;
-    setLabelWidth(labelRef.current.offsetWidth + 8);
-  }, []);
-
   if (queryType !== QUERY_TYPE.SAMPLE_TAG) { return null; }
 
   return (
@@ -56,11 +48,10 @@ function QueryBySampleTagAndClass(props) {
       className={classes.formControl}
       error={/sample class/i.test(queryErrorStr)}
     >
-      <InputLabel id="select-sample-class-label" ref={labelRef}>Sample Class</InputLabel>
+      <InputLabel id="select-sample-class-label">Sample Class</InputLabel>
       <Select
-        variant="standard"
         labelId="select-sample-class-label"
-        label={labelWidth}
+        label="Sample Class"
         data-gtm="sample-search-form.select-sample-class"
         data-selenium="sample-search-form.select-sample-class"
         value={sampleClass || ''}

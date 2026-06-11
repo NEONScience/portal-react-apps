@@ -168,7 +168,6 @@ const PresentationSort = (inProps) => {
     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
       <FormControl variant="outlined">
         <Select
-          variant="standard"
           value={sortMethod}
           aria-label="Sort Method"
           className={classes.select}

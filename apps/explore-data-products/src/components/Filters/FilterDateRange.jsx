@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
 import moment from 'moment';
 
@@ -160,7 +160,7 @@ const FilterDateRange = () => {
         }}
       />
       <LocalizationProvider dateAdapter={AdapterMoment}>
-        <DatePicker
+        <MobileDatePicker
           data-selenium="browse-data-products-page.filters.date-range.from-input"
           inputVariant="outlined"
           margin="dense"
@@ -175,14 +175,14 @@ const FilterDateRange = () => {
           slotProps={{
             textField: {
               size: 'small',
-              width: '100%',
               style: {
                 marginBottom: Theme.spacing(2),
+                width: '100%',
               },
             },
           }}
         />
-        <DatePicker
+        <MobileDatePicker
           data-selenium="browse-data-products-page.filters.date-range.through-input"
           inputVariant="outlined"
           margin="dense"
@@ -197,9 +197,9 @@ const FilterDateRange = () => {
           slotProps={{
             textField: {
               size: 'small',
-              width: '100%',
               style: {
                 marginBottom: Theme.spacing(2),
+                width: '100%',
               },
             },
           }}

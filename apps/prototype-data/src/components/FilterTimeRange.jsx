@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
@@ -113,7 +113,9 @@ const FilterTimeRange = () => {
 
   const handleChangeDatePicker = (rangeIndex, value) => {
     // Confirm arguments are sane
-    const newSliderValue = selectableRange.indexOf(value);
+    const year = value.year();
+    const newSliderValue = selectableRange.indexOf(year);
+
     if (![0, 1].includes(rangeIndex) || newSliderValue === -1) { return; }
 
     // Apply the updated filter value to state
@@ -121,7 +123,7 @@ const FilterTimeRange = () => {
       currentRange[0] === null ? selectableRange[sliderMin] : currentRange[0],
       currentRange[1] === null ? selectableRange[sliderMax] : currentRange[1],
     ];
-    newFilterValues[rangeIndex] = value;
+    newFilterValues[rangeIndex] = year;
     dispatch({ type: 'applyFilter', filterKey, filterValue: newFilterValues });
   };
 
@@ -165,7 +167,7 @@ const FilterTimeRange = () => {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <DatePicker
+            <MobileDatePicker
               data-selenium="browse-data-products-page.filters.time-range.from-input"
               inputVariant="outlined"
               margin="dense"
@@ -186,7 +188,7 @@ const FilterTimeRange = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <DatePicker
+            <MobileDatePicker
               data-selenium="browse-data-products-page.filters.time-range.through-input"
               inputVariant="outlined"
               margin="dense"

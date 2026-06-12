@@ -17,12 +17,15 @@ COPY . /usr/src/app/build-stage/portal-react-apps
 
 # Install dependencies
 RUN cd /usr/src/app/build-stage/portal-react-apps \
-  && yarn run ci
+  && yarn install --immutable
+# Execute linting
+RUN cd /usr/src/app/build-stage/portal-react-apps \
+  && yarn run lint
 
 #-------------------------------------------------------------------------------
 # Result container
 
-FROM alpine:3.20
+FROM alpine:3.23
 
 WORKDIR /usr/src/app
 

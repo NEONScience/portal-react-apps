@@ -61,6 +61,7 @@ const jsRules = {
 };
 const rules = {
   ...jsRules,
+  ...stylisticPluginJs.configs.recommended.rules,
   ...tsPlugin.configs.recommended.rules,
   ...jsxA11yPlugin.configs.recommended.rules,
   ...importPlugin.configs.recommended.rules,
@@ -68,7 +69,6 @@ const rules = {
   ...reactHooksPlugin.configs.recommended.rules,
   ...nextPlugin.configs.recommended.rules,
   ...nextPlugin.configs['core-web-vitals'].rules,
-  ...stylisticPluginJs.configs.recommended.rules,
   '@next/next/no-img-element': 'off',
   '@next/next/no-html-link-for-pages': 'off',
 

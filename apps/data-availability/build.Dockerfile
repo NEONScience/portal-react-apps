@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY --from=builder-base /app/node_modules /app/node_modules
 COPY --from=builder-base /app/.yarn /app/.yarn
-COPY --from=builder-base /app/.eslintrc.json /app/.eslintrc.json
+COPY --from=builder-base /app/eslint.config.mjs /app/eslint.config.mjs
 COPY --from=builder-base /app/.yarnrc.yml /app/.yarnrc.yml
 COPY --from=builder-base /app/package.json /app/package.json
 COPY --from=builder-base /app/tsconfig.json /app/tsconfig.json

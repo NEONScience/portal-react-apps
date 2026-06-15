@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import makeStyles from '@mui/styles/makeStyles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
@@ -167,7 +167,7 @@ const FilterTimeRange = () => {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid container spacing={2}>
           <Grid item xs={6}>
-            <MobileDatePicker
+            <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.from-input"
               inputVariant="outlined"
               margin="dense"
@@ -188,7 +188,7 @@ const FilterTimeRange = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <MobileDatePicker
+            <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.through-input"
               inputVariant="outlined"
               margin="dense"

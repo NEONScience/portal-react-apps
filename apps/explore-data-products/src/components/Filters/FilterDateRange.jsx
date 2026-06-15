@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import moment from 'moment';
 
@@ -160,7 +160,7 @@ const FilterDateRange = () => {
         }}
       />
       <LocalizationProvider dateAdapter={AdapterMoment}>
-        <MobileDatePicker
+        <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.from-input"
           inputVariant="outlined"
           margin="dense"
@@ -182,7 +182,7 @@ const FilterDateRange = () => {
             },
           }}
         />
-        <MobileDatePicker
+        <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.through-input"
           inputVariant="outlined"
           margin="dense"

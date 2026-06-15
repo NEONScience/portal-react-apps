@@ -127,7 +127,6 @@ const ReleaseCard = () => {
       const bundleParentLink = !Object.keys(bundleParentData).length ? null : (
         <Link
           href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
-          underline="hover"
         >
           {`${bundleParentName} (${bundleParentCode})`}
         </Link>
@@ -159,7 +158,6 @@ const ReleaseCard = () => {
     const dataProductDetailLink = (
       <Link
         href={RouteService.getProductDetailPath(baseProduct.productCode)}
-        underline="hover"
       >
         here
       </Link>
@@ -305,7 +303,6 @@ const ReleaseCard = () => {
                   <Link
                     href={releaseInfoHref}
                     className={classes.releaseInfoLink}
-                    underline="hover"
                   >
                     {currentRelease}
                   </Link>

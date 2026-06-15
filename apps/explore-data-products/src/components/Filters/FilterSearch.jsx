@@ -283,7 +283,7 @@ const FilterSearch = (props) => {
         {' '}
         Quote terms to match phrases (e.g. &quot;wind speed&quot;).
         {' '}
-        <Link href="#" onClick={() => setDialogOpen(true)} underline="hover">Browse keywords</Link>
+        <Link href="#" onClick={() => setDialogOpen(true)}>Browse keywords</Link>
         {' '}
         for ideas.
       </Typography>

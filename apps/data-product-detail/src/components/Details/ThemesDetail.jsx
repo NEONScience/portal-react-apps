@@ -30,7 +30,6 @@ const ThemesDetail = () => {
       title={theme}
       style={{ marginRight: Theme.spacing(1) }}
       href={RouteService.getThemeDetailPath(dataThemeHrefs[theme])}
-      underline="hover"
     >
       <DataThemeIcon
         theme={theme}

@@ -410,7 +410,6 @@ const DataProductSelect: React.FC = (): JSX.Element => {
                 target="_blank"
                 rel="noreferrer noopener"
                 href={RouteService.getProductDetailPath(initialProduct.productCode)}
-                underline="hover"
               >
                 {initialProduct.productName}
               </Link>

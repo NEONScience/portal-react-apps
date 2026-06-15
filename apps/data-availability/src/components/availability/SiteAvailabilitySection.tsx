@@ -135,7 +135,6 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
               target="_blank"
               rel="noreferrer noopener"
               href={RouteService.getDataRevisionsReleasePath()}
-              underline="hover"
             >
               Data Product Revisions and Releases
             </Link>

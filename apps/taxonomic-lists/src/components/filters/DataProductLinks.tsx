@@ -68,7 +68,6 @@ function DataProductLinks({ props }: any) {
               <li key={dataProduct.dataProductCode}>
                 <Link
                   href={RouteService.getProductDetailPath(dataProduct.dataProductCode)}
-                  underline="hover"
                 >
                   {dataProduct.dataProductCode}
                 </Link>

@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 function InfoPresentation(props) {
   const classes = useStyles(Theme);
   const exploreDataProductsLink = (
-    <Link href={RouteService.getDataProductExplorePath()} underline="hover">
+    <Link href={RouteService.getDataProductExplorePath()}>
       Explore Data Products
     </Link>
   );

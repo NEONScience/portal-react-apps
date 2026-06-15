@@ -354,7 +354,6 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 target="_blank"
                 rel="noreferrer noopener"
                 href={RouteService.getFieldSiteDetailPath(selectedSiteOption.siteCode)}
-                underline="hover"
               >
                 {selectedSiteOption.siteDescription}
               </Link>

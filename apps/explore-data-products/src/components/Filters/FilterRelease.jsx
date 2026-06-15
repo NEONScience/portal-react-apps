@@ -55,7 +55,6 @@ const FilterRelease = (inProps) => {
     <Link
       href={RouteService.getDataRevisionsReleasePath()}
       target="_blank"
-      underline="hover"
     >
       Data Product Revisions and Releases
     </Link>

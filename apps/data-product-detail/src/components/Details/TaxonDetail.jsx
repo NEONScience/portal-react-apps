@@ -110,7 +110,6 @@ const TaxonDetail = (inProps) => {
             <li key={taxonType} className={classes.link}>
               <Link
                 href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}
-                underline="hover"
               >
                 {parseTaxonType(taxonType)}
               </Link>

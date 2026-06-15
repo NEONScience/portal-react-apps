@@ -174,7 +174,7 @@ const DataProduct = React.memo((props) => {
 
   const name = (
     <Typography variant="h6" className={classes.productName}>
-      <Link href={productHref} target="_blank" underline="hover">
+      <Link href={productHref} target="_blank">
         {productName}
       </Link>
     </Typography>
@@ -230,7 +230,6 @@ const DataProduct = React.memo((props) => {
             component="button"
             className={classes.moreLink}
             onClick={() => dispatch({ type: 'expandProductDescription', productCode })}
-            underline="hover"
           >
             More
             <MoreIcon fontSize="small" className={classes.moreIcon} />

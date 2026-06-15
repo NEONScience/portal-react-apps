@@ -517,7 +517,7 @@ const DatasetDetails = (props) => {
           let identifierLink = null;
           if (citationIdentifierType && citationIdentifier) {
             const identifier = /^http[s]?:/.test(citationIdentifier)
-              ? <Link href={citationIdentifier} underline="hover">{citationIdentifier}</Link>
+              ? <Link href={citationIdentifier}>{citationIdentifier}</Link>
               : citationIdentifier;
             identifierLink = (
               <div>{identifier}</div>

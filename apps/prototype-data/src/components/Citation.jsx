@@ -45,7 +45,7 @@ const Citation = (props) => {
   if (typeof dataset === 'undefined') { return null; }
 
   const dataPolicyLink = (
-    <Link href={RouteService.getDataPoliciesCitationPath()} underline="hover">
+    <Link href={RouteService.getDataPoliciesCitationPath()}>
       Data Policies &amp; Citation Guidelines
     </Link>
   );

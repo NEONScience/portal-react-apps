@@ -93,7 +93,6 @@ const TombstoneNotice = () => {
         bundleParentLink = (
           <Link
             href={RouteService.getProductDetailPath(bundleParentCode, currentRelease)}
-            underline="hover"
           >
             {`${bundleParentName} (${bundleParentCode})`}
           </Link>
@@ -107,7 +106,6 @@ const TombstoneNotice = () => {
           const dataProductDetailLink = (
             <Link
               href={RouteService.getProductDetailPath(appliedProduct.productCode)}
-              underline="hover"
             >
               newer release
             </Link>
@@ -123,7 +121,7 @@ const TombstoneNotice = () => {
       }
     }
     const contactUsLink = (
-      <Link href={RouteService.getContactUsPath()} underline="hover">
+      <Link href={RouteService.getContactUsPath()}>
         Contact Us
       </Link>
     );

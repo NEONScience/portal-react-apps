@@ -54,9 +54,9 @@ const mapDispatchToProps = (dispatch) => {
     onSetUrlParams: () => {
       dispatch(setUrlParams());
     },
-    onQuerySampleFromUrl: (urlParams) => {
+    onQuerySampleFromUrl: (urlParams, headers) => {
       dispatch(querySampleFromUrl());
-      dispatch(querySampleFromUrlDispatch(urlParams));
+      dispatch(querySampleFromUrlDispatch(urlParams, headers));
     },
     onSetQueryType: (queryType) => {
       dispatch(setQueryType(queryType));
@@ -73,17 +73,17 @@ const mapDispatchToProps = (dispatch) => {
     onSetQueryBarcode: (barcode) => {
       dispatch(setQueryBarcode(barcode));
     },
-    onQueryClick: (url, cacheControl) => {
-      dispatch(querySample(url, cacheControl));
+    onQueryClick: (url, cacheControl, headers) => {
+      dispatch(querySample(url, cacheControl, headers));
     },
     onQuerySampleTagClasses: (classUrl) => {
       dispatch(querySampleTagClasses(classUrl));
     },
-    onQuerySampleClassClick: (classUrl, viewUrl, cacheControl, sampleClass) => {
-      dispatch(querySampleClass(classUrl, viewUrl, cacheControl, sampleClass));
+    onQuerySampleClassClick: (classUrl, viewUrl, cacheControl, sampleClass, headers) => {
+      dispatch(querySampleClass(classUrl, viewUrl, cacheControl, sampleClass, headers));
     },
-    onDownloadClick: (downloadType, url, cacheControl) => {
-      dispatch(downloadSamples(downloadType, url, cacheControl));
+    onDownloadClick: (downloadType, url, cacheControl, headers) => {
+      dispatch(downloadSamples(downloadType, url, cacheControl, headers));
     },
     onDownloadVisitedSamplesClick: (downloadType, sampleList) => {
       dispatch(downloadVisitedSamples(downloadType, sampleList));

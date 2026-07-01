@@ -14,10 +14,7 @@
     "ag-grid-community": "~32.0.2",
     "ag-grid-react": "~32.0.2",
     "core-js": "^3.37.1",
-    "d3": "5.16.0",
-    "d3-drag": "^1.2.5",
-    "d3-selection": "^1.4.2",
-    "d3-transition": "^1.3.2",
+    "d3": "^7.9.0",
     "js-file-download": "^0.4.12",
     "json2csv": "^5.0.7",
     "portal-core-components": "github:NEONScience/portal-core-components#9294273b50def23c3109c337d18eb7dc0ec7b996",
@@ -33,13 +30,7 @@
     "url-search-params-polyfill": "^8.2.5",
     "whatwg-fetch": "^3.6.20"
   },
-  "overrides": {
-    "portal-core-components": {
-      "d3-drag": "^1.2.5",
-      "d3-selection": "^1.4.2",
-      "d3-transition": "^1.3.2"
-    }
-  },
+  "overrides": {},
   "scripts": {
     "start": "cross-env PORTAL_REACT_APPS_ENV=dev next dev",
     "start:prod": "node server.js",

@@ -1,10 +1,8 @@
 import React, { Suspense } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import DialogBase from 'portal-core-components/lib/components/DialogBase';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import Theme, { makeStyles } from 'portal-core-components/lib/components/Theme';
 
 import ExploreContext from '../ExploreContext';
 
@@ -13,7 +11,6 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const AopDataViewer = React.lazy(() => import('portal-core-components/lib/components/AopDataViewer'));
 const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
 
 const useDialogBaseStyles = makeStyles((theme) => ({
@@ -32,7 +29,6 @@ const useDialogBaseStyles = makeStyles((theme) => ({
 }));
 
 const DataVisualizationDialog = () => {
-  const dialogBaseClasses = useDialogBaseStyles(Theme);
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
     currentProducts: { release: currentRelease },
@@ -58,14 +54,6 @@ const DataVisualizationDialog = () => {
 
   if (open) {
     switch (component) {
-      case VISUALIZATIONS.AOP_DATA_VIEWER.key:
-        title = `AOP Data Viewer - ${productCode} - ${product.productName}`;
-        contents = (
-          <AopDataViewer fillContainer productCode={productCode} showTitle={false} />
-        );
-        appliedDialogBaseClasses = dialogBaseClasses;
-        break;
-
       case VISUALIZATIONS.TIME_SERIES_VIEWER.key:
         title = `Time Series Viewer - ${productCode} - ${product.productName}`;
         dialogBaseProps.nopaper = true;

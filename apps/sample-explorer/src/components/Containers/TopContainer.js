@@ -47,51 +47,53 @@ const mapStateToProps = (state) => ({
 });
 
 // binds callback functions to action types
-const mapDispatchToProps = (dispatch) => ({
-  onSetUrlParams: () => {
-    dispatch(setUrlParams());
-  },
-  onQuerySampleFromUrl: (urlParams) => {
-    dispatch(querySampleFromUrl());
-    dispatch(querySampleFromUrlDispatch(urlParams));
-  },
-  onSetQueryType: (queryType) => {
-    dispatch(setQueryType(queryType));
-  },
-  onSetQuerySampleTag: (sampleTag) => {
-    dispatch(setQuerySampleTag(sampleTag));
-  },
-  onSetQuerySampleClass: (sampleClass) => {
-    dispatch(setQuerySampleClass(sampleClass));
-  },
-  onSetQueryArchiveGuid: (archiveGuid) => {
-    dispatch(setQueryArchiveGuid(archiveGuid));
-  },
-  onSetQueryBarcode: (barcode) => {
-    dispatch(setQueryBarcode(barcode));
-  },
-  onQueryClick: (url, cacheControl) => {
-    dispatch(querySample(url, cacheControl));
-  },
-  onQuerySampleTagClasses: (classUrl) => {
-    dispatch(querySampleTagClasses(classUrl));
-  },
-  onQuerySampleClassClick: (classUrl, viewUrl, cacheControl, sampleClass) => {
-    dispatch(querySampleClass(classUrl, viewUrl, cacheControl, sampleClass));
-  },
-  onDownloadClick: (downloadType, url, cacheControl) => {
-    dispatch(downloadSamples(downloadType, url, cacheControl));
-  },
-  onDownloadVisitedSamplesClick: (downloadType, sampleList) => {
-    dispatch(downloadVisitedSamples(downloadType, sampleList));
-  },
-  onPopupResetClick: () => {
-    dispatch(resetDownloadState());
-  },
-  onDownloadSupportedClassesClick: (url, fetch, download) => {
-    dispatch(querySupportedSampleClasses(url, fetch, download));
-  },
-});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onSetUrlParams: () => {
+      dispatch(setUrlParams());
+    },
+    onQuerySampleFromUrl: (urlParams, headers) => {
+      dispatch(querySampleFromUrl());
+      dispatch(querySampleFromUrlDispatch(urlParams, headers));
+    },
+    onSetQueryType: (queryType) => {
+      dispatch(setQueryType(queryType));
+    },
+    onSetQuerySampleTag: (sampleTag) => {
+      dispatch(setQuerySampleTag(sampleTag));
+    },
+    onSetQuerySampleClass: (sampleClass) => {
+      dispatch(setQuerySampleClass(sampleClass));
+    },
+    onSetQueryArchiveGuid: (archiveGuid) => {
+      dispatch(setQueryArchiveGuid(archiveGuid));
+    },
+    onSetQueryBarcode: (barcode) => {
+      dispatch(setQueryBarcode(barcode));
+    },
+    onQueryClick: (url, cacheControl, headers) => {
+      dispatch(querySample(url, cacheControl, headers));
+    },
+    onQuerySampleTagClasses: (classUrl) => {
+      dispatch(querySampleTagClasses(classUrl));
+    },
+    onQuerySampleClassClick: (classUrl, viewUrl, cacheControl, sampleClass, headers) => {
+      dispatch(querySampleClass(classUrl, viewUrl, cacheControl, sampleClass, headers));
+    },
+    onDownloadClick: (downloadType, url, cacheControl, headers) => {
+      dispatch(downloadSamples(downloadType, url, cacheControl, headers));
+    },
+    onDownloadVisitedSamplesClick: (downloadType, sampleList) => {
+      dispatch(downloadVisitedSamples(downloadType, sampleList));
+    },
+    onPopupResetClick: () => {
+      dispatch(resetDownloadState());
+    },
+    onDownloadSupportedClassesClick: (url, fetch, download) => {
+      dispatch(querySupportedSampleClasses(url, fetch, download));
+    }
+  }
+}
 
 // this binds the products in the global state to the
 // TopPresentation component, where they show up as

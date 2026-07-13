@@ -43,14 +43,17 @@ const DataProductPage = () => {
     },
     data: {
       releases,
-      aopVizProducts,
       productReleaseDois,
     },
   } = state;
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+    saeDataProducts: saeDataProductsJSON = { productCodes: [] },
   } = neonContextData;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
+  const { productCodes: aopDataProducts } = aopDataProductsJSON;
+  const { productCodes: saeDataProducts } = saeDataProductsJSON;
 
   // Set loading and error page props
   let loading = null;
@@ -120,10 +123,11 @@ const DataProductPage = () => {
 
   const isTombstoned = DataProductContext.determineTombstoned(productReleaseDois, currentRelease);
   const isVizProduct = (timeSeriesProductCodes.includes(productCode)
-    || aopVizProducts.includes(productCode));
+    || aopDataProducts.includes(productCode));
   const isBundleChild = (parentCodes.length > 0)
     && (isStringNonEmpty(doiProductCode) || Array.isArray(doiProductCode));
-  const showVizSection = !isTombstoned && (isVizProduct && !isBundleChild);
+  const showVizSection = !isTombstoned && ((isVizProduct && !isBundleChild)
+    || saeDataProducts.includes(productCode));
 
   // Establish sidebar links mapping to sections
   const sidebarLinks = [

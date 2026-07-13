@@ -9,9 +9,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { of, map, catchError } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import cloneDeep from 'lodash/cloneDeep';
@@ -68,7 +65,6 @@ const DEFAULT_STATE = {
     bundleParents: {},
     bundleParentReleases: {},
     productReleaseDois: {},
-    aopVizProducts: null,
     tombstoneAvailability: {},
   },
   data: {
@@ -78,7 +74,6 @@ const DEFAULT_STATE = {
     bundleParentReleases: {}, // Bundle parent product metadata on a per-release basis
     releases: [], // List of release objects; fed from base product or bundle inheritance
     productReleaseDois: {},
-    aopVizProducts: [],
     tombstoneAvailability: null,
   },
 
@@ -108,11 +103,6 @@ const stateHasFetchesInStatus = (state, status) => (
     (bundleParent) => Object.keys(state.fetches.bundleParentReleases[bundleParent]).some(
       (f) => fetchIsInStatus(state.fetches.bundleParentReleases[bundleParent][f], status),
     ),
-  )
-  // NOTE: we only care about the aopVizProducts fetch if it's awaiting fetch, so it can be
-  // triggered. Otherwise it should never affect app-level status.
-  || (
-    status === FETCH_STATUS.AWAITING_CALL && fetchIsInStatus(state.fetches.aopVizProducts, status)
   )
 );
 
@@ -183,10 +173,6 @@ const calculateFetches = (state) => {
   // Fetch the base product
   if (!state.fetches.product) {
     newState.fetches.product = { status: FETCH_STATUS.AWAITING_CALL };
-  }
-  // Fetch the list of products that support the AOP Visualization
-  if (!state.fetches.aopVizProducts) {
-    newState.fetches.aopVizProducts = { status: FETCH_STATUS.AWAITING_CALL };
   }
   // Fetch the release-specific product
   if (fetchRelease && !state.fetches.productReleases[fetchRelease]) {
@@ -843,18 +829,6 @@ const reducer = (state, action) => {
       }
       return calculateAppStatus(newState);
 
-    case 'fetchAOPVizProductsStarted':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.FETCHING;
-      return calculateAppStatus(newState);
-    case 'fetchAOPVizProductsFailed':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.ERROR;
-      newState.fetches.aopVizProducts.error = action.error;
-      return calculateAppStatus(newState);
-    case 'fetchAOPVizProductsSucceeded':
-      newState.fetches.aopVizProducts.status = FETCH_STATUS.SUCCESS;
-      newState.data.aopVizProducts = action.data;
-      return calculateAppStatus(newState);
-
     case 'setNextRelease':
       newState.route.nextRelease = action.release;
       if (action.hash) { newState.route.nextHash = action.hash.replace(/#/g, ''); }
@@ -1062,30 +1036,6 @@ const Provider = (inProps) => {
             );
           });
       });
-    // AOP products fetch
-    if (fetchIsAwaitingCall(fetches.aopVizProducts)) {
-      dispatch({ type: 'fetchAOPVizProductsStarted' });
-      ajax({
-        method: 'GET',
-        url: `${NeonEnvironment.getVisusProductsBaseUrl()}`,
-        crossDomain: true,
-      }).pipe(
-        map((response) => {
-          if (exists(response)
-              && Array.isArray(response.response)
-              && (response.response.length > 0)) {
-            dispatch({ type: 'fetchAOPVizProductsSucceeded', data: response.response });
-            return of(true);
-          }
-          dispatch({ type: 'fetchAOPVizProductsFailed', error: 'AOP products fetch failed' });
-          return of('AOP visualization products fetch failed');
-        }),
-        catchError((error) => {
-          dispatch({ type: 'fetchAOPVizProductsFailed', error });
-          return of('AOP visualization products fetch failed');
-        }),
-      ).subscribe();
-    }
   }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
 
   useEffect(() => {

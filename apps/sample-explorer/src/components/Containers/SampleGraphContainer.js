@@ -8,11 +8,13 @@ const mapStateToProps = (state) => ({
   graphData: state.graphData,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onQueryClick: (url, cacheControl) => {
-    dispatch(querySample(url, cacheControl));
-  },
-});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onQueryClick: (url, cacheControl, headers) => {
+      dispatch(querySample(url, cacheControl, headers));
+    }
+  };
+}
 
 const SampleGraphContainer = connect(
   mapStateToProps,

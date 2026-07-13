@@ -12,7 +12,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import LoginRequiredCard from 'portal-core-components/lib/components/Card/LoginRequiredCard';
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
@@ -62,25 +64,41 @@ function SampleQueryPresentation(props) {
 
   const classes = useStyles(Theme);
 
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  // Check preconditions for initial status
+  const {
+    ready: preconditionsSatisfied,
+    canAccessData,
+  } = neonContextSessionState;
+
   const submitQuery = () => {
     let url = NeonEnvironment.getFullApiPath('samples');
+    const headers = {
+      ...neonContextSessionState.sessionHeaders
+    };
     switch (queryType) {
       case QUERY_TYPE.SAMPLE_TAG: {
         const appliedSampleTag = exists(sampleTag) ? sampleTag.trim() : null;
         const classUrl = `${url}/classes?sampleTag=${encodeURIComponent(appliedSampleTag)}`;
         const viewUrl = `${url}/view?sampleTag=${encodeURIComponent(appliedSampleTag)}`;
         const appliedSampleClass = exists(sampleClass) ? sampleClass : null;
-        return onQuerySampleClassClick(classUrl, viewUrl, cacheControl, appliedSampleClass);
+        return onQuerySampleClassClick(
+          classUrl,
+          viewUrl,
+          cacheControl,
+          appliedSampleClass,
+          headers,
+        );
       }
       case QUERY_TYPE.BARCODE: {
         const appliedBarcode = exists(barcode) ? barcode.trim() : null;
         url = `${url}/view?barcode=${encodeURIComponent(appliedBarcode)}`;
-        return onQueryClick(url, cacheControl);
+        return onQueryClick(url, cacheControl, headers);
       }
       case QUERY_TYPE.ARCHIVE_GUID: {
         const appliedArchiveGuid = exists(archiveGuid) ? archiveGuid.trim() : null;
         url = `${url}/view?archiveGuid=${encodeURIComponent(appliedArchiveGuid)}`;
-        return onQueryClick(url, cacheControl);
+        return onQueryClick(url, cacheControl, headers);
       }
       default:
         return undefined;
@@ -88,12 +106,37 @@ function SampleQueryPresentation(props) {
   };
 
   useEffect(() => {
+    if (!preconditionsSatisfied) { return; }
+    if (!canAccessData) { return; }
+    const headers = {
+      ...neonContextSessionState.sessionHeaders
+    };
     if (!urlParams.parsed) {
       onSetUrlParams();
     } else if (urlParams.fetch) {
-      onQuerySampleFromUrl(urlParams);
+      onQuerySampleFromUrl(urlParams, headers);
     }
-  });
+  }, [
+    preconditionsSatisfied,
+    canAccessData,
+    neonContextSessionState,
+    onSetUrlParams,
+    onQuerySampleFromUrl,
+    urlParams,
+  ]);
+
+  const renderDataAccessCard = () => {
+    if (!preconditionsSatisfied) { return <></>; }
+    if (canAccessData) { return <></>; }
+    return (
+      <LoginRequiredCard
+        showValidation
+        isAuthenticated={neonContextSessionState.authenticated}
+        accountValidated={neonContextSessionState.accountValidated}
+        accountValidationSteps={neonContextSessionState.accountValidationSteps}
+      />
+    );
+  };
 
   // Error State
   const renderError = () => {
@@ -114,11 +157,41 @@ function SampleQueryPresentation(props) {
     );
   };
 
+  const renderButtonContents = () => {
+    if (!preconditionsSatisfied) {
+      return (
+        <React.Fragment>
+          Initializing...
+          <CircularProgress size={24} className={classes.searchIcon} />
+        </React.Fragment>
+      );
+    }
+    if (queryIsLoading) {
+      return (
+        <React.Fragment>
+          Searching...
+          <CircularProgress size={24} className={classes.searchIcon} />
+        </React.Fragment>
+      );
+    }
+    return (
+      <React.Fragment>
+        Search
+        <SearchIcon fontSize="small" className={classes.searchIcon} />
+      </React.Fragment>
+    );
+  };
+
+  const getSearchDisabled = () => {
+    return queryIsLoading || !canAccessData || !preconditionsSatisfied;
+  };
+
   return (
     <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="search-samples-section">
       <Typography variant="h4" gutterBottom>
         Search Samples
       </Typography>
+      {renderDataAccessCard()}
       <div data-selenium="sample-query-form">
         <div className={classes.row}>
           <SelectSampleIdentifier {...props} />
@@ -135,21 +208,11 @@ function SampleQueryPresentation(props) {
             variant="contained"
             color="primary"
             onClick={submitQuery}
-            disabled={queryIsLoading}
+            disabled={getSearchDisabled()}
             data-gtm="sample-search-form.submit-button"
             data-selenium="sample-search-form.submit-button"
           >
-            {queryIsLoading ? (
-              <>
-                Searching...
-                <CircularProgress size={24} className={classes.searchIcon} />
-              </>
-            ) : (
-              <>
-                Search
-                <SearchIcon fontSize="small" className={classes.searchIcon} />
-              </>
-            )}
+            {renderButtonContents()}
           </Button>
         </div>
         {renderError()}

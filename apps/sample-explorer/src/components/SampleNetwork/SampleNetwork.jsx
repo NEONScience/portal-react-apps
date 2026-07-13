@@ -11,6 +11,7 @@ import { Graph } from 'react-d3-graph';
 
 import makeStyles from '@mui/styles/makeStyles';
 
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
@@ -33,6 +34,9 @@ const useStyles = makeStyles(() => ({
 function SampleNetwork(props) {
   const { onNodeClick, graphData } = props;
   const classes = useStyles(Theme);
+
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const { canAccessData } = neonContextSessionState;
 
   const [width, setWidth] = useState(1100);
   const [height, setHeight] = useState(500);
@@ -94,6 +98,16 @@ function SampleNetwork(props) {
     return null;
   }
 
+  const getNodeClick = () => {
+    if (!canAccessData) {
+      return undefined;
+    }
+    return (nodeId) => {
+      const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${nodeId}`;
+      return onNodeClick(url);
+    };
+  }
+
   const graphConfig = {
     highlightBehavior: true,
     staticGraph: true,
@@ -122,10 +136,7 @@ function SampleNetwork(props) {
         id="sample-network-graph"
         data={graphData}
         config={graphConfig}
-        onClickNode={(nodeId) => {
-          const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${nodeId}`;
-          return onNodeClick(url);
-        }}
+        onClickNode={getNodeClick()}
       />
     </div>
   );

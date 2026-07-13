@@ -38,12 +38,33 @@ const getFetch = () => {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
-};
+}
 
-export const querySample = (url, cacheControl) => {
-  const fetchHeaders = {
-    Accept: 'application/json;charset=UTF-8; text/plain',
+export const querySampleFromUrlDispatch = (urlParams, headers) => {
+  let viewUrl = null;
+  switch (urlParams.idType) {
+    case QUERY_TYPE.SAMPLE_TAG:
+      let url = NeonEnvironment.getFullApiPath('samples');
+      let classUrl = url + "/classes?sampleTag=" + encodeURIComponent(urlParams.sampleTag.trim());
+      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
+      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass, headers);
+    case QUERY_TYPE.BARCODE:
+      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
+      return querySample(viewUrl, null, headers);
+    case QUERY_TYPE.ARCHIVE_GUID:
+      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
+      return querySample(viewUrl, null, headers);
+    default:
+      break;
+  }
+  return;
+}
+
+export const querySample = (url, cacheControl, headers) => {
+  let fetchHeaders = {
+    Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
+    ...headers,
   };
   if (cacheControl === 'no-cache') {
     fetchHeaders['cache-control'] = cacheControl;
@@ -82,10 +103,11 @@ export const querySample = (url, cacheControl) => {
   };
 };
 
-export const querySampleTagClasses = (classUrl) => {
-  const fetchHeaders = {
-    Accept: 'application/json;charset=UTF-8; text/plain',
+export const querySampleTagClasses = (classUrl, headers) => {
+  let fetchHeaders = {
+    Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
+    ...headers,
   };
   const fetchInit = {
     method: 'GET',
@@ -123,9 +145,9 @@ export const querySampleTagClasses = (classUrl) => {
   };
 };
 
-export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) => {
-  const fetchHeaders = {
-    Accept: 'application/json;charset=UTF-8; text/plain',
+export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, headers) => {
+  let fetchHeaders = {
+    Accept: "application/json;charset=UTF-8; text/plain",
     ...NeonApi.getApiTokenHeader(),
   };
   if (cacheControl === 'no-cache') {
@@ -167,8 +189,8 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass) =
         }
 
         if (exists(appliedSampleClass)) {
-          const viewUrlForQuerySample = `${viewUrl}&sampleClass=${appliedSampleClass}`;
-          dispatch(querySample(viewUrlForQuerySample, cacheControl));
+          viewUrl = viewUrl + "&sampleClass=" + appliedSampleClass;
+          dispatch(querySample(viewUrl, cacheControl, headers));
         }
       })
       .catch((error) => {
@@ -246,7 +268,7 @@ export const querySupportedSampleClasses = (url, query, download) => {
   };
 };
 
-export const downloadSamples = (downloadType, url, cacheControl) => {
+export const downloadSamples = (downloadType, url, cacheControl, headers) => {
   const fetchHeaders = new Headers();
   fetchHeaders.append('Accept', 'application/json;charset=UTF-8');
   fetchHeaders.append('Accept', 'text/plain');
@@ -258,6 +280,7 @@ export const downloadSamples = (downloadType, url, cacheControl) => {
     headers: {
       ...fetchHeaders,
       ...NeonApi.getApiTokenHeader(),
+      ...headers,
     },
     mode: 'cors',
     credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',

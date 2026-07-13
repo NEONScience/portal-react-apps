@@ -19,6 +19,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
 function DownloadSamplesPresentation(props) {
@@ -33,7 +34,10 @@ function DownloadSamplesPresentation(props) {
     },
   } = props;
 
-  const degreeIsValid = (d) => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const { canAccessData } = neonContextSessionState;
+
+  const degreeIsValid = d => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
 
   const initialState = {
     dialogOpen: false,
@@ -109,15 +113,20 @@ function DownloadSamplesPresentation(props) {
     }
     if (state.sampleSelection === 'allSamples') {
       return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-    }
-    if (state.degreeType === 'chosen') {
-      return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-    }
-    const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
+    } else {
+      if (state.degreeType === 'chosen') {
+        return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
+      } else {
+        const headers = {
+          ...neonContextSessionState.sessionHeaders
+        };
+        const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
           + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
           + `&sampleClass=${sampleList[0].sampleClass}`
           + `&degree=${state.degree}`;
-    return onDownloadClick(state.downloadType, url, cacheControl);
+        return onDownloadClick(state.downloadType, url, cacheControl, headers);
+      }
+    }
   };
 
   return (
@@ -131,10 +140,11 @@ function DownloadSamplesPresentation(props) {
             dialogOpen: true,
           });
         }}
+        disabled={!canAccessData}
         style={{ marginBottom: Theme.spacing(3), whiteSpace: 'nowrap' }}
         data-selenium="download-samples-button"
       >
-        Download Sample(s)
+        {canAccessData ? 'Download Sample(s)' : 'Login Required' }
         <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
       </Button>
       <Dialog
@@ -274,7 +284,7 @@ function DownloadSamplesPresentation(props) {
           <Button
             color="primary"
             variant="contained"
-            disabled={!state.canDownload}
+            disabled={!state.canDownload || !canAccessData}
             onClick={() => {
               executeDownload();
               dispatch({

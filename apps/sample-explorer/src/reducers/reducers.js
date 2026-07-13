@@ -146,11 +146,11 @@ const reducer = (state = {}, action) => {
           errorDisplay = 'Sample Not Found. You may have entered an incorrect identifier...';
         }
       } else if (errorString.includes('500')) {
-        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
+        errorDisplay = 'Internal Server Error';
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
+        errorDisplay = 'Internal Server Error';
       }
 
       const visitedSamples = {

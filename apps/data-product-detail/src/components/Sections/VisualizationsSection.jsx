@@ -2,16 +2,73 @@ import React from 'react';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
 
+import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import AopDataViewer from 'portal-core-components/lib/components/AopDataViewer';
+import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
+import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
-import Theme from 'portal-core-components/lib/components/Theme';
+import Theme, { makeStyles } from 'portal-core-components/lib/components/Theme';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
 import SkeletonSection from './SkeletonSection';
+
+const useStyles = makeStyles((theme) => ({
+  divider: {
+    margin: theme.spacing(2, 0),
+  },
+}));
+
+const aopVideoUrl = (
+  <>
+    {' '}
+    <a href={NeonEnvironment.getAopGEEVideoUrl()}>
+      this video
+    </a>
+    {' '}
+  </>
+);
+
+const AopVizNode = () => {
+  const classes = useStyles(Theme);
+  return (
+    <div>
+      <Typography variant="body2" gutterBottom>
+        This Google Earth Engine (GEE) viewer allows for interactive exploration of remotely
+        sensed data from the Airborne Observation Platform (AOP) that have been added to GEE.
+        In the app, change the field site and data product for up to two images and/or dates
+        to view and compare. See
+        {aopVideoUrl}
+        for an overview of all the interactive features included in the app. Note that not all
+        AOP data available on the data portal may be included in the GEE catalog at any given time.
+      </Typography>
+      <Divider className={classes.divider} />
+      {/* <Divider /> */}
+      <AopGeeDataViewer isFullWidth={false} />
+    </div>
+  );
+};
+
+const SaeVizNode = (product) => {
+  const classes = useStyles(Theme);
+  return (
+    <div>
+      <Typography variant="body2" gutterBottom>
+        This tool provides a quick, interactive view of fluxes and key meteorological drivers.
+        Users can preview time series, QC information, and site-level patterns before downloading
+        data.
+      </Typography>
+      <Divider className={classes.divider} />
+      <SaeDataViewerButton
+        isFullWidth={false}
+        product={product}
+      />
+    </div>
+  );
+};
 
 const VisualizationsSection = (props) => {
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
@@ -19,13 +76,20 @@ const VisualizationsSection = (props) => {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
   } = neonContextData;
   const { productCodes: timeSeriesProductCodes } = timeSeriesDataProductsJSON;
+  const {
+    aopDataProducts: aopDataProductsJSON = { productCodes: [] },
+  } = neonContextData;
+  const { productCodes: aopProductCodes } = aopDataProductsJSON;
+  const {
+    saeDataProducts: saeDataProductsJSON = { productCodes: [] },
+  } = neonContextData;
+  const { productCodes: saeProductCodes } = saeDataProductsJSON;
 
   const [state, dispatch] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
 
   const {
     route: { productCode, release: currentRelease },
-    data: { aopVizProducts },
   } = state;
 
   const currentReleaseObject = DataProductContext.getCurrentReleaseObjectFromState(state);
@@ -55,12 +119,19 @@ const VisualizationsSection = (props) => {
       };
     }
   }
-  if (aopVizProducts.includes(productCode)) {
+  if (aopProductCodes.includes(productCode)) {
     viz.AOP = {
-      name: 'AOP Data Viewer',
-      node: <AopDataViewer key="aopDataViewer" showOpenInNewWindow productCode={productCode} />,
+      name: 'AOP GEE Data Viewer',
+      node: AopVizNode(),
     };
   }
+  if (saeProductCodes.includes(productCode)) {
+    viz.SAE = {
+      name: 'SAE Data Viewer',
+      node: SaeVizNode(productCode),
+    };
+  }
+
   const hideViz = currentReleaseObject && (currentReleaseObject.showViz === false);
   if (currentRelease && hideViz && Object.keys(viz).length) {
     const releaseTag = <b>{currentRelease}</b>;

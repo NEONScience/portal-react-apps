@@ -7,7 +7,7 @@ import React, {
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 import { Theme as MuiTheme } from '@mui/material/styles';
@@ -146,7 +146,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
         return null;
       }
       return (
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TombstoneNotice />
         </Grid>
       );
@@ -154,7 +154,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 
     return (
       <Grid container className={componentClasses.infoContainer}>
-        <Grid item xs={12} className={componentClasses.infoTextContainer}>
+        <Grid size={{ xs: 12 }} className={componentClasses.infoTextContainer}>
           <Typography variant="subtitle1">
             {text}
           </Typography>
@@ -169,7 +169,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
       <Typography variant="h4" component="h2" gutterBottom>Available Sites</Typography>
       {renderInfo()}
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <div className={isLoading ? classes.overlay : undefined}>
             {renderLocations()}
           </div>

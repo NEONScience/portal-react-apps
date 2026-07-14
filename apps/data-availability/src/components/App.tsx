@@ -7,7 +7,7 @@ import React, {
 import { Dispatch, AnyAction } from 'redux';
 import { batch, useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
@@ -41,7 +41,6 @@ import {
   DataProductBundle,
   DataProductParent,
 } from '../types/store';
-import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
 import useContextReleases from '../hooks/useContextReleases';
 import { determineBundle, findBundle, findForwardParent } from '../util/bundleUtil';
@@ -250,13 +249,13 @@ const App: React.FC = (): JSX.Element => {
       case 'Site':
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <SiteSelect />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <SiteAvailabilitySection />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <LocationsSection />
             </Grid>
           </Grid>
@@ -265,13 +264,13 @@ const App: React.FC = (): JSX.Element => {
       default:
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <DataProductSelect />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <AvailabilitySection />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <LocationsSection />
             </Grid>
           </Grid>
@@ -308,7 +307,7 @@ const App: React.FC = (): JSX.Element => {
       sidebarLinksAdditionalContent={sidebarContent}
     >
       <Grid container className={classes.infoContainer}>
-        <Grid item xs={12} className={classes.introTextContainer}>
+        <Grid size={{ xs: 12 }} className={classes.introTextContainer}>
           <Typography variant="subtitle1">
             {/* eslint-disable */}
             The availability chart and site map below show the combination of product, site, and month
@@ -323,7 +322,7 @@ const App: React.FC = (): JSX.Element => {
             {/* eslint-enable */}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <InfoCard
             classes={{
               callout: classes.callout,

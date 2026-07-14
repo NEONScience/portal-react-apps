@@ -2,7 +2,7 @@ import React, { useMemo, Suspense, type JSX } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Skeleton from '@mui/material/Skeleton';
@@ -125,7 +125,7 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
     <div id="site-availability-view" className={classes.section}>
       <Typography variant="h4" component="h2" gutterBottom>Site Availability</Typography>
       <Grid container className={componentClasses.infoContainer}>
-        <Grid item xs={12} className={componentClasses.infoTextContainer}>
+        <Grid size={{ xs: 12 }} className={componentClasses.infoTextContainer}>
           <Typography variant="subtitle1">
             The chart shows the available data products and months where data are available as
             well as distinguishes beween release data and provisional data. When viewing
@@ -141,12 +141,12 @@ const SiteAvailabilitySection: React.FC = (): JSX.Element => {
             &nbsp;for more details.
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           {renderSummary()}
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <div className={isLoading ? classes.overlay : undefined}>
             {renderAvailability()}
           </div>

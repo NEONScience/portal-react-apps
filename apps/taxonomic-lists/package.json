@@ -19,7 +19,7 @@
     "datatables.net-responsive-bs": "^2.5.1",
     "jquery": "3.7.1",
     "lodash": "^4.17.21",
-    "portal-core-components": "github:NEONScience/portal-core-components#next",
+    "portal-core-components": "github:NEONScience/portal-core-components#9294273b50def23c3109c337d18eb7dc0ec7b996",
     "prop-types": "^15.8.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",

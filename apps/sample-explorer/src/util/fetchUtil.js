@@ -38,31 +38,11 @@ const getFetch = () => {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
-}
-
-export const querySampleFromUrlDispatch = (urlParams, headers) => {
-  let viewUrl = null;
-  switch (urlParams.idType) {
-    case QUERY_TYPE.SAMPLE_TAG:
-      let url = NeonEnvironment.getFullApiPath('samples');
-      let classUrl = url + "/classes?sampleTag=" + encodeURIComponent(urlParams.sampleTag.trim());
-      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
-      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass, headers);
-    case QUERY_TYPE.BARCODE:
-      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
-      return querySample(viewUrl, null, headers);
-    case QUERY_TYPE.ARCHIVE_GUID:
-      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
-      return querySample(viewUrl, null, headers);
-    default:
-      break;
-  }
-  return;
-}
+};
 
 export const querySample = (url, cacheControl, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
     ...headers,
   };
@@ -104,8 +84,8 @@ export const querySample = (url, cacheControl, headers) => {
 };
 
 export const querySampleTagClasses = (classUrl, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
     ...headers,
   };
@@ -146,8 +126,8 @@ export const querySampleTagClasses = (classUrl, headers) => {
 };
 
 export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
   };
   if (cacheControl === 'no-cache') {
@@ -189,8 +169,8 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, h
         }
 
         if (exists(appliedSampleClass)) {
-          viewUrl = viewUrl + "&sampleClass=" + appliedSampleClass;
-          dispatch(querySample(viewUrl, cacheControl, headers));
+          const newViewUrl = `${viewUrl}&sampleClass=${appliedSampleClass}`;
+          dispatch(querySample(newViewUrl, cacheControl, headers));
         }
       })
       .catch((error) => {
@@ -205,26 +185,27 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, h
   };
 };
 
-export const querySampleFromUrlDispatch = (urlParams) => {
+export const querySampleFromUrlDispatch = (urlParams, headers) => {
   let viewUrl = null;
   switch (urlParams.idType) {
     case QUERY_TYPE.SAMPLE_TAG: {
       const url = NeonEnvironment.getFullApiPath('samples');
       const classUrl = `${url}/classes?sampleTag=${encodeURIComponent(urlParams.sampleTag.trim())}`;
       viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
-      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass);
+      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass, headers);
     }
     case QUERY_TYPE.BARCODE: {
       viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
-      return querySample(viewUrl);
+      return querySample(viewUrl, null, headers);
     }
     case QUERY_TYPE.ARCHIVE_GUID: {
       viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
-      return querySample(viewUrl);
+      return querySample(viewUrl, null, headers);
     }
     default:
-      return undefined;
+      break;
   }
+  return undefined;
 };
 
 export const querySupportedSampleClasses = (url, query, download) => {

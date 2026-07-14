@@ -1,8 +1,6 @@
 import React, { type JSX } from 'react';
 import { useSelector } from 'react-redux';
 
-import { Theme as MuiTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -10,15 +8,15 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
 import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
-import { StylesHook } from '../../types/styles';
 import { TombstoneNoticeState } from '../states/AppStates';
 import { DataProductReleaseDoi } from '../../types/store';
 
-const useStyles: StylesHook = makeStyles((theme: MuiTheme) => ({
+const useStyles = makeStyles()((theme: NeonTheme) => ({
   doiList: {
     width: '100%',
   },
@@ -33,7 +31,7 @@ const useTombstoneNoticdSelector = (): TombstoneNoticeState => useSelector(
 
 const TombstoneNotice: React.FC = (): JSX.Element | null => {
   const state: TombstoneNoticeState = useTombstoneNoticdSelector();
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { isTombstoned, focalProductReleaseDoi }: TombstoneNoticeState = state;
   if (!(isTombstoned === true)
       || !exists(focalProductReleaseDoi)

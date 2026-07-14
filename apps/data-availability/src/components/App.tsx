@@ -11,16 +11,12 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
-import { Theme as MuiTheme } from '@mui/material/styles';
-
-import { makeStyles } from '@mui/styles';
-import createStyles from '@mui/styles/createStyles';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
 import SidebarFilter from 'portal-core-components/lib/components/SidebarFilter/SidebarFilter';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
@@ -52,26 +48,26 @@ import { determineBundle, findBundle, findForwardParent } from '../util/bundleUt
 
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useStyles = makeStyles()((theme: NeonTheme) => ({
   sidebarDivider: {
-    margin: muiTheme.spacing(3, 0),
+    margin: theme.spacing(3, 0),
   },
   introTextContainer: {
-    margin: muiTheme.spacing(0, 0, 3, 0),
+    margin: theme.spacing(0, 0, 3, 0),
   },
   infoContainer: {
-    margin: muiTheme.spacing(0, 0, 4, 0),
+    margin: theme.spacing(0, 0, 4, 0),
   },
   callout: {
-    margin: muiTheme.spacing(0.5, 0, 3, 0),
+    margin: theme.spacing(0.5, 0, 3, 0),
     backgroundColor: '#ffffff',
     borderColor: '#d7d9d9',
   },
   calloutIcon: {
-    color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-    marginRight: muiTheme.spacing(2),
+    color: theme.colors.LIGHT_BLUE[300],
+    marginRight: theme.spacing(2),
   },
-})) as StylesHook;
+}));
 
 const useAppSelector = (): AppComponentState => useSelector(
   AppStateSelector.app,
@@ -79,7 +75,7 @@ const useAppSelector = (): AppComponentState => useSelector(
 
 const App: React.FC = (): JSX.Element => {
   const state: AppComponentState = useAppSelector();
-  const classes: Record<string, string> = useStyles(Theme);
+  const { classes } = useStyles();
   const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     productsFetchState,

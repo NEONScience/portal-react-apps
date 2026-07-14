@@ -2,7 +2,7 @@ import React from 'react';
 import { ReplaySubject } from 'rxjs';
 
 import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
-import NeonThemeProvider from 'portal-core-components/lib/components/NeonPage/NeonThemeProvider';
+import NeonThemeProvider from 'portal-core-components/lib/components/Theme/NeonThemeProvider';
 
 import ExploreContext from './ExploreContext';
 import ExplorePage from './ExplorePage';

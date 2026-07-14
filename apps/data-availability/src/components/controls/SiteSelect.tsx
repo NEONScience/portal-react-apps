@@ -21,16 +21,14 @@ import Autocomplete, {
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
 import Skeleton from '@mui/material/Skeleton';
-import { Theme as MuiTheme } from '@mui/material/styles';
-
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
 
 import LocationIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
@@ -39,43 +37,42 @@ import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
 import { Site } from '../../types/store';
-import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { SiteSelectOption, SiteSelectState } from '../states/AppStates';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useStyles = makeStyles()((theme: NeonTheme) => ({
   section: {
-    marginBottom: muiTheme.spacing(4),
+    marginBottom: theme.spacing(4),
   },
   sectionTitle: {
     fontWeight: 500,
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   sectionSubtitle: {
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   infoCallout: {
-    marginTop: muiTheme.spacing(3),
+    marginTop: theme.spacing(3),
   },
   skeleton: {
     marginBottom: '16px',
   },
   cardSelectedSite: {
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
     border: '1px solid #d7d9d9',
   },
   cardContentSelectedSite: {
-    padding: muiTheme.spacing(2),
+    padding: theme.spacing(2),
   },
   autocompleteInput: {
-    padding: `${muiTheme.spacing(2)} !important`,
+    padding: `${theme.spacing(2)} !important`,
   },
   autocompletePopupOpen: {
     transform: 'rotate(0) !important',
   },
   autocompleteLabel: {
-    paddingLeft: `${muiTheme.spacing(1)} !important`,
+    paddingLeft: `${theme.spacing(1)} !important`,
     paddingTop: '6px !important',
   },
   autocompleteLabelShrink: {
@@ -85,9 +82,9 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
     fontWeight: 600,
   },
   siteCodeChip: {
-    color: muiTheme.palette.grey[400],
-    border: `1px solid ${muiTheme.palette.grey[400]}`,
-    backgroundColor: muiTheme.palette.grey[100],
+    color: theme.palette.grey[400],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
   },
   siteDetailsRow: {
@@ -112,7 +109,7 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
   searchHighlight: {
     fontWeight: 700,
   },
-})) as StylesHook;
+}));
 
 const useSiteSelectSelector = (): SiteSelectState => useSelector(
   AppStateSelector.siteSelect,
@@ -154,7 +151,7 @@ const transformOptions = (
 
 const SiteSelect: React.FC = (): JSX.Element => {
   const state: SiteSelectState = useSiteSelectSelector();
-  const classes: Record<string, string> = useStyles(Theme);
+  const { classes } = useStyles();
   const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     sitesFetchState,

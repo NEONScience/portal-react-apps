@@ -1,11 +1,6 @@
-import { Theme as MuiTheme } from '@mui/material/styles';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-
-import { StylesHook } from '../types/styles';
-
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useStyles = makeStyles()((muiTheme) => ({
   section: {
     marginBottom: muiTheme.spacing(4),
   },
@@ -43,6 +38,6 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
       opacity: 0.9,
     },
   },
-})) as StylesHook;
+}));
 
 export default useStyles;

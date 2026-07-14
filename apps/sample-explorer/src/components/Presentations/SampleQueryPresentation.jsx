@@ -74,7 +74,7 @@ function SampleQueryPresentation(props) {
   const submitQuery = () => {
     let url = NeonEnvironment.getFullApiPath('samples');
     const headers = {
-      ...neonContextSessionState.sessionHeaders
+      ...neonContextSessionState.sessionHeaders,
     };
     switch (queryType) {
       case QUERY_TYPE.SAMPLE_TAG: {
@@ -109,7 +109,7 @@ function SampleQueryPresentation(props) {
     if (!preconditionsSatisfied) { return; }
     if (!canAccessData) { return; }
     const headers = {
-      ...neonContextSessionState.sessionHeaders
+      ...neonContextSessionState.sessionHeaders,
     };
     if (!urlParams.parsed) {
       onSetUrlParams();
@@ -126,8 +126,8 @@ function SampleQueryPresentation(props) {
   ]);
 
   const renderDataAccessCard = () => {
-    if (!preconditionsSatisfied) { return <></>; }
-    if (canAccessData) { return <></>; }
+    if (!preconditionsSatisfied) { return null; }
+    if (canAccessData) { return null; }
     return (
       <LoginRequiredCard
         showValidation
@@ -160,31 +160,29 @@ function SampleQueryPresentation(props) {
   const renderButtonContents = () => {
     if (!preconditionsSatisfied) {
       return (
-        <React.Fragment>
+        <>
           Initializing...
           <CircularProgress size={24} className={classes.searchIcon} />
-        </React.Fragment>
+        </>
       );
     }
     if (queryIsLoading) {
       return (
-        <React.Fragment>
+        <>
           Searching...
           <CircularProgress size={24} className={classes.searchIcon} />
-        </React.Fragment>
+        </>
       );
     }
     return (
-      <React.Fragment>
+      <>
         Search
         <SearchIcon fontSize="small" className={classes.searchIcon} />
-      </React.Fragment>
+      </>
     );
   };
 
-  const getSearchDisabled = () => {
-    return queryIsLoading || !canAccessData || !preconditionsSatisfied;
-  };
+  const getSearchDisabled = () => queryIsLoading || !canAccessData || !preconditionsSatisfied;
 
   return (
     <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="search-samples-section">

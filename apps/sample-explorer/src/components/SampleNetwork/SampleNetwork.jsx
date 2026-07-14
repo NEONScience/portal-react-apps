@@ -106,7 +106,7 @@ function SampleNetwork(props) {
       const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${nodeId}`;
       return onNodeClick(url);
     };
-  }
+  };
 
   const graphConfig = {
     highlightBehavior: true,

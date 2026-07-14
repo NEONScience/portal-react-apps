@@ -21,16 +21,13 @@ import Autocomplete, {
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
 import Skeleton from '@mui/material/Skeleton';
-import { Theme as MuiTheme } from '@mui/material/styles';
-
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
 
 import SearchIcon from '@mui/icons-material/Search';
 
 import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -42,57 +39,56 @@ import { IDataProductLike } from 'portal-core-components/lib/types/internal';
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
 import { DataProduct, DataProductBundle, DataProductParent } from '../../types/store';
-import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
 import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useStyles = makeStyles()((theme: NeonTheme) => ({
   section: {
-    marginBottom: muiTheme.spacing(4),
+    marginBottom: theme.spacing(4),
   },
   sectionTitle: {
     fontWeight: 500,
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   sectionSubtitle: {
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   infoCallout: {
-    marginTop: muiTheme.spacing(3),
+    marginTop: theme.spacing(3),
   },
   skeleton: {
     marginBottom: '16px',
   },
   callout: {
-    margin: muiTheme.spacing(0.5, 0, 3, 0),
+    margin: theme.spacing(0.5, 0, 3, 0),
     backgroundColor: '#ffffff',
     borderColor: '#d7d9d9',
   },
   calloutIcon: {
-    color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-    marginRight: muiTheme.spacing(2),
+    color: theme.colors.LIGHT_BLUE[300],
+    marginRight: theme.spacing(2),
   },
   listItemTextProduct: {
     display: 'inline-block',
     whiteSpace: 'normal',
   },
   cardSelectedProduct: {
-    marginBottom: muiTheme.spacing(2),
+    marginBottom: theme.spacing(2),
     border: '1px solid #d7d9d9',
   },
   cardContentSelectedProduct: {
-    padding: muiTheme.spacing(2),
+    padding: theme.spacing(2),
   },
   autocompleteInput: {
-    padding: `${muiTheme.spacing(2)} !important`,
+    padding: `${theme.spacing(2)} !important`,
   },
   autocompletePopupOpen: {
     transform: 'rotate(0) !important',
   },
   autocompleteLabel: {
-    paddingLeft: `${muiTheme.spacing(1)} !important`,
+    paddingLeft: `${theme.spacing(1)} !important`,
     paddingTop: '6px !important',
   },
   autocompleteLabelShrink: {
@@ -102,15 +98,15 @@ const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
     fontWeight: 600,
   },
   productCodeChip: {
-    color: muiTheme.palette.grey[400],
-    border: `1px solid ${muiTheme.palette.grey[400]}`,
-    backgroundColor: muiTheme.palette.grey[100],
+    color: theme.palette.grey[400],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
   },
   searchHighlight: {
     fontWeight: 700,
   },
-})) as StylesHook;
+}));
 
 const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
   AppStateSelector.dataProductSelect,
@@ -118,7 +114,7 @@ const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
 
 const DataProductSelect: React.FC = (): JSX.Element => {
   const state: DataProductSelectState = useDataProductSelectSelector();
-  const classes: Record<string, string> = useStyles(Theme);
+  const { classes } = useStyles();
   const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     bundlesFetchState,

@@ -81,7 +81,7 @@ function SampleGraphPresentation(props) {
         graphData={graphData}
         onNodeClick={(url) => {
           const headers = {
-            ...neonContextSessionState.sessionHeaders
+            ...neonContextSessionState.sessionHeaders,
           };
           onQueryClick(url, null, headers);
         }}

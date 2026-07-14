@@ -37,7 +37,7 @@ function DownloadSamplesPresentation(props) {
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
   const { canAccessData } = neonContextSessionState;
 
-  const degreeIsValid = d => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
+  const degreeIsValid = (d) => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
 
   const initialState = {
     dialogOpen: false,
@@ -113,20 +113,20 @@ function DownloadSamplesPresentation(props) {
     }
     if (state.sampleSelection === 'allSamples') {
       return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-    } else {
-      if (state.degreeType === 'chosen') {
-        return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
-      } else {
-        const headers = {
-          ...neonContextSessionState.sessionHeaders
-        };
-        const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
-          + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
-          + `&sampleClass=${sampleList[0].sampleClass}`
-          + `&degree=${state.degree}`;
-        return onDownloadClick(state.downloadType, url, cacheControl, headers);
-      }
     }
+
+    if (state.degreeType === 'chosen') {
+      return onDownloadVisitedSamplesClick(state.downloadType, sampleList);
+    }
+
+    const headers = {
+      ...neonContextSessionState.sessionHeaders,
+    };
+    const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
+      + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`
+      + `&sampleClass=${sampleList[0].sampleClass}`
+      + `&degree=${state.degree}`;
+    return onDownloadClick(state.downloadType, url, cacheControl, headers);
   };
 
   return (

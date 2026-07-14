@@ -10,22 +10,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
-import { Theme as MuiTheme } from '@mui/material/styles';
 
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { AnyObject, Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
 import { LocationsSectionState } from '../states/AppStates';
 import useStyles from '../../styles/overlay';
-import { StylesHook } from '../../types/styles';
 import { Site } from '../../types/store';
 import { AppActionCreator } from '../../actions/app';
 
@@ -33,14 +29,14 @@ const SiteMap: React.ExoticComponent<AnyObject> = React.lazy(
   () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useComponentStyles = makeStyles()((theme: NeonTheme) => ({
   infoContainer: {
-    margin: muiTheme.spacing(0, 0, 4, 0),
+    margin: theme.spacing(0, 0, 4, 0),
   },
   infoTextContainer: {
-    margin: muiTheme.spacing(0, 0, 2, 0),
+    margin: theme.spacing(0, 0, 2, 0),
   },
-})) as StylesHook;
+}));
 
 const useLocationsSelector = (): LocationsSectionState => useSelector(
   AppStateSelector.locations,
@@ -49,8 +45,8 @@ const useLocationsSelector = (): LocationsSectionState => useSelector(
 const LocationsSection: React.FC = (): JSX.Element => {
   const state: LocationsSectionState = useLocationsSelector();
   const dispatch: Dispatch<AnyAction> = useDispatch();
-  const classes: Record<string, string> = useStyles(Theme);
-  const componentClasses: Record<string, string> = useComponentStyles(Theme);
+  const { classes } = useStyles();
+  const { classes: componentClasses } = useComponentStyles();
   const {
     fetchState,
     siteCodes,

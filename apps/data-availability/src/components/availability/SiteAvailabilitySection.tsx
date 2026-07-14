@@ -6,24 +6,20 @@ import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Skeleton from '@mui/material/Skeleton';
-import { Theme as MuiTheme } from '@mui/material/styles';
 
-import makeStyles from '@mui/styles/makeStyles';
-import createStyles from '@mui/styles/createStyles';
-
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { AnyObject } from 'portal-core-components/lib/types/core';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
 import { SiteAvailabilitySectionState } from '../states/AppStates';
 import { Site } from '../../types/store';
 import useStyles from '../../styles/overlay';
-import { StylesHook } from '../../types/styles';
 import {
   AvailableDateRange,
   computeAvailableDateRangeSite,
@@ -33,22 +29,22 @@ const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
   () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) => createStyles({
+const useComponentStyles = makeStyles()((theme: NeonTheme) => ({
   sidebarDivider: {
-    margin: muiTheme.spacing(3, 0),
+    margin: theme.spacing(3, 0),
   },
   infoContainer: {
-    margin: muiTheme.spacing(0, 0, 2, 0),
+    margin: theme.spacing(0, 0, 2, 0),
   },
   infoTextContainer: {
-    margin: muiTheme.spacing(0, 0, 2, 0),
+    margin: theme.spacing(0, 0, 2, 0),
   },
   summaryStyle: {
-    color: muiTheme.palette.grey[500],
+    color: theme.palette.grey[500],
     lineHeight: '1em',
-    marginBottom: muiTheme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
-})) as StylesHook;
+}));
 
 const useAvailabilitySelector = (): SiteAvailabilitySectionState => useSelector(
   AppStateSelector.siteAvailability,
@@ -56,8 +52,8 @@ const useAvailabilitySelector = (): SiteAvailabilitySectionState => useSelector(
 
 const SiteAvailabilitySection: React.FC = (): JSX.Element => {
   const state: SiteAvailabilitySectionState = useAvailabilitySelector();
-  const classes: Record<string, string> = useStyles(Theme);
-  const componentClasses: Record<string, string> = useComponentStyles(Theme);
+  const { classes } = useStyles();
+  const { classes: componentClasses } = useComponentStyles();
   const {
     focalSiteFetchState,
     focalSite,

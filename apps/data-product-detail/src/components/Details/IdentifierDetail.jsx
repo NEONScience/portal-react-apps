@@ -1,17 +1,15 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Chip from '@mui/material/Chip';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
 import RouteService from 'portal-core-components/lib/service/RouteService';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   productCodeChip: {
     color: theme.palette.grey[500],
     border: `1px solid ${theme.palette.grey[500]}`,
@@ -22,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const IdentifierDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);

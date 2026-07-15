@@ -4,7 +4,6 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -23,6 +22,7 @@ import ReleaseMessageCard from 'portal-core-components/lib/components/Card/Relea
 import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 
@@ -38,7 +38,7 @@ const {
   determineTombstoned,
 } = DataProductContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   multiCitationContainer: {
     marginTop: theme.spacing(2),
   },
@@ -90,7 +90,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ReleaseCard = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = useDataProductContextState();
   const {

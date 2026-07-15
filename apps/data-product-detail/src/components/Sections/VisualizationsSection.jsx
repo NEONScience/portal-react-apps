@@ -9,14 +9,15 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
-import Theme, { makeStyles } from 'portal-core-components/lib/components/Theme';
+import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
 import SkeletonSection from './SkeletonSection';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   divider: {
     margin: theme.spacing(2, 0),
   },
@@ -33,7 +34,7 @@ const aopVideoUrl = (
 );
 
 const AopVizNode = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <div>
       <Typography variant="body2" gutterBottom>

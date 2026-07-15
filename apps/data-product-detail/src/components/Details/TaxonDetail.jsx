@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 /**
  * Style the component using the imported theme
  */
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()((theme) => ({
   linkList: {
     listStyleType: 'none',
     paddingLeft: 0,
@@ -76,7 +76,7 @@ const TaxonDetail = (inProps) => {
     getTaxonTypes(dataProductCode);
   }, [dataProductCode]);
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   /**
   * Capitalize the first letter of a string.

@@ -1,7 +1,6 @@
 import React from 'react';
 import moment from 'moment';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 
@@ -12,6 +11,7 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
@@ -22,7 +22,7 @@ import Section from './Section';
 import SkeletonSection from './SkeletonSection';
 import TombstoneNotice from '../Release/TombstoneNotice';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   summaryDivStyle: {
     width: '100%',
     display: 'flex',
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const AvailabilitySection = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = DataProductContext.useDataProductContextState();
 

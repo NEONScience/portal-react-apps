@@ -1,6 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -12,11 +11,12 @@ import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   list: {
     padding: theme.spacing(0),
     marginTop: theme.spacing(-1),
@@ -62,7 +62,7 @@ const downloadCollection = (url) => {
 };
 
 const BioRepoCollectionsDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
   const { biorepositoryCollections: collections } = product;

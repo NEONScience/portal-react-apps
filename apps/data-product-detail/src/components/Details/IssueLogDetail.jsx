@@ -5,8 +5,6 @@ import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
@@ -30,6 +28,7 @@ import CustomComponentFallback from 'portal-core-components/lib/components/Error
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
@@ -47,7 +46,7 @@ const unresolvedStyle = {
   fontWeight: 700,
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     backgroundColor: theme.palette.grey[50],
     padding: theme.spacing(2),
@@ -125,7 +124,7 @@ const MarkdownFallbackComponent = (props) => ((
 ));
 
 const IssueLogDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = useDataProductContextState();
   const product = getCurrentProductFromState(state);

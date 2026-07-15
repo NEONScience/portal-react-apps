@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   tooltip: {
     marginLeft: theme.spacing(0.5),
   },
@@ -19,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DetailTooltip = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { tooltip } = props;
   return (
     <Tooltip

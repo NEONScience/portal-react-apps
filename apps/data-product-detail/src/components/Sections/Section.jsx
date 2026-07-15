@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 // Theme and override styles are (re)introduced here because without them
 // the primary color is lost and the expansion panel layout gets messed up.
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   section: {
     marginBottom: theme.spacing(6),
   },
@@ -23,7 +22,7 @@ const defaultProps = {
 
 const Section = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const {
     hash,

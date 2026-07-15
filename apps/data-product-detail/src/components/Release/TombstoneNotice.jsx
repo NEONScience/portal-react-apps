@@ -1,6 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import List from '@mui/material/List';
@@ -14,12 +13,13 @@ import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/
 import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 
 const { useDataProductContextState, getProductDoiInfo } = DataProductContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   doiListMultiBundle: {
     marginLeft: theme.spacing(3),
   },
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TombstoneNotice = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state] = useDataProductContextState();
   const {
     route: { release: currentRelease, bundle },

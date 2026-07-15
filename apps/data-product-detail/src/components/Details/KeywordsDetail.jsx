@@ -1,15 +1,13 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Chip from '@mui/material/Chip';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(0.5),
@@ -21,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const KeywordsDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
 

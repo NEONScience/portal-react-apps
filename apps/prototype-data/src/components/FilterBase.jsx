@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   filter: {
     '& ul': {
       listStyleType: 'none',
@@ -55,7 +55,7 @@ const defaultProps = {
 
 const FilterBase = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const {
     title,
     titleNote,

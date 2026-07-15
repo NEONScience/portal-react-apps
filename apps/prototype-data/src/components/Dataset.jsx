@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -14,6 +13,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DetailsIcon from '@mui/icons-material/InfoOutlined';
 
@@ -22,7 +22,7 @@ import { getDoiDisplay } from '../renderUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   actions: {
     justifyContent: 'flex-end',
   },
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Dataset = (props) => {
   const { uuid } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
   const downSm = useMediaQuery(Theme.breakpoints.down('md'));
   const atMd = useMediaQuery(Theme.breakpoints.only('md'));

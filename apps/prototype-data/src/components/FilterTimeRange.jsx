@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -11,6 +10,7 @@ import Slider from '@mui/material/Slider';
 import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -21,7 +21,7 @@ const { usePrototypeContextState } = PrototypeContext;
 
 const getYearMoment = (year) => moment(`${year}-06-01`);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   slider: {
     width: `calc(100% - ${theme.spacing(6)})`,
     marginLeft: Theme.spacing(3),
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterTimeRange = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = usePrototypeContextState();
   const {

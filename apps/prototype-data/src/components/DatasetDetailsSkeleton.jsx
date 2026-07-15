@@ -1,13 +1,13 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import { getSkeleton } from '../renderUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   section: {
     marginBottom: theme.spacing(4),
   },
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DatasetDetailsSkeleton = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const getFileSkeleton = () => (
     <div className={classes.startFlex} style={{ marginBottom: Theme.spacing(1.5) }}>

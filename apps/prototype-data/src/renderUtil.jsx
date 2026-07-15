@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -10,8 +9,9 @@ import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   sidebarContentFont: {
     color: 'rgba(0, 0, 0, 0.70)',
   },
@@ -48,7 +48,7 @@ export const getDoiDisplay = (doi) => {
 };
 
 export const DoiDetail = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { doi } = props;
   const hasDoi = doi && doi.url;
   if (!hasDoi) {

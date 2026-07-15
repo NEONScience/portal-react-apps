@@ -1,16 +1,15 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import { getSkeleton } from '../renderUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   actions: {
     justifyContent: 'flex-end',
   },
@@ -35,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SkeletonDataset = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <Card className={classes.datasetCard}>
       <CardContent>

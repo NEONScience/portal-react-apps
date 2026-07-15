@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -15,7 +14,7 @@ import Typography from '@mui/material/Typography';
 import CopyIcon from '@mui/icons-material/Assignment';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import CitationService from 'portal-core-components/lib/service/CitationService';
 import DataCiteService, {
@@ -27,14 +26,14 @@ import PrototypeContext from '../PrototypeContext';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   citationText: {
     fontFamily: 'monospace',
   },
 }));
 
 const Citation = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const { uuid } = props;
   const [state] = usePrototypeContextState();

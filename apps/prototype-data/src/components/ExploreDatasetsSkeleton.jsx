@@ -1,14 +1,13 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import SkeletonDataset from './SkeletonDataset';
 
 import { getSkeleton } from '../renderUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   filters: {
     display: 'flex',
     alignItems: 'flex-start',
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ExploreDatasetsSkeleton = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   return (
     <div>

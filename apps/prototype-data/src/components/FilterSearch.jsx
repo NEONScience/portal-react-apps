@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 
 import debounce from 'lodash/debounce';
 
 import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -19,7 +18,7 @@ const { usePrototypeContextState } = PrototypeContext;
 
 const DEBOUNCE_MILLISECONDS = 200;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   subtitle: {
     fontSize: '0.725rem',
     color: theme.palette.grey[400],
@@ -36,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterSearch = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { searchRef } = props;
 
   const [, dispatch] = usePrototypeContextState();

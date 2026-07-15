@@ -5,7 +5,6 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
@@ -34,6 +33,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
@@ -46,7 +46,7 @@ const SiteMap = React.lazy(() => import('portal-core-components/lib/components/S
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
@@ -353,7 +353,7 @@ const renderDataFileRow = (file, uuid, classes) => {
 
 const DatasetDetails = (props) => {
   const { uuid } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = usePrototypeContextState();
   const {

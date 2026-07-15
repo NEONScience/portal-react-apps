@@ -1,7 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -12,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import AscIcon from '@mui/icons-material/ArrowDownward';
 import DescIcon from '@mui/icons-material/ArrowUpward';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 
@@ -20,7 +18,7 @@ import { SORT_METHODS, SORT_DIRECTIONS } from '../filterUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -42,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Sort = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = usePrototypeContextState();
   const {

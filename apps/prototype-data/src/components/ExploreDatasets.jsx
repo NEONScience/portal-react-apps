@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useCallback } from 'react';
 
 import debounce from 'lodash/debounce';
 
-import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import Dataset from './Dataset';
@@ -15,7 +15,7 @@ import Sort from './Sort';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   lazyLoader: {
     margin: theme.spacing(5, 5, 0, 5),
     textAlign: 'center',
@@ -39,7 +39,7 @@ const DEBOUNCE_MILLISECONDS = 100;
 const SCROLL_PADDING = 400;
 
 const ExploreDatasets = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state, dispatch] = usePrototypeContextState();
 
   const {

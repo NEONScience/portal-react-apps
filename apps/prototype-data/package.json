@@ -6,9 +6,9 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@mui/icons-material": "^5.17.1",
-    "@mui/material": "^5.17.1",
-    "@mui/styles": "^5.17.1",
+    "@mui/icons-material": "^6.5.0",
+    "@mui/material": "^6.5.0",
+    "@mui/styles": "^6.5.0",
     "@mui/x-date-pickers": "^7.29.4",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -21,11 +21,12 @@
     "react": "^19.2.5",
     "react-copy-to-clipboard": "^5.1.1",
     "react-dom": "^19.2.5",
-    "react-router-dom": "^6.30.3",
+    "react-router": "^8.2.0",
     "rxjs": "^7.8.2",
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
+    "@types/node": "26.1.1",
     "commander": "^14.0.3",
     "eslint": "^9.39.4",
     "express": "^4.19.2",

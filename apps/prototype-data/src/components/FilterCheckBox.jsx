@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     width: `calc(100% + ${theme.spacing(2)})`,
     marginLeft: theme.spacing(-2),
@@ -50,7 +50,7 @@ const defaultProps = {
 
 const FilterCheckBox = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const {
     name,
     value,

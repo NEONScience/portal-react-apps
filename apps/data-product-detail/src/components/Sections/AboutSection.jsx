@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 
 import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
@@ -56,7 +56,7 @@ const AboutSection = (props) => {
     <Section {...props}>
       <Grid container spacing={3}>
 
-        <Grid item xs={12} md={7} lg={8}>
+        <Grid size={{ xs: 12, md: 7, lg: 8 }}>
           <Detail
             title="Description"
             content={(
@@ -110,7 +110,7 @@ const AboutSection = (props) => {
           <CitationDetail />
         </Grid>
 
-        <Grid item xs={12} md={5} lg={4}>
+        <Grid size={{ xs: 12, md: 5, lg: 4 }}>
           <IdentifierDetail />
           <ThemesDetail />
           <Detail
@@ -123,7 +123,7 @@ const AboutSection = (props) => {
           <TaxonDetail dataProductCode={product.productCode} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Detail
             title="Study Description"
             content={(

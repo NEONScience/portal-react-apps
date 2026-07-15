@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 
 import DataProductContext from '../DataProductContext';
 
@@ -17,7 +17,7 @@ const IssueLogSection = (props) => {
     <Section {...props}>
       <Grid container spacing={3}>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <IssueLogDetail />
         </Grid>
 

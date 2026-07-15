@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 
 import DocumentList from 'portal-core-components/lib/components/Documents/DocumentList';
@@ -28,7 +28,7 @@ const DocumentationDetail = () => {
     ));
     return (
       <Grid container spacing={2}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <DocumentList
             documents={sortedDocs}
             enableDownloadButton
@@ -36,12 +36,12 @@ const DocumentationDetail = () => {
             fetchVariants
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="h6" component="div" gutterBottom>
             Explore Documentation
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <DocumentSelect documents={displayableDocs} />
         </Grid>
       </Grid>

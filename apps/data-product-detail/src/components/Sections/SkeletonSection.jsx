@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Skeleton from '@mui/material/Skeleton';
 
 import Section from './Section';
@@ -9,7 +9,7 @@ const SkeletonSection = (props) => (
   <Section {...props} skeleton>
     <Grid container spacing={3}>
 
-      <Grid item xs={12} md={5} lg={4}>
+      <Grid size={{ xs: 12, md: 5, lg: 4 }}>
         <Skeleton width="20%" height={16} style={{ marginBottom: '16px' }} />
         <Skeleton width="100%" height={8} />
         <br />
@@ -25,7 +25,7 @@ const SkeletonSection = (props) => (
         <Skeleton width="80%" height={8} />
       </Grid>
 
-      <Grid item xs={12} md={7} lg={8}>
+      <Grid size={{ xs: 12, md: 7, lg: 8 }}>
         <Skeleton width="20%" height={16} style={{ marginBottom: '16px' }} />
         <Skeleton width="100%" height={8} />
         <Skeleton width="100%" height={8} />

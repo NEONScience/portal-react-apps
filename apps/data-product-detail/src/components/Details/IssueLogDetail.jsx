@@ -8,7 +8,7 @@ import truncate from 'lodash/truncate';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 import Hidden from '@mui/material/Hidden';
 import FormControl from '@mui/material/FormControl';
@@ -350,10 +350,10 @@ const IssueLogDetail = () => {
           <>
             <Container className={classes.container}>
               <Grid container spacing={1}>
-                <Grid item xs={12} sm={3} md={2}>
+                <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                   <Typography variant="subtitle2">Issue Details</Typography>
                 </Grid>
-                <Grid item xs={12} sm={9} md={10}>
+                <Grid size={{ xs: 12, sm: 9, md: 10 }}>
                   <ComponentErrorBoundary
                     // eslint-disable-next-line react/no-unstable-nested-components
                     fallbackComponent={() => ((
@@ -368,10 +368,10 @@ const IssueLogDetail = () => {
                     </Typography>
                   </ComponentErrorBoundary>
                 </Grid>
-                <Grid item xs={12} sm={3} md={2}>
+                <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                   <Typography variant="subtitle2">Resolution</Typography>
                 </Grid>
-                <Grid item xs={12} sm={9} md={10}>
+                <Grid size={{ xs: 12, sm: 9, md: 10 }}>
                   {resolution ? (
                     <ComponentErrorBoundary
                       // eslint-disable-next-line react/no-unstable-nested-components
@@ -392,10 +392,10 @@ const IssueLogDetail = () => {
                 </Grid>
                 {dateRangeEnd ? (
                   <>
-                    <Grid item xs={12} sm={3} md={2}>
+                    <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                       <Typography variant="subtitle2">Duration</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={9} md={10}>
+                    <Grid size={{ xs: 12, sm: 9, md: 10 }}>
                       <Typography variant="body2">{formatDuration(row)}</Typography>
                     </Grid>
                   </>
@@ -433,32 +433,32 @@ const IssueLogDetail = () => {
       </Typography>
       <Divider className={classes.xsRowDivider} />
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Reported</b>
           <br />
           {renderIssueField(issue, 'issueDate')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Resolved</b>
           <br />
           {renderIssueField(issue, 'resolvedDate')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Issue Start</b>
           <br />
           {renderIssueField(issue, 'dateRangeStart')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Issue End</b>
           <br />
           {renderIssueField(issue, 'dateRangeEnd')}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <b>Locations Affected:</b>
           <br />
           {renderIssueField(issue, 'locationAffected')}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <b>Resolution</b>
           <br />
           {issue.resolution}
@@ -533,7 +533,7 @@ const IssueLogDetail = () => {
       <Hidden mdUp>
         <Detail title="Issue Log" seleniumKey="issue-log">
           <Grid container spacing={1}>
-            <Grid item xs={6} sm={4}>
+            <Grid size={{ xs: 6, sm: 4 }}>
               <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-column">Sort By</InputLabel>
                 <Select
@@ -551,7 +551,7 @@ const IssueLogDetail = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6} sm={4}>
+            <Grid size={{ xs: 6, sm: 4 }}>
               <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-direction">Sort Direction</InputLabel>
                 <Select
@@ -567,7 +567,7 @@ const IssueLogDetail = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="search" shrink>Search Issues</InputLabel>
                 <TextField

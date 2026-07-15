@@ -5,6 +5,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemButton from '@mui/material/ListItemButton';
 import Tooltip from '@mui/material/Tooltip';
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
@@ -30,6 +31,7 @@ const useStyles = makeStyles()((theme) => ({
     '&:hover': {
       border: `0.5px solid ${theme.palette.primary.main}`,
     },
+    paddingRight: theme.spacing(6),
   },
   listItemLinkSecondary: {
     '& p': {
@@ -84,7 +86,7 @@ const BioRepoCollectionsDetail = () => {
             return null;
           }
           return (
-            <ListItem
+            <ListItemButton
               key={`${collectionCode}-${collectionName}`}
               className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
               component="a"
@@ -111,7 +113,7 @@ const BioRepoCollectionsDetail = () => {
                   </Tooltip>
                 </ListItemSecondaryAction>
               )}
-            </ListItem>
+            </ListItemButton>
           );
         })}
       </List>

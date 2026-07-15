@@ -1,6 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Hidden from '@mui/material/Hidden';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -8,13 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterIcon from '@mui/icons-material/FilterList';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
 import { FILTER_LABELS } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 600,
     [theme.breakpoints.up('md')]: {
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterHeader = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const { filtersVisible, filtersApplied } = state;

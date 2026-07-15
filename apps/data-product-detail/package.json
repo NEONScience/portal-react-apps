@@ -15,7 +15,6 @@
     "@types/react-dom": "^19.2.3",
     "core-js": "^3.37.1",
     "dateformat": "^5.0.3",
-    "install": "^0.13.0",
     "lodash": "^4.17.21",
     "material-table": "^2.0.6",
     "moment": "^2.30.1",

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 
 import { ReplaySubject } from 'rxjs';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -17,7 +16,6 @@ import Typography from '@mui/material/Typography';
 import MoreIcon from '@mui/icons-material/KeyboardArrowRight';
 import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
 import ProductDetailsIcon from '@mui/icons-material/InfoOutlined';
-import AopDataViewerIcon from '@mui/icons-material/SatelliteOutlined';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
 import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
@@ -29,6 +27,7 @@ import DownloadDataButton from 'portal-core-components/lib/components/DownloadDa
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -43,7 +42,7 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   productCard: {
     marginBottom: theme.spacing(3),
   },
@@ -103,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DataProduct = React.memo((props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const { productCode, highestOrderDownloadSubject } = props;
 

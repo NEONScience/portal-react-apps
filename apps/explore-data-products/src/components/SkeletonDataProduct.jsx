@@ -1,6 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -8,15 +7,16 @@ import CardContent from '@mui/material/CardContent';
 import Skeleton from '@mui/material/Skeleton';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   productCard: {
     marginBottom: theme.spacing(3),
   },
 }));
 
 const SkeletonDataProduct = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <Card className={classes.productCard}>
       <CardContent>

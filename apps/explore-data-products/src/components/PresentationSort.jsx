@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Card from '@mui/material/Card';
@@ -25,12 +24,13 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
 import { SORT_METHODS, SORT_DIRECTIONS } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   card: {
     marginBottom: theme.spacing(3),
     backgroundColor: theme.palette.grey[50],
@@ -97,7 +97,7 @@ const PresentationSort = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {

@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -10,6 +9,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import moment from 'moment';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -18,7 +18,7 @@ import { FILTER_KEYS } from '../../util/filterUtil';
 
 const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   slider: {
     width: `calc(100% - ${theme.spacing(6)})`,
     marginLeft: Theme.spacing(3),
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterDateRange = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {

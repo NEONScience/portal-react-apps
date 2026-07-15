@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
@@ -10,6 +9,7 @@ import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
@@ -19,7 +19,7 @@ import FilterBase from '../FilterBase';
 
 import { FILTER_KEYS, FILTER_LABELS } from '../../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 500,
   },
@@ -36,7 +36,7 @@ const defaultProps = {
 };
 
 const FilterRelease = (inProps) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 

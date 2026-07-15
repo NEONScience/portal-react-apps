@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Collapse from '@mui/material/Collapse';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
@@ -22,7 +22,7 @@ import FilterSite from './Filters/FilterSite';
 import FilterTheme from './Filters/FilterTheme';
 import FilterVisualization from './Filters/FilterVisualization';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   filterContent: {
     [theme.breakpoints.up('md')]: {
       width: '276px',
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const PresentationFilter = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = ExploreContext.useExploreContextState();
   const { filtersVisible } = state;

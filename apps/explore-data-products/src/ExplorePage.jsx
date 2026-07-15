@@ -5,7 +5,6 @@ import React, {
   useCallback,
 } from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 
@@ -14,7 +13,7 @@ import Skeleton from '@mui/material/Skeleton';
 import debounce from 'lodash/debounce';
 
 import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
@@ -30,7 +29,7 @@ import { APP_STATUS } from './util/stateUtil';
 
 const DataHeader = React.lazy(() => import('./components/DataHeader'));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   lazyLoader: {
     margin: theme.spacing(5, 5, 0, 5),
     textAlign: 'center',
@@ -45,7 +44,7 @@ const DEBOUNCE_MILLISECONDS = 100;
 const SCROLL_PADDING = 400;
 
 const ExplorePage = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   // Deconstruct state
   const [state, dispatch] = ExploreContext.useExploreContextState();

@@ -3,7 +3,6 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { alpha } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
@@ -20,6 +19,7 @@ import debounce from 'lodash/debounce';
 
 import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -28,7 +28,7 @@ import { FILTER_KEYS, parseSearchTerms } from '../../util/filterUtil';
 
 const DEBOUNCE_MILLISECONDS = 200;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   closeButton: {
     color: theme.palette.grey[500],
   },
@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterSearch = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { searchRef } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();

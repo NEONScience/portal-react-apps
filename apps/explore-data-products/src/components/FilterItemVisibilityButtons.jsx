@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import ExpandIcon from '@mui/icons-material/Add';
 import CollapseIcon from '@mui/icons-material/Remove';
@@ -9,10 +8,11 @@ import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import { FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   button: {
     margin: theme.spacing(1, 1, 0, 0),
   },
@@ -33,7 +33,7 @@ const defaultProps = {
 
 const FilterItemVisibilityButtons = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const {
     filterKey,
     currentState,

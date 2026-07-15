@@ -2,7 +2,8 @@ import React, { Suspense } from 'react';
 
 import DialogBase from 'portal-core-components/lib/components/DialogBase';
 import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import Theme, { makeStyles } from 'portal-core-components/lib/components/Theme';
+import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
@@ -13,7 +14,7 @@ import {
 
 const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
 
-const useDialogBaseStyles = makeStyles((theme) => ({
+const useDialogBaseStyles = makeStyles()((theme) => ({
   contentPaper: {
     margin: theme.spacing(10, 2, 2, 2),
     padding: theme.spacing(3),

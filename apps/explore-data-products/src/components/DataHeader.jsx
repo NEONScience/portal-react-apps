@@ -9,7 +9,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -213,7 +213,7 @@ const DataHeader = (inProps) => {
 
   let catalogSummaryContents = (
     <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <div className={classes.catalogContainer}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
             All Products
@@ -272,19 +272,21 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                 </Button>
               </Tooltip>
               <Tooltip title={getTooltip('PDF', false)}>
-                <Button
-                  {...gtmProps('pdf', false)}
-                  onClick={() => { handleDownload('pdf', false); }}
-                  aria-label="Download Full Catalog PDF"
-                >
-                  PDF
-                </Button>
+                <div>
+                  <Button
+                    {...gtmProps('pdf', false)}
+                    onClick={() => { handleDownload('pdf', false); }}
+                    aria-label="Download Full Catalog PDF"
+                  >
+                    PDF
+                  </Button>
+                </div>
               </Tooltip>
             </ButtonGroup>
           </div>
         </div>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <div
           className={classes.catalogContainer}
           style={{ opacity: filtersApplied.length ? 1 : 0.5 }}
@@ -384,7 +386,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
   if (skeleton) {
     catalogSummaryContents = (
       <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <div className={classes.catalogContainer}>
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               All Products
@@ -394,7 +396,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
           </div>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <div className={classes.catalogContainer}>
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               Filtered Products

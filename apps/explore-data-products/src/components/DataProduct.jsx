@@ -8,7 +8,7 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -438,12 +438,26 @@ const DataProduct = React.memo((props) => {
     <Card className={classes.productCard}>
       <CardContent data-selenium={`browse-data-products-page.product-card.${productCode}`}>
         <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-          <Grid item xs={12} sm={7} md={8} lg={9}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 7,
+              md: 8,
+              lg: 9,
+            }}
+          >
             {name}
             {code}
             {description}
           </Grid>
-          <Grid item xs={12} sm={5} md={4} lg={3}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 5,
+              md: 4,
+              lg: 3,
+            }}
+          >
             {downloadDataButton}
             {productDetailsButton}
           </Grid>
@@ -453,7 +467,7 @@ const DataProduct = React.memo((props) => {
 
         <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
           {!timeRange ? null : (
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Available Dates
               </Typography>
@@ -463,7 +477,7 @@ const DataProduct = React.memo((props) => {
             </Grid>
           )}
           {!timeRange && !hasVisualization ? null : (
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Data Themes
               </Typography>
@@ -473,7 +487,7 @@ const DataProduct = React.memo((props) => {
             </Grid>
           )}
           {!hasData || !hasVisualization ? null : (
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data
               </Typography>

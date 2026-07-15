@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
@@ -47,7 +47,15 @@ const DatasetDetailsSkeleton = () => {
       <Grid container spacing={4}>
 
         {/* Left Column */}
-        <Grid item xs={12} sm={12} md={8} lg={9} xl={10}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 8,
+            lg: 9,
+            xl: 10,
+          }}
+        >
           <div className={classes.section}>
             {getSkeleton(27, 240, 1.5, false)}
             {getSkeleton(30, 300, 0, false, 'rect')}
@@ -85,7 +93,15 @@ const DatasetDetailsSkeleton = () => {
         </Grid>
 
         {/* Right Column */}
-        <Grid item xs={12} sm={12} md={4} lg={3} xl={2}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 4,
+            lg: 3,
+            xl: 2,
+          }}
+        >
           <div className={classes.section}>
             {getSkeleton(27, 140, 1.5, false)}
             {getSkeleton(23, 80, 0, false)}

@@ -3,7 +3,7 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -40,7 +40,7 @@ const SkeletonDataset = () => {
       <CardContent>
         {getSkeleton(25, [60, 80], 2)}
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <div className={classes.cardFirstColumnSection}>
               {getSkeleton(22, 60, 1)}
               {getSkeleton(18, 30, 0)}
@@ -50,7 +50,7 @@ const SkeletonDataset = () => {
               {getSkeleton(32, 32, 0, false, 'rect')}
             </div>
           </Grid>
-          <Grid item xs={12} sm={10}>
+          <Grid size={{ xs: 12, sm: 10 }}>
             {getSkeleton(18, 100, 0.5)}
             {getSkeleton(18, 100, 0.5)}
             {getSkeleton(18, [30, 85], 3)}

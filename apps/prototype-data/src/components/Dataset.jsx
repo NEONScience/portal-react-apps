@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -126,31 +126,31 @@ const Dataset = (props) => {
         }
         const renderTitle = (titleLoc) => ((
           <Grid container spacing={1}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Typography variant="subtitle2">Site Name</Typography>
               {titleLoc.siteName
                 ? <Typography variant="body2">{titleLoc.siteName}</Typography>
                 : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">State</Typography>
               {titleLoc.state
                 ? <Typography variant="body2">{titleLoc.state}</Typography>
                 : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Domain</Typography>
               {titleLoc.domain
                 ? <Typography variant="body2">{titleLoc.domain}</Typography>
                 : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Latitude</Typography>
               {titleLoc.latitude
                 ? <Typography variant="body2">{titleLoc.latitude}</Typography>
                 : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
             </Grid>
-            <Grid item xs={6}>
+            <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Longitude</Typography>
               {titleLoc.longitude
                 ? <Typography variant="body2">{titleLoc.longitude}</Typography>
@@ -227,20 +227,42 @@ const Dataset = (props) => {
     <Card className={classes.datasetCard}>
       <CardContent className={classes.content}>
         <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
-          <Grid item xs={12} sm={9} md={8} lg={8}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 9,
+              md: 8,
+              lg: 8,
+            }}
+          >
             <Typography variant="h6" className={classes.title}>
               {projectTitle}
             </Typography>
           </Grid>
-          <Grid item xs={12} sm={3} md={4} lg={4} style={{ textAlign: 'right' }}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 3,
+              md: 4,
+              lg: 4,
+            }}
+            style={{ textAlign: 'right' }}
+          >
             {renderDetailButton()}
           </Grid>
         </Grid>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={10}>
+          <Grid size={{ xs: 12, sm: 10 }}>
             <Grid container>
-              <Grid item xs={12} sm={12} md={12} lg={4}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
+                  lg: 4,
+                }}
+              >
                 <Typography variant="subtitle2" className={classes.sectionTitle}>
                   DOI
                 </Typography>
@@ -248,7 +270,14 @@ const Dataset = (props) => {
                   <Chip label={getDoiDisplay(doi)} className={classes.datasetIdChip} />
                 </div>
               </Grid>
-              <Grid item xs={12} sm={12} md={12} lg={8}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 12,
+                  md: 12,
+                  lg: 8,
+                }}
+              >
                 <Typography variant="subtitle2" className={classes.sectionTitle}>
                   Prototype Dataset ID
                 </Typography>
@@ -281,7 +310,7 @@ const Dataset = (props) => {
               </div>
             </div>
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <div className={classes.cardFirstColumnSection}>
               <Typography variant="subtitle2" className={classes.sectionTitle}>
                 Time Range

@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Slider from '@mui/material/Slider';
 
 import moment from 'moment';
@@ -166,7 +166,7 @@ const FilterTimeRange = () => {
 
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.from-input"
               inputVariant="outlined"
@@ -187,7 +187,7 @@ const FilterTimeRange = () => {
               }}
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid size={{ xs: 6 }}>
             <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.through-input"
               inputVariant="outlined"

@@ -9,10 +9,11 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import TableCell from '@mui/material/TableCell';
@@ -487,15 +488,14 @@ const DatasetDetails = (props) => {
         const { dataProductCode, dataProductName } = dataProduct;
         const href = RouteService.getProductDetailPath(dataProductCode);
         return (
-          <ListItem
+          <ListItemButton
             key={dataProductCode}
             className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
             component="a"
             href={href}
-            button
           >
             <ListItemText primary={dataProductName} secondary={dataProductCode} />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
@@ -562,20 +562,19 @@ const DatasetDetails = (props) => {
               description,
             } = dataLocation;
             return (
-              <ListItem
+              <ListItemButton
                 key={path}
                 className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
                 component="a"
                 href={path}
                 target="_blank"
                 rel="noopener noreferrer"
-                button
               >
                 <ListItemIcon className={classes.listItemIcon}>
                   <LinkIcon />
                 </ListItemIcon>
                 <ListItemText primary={description} secondary={path} />
-              </ListItem>
+              </ListItemButton>
             );
           })}
       </List>
@@ -665,7 +664,15 @@ const DatasetDetails = (props) => {
       <Grid container spacing={4}>
 
         {/* Left Column */}
-        <Grid item xs={12} sm={12} md={8} lg={8} xl={9}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 8,
+            lg: 8,
+            xl: 9,
+          }}
+        >
           {/* Prototype Dataset ID */}
           <div className={classes.section}>
             {getSectionTitle('Prototype Dataset ID')}
@@ -705,7 +712,15 @@ const DatasetDetails = (props) => {
         </Grid>
 
         {/* Right Column */}
-        <Grid item xs={12} sm={12} md={4} lg={4} xl={3}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 4,
+            lg: 4,
+            xl: 3,
+          }}
+        >
           {/* DOI */}
           <div className={classes.sidebarSection}>
             <Typography variant="h6" component="h2" className={classes.sidebarSectionTitleDoi}>
@@ -781,7 +796,15 @@ const DatasetDetails = (props) => {
         </Grid>
 
         {/* Lower Section */}
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 12,
+            lg: 12,
+            xl: 12,
+          }}
+        >
           {/* Download */}
           <div className={classes.section} id="dataset-download">
             <Typography variant="h4" component="h2" gutterBottom>Data Package and Download</Typography>

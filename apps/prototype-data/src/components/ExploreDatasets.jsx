@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 
 import CircularProgress from '@mui/material/CircularProgress';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -89,11 +89,11 @@ const ExploreDatasets = () => {
 
   return (
     <div>
-      <Grid container spacing={4} style={{ marginBottom: Theme.spacing(3) }}>
-        <Grid item xs={12} sm={6} className={classes.showingContainer}>
+      <Grid container spacing={4} style={{ marginBottom: Theme.spacing(5) }}>
+        <Grid size={{ xs: 12, sm: 6 }} className={classes.showingContainer}>
           <Typography variant="h5" component="h3" className={classes.showing}>{showing}</Typography>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <Sort />
         </Grid>
       </Grid>

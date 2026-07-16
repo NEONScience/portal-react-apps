@@ -1,6 +1,6 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -11,9 +11,7 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   infoIcon: {
     marginLeft: theme.spacing(1.5),
     marginBottom: theme.spacing(-0.5),
@@ -29,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function InfoPresentation() {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <div data-selenium="info-section">
       <Accordion style={{ marginBottom: '32px' }} defaultExpanded>

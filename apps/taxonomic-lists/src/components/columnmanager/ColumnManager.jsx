@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
@@ -15,7 +15,7 @@ import Typography from '@mui/material/Typography';
 
 import { getColumns, getColumnDisplayGroupLabel } from '../../api/dataTableColumns';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   paddedSection: {
     '@media (min-width:960px)': {
       marginTop: '35px',
@@ -31,7 +31,7 @@ function ColumnManager(props) {
     onColumnVisibilityChanged,
     onToggleColumnManagerVisibility,
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const renderColumnDisplay = () => {
     if (!columns) { return null; }

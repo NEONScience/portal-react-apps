@@ -4,7 +4,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Link from '@mui/material/Link';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -65,7 +65,7 @@ function InfoPresentation(props) {
           <AccordionDetails id="samples-info-content" className={classes.accordionDetails}>
             <Grid container spacing={3}>
 
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h5" gutterBottom>
                   Location
                 </Typography>
@@ -95,7 +95,7 @@ function InfoPresentation(props) {
                 </Typography>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Typography variant="h5" gutterBottom>
                   Hierarchy
                 </Typography>
@@ -122,7 +122,7 @@ function InfoPresentation(props) {
                 </Typography>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="h5" gutterBottom>
                   Searching by Sample Identifier and Class
                 </Typography>
@@ -133,8 +133,8 @@ function InfoPresentation(props) {
                 <Typography variant="body1" gutterBottom>
                   {/* eslint-disable react/jsx-one-expression-per-line */}
                   In NEON data files, sample identifiers appear under field names ending in
-                  either <tt>ID</tt> or <tt>IDList </tt>
-                  (e.g. <tt>sampleID</tt>, <tt>sampleIDList</tt>).
+                  either <tt>ID</tt> or <tt>IDList</tt>
+                  &nbsp;(e.g. <tt>sampleID</tt>, <tt>sampleIDList</tt>).
                   In the case of a list, sample tags will be separated by pipes,
                   e.g. <tt>TALL_033.20200805.0604|TALL_034.20200805.0621</tt>. Lists are not
                   searchable as whole lists; each sample identifier in a list must be searched for

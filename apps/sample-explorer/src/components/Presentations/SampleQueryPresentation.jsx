@@ -2,8 +2,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 
@@ -16,6 +14,7 @@ import LoginRequiredCard from 'portal-core-components/lib/components/Card/LoginR
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import SelectSampleIdentifier from '../Queries/SelectSampleIdentifier';
@@ -26,7 +25,7 @@ import DownloadSampleClassesButton from '../DownloadSampleClassesButton/Download
 
 import { QUERY_TYPE } from '../../util/queryUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   row: {
     display: 'flex',
     flexDirection: 'row',
@@ -62,7 +61,7 @@ function SampleQueryPresentation(props) {
     onSetUrlParams,
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
   // Check preconditions for initial status

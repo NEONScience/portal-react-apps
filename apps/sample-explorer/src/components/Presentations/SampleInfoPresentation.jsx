@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   grid: {
     display: 'flex',
     flexDirection: 'row',
@@ -36,7 +36,7 @@ function SampleInfoPresentation(props) {
     sampleClassDesc,
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   if (queryErrorStr !== 'success') { return null; }
 

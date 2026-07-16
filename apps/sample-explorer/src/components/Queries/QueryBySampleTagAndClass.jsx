@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import { QUERY_TYPE } from '../../util/queryUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     [theme.breakpoints.down('sm')]: {
       width: '100%',
@@ -38,7 +37,7 @@ function QueryBySampleTagAndClass(props) {
     },
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   if (queryType !== QUERY_TYPE.SAMPLE_TAG) { return null; }
 

@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
     [theme.breakpoints.down('sm')]: {
       width: '100%',
@@ -29,7 +28,7 @@ function SelectSampleIdentifier(props) {
     query: { queryType, queryTypeOptions },
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>

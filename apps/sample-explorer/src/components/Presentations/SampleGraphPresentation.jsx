@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import SampleNetwork from '../SampleNetwork/SampleNetwork';
 import { GRAPH_COLORS } from '../../util/appUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   keyContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SampleGraphPresentation(props) {
   const { onQueryClick, graphData } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
 
   return (

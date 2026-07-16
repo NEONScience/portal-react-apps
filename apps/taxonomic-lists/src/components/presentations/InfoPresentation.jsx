@@ -5,7 +5,7 @@ import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyl
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -41,7 +41,7 @@ function InfoPresentation() {
         </AccordionSummary>
         <AccordionDetails id="taxon-info-content" style={{ padding: '0px 24px 24px 24px' }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
                 Taxonomic lists are compiled from a variety of published sources
                 and are used primarily by
@@ -76,7 +76,7 @@ function InfoPresentation() {
                 NEON anticipates these lists will be updated and refined over time.
               </Typography>
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
                 In general, NEON field staff (aka parataxonomists) are limited to selecting
                 only taxa whose geographic range extends over the sampling location. NEON

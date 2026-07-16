@@ -44,6 +44,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   title: {
     fontWeight: 500,
+    marginBottom: theme.spacing(1),
   },
   startFlex: {
     display: 'flex',

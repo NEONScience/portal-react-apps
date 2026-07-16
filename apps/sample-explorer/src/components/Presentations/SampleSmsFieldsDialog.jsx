@@ -9,7 +9,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Grid from '@mui/material/Grid';
+import Grid from '@mui/material/Grid2';
 
 import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
@@ -185,7 +185,7 @@ function SampleSmsFieldsDialog() {
     }
     return (
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Alert
             severity="error"
             style={{ margin: Theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}

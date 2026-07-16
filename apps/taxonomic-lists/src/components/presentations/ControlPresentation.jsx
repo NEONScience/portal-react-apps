@@ -1,14 +1,12 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import Typography from '@mui/material/Typography';
-
-import Theme from 'portal-core-components/lib/components/Theme';
 
 import FilterContainer from '../containers/FilterContainer';
 import DownloadContainer from '../containers/DownloadContainer';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   outerContainer: {
     marginBottom: '20px',
     '@media (min-width:968px)': {
@@ -29,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ControlPresentation() {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <div className={classes.outerContainer}>
       <Typography variant="h5" id="taxon-type-title" className={classes.taxonTypeTitle}>

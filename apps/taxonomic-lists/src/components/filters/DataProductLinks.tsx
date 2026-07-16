@@ -2,7 +2,7 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import Theme from 'portal-core-components/lib/components/Theme';
@@ -10,7 +10,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 /**
  * Style the component using the imported theme
  */
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   linkList: {
     listStyleType: 'none',
     padding: Theme.spacing(3),
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
  */
 function DataProductLinks({ props }: any) {
   const { dataProducts } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   /* Define state for the popover */
   const [anchorElement, setAnchorElement] = React.useState<HTMLButtonElement | null>(null);

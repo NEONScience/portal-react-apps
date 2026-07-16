@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
-
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DataTable from '../datatable/DataTable';
 
@@ -18,7 +16,7 @@ import 'datatables.net-bs/css/dataTables.bootstrap.css';
    (as other tables in react apps are currently). Until that happens this set of CSS overrides
    maintains close-enough visual parity with the current theme.
 */
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   root: {
     '& .btn': {
       color: '#fff',
@@ -162,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
 
 function DataTablePresentation(props) {
   const { taxonQuery, columns, onToggleColumnManagerVisibility } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <div className={classes.root} data-selenium="table-section">
       <DataTable

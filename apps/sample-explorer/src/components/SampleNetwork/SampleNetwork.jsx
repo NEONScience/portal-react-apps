@@ -9,16 +9,15 @@ import PropTypes from 'prop-types';
 
 import { Graph } from 'react-d3-graph';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import { GRAPH_COLORS } from '../../util/appUtil';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   container: {
     cursor: 'move',
     border: `1px solid ${Theme.palette.grey[400]}`,
@@ -33,7 +32,7 @@ const useStyles = makeStyles(() => ({
 
 function SampleNetwork(props) {
   const { onNodeClick, graphData } = props;
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
   const { canAccessData } = neonContextSessionState;

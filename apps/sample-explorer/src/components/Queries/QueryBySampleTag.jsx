@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   textField: {
     [theme.breakpoints.down('sm')]: {
       width: '100%',
@@ -23,7 +22,7 @@ function QueryBySampleTag(props) {
     query: { sampleTag, queryErrorStr, queryIsLoading },
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   return (
     <TextField

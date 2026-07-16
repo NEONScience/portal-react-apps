@@ -1,7 +1,5 @@
 import React from 'react';
 
-import makeStyles from '@mui/styles/makeStyles';
-
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -13,12 +11,13 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
 
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   infoIcon: {
     marginLeft: theme.spacing(1.5),
     marginBottom: theme.spacing(-0.5),
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function InfoPresentation(props) {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const exploreDataProductsLink = (
     <Link href={RouteService.getDataProductExplorePath()}>
       Explore Data Products

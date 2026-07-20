@@ -222,7 +222,7 @@ const ReleaseCard = () => {
           disableGutters
           key={`ReleaseCardDoiUrlKey-${currentDoiUrl}`}
           alignItems="flex-start"
-          ContainerComponent="div"
+          slots={{ root: 'div' }}
           className={classes.doiListitem}
           classes={{
             secondaryAction: classes.doiListItemSecondaryAction,

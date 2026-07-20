@@ -183,7 +183,7 @@ const TombstoneNotice = () => {
         disableGutters
         key={`TombstonedDoiUrlKey-${tombstonedDoiUrl.doiUrl}`}
         alignItems="flex-start"
-        ContainerComponent="div"
+        slots={{ root: 'div' }}
       >
         <ListItemText
           className={hasManyTombstonedDois ? classes.doiListItemText : undefined}

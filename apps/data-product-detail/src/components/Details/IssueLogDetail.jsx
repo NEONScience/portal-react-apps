@@ -578,19 +578,21 @@ const IssueLogDetail = () => {
                   value={xsSearch}
                   data-selenium="data-product-page.detail.issue-log.search"
                   fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton aria-label="clear search term" onClick={handleClearXsSearch} size="large">
-                          <ClearIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton aria-label="clear search term" onClick={handleClearXsSearch} size="large">
+                            <ClearIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
               </FormControl>

@@ -63,11 +63,13 @@ const FilterSearch = (props) => {
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value)}
         className={classes.textField}
-        InputProps={{
-          ref: searchRef,
-          'aria-label': 'search',
-          type: 'search',
-          className: classes.searchInput,
+        slotProps={{
+          input: {
+            ref: searchRef,
+            'aria-label': 'search',
+            type: 'search',
+            className: classes.searchInput,
+          },
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>

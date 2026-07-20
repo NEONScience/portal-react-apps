@@ -212,7 +212,7 @@ const DataHeader = (inProps) => {
   };
 
   let catalogSummaryContents = (
-    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
+    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 2.5) }}>
       <Grid size={{ xs: 12, sm: 6 }}>
         <div className={classes.catalogContainer}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>

@@ -202,11 +202,13 @@ const FilterSearch = (props) => {
               placeholder={placeholder}
               style={{ marginBottom: 0 }}
               onChange={(event) => debouncedSearch(event.target.value, searchRef.current, true)}
-              InputProps={{
-                ref: dialogSearchRef,
-                'aria-label': 'search',
-                type: 'search',
-                className: classes.searchInput,
+              slotProps={{
+                input: {
+                  ref: dialogSearchRef,
+                  'aria-label': 'search',
+                  type: 'search',
+                  className: classes.searchInput,
+                },
               }}
             />
             <Typography variant="body2" className={classes.subtitle}>
@@ -265,11 +267,13 @@ const FilterSearch = (props) => {
         defaultValue={defaultValue}
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value, searchRef.current)}
-        InputProps={{
-          ref: searchRef,
-          'aria-label': 'search',
-          type: 'search',
-          className: classes.searchInput,
+        slotProps={{
+          input: {
+            ref: searchRef,
+            'aria-label': 'search',
+            type: 'search',
+            className: classes.searchInput,
+          },
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>

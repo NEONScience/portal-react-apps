@@ -33,6 +33,7 @@
   "devDependencies": {
     "@types/node": "26.1.1",
     "commander": "^14.0.3",
+    "cross-env": "^10.1.0",
     "eslint": "^9.39.4",
     "express": "^4.19.2",
     "jsdom": "^29.0.1",

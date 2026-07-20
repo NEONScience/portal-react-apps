@@ -322,11 +322,13 @@ const DataProductSelect: React.FC = (): JSX.Element => {
             {...params}
             variant="outlined"
             label="Search Data Products"
-            InputLabelProps={{
-              ...params.InputLabelProps,
-              className: classes.autocompleteLabel,
-              classes: {
-                shrink: classes.autocompleteLabelShrink,
+            slotProps={{
+              inputLabel: {
+                ...params.InputLabelProps,
+                className: classes.autocompleteLabel,
+                classes: {
+                  shrink: classes.autocompleteLabelShrink,
+                },
               },
             }}
           />

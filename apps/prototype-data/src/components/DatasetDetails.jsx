@@ -330,9 +330,11 @@ const renderDataFileRow = (file, uuid, classes) => {
           </ListItemIcon>
           <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
           <ListItemText
-            primaryTypographyProps={{
-              variant: 'body2',
-              component: 'div',
+            slotProps={{
+              primary: {
+                variant: 'body2',
+                component: 'div',
+              },
             }}
             primary={(
               <div className={classes.listItemFilePrimaryText}>

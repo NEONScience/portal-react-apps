@@ -25,6 +25,9 @@ const useStyles = makeStyles()((theme) => ({
     maxHeight: '440px',
     overflowY: 'auto',
   },
+  listItem: {
+    padding: theme.spacing(0),
+  },
   listItemLink: {
     borderRadius: theme.spacing(0.5),
     border: '0.5px solid #ffffff00',
@@ -86,34 +89,36 @@ const BioRepoCollectionsDetail = () => {
             return null;
           }
           return (
-            <ListItemButton
+            <ListItem
               key={`${collectionCode}-${collectionName}`}
-              className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
-              component="a"
-              href={collectionContentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              button
-            >
-              <ListItemText primary={collectionName} secondary={collectionCode} />
-              {!showDownload ? null : (
-                <ListItemSecondaryAction>
-                  <Tooltip
-                    style={{ flex: 0 }}
-                    placement="left"
-                    title="Download collection"
+              className={`${classes.listItem}`}
+              secondaryAction={!showDownload ? null : (
+                <Tooltip
+                  style={{ flex: 0 }}
+                  placement="left"
+                  title="Download collection"
+                >
+                  <IconButton
+                    color="primary"
+                    onClick={() => { downloadCollection(collectionDownloadUrl); }}
+                    size="large"
                   >
-                    <IconButton
-                      color="primary"
-                      onClick={() => { downloadCollection(collectionDownloadUrl); }}
-                      size="large"
-                    >
-                      <DownloadIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
               )}
-            </ListItemButton>
+            >
+              <ListItemButton
+                className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
+                component="a"
+                href={collectionContentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                button
+              >
+                <ListItemText primary={collectionName} secondary={collectionCode} />
+              </ListItemButton>
+            </ListItem>
           );
         })}
       </List>

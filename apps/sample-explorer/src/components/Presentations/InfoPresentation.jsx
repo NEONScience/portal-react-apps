@@ -29,7 +29,7 @@ const useStyles = makeStyles()((theme) => ({
       fontWeight: 600,
       fontSize: '1.15rem',
     },
-    '& h5:not(:first-child)': {
+    '& h5:not(:first-of-type)': {
       marginTop: theme.spacing(4),
     },
   },

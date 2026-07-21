@@ -42,7 +42,7 @@ const useStyles = makeStyles()((theme) => ({
   twoColumns: {
     display: 'flex',
     marginBottom: 'unset',
-    '& > :first-child': {
+    '& > :first-of-type': {
       marginRight: theme.spacing(3),
     },
     '& > :last-child': {

@@ -62,7 +62,7 @@ const useStyles = makeStyles()((theme) => ({
     padding: theme.spacing(2),
     borderLeft: `2px solid ${theme.palette.grey[50]}`,
     borderRight: `2px solid ${theme.palette.grey[50]}`,
-    '&:nth-child(even)': {
+    '&:nth-of-type(even)': {
       backgroundColor: theme.palette.grey[50],
     },
   },
@@ -74,7 +74,7 @@ const useStyles = makeStyles()((theme) => ({
   locations: {
     maxHeight: '160px',
     overflowY: 'scroll',
-    '& > div:not(:first-child)': {
+    '& > div:not(:first-of-type)': {
       marginTop: theme.spacing(1.5),
     },
   },

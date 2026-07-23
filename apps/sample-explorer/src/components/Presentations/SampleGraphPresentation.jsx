@@ -29,7 +29,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const SampleGraphPresentation = (props) => {
-  const { onQueryClick, graphData } = props;
+  const { onQueryClick, graphData, visitedSamples } = props;
   const { classes, theme } = useStyles();
   const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
 
@@ -81,13 +81,15 @@ const SampleGraphPresentation = (props) => {
       </div>
       <SampleNetwork
         graphData={graphData}
+        visitedSamples={visitedSamples}
         onNodeClick={(url) => {
           const headers = {
             ...neonAuthContextSessionState.sessionHeaders,
           };
+
           onQueryClick(url, null, headers);
         }}
-      />
+    />
     </div>
   );
 };

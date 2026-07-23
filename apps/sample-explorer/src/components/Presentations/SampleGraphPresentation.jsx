@@ -30,10 +30,16 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 function SampleGraphPresentation(props) {
-  const { onQueryClick, graphData } = props;
-  const { classes } = useStyles();
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const {
+    onQueryClick,
+    graphData,
+    visitedSamples,
+  } = props;
 
+  const { classes } = useStyles();
+
+  const neonContextSessionState =
+    NeonContext.useNeonContextSessionState();
   return (
     <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-graph-section">
       <Typography variant="h4" gutterBottom>
@@ -79,13 +85,15 @@ function SampleGraphPresentation(props) {
       </div>
       <SampleNetwork
         graphData={graphData}
+        visitedSamples={visitedSamples}
         onNodeClick={(url) => {
           const headers = {
             ...neonContextSessionState.sessionHeaders,
           };
+
           onQueryClick(url, null, headers);
         }}
-      />
+    />
     </div>
   );
 }

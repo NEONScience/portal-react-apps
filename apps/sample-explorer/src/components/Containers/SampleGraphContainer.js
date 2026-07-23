@@ -6,6 +6,7 @@ import { querySample } from '../../util/fetchUtil';
 const mapStateToProps = (state) => ({
   sampleUuid: state.sampleUuid,
   graphData: state.graphData,
+  visitedSamples: state.visitedSamples,
 });
 
 const mapDispatchToProps = (dispatch) => ({

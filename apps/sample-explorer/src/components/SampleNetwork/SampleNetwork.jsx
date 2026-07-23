@@ -1,4 +1,4 @@
-import React, {
+import {
   useRef,
   useState,
   useEffect,
@@ -18,157 +18,176 @@ import { GRAPH_COLORS } from '../../util/appUtil';
 
 import TreeWithParents from './TreeWithParents';
 
+// This may not be importable once moved to portal-core-components, so we will keep it here for now.
+import { NODE_TYPES } from './TreeWithParentsConstants';
+
 const useStyles = makeStyles()(() => ({
   container: {
-    cursor: "move",
+    cursor: "default",
     border: `1px solid ${Theme.palette.grey[400]}`,
     backgroundColor: Theme.palette.grey[50],
     overflow: "auto",
     resize: "vertical",
   },
 }));
+const treeConfig = {
+  spacing: {
+    column: 80,
+    row: 30,
+  },
+  layout: {
+    leftMargin: 25,
+    topMargin: 25,
+    parentConnectorLength: 50,
+    scale: 1,
+  },
+  labels: {
+    fontSize: 12.8,
+    fontFamily: "Inter, Helvetica, Arial, sans-serif",
+    labelPadding: 8,
+    parentLabelLineGap: 5,
+    verticalOffset: "0.32em",
+  },
+  svg: {
+    bottomPadding: 100,
+    containerPadding: 15,
+  },
+  link: {
+    stroke: GRAPH_COLORS.LINKS,
+    strokeWidth: 1.5,
+  },
+  nodeStyles: {
+    [NODE_TYPES.FOCUS]: {
+      fill: GRAPH_COLORS.NODES.FOCUS,
+      stroke: GRAPH_COLORS.NODES.FOCUS,
+      strokeWidth: 1.5,
+      symbolSize: 200,
+    },
+    [NODE_TYPES.PARENT]: {
+      fill: GRAPH_COLORS.NODES.PARENT,
+      stroke: GRAPH_COLORS.NODES.PARENT,
+      strokeWidth: 1.5,
+      symbolSize: 200,
+    },
+    [NODE_TYPES.CHILD]: {
+      fill: GRAPH_COLORS.NODES.CHILD,
+      stroke: GRAPH_COLORS.NODES.CHILD,
+      strokeWidth: 1.5,
+      symbolSize: 200,
+    },
+    [NODE_TYPES.PREVIOUS]: {
+      fill: GRAPH_COLORS.NODES.PREVIOUS,
+      stroke: GRAPH_COLORS.NODES.PREVIOUS,
+      strokeWidth: 1.5,
+      symbolSize: 200,
+    },
+  },
+};
+const CLICK_COOLDOWN_MS = 800; // milliseconds
 
 function SampleNetwork(props) {
-  const { onNodeClick, graphData } = props;
+  const {
+    onNodeClick,
+    graphData,
+    visitedSamples,
+  } = props;
+
   const { classes } = useStyles();
 
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
-  const { canAccessData } = neonContextSessionState;
+  const neonContextSessionState =
+    NeonContext.useNeonContextSessionState();
 
-  const [width, setWidth] = useState(1100);
-  const containerRef = useRef(null);
+  const { canAccessData } =
+    neonContextSessionState;
+
+  const [height, setHeight] = useState(600);
+
+  // Observe wrapper instead of container.
+  // Observing container and updating its height
+  // can trigger ResizeObserver loop warnings.
+  const wrapperRef = useRef(null);
+
+  // stores a mutable value between renders,
+  // does not trigger re-render when changed. f94feec (Complete TreeWithParents refactor)
   const clickCooldownRef = useRef(false);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const containerWidth = Math.ceil(containerRef.current.clientWidth);
-    if (width !== containerWidth) {
-      setWidth(containerWidth);
-    }
-  }, [width]);
-
-  if (!exists(graphData) || graphData.nodes.length <= 0) {
-    return null;
-  }
-
-  const getNodeClick = () => {
-    if (!canAccessData) {
-      return undefined;
+  // creates and register browser-managed objects.
+  // Keeps the height of the container in sync with the wrapper.
+  useLayoutEffect(() => {
+    if (!wrapperRef.current) {
+      return;
     }
 
-    return (nodeData) => {
-      if (!nodeData) {
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+
+      if (!entry) {
         return;
       }
 
-      const nodeId =
-        typeof nodeData === 'object'
-          ? nodeData.id
-          : nodeData;
+      const newHeight = Math.ceil(entry.contentRect.height);
 
-      const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${nodeId}`;
-
-      return onNodeClick(url);
-    };
-  };
-
-  const treeConfig = {
-    spacing: {
-      column: 80,
-      row: 20,
-    },
-
-    layout: {
-      leftMargin: 10,
-      topMargin: 10,
-      elbowOffset: 20
-    },
-
-    link: {
-      stroke: "#999",
-      strokeWidth: 1.5
-    },
-
-    nodeStyles: {
-      circle: {
-        fill: "#1f4ea8",
-        stroke: "#1f4ea8"
-      },
-      square: {
-        fill: "#5c8f1a",
-        stroke: "#5c8f1a"
-      },
-      triangle: {
-        fill: "#5b9bd5",
-        stroke: "#5b9bd5"
-      },
-      diamond: {
-        fill: "#FFD966",
-        stroke: "#D6B656"
+      if (newHeight > 100) {
+        setHeight(newHeight);
       }
+    });
+
+    observer.observe(wrapperRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+  const resetClickCooldown = () => {
+    setTimeout(() => {
+      clickCooldownRef.current = false;
+    }, CLICK_COOLDOWN_MS);
+  };
+  const handleNodeClick = (nodeData) => {
+    if (!nodeData) { return; }
+    if (clickCooldownRef.current) { return; }
+    // Stores mutable state between renders without causing rerenders.
+    clickCooldownRef.current = true;
+    const id = (typeof nodeData === 'object' && nodeData !== null)
+      ? (nodeData.id || nodeData.sampleUuid || nodeData.nodeid)
+      : nodeData;
+    if (!id) {
+      resetClickCooldown();
+      return;
+    }
+    const safeId = encodeURIComponent(String(id).trim());
+    let url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${safeId}`;
+    if (typeof nodeData === 'object' && nodeData !== null && nodeData.sampleClass) {
+      url += `&sampleClass=${encodeURIComponent(String(nodeData.sampleClass).trim())}`;
+    }
+    try {
+      onNodeClick(url);
+    } finally {
+      resetClickCooldown();
     }
   };
-
-
+  if (!exists(graphData?.nodes) || graphData.nodes.length <= 0) {
+    return null;
+  }
   return (
-    <div className={classes.container} ref={containerRef}>
+    <div ref={wrapperRef}>
+      <div
+        className={classes.container}
+        style={{ height }}
+      >
       <TreeWithParents
         data={graphData}
+        visitedSamples={visitedSamples}
         config={treeConfig}
+        containerHeight={height}
         onClickNode={(nodeData) => {
           if (!canAccessData) {
             return;
           }
 
-          if (!nodeData) {
-            return;
-          }
-
-          if (clickCooldownRef.current) {
-            return;
-          }
-
-          clickCooldownRef.current = true;
-
-          const id =
-            (typeof nodeData === 'object' && nodeData !== null)
-              ? (nodeData.id || nodeData.sampleUuid || nodeData.nodeid)
-              : nodeData;
-
-          if (!id) {
-            setTimeout(() => {
-              clickCooldownRef.current = false;
-            }, 800);
-            return;
-          }
-
-          const safeId = encodeURIComponent(String(id).trim());
-
-          let url =
-            `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${safeId}`;
-
-          if (
-            typeof nodeData === 'object'
-            && nodeData !== null
-            && nodeData.sampleClass
-          ) {
-            url +=
-              `&sampleClass=${
-                encodeURIComponent(
-                  String(nodeData.sampleClass).trim(),
-                )
-              }`;
-          }
-
-          try {
-            onNodeClick(url);
-          } finally {
-            setTimeout(() => {
-              clickCooldownRef.current = false;
-            }, 800);
-          }
+          handleNodeClick(nodeData);
         }}
       />
+      </div>
     </div>
   );
 }
@@ -184,5 +203,4 @@ SampleNetwork.propTypes = {
     ).isRequired,
   }).isRequired,
 };
-
 export default SampleNetwork;

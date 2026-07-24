@@ -21,7 +21,6 @@ const buildParentLinkPath = ({
   const startX =
     (sourceNode.labelRightX ?? sourceNode.x) +
     parentLabelToLineGap;
-
   return `
     M${startX},${sourceNode.y}
     L${parentSpineX},${sourceNode.y}
@@ -37,7 +36,6 @@ const buildChildLinkPath = ({
     targetNode.symbolType === NODE_TYPES.PREVIOUS
       ? targetNode.x - labelPadding
       : targetNode.x;
-
   return `
     M${sourceNode.x},${targetNode.y}
     L${endX},${targetNode.y}
@@ -53,7 +51,6 @@ const buildLinkPath = ({
 }) => {
   let s = sourceNode;
   let t = targetNode;
-
   if (
     s.symbolType === NODE_TYPES.FOCUS &&
     (
@@ -79,7 +76,6 @@ const buildLinkPath = ({
       parentLabelToLineGap,
     });
   }
-
   if (
     t.symbolType === NODE_TYPES.CHILD ||
     t.symbolType === NODE_TYPES.PREVIOUS
@@ -104,7 +100,6 @@ const renderNodeSymbols = ({
       const type =
         symbolMap[d.symbolType] ??
         d3.symbolCircle;
-
       return symbolGenerator
         .type(type)
         .size(d.style.symbolSize)();
@@ -121,7 +116,6 @@ const renderNodeSymbols = ({
     })
     .on("click", (event, d) => {
       event.stopPropagation();
-
       if (onClickNode) {
         onClickNode(d);
       }
@@ -138,7 +132,6 @@ const renderNodeLabels = ({
     LABEL_FONT_SIZE,
     LABEL_FONT_FAMILY,
   } = labelConfig;
-
   const textLabels = nodeGroups
     .append("text")
     .attr("text-anchor", "start")
@@ -148,7 +141,6 @@ const renderNodeLabels = ({
         .select("path")
         .node()
         .getBBox();
-
       return (
         bbox.x +
         bbox.width +
@@ -157,7 +149,6 @@ const renderNodeLabels = ({
     })
     .attr("dy", LABEL_VERTICAL_OFFSET)
     .text(d => d.sampleName);
-
   textLabels
     .attr(
       "font-size",
@@ -175,11 +166,9 @@ const cacheLabelPositions = nodeGroups => {
       .select(this)
       .select("text")
       .node();
-
     if (textElement) {
       const textBounds =
         textElement.getBBox();
-
       // Used for parent link positioning.
       d.labelRightX =
         d.x +

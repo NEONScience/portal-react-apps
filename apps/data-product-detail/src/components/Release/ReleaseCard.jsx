@@ -28,6 +28,7 @@ import DataProductContext from '../DataProductContext';
 
 import DetailTooltip from '../Details/DetailTooltip';
 
+// eslint-disable-next-line max-len, @stylistic/max-len
 const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable, permanent link to this data product release';
 
 const {

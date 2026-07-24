@@ -1,6 +1,11 @@
 /* eslint-disable @next/next/next-script-for-ga */
 /* eslint-disable @next/next/no-sync-scripts */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable @stylistic/jsx-closing-tag-location */
 /* eslint-disable react/no-danger */
+/* eslint-disable react/self-closing-comp */
+/* eslint-disable quotes */
+/* eslint-disable @stylistic/quotes */
 
 import React from 'react';
 import type { Metadata } from 'next';
@@ -8,7 +13,7 @@ import type { Metadata } from 'next';
 import './assets/css/drupal-fonts.css';
 
 // DO NOT REMOVE OR EDIT THIS LINE WITHOUT UPDATING
-// scripts/sync-assets.js
+// portal-core-components/scripts/sync-assets.mjs
 // This hash will be updated whenever fresh cached
 // assets are fetched.
 // -----------------------------------------------------------------------------
@@ -42,33 +47,38 @@ export default function RootLayout({
           src="https://code.jquery.com/jquery-3.7.1.min.js"
           integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
           crossOrigin="anonymous"
-        />
+        ></script>
         {/* <!-- Google Tag Manager --> */}
         <script
           dangerouslySetInnerHTML={{
-            __html: 'window.gtmDataLayer = [{ page_category: "Sample Explorer" }];',
+            __html: `window.gtmDataLayer = [{ page_category: "Sample Explorer" }];`,
           }}
-        />
+        ></script>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function (w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-            var f = d.getElementsByTagName(s)[0],
-              j = d.createElement(s),
-              dl = l != "dataLayer" ? "&l=" + l : "";
-            j.async = true;
-            j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-            f.parentNode.insertBefore(j, f);
-          })(window, document, "script", "gtmDataLayer", "GTM-K4S83R2");`,
+            __html: `
+            (function (w, d, s, l, i) {
+              w[l] = w[l] || [];
+              w[l].push({
+                "gtm.start": new Date().getTime(),
+                event: "gtm.js",
+              });
+              var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != "dataLayer" ? "&l=" + l : "";
+              j.async = true;
+              j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+              f.parentNode.insertBefore(j, f);
+            })(window, document, "script", "gtmDataLayer", "GTM-K4S83R2");
+          `,
           }}
-        />
+        ></script>
         {/* <!-- End Google Tag Manager --> */}
         <script
           dangerouslySetInnerHTML={{
-            __html: 'window.NEON_SERVER_DATA = "__NEON_SERVER_DATA__";',
+            __html: `window.NEON_SERVER_DATA = "__NEON_SERVER_DATA__";`,
           }}
-        />
+        ></script>
       </head>
       <body>
         <noscript> You need to enable JavaScript to run this app. </noscript>
@@ -83,7 +93,7 @@ export default function RootLayout({
               visibility: 'hidden',
             }}
             title="GTM JavaScript Required"
-          />
+          ></iframe>
         </noscript>
         {/* <!-- End Google Tag Manager (noscript) --> */}
         <div id="root">{children}</div>

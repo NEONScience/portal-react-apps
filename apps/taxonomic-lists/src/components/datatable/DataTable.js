@@ -139,28 +139,30 @@ class DataTable extends Component {
     const table = $(this.dataTable).DataTable();
 
     const input = $(
-      '<input type="filter" '
+      `<th query-name="${queryName}" col-index="${index.toString()}"> `
+        + '<input type="filter" '
           + `query-name="${queryName}" `
           + `col-index="${index.toString()}" `
           + 'class="input-sm form-control" '
-          + `data-selenium="table-section.column-filter.${queryName}" />`,
+          + `data-selenium="table-section.column-filter.${queryName}" />`
+      + '</th>',
     );
 
     const method = debounce((e, tableParam, queryNameParam, term) => {
       this.debounceColumnFilterMethod(e, tableParam, queryNameParam, term);
     }, table.settings()[0].searchDelay);
 
-    input.off('click').on('click', (e) => {
+    input.find('input').off('click').on('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
     });
-    input.off('keyup cut paste').on('keyup cut paste', (e) => {
+    input.find('input').off('keyup cut paste').on('keyup cut paste', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      method(e, table, queryName, input.val());
+      method(e, table, queryName, input.find('input').val());
     });
-    input.off('cut paste').on('cut paste', (e) => {
-      method(e, table, queryName, input.val());
+    input.find('input').off('cut paste').on('cut paste', (e) => {
+      method(e, table, queryName, input.find('input').val());
     });
 
     return input;
@@ -184,6 +186,11 @@ class DataTable extends Component {
         $(filter).val(null);
       });
     });
+    $(this.dataTable).find('thead tr:last-of-type')
+      .find('input[type="filter"]')
+      .each((filterIndex, filter) => {
+        $(filter).val(null);
+      });
   }
 
   clearTableData() {
@@ -220,11 +227,10 @@ class DataTable extends Component {
         dt.settings()[0].jqXHR.abort();
       }
 
-      let url = `${taxonQuery.rootApiUrl
-      }?taxonTypeCode=${taxonQuery.taxonTypeCode
-      }&verbose=true`
-          + `&offset=${dt.page.info().start
-          }&limit=${dt.page.info().length}`;
+      const taxonTypeCodeQuery = `taxonTypeCode=${taxonQuery.taxonTypeCode}`;
+      const verboseQuery = 'verbose=true';
+      const pageQuery = `offset=${dt.page.info().start}&limit=${dt.page.info().length}`;
+      let url = `${taxonQuery.rootApiUrl}?${taxonTypeCodeQuery}&${verboseQuery}&${pageQuery}`;
 
       if (taxonQuery.locationName) {
         url += `&locationName=${taxonQuery.locationName}`;
@@ -261,11 +267,13 @@ class DataTable extends Component {
   };
 
   initDataTableColumnFilters = () => {
+    $(this.dataTable).find('thead').append('<tr class="header-filter-row">');
     $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
       this.prohibitColumnHeaderKeyEvents(tableHeaderCol);
       const col = this.findColumnByTitle(tableHeaderCol.innerHTML);
       if (col) {
-        $(tableHeaderCol).append(this.getColumnFilterInput(col.column.queryName, col.index));
+        $(this.dataTable).find('thead tr:last-of-type')
+          .append(this.getColumnFilterInput(col.column.queryName, col.index));
       }
     });
   };
@@ -345,16 +353,45 @@ class DataTable extends Component {
       foundColumns.forEach((foundColumn) => {
         if (!foundColumn.column.visible) {
           delete this.queryFilter.filterColumns[foundColumn.column.queryName];
+          $(this.dataTable).find('thead tr:last-of-type')
+            .find(`th[query-name="${foundColumn.column.queryName}"]`)
+            .remove();
         }
 
         $(this.dataTable).find('thead th').each((index, tableHeaderCol) => {
           this.prohibitColumnHeaderKeyEvents(tableHeaderCol);
           const col = this.findColumnByTitle(tableHeaderCol.innerHTML);
           if (col) {
-            if (tableHeaderCol.innerHTML.toString().indexOf('<input') < 0) {
-              $(tableHeaderCol)
-                .append(this.getColumnFilterInput(foundColumn.column.queryName, foundColumn.index));
-              return false;
+            if (foundColumn.column.queryName === col.column.queryName) {
+              const filterTh = $(this.dataTable).find('thead tr:last-of-type')
+                .find(`th[query-name="${foundColumn.column.queryName}"]`);
+              if (!filterTh[0]) {
+                let insertAt = -1;
+                const filterThs = $(this.dataTable).find('thead tr:last-of-type th')
+                  .each((checkFilterIdx, checkFilterTh) => {
+                    // Find the col-index where col.index is less than
+                    const colIdx = parseInt($(checkFilterTh).attr('col-index'), 10);
+                    if (col.index < colIdx) {
+                      insertAt = checkFilterIdx;
+                      return false;
+                    }
+                    return null;
+                  });
+                if (insertAt < 0) {
+                  $(this.dataTable).find('thead tr:last-of-type')
+                    .append(this.getColumnFilterInput(
+                      foundColumn.column.queryName,
+                      foundColumn.index,
+                    ));
+                } else {
+                  filterThs.eq(insertAt)
+                    .before(this.getColumnFilterInput(
+                      foundColumn.column.queryName,
+                      foundColumn.index,
+                    ));
+                }
+                return false;
+              }
             }
           }
           return null;
@@ -419,7 +456,9 @@ class DataTable extends Component {
 
     this.queryFilter.search.term = null;
     this.queryFilter.search.columns = [];
-    if ((typeof searchTerm !== 'undefined') && (searchTerm !== null) && (searchTerm.trim().length > 0)) {
+    if ((typeof searchTerm !== 'undefined')
+        && (searchTerm !== null)
+        && (searchTerm.trim().length > 0)) {
       this.queryFilter.search.term = searchTerm.trim();
       table.settings().init().columns.forEach((col) => {
         if (col.queryName) { // && col.visible) {

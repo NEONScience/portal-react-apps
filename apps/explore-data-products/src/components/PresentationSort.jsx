@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Collapse from '@mui/material/Collapse';
 import FormControl from '@mui/material/FormControl';
-import Hidden from '@mui/material/Hidden';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -134,7 +134,8 @@ const PresentationSort = (inProps) => {
     <Typography variant="h4" component="h2" className={classes.title}>Sort</Typography>
   );
 
-  const summary = `${SORT_METHODS[sortMethod].label} ${sortDirection === 'ASC' ? '(ascending)' : '(descending)'}`;
+  const sortDirectionLabel = sortDirection === 'ASC' ? '(ascending)' : '(descending)';
+  const summary = `${SORT_METHODS[sortMethod].label} ${sortDirectionLabel}`;
 
   const sortBlurb = (
     <Typography
@@ -221,7 +222,7 @@ const PresentationSort = (inProps) => {
   return (
     <Card className={classes.card}>
       <CardContent data-selenium="browse-data-products-page.sort">
-        <Hidden mdUp>
+        <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               {title}
@@ -238,7 +239,7 @@ const PresentationSort = (inProps) => {
               </IconButton>
             </Tooltip>
           </div>
-        </Hidden>
+        </Box>
         {belowMd ? (
           <Collapse in={visible}>
             <div style={collapsedContentDivStyle}>

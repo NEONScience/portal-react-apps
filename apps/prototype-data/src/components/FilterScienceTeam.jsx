@@ -44,7 +44,8 @@ const FilterScienceTeam = (inProps) => {
     >
       <ul>
         {filterItems[filterKey].map((filterItem) => {
-          const countTitle = `{n} datasets are provided by the ${filterItem.name} ${filterItem.subtitle} team`;
+          const countTitle = '{n} datasets are provided by the '
+            + `${filterItem.name} ${filterItem.subtitle} team`;
           return (
             <li key={filterItem.value}>
               <FilterCheckBox

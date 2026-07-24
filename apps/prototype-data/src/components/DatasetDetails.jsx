@@ -319,7 +319,8 @@ const renderDataFileRow = (file, uuid, classes) => {
                 color="primary"
                 onClick={() => {
                   const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                  const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
+                  const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
+                  const filePath = `${fileRoot}?download=true`;
                   window.location.href = filePath;
                 }}
                 size="large"
@@ -809,7 +810,9 @@ const DatasetDetails = (props) => {
         >
           {/* Download */}
           <div className={classes.section} id="dataset-download">
-            <Typography variant="h4" component="h2" gutterBottom>Data Package and Download</Typography>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Data Package and Download
+            </Typography>
           </div>
           <div className={classes.section}>
             {downloadButton}
@@ -827,7 +830,9 @@ const DatasetDetails = (props) => {
           </div>
           {/* Locations and Study Area */}
           <div className={classes.section} id="dataset-locations-study-area">
-            <Typography variant="h4" component="h2" gutterBottom>Locations and Study Area</Typography>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Locations and Study Area
+            </Typography>
           </div>
           <div className={classes.section} id="dataset-locations-study-area">
             <Typography gutterBottom variant="body2" className={classes.sectionContent}>

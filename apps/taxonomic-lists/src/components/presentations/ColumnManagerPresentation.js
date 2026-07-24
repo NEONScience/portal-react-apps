@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ColumnManager from '../columnmanager/ColumnManager';
 
-function ColumnManagerPresentation(props) {
+const ColumnManagerPresentation = (props) => {
   const containerStyle = {};
   const {
     columnManagerVisible,
@@ -26,7 +26,7 @@ function ColumnManagerPresentation(props) {
       />
     </div>
   );
-}
+};
 
 ColumnManagerPresentation.propTypes = {
   columnManagerVisible: PropTypes.bool.isRequired,

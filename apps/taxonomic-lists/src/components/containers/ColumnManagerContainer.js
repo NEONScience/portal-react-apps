@@ -23,6 +23,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-const ColumnManagerContainer = connect(mapStateToProps, mapDispatchToProps)(ColumnManagerPresentation);
+const ColumnManagerContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ColumnManagerPresentation);
 
 export default ColumnManagerContainer;

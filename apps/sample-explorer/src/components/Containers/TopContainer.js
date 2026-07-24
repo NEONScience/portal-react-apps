@@ -21,8 +21,6 @@ import {
   querySampleTagClasses,
 } from '../../util/fetchUtil';
 
-// TODO(RJL): clean all unused state
-// bind state to properties
 const mapStateToProps = (state) => ({
   urlParams: state.urlParams,
   query: state.query,

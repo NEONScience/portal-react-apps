@@ -10,7 +10,7 @@ import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
-import { FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
+import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
 const useStyles = makeStyles()((theme) => ({
   button: {
@@ -110,7 +110,7 @@ const FilterItemVisibilityButtons = (inProps) => {
 };
 
 FilterItemVisibilityButtons.propTypes = {
-  filterKey: PropTypes.string.isRequired,
+  filterKey: PropTypes.oneOf(Object.keys(FILTER_KEYS)).isRequired,
   currentState: PropTypes.oneOf(Object.values(FILTER_ITEM_VISIBILITY_STATES)).isRequired,
   totalItemCount: PropTypes.number.isRequired,
   selectedItemCount: PropTypes.number.isRequired,

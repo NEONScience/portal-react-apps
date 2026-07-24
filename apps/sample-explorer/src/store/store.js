@@ -71,7 +71,11 @@ const dataStore = {
       headerName: 'fate', field: 'fate', sortable: true, resizable: true, filter: true,
     },
     {
-      headerName: 'fate location', field: 'fate_location', sortable: true, resizable: true, filter: true,
+      headerName: 'fate location',
+      field: 'fate_location',
+      sortable: true,
+      resizable: true,
+      filter: true,
     },
   ],
   tableDefinition: [],
@@ -85,9 +89,9 @@ export const configureStore = (state) => {
     thunk,
   ];
   if (NeonEnvironment.isDevEnv) {
-    import('redux-logger').then(({ logger }) => {
-      middlewares.push(logger);
-    });
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    const { logger } = require('redux-logger');
+    middlewares.push(logger);
   }
 
   const store = createStore(

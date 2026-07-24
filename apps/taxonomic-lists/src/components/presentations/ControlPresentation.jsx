@@ -26,7 +26,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function ControlPresentation() {
+const ControlPresentation = () => {
   const { classes } = useStyles();
   return (
     <div className={classes.outerContainer}>
@@ -43,6 +43,6 @@ function ControlPresentation() {
       </div>
     </div>
   );
-}
+};
 
 export default ControlPresentation;

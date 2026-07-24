@@ -134,7 +134,7 @@ const fetchFields = (dispatch) => {
     });
 };
 
-function SampleSmsFieldsDialog() {
+const SampleSmsFieldsDialog = () => {
   const initialState = {
     dialogOpen: false,
     fields: [],
@@ -262,6 +262,6 @@ function SampleSmsFieldsDialog() {
       </Dialog>
     </div>
   );
-}
+};
 
 export default SampleSmsFieldsDialog;

@@ -131,31 +131,51 @@ const Dataset = (props) => {
               <Typography variant="subtitle2">Site Name</Typography>
               {titleLoc.siteName
                 ? <Typography variant="body2">{titleLoc.siteName}</Typography>
-                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+                : (
+                  <Typography variant="subtitle2" className={classes.NA}>
+                    None specified
+                  </Typography>
+                )}
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">State</Typography>
               {titleLoc.state
                 ? <Typography variant="body2">{titleLoc.state}</Typography>
-                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+                : (
+                  <Typography variant="subtitle2" className={classes.NA}>
+                    None specified
+                  </Typography>
+                )}
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Domain</Typography>
               {titleLoc.domain
                 ? <Typography variant="body2">{titleLoc.domain}</Typography>
-                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+                : (
+                  <Typography variant="subtitle2" className={classes.NA}>
+                    None specified
+                  </Typography>
+                )}
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Latitude</Typography>
               {titleLoc.latitude
                 ? <Typography variant="body2">{titleLoc.latitude}</Typography>
-                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+                : (
+                  <Typography variant="subtitle2" className={classes.NA}>
+                    None specified
+                  </Typography>
+                )}
             </Grid>
             <Grid size={{ xs: 6 }}>
               <Typography variant="subtitle2">Longitude</Typography>
               {titleLoc.longitude
                 ? <Typography variant="body2">{titleLoc.longitude}</Typography>
-                : <Typography variant="subtitle2" className={classes.NA}>None specified</Typography>}
+                : (
+                  <Typography variant="subtitle2" className={classes.NA}>
+                    None specified
+                  </Typography>
+                )}
             </Grid>
           </Grid>
         ));

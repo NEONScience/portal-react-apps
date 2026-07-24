@@ -25,6 +25,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
+    "incremental": true,
     "plugins": [
       {
         "name": "next"
@@ -41,6 +42,7 @@
     "acceptance-tests",
     "webpack",
     "jest",
-    "setupTests.ts"
+    "setupTests.ts",
+    "**/*/next.config.mjs"
   ]
 }

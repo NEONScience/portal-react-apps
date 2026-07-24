@@ -9,7 +9,7 @@ import ControlPresentation from '../presentations/ControlPresentation';
 import ColumnManagerContainer from '../containers/ColumnManagerContainer';
 import DataTableContainer from '../containers/DataTableContainer';
 
-function App() {
+const App = () => {
   const breadcrumbs = [
     { name: 'Data', href: RouteService.getDataSamplesDataPath() },
     { name: 'Samples & Specimens', href: RouteService.getSamplesPath() },
@@ -27,6 +27,6 @@ function App() {
       <DataTableContainer />
     </NeonPage>
   );
-}
+};
 
 export default App;

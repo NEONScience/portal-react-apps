@@ -10,7 +10,6 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid2';
 import Typography from '@mui/material/Typography';
-import Hidden from '@mui/material/Hidden';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -74,9 +73,6 @@ const useStyles = makeStyles()((theme) => ({
   locations: {
     maxHeight: '160px',
     overflowY: 'scroll',
-    '& > div:not(:first-of-type)': {
-      marginTop: theme.spacing(1.5),
-    },
   },
   locationsBottom: {
     top: '159px',
@@ -387,7 +383,9 @@ const IssueLogDetail = () => {
                       </Typography>
                     </ComponentErrorBoundary>
                   ) : (
-                    <Typography variant="body2" className={classes.unresolved}>Unresolved</Typography>
+                    <Typography variant="body2" className={classes.unresolved}>
+                      Unresolved
+                    </Typography>
                   )}
                 </Grid>
                 {dateRangeEnd ? (
@@ -413,6 +411,7 @@ const IssueLogDetail = () => {
     pagination: {
       labelRowsSelect: 'top-level issues',
       labelRowsPerPage: null,
+      // labelRows: 'top-level issues',
     },
     toolbar: {
       searchPlaceholder: 'Search issues',
@@ -508,7 +507,7 @@ const IssueLogDetail = () => {
 
   return (
     <>
-      <Hidden mdDown>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
         <Detail seleniumKey="issue-log">
           <MaterialTable
             title=""
@@ -529,8 +528,8 @@ const IssueLogDetail = () => {
             }}
           />
         </Detail>
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <Detail title="Issue Log" seleniumKey="issue-log">
           <Grid container spacing={1}>
             <Grid size={{ xs: 6, sm: 4 }}>
@@ -587,7 +586,11 @@ const IssueLogDetail = () => {
                       ),
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton aria-label="clear search term" onClick={handleClearXsSearch} size="large">
+                          <IconButton
+                            aria-label="clear search term"
+                            onClick={handleClearXsSearch}
+                            size="large"
+                          >
                             <ClearIcon />
                           </IconButton>
                         </InputAdornment>
@@ -607,7 +610,7 @@ const IssueLogDetail = () => {
           </div>
           {renderIssueXsRows()}
         </Detail>
-      </Hidden>
+      </Box>
     </>
   );
 };

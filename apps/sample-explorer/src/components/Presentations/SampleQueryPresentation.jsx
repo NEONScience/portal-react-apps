@@ -42,7 +42,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function SampleQueryPresentation(props) {
+const SampleQueryPresentation = (props) => {
   const {
     query: {
       queryType,
@@ -216,7 +216,7 @@ function SampleQueryPresentation(props) {
       </div>
     </div>
   );
-}
+};
 
 SampleQueryPresentation.propTypes = {
   query: PropTypes.shape({

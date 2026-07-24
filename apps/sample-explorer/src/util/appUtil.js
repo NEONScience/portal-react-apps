@@ -175,11 +175,13 @@ export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {
   let parentSamples = [];
   let childSamples = [];
 
-  if (typeof sampleView.parentSampleIdentifiers !== 'undefined' && sampleView.parentSampleIdentifiers !== null) {
+  if (typeof sampleView.parentSampleIdentifiers !== 'undefined'
+      && sampleView.parentSampleIdentifiers !== null) {
     parentSamples = sampleView.parentSampleIdentifiers;
   }
 
-  if (typeof sampleView.childSampleIdentifiers !== 'undefined' && sampleView.childSampleIdentifiers !== null) {
+  if (typeof sampleView.childSampleIdentifiers !== 'undefined'
+      && sampleView.childSampleIdentifiers !== null) {
     childSamples = sampleView.childSampleIdentifiers;
   }
 
@@ -335,7 +337,8 @@ export const createCsv = (samples) => {
       }
 
       // handle child samples
-      if (typeof samples[i].childSampleIdentifiers === 'undefined' || samples[i].childSampleIdentifiers === null) {
+      if (typeof samples[i].childSampleIdentifiers === 'undefined'
+          || samples[i].childSampleIdentifiers === null) {
         sampleInfoRow = Object.assign(sampleInfoRow, { childSampleUuids: '' });
       } else {
         const childSamples = samples[i].childSampleIdentifiers;
@@ -356,7 +359,8 @@ export const createCsv = (samples) => {
       } else {
         const events = samples[i].sampleEvents;
         for (let e = 0; e < events.length; e += 1) {
-          if (typeof events[e].smsFieldEntries === 'undefined' || events[e].smsFieldEntries === null) {
+          if (typeof events[e].smsFieldEntries === 'undefined'
+              || events[e].smsFieldEntries === null) {
             console.log('We have an event with no SMS Field Entries.  This should not happen.');
           } else {
             const tableName = events[e].ingestTableName;

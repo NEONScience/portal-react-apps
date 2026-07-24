@@ -22,7 +22,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function SampleInfoPresentation(props) {
+const SampleInfoPresentation = (props) => {
   const {
     search: {
       sampleTag,
@@ -87,7 +87,7 @@ function SampleInfoPresentation(props) {
       </div>
     </div>
   );
-}
+};
 
 SampleInfoPresentation.propTypes = {
   search: PropTypes.shape({

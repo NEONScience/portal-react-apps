@@ -7,8 +7,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -154,7 +152,11 @@ const TombstoneNotice = () => {
         }
         return (
           <>
-            <Typography variant="subtitle2" color="textPrimary" className={classes.doiFromParentBlurb}>
+            <Typography
+              variant="subtitle2"
+              color="textPrimary"
+              className={classes.doiFromParentBlurb}
+            >
               {/* eslint-disable react/jsx-one-expression-per-line */}
               This data product release is {bundledLink} into {bundleParentLink}.
               {/* eslint-enable react/jsx-one-expression-per-line */}

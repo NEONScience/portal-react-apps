@@ -29,7 +29,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function SampleGraphPresentation(props) {
+const SampleGraphPresentation = (props) => {
   const { onQueryClick, graphData } = props;
   const { classes } = useStyles();
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
@@ -70,7 +70,10 @@ function SampleGraphPresentation(props) {
         </div>
         <div className={classes.keyElement}>
           <svg height="20" width="20">
-            <polygon points="10,0 17,10 10,20 3,10 " style={{ fill: GRAPH_COLORS.NODES.PREVIOUS }} />
+            <polygon
+              points="10,0 17,10 10,20 3,10 "
+              style={{ fill: GRAPH_COLORS.NODES.PREVIOUS }}
+            />
           </svg>
           <Typography variant="body2">
             Previous Sample
@@ -88,7 +91,7 @@ function SampleGraphPresentation(props) {
       />
     </div>
   );
-}
+};
 
 SampleGraphPresentation.propTypes = {
   onQueryClick: PropTypes.func.isRequired,

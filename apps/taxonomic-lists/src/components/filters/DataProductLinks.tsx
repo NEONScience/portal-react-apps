@@ -22,7 +22,7 @@ const useStyles = makeStyles()(() => ({
  * @param dataProducts An array of data product objects
  * @returns The component
  */
-function DataProductLinks({ props }: any) {
+const DataProductLinks = (props: any) => {
   const { dataProducts } = props;
   const { classes } = useStyles();
 
@@ -82,7 +82,7 @@ function DataProductLinks({ props }: any) {
     );
   }
   return null;
-}
+};
 
 /* Export the component */
 export default DataProductLinks;

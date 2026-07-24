@@ -19,13 +19,14 @@ import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 import AppStateSelector from '../../selectors/app';
 import { SiteAvailabilitySectionState } from '../states/AppStates';
 import { Site } from '../../types/store';
-import useStyles from '../../styles/overlay';
+import { useStyles } from '../../styles/overlay';
 import {
   AvailableDateRange,
   computeAvailableDateRangeSite,
 } from '../../util/availabilityUtil';
 
 const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
+  // eslint-disable-next-line max-len, @stylistic/max-len
   () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
 );
 

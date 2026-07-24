@@ -9,7 +9,8 @@ interface UserRelease {
   generationDate: number;
 }
 
-const useContextReleases = (currentReleases: Release[]): Release[] => {
+// eslint-disable-next-line import/prefer-default-export
+export const useContextReleases = (currentReleases: Release[]): Release[] => {
   const [
     {
       auth: {
@@ -44,5 +45,3 @@ const useContextReleases = (currentReleases: Release[]): Release[] => {
   });
   return currentReleases;
 };
-
-export default useContextReleases;

@@ -171,6 +171,9 @@ const FilterSearch = (props) => {
       }
     });
 
+    const filterSubtitle = 'With all filters combined: '
+      + `${productOrder.length} product${productOrder.length === 1 ? '' : 's'}`;
+
     return (
       <Dialog
         fullWidth
@@ -181,7 +184,12 @@ const FilterSearch = (props) => {
       >
         <DialogTitle className={classes.dialogTitle}>
           <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3) }}>
-            <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }} id="keywords-dialog-title">
+            <Typography
+              variant="h4"
+              component="span"
+              style={{ marginBottom: Theme.spacing(2) }}
+              id="keywords-dialog-title"
+            >
               Browse Keywords
             </Typography>
             <Typography variant="body2" className={classes.subtitle}>
@@ -212,7 +220,7 @@ const FilterSearch = (props) => {
               }}
             />
             <Typography variant="body2" className={classes.subtitle}>
-              {`With all filters combined: ${productOrder.length} product${productOrder.length === 1 ? '' : 's'}`}
+              {filterSubtitle}
             </Typography>
           </div>
           <div style={{ flexBasis: Theme.spacing(6), textAlign: 'right' }}>

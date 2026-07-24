@@ -23,7 +23,7 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-function ColumnManager(props) {
+const ColumnManager = (props) => {
   const {
     columns,
     onSetColumns,
@@ -108,7 +108,7 @@ function ColumnManager(props) {
       data-selenium="column-manager-dialog"
     >
       <DialogTitle id="column-manager-title">
-        <Typography variant="h4" style={{ marginTop: '8px' }}>
+        <Typography variant="h4" component="span" style={{ marginTop: '8px' }}>
           Table Columns
         </Typography>
       </DialogTitle>
@@ -134,7 +134,7 @@ function ColumnManager(props) {
       </DialogActions>
     </Dialog>
   );
-}
+};
 
 ColumnManager.propTypes = {
   columns: PropTypes.arrayOf(PropTypes.shape({

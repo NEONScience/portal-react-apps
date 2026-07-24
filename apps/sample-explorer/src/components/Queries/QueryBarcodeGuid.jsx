@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 
 import { getQueryTypeName, QUERY_TYPE } from '../../util/queryUtil';
 
-function QueryBarcodeGuid(props) {
+const QueryBarcodeGuid = (props) => {
   const {
     query: {
       queryType,
@@ -53,7 +53,7 @@ function QueryBarcodeGuid(props) {
       }}
     />
   );
-}
+};
 
 QueryBarcodeGuid.propTypes = {
   query: PropTypes.shape({

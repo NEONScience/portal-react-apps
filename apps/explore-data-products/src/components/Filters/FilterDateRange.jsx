@@ -124,6 +124,12 @@ const FilterDateRange = () => {
   };
 
   // Render active date range filter with slider and date picker inputs
+  const fromMinDate = getYearMonthMoment(selectableRange[sliderMin]);
+  const fromMaxDate = getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])
+    .subtract(1, 'months');
+  const throughMinDate = getYearMonthMoment(currentRange[0] || selectableRange[sliderMin])
+    .add(1, 'months');
+  const throughMaxDate = getYearMonthMoment(selectableRange[sliderMax]);
   return (
     <FilterBase
       {...filterBaseProps}
@@ -170,8 +176,8 @@ const FilterDateRange = () => {
           views={['month', 'year']}
           label="From"
           openTo="month"
-          minDate={getYearMonthMoment(selectableRange[sliderMin])}
-          maxDate={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax]).subtract(1, 'months')}
+          minDate={fromMinDate}
+          maxDate={fromMaxDate}
           slotProps={{
             textField: {
               size: 'small',
@@ -192,8 +198,8 @@ const FilterDateRange = () => {
           views={['month', 'year']}
           label="Through"
           openTo="month"
-          minDate={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin]).add(1, 'months')}
-          maxDate={getYearMonthMoment(selectableRange[sliderMax])}
+          minDate={throughMinDate}
+          maxDate={throughMaxDate}
           slotProps={{
             textField: {
               size: 'small',

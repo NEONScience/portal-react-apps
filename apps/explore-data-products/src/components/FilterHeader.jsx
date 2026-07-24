@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Hidden from '@mui/material/Hidden';
+import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -59,10 +59,10 @@ const FilterHeader = () => {
 
   return (
     <>
-      <Hidden mdDown>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
         {title}
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1 }}>
             {title}
@@ -83,7 +83,7 @@ const FilterHeader = () => {
             </IconButton>
           </Tooltip>
         </div>
-      </Hidden>
+      </Box>
     </>
   );
 };

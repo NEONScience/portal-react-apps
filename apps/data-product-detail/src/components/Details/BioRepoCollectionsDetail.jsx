@@ -4,13 +4,11 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemButton from '@mui/material/ListItemButton';
 import Tooltip from '@mui/material/Tooltip';
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -42,7 +40,7 @@ const useStyles = makeStyles()((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },

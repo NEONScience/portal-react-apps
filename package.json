@@ -2,9 +2,9 @@
   "name": "portal-react-apps",
   "version": "2.19.1",
   "private": true,
-  "packageManager": "yarn@4.15.0",
+  "packageManager": "yarn@4.17.1",
   "config": {
-    "yarnVersion": "4.15.0"
+    "yarnVersion": "4.17.1"
   },
   "workspaces": [
     "apps/*"
@@ -36,7 +36,7 @@
     "ci": "yarn install --immutable",
     "ci:prod": "yarn install --immutable",
     "build:docker-clean": "docker image rm portal-react-apps:latest-builder-base",
-    "build:docker-all": "docker buildx bake --set \\*.args.YARN_VERSION=4.15.0 --file docker-bake-build.hcl",
+    "build:docker-all": "docker buildx bake --set \\*.args.YARN_VERSION=4.17.1 --file docker-bake-build.hcl",
     "lint": "npx eslint --config eslint.config.mjs ."
   },
   "devDependencies": {
@@ -54,6 +54,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "globals": "^17.4.0"
+    "globals": "^17.4.0",
+    "typescript": "~5.9.3"
   }
 }

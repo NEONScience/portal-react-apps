@@ -24,9 +24,9 @@ const dataStore = {
 
 const middlewares = [];
 if (NeonEnvironment.isDevEnv) {
-  import('redux-logger').then(({ logger }) => {
-    middlewares.push(logger);
-  });
+  // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+  const { logger } = require('redux-logger');
+  middlewares.push(logger);
 }
 
 const store = createStore(

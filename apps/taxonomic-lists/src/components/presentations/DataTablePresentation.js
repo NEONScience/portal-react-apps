@@ -26,11 +26,18 @@ const useStyles = makeStyles()((theme) => ({
       borderRadius: '2px',
       letterSpacing: '0.06em',
       textTransform: 'uppercase',
-      boxShadow: '0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12)',
+      boxShadow: `
+        0px 3px 1px -2px rgba(0,0,0,0.2),
+        0px 2px 2px 0px rgba(0,0,0,0.14),
+        0px 1px 5px 0px rgba(0,0,0,0.12)
+        `,
       '&:hover, &:active': {
         backgroundColor: '#0092e2',
-        // eslint-disable-next-line max-len, @stylistic/max-len
-        boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+        boxShadow: `
+          0px 2px 4px -1px rgba(0,0,0,0.2),
+          0px 4px 5px 0px rgba(0,0,0,0.14),
+          0px 1px 10px 0px rgba(0,0,0,0.12)
+          `,
       },
       '& i': {
         marginLeft: theme.spacing(1),
@@ -129,7 +136,7 @@ const useStyles = makeStyles()((theme) => ({
       },
       '& tr': {
         verticalAlign: 'middle',
-        '& th:not(:last-child)': {
+        '& th:not(th:last-of-type)': {
           borderRight: `1px solid ${theme.palette.secondary.main}`,
         },
         '& th': {
@@ -144,10 +151,31 @@ const useStyles = makeStyles()((theme) => ({
           },
         },
       },
+      '& tr.header-filter-row': {
+        verticalAlign: 'middle',
+        '& th:not(th:last-of-type)': {
+          borderRight: `1px solid ${theme.palette.secondary.main}`,
+        },
+        '& th': {
+          color: '#fff',
+          fontWeight: 600,
+          lineHeight: '1.5rem',
+          borderBottom: `1.5px solid ${theme.palette.secondary.main}`,
+          backgroundColor: 'rgb(245, 246, 247)',
+          padding: theme.spacing(1),
+          textAlign: 'center',
+          '& input': {
+            width: `calc(100% - ${theme.spacing(2)})`,
+            marginTop: 0,
+            padding: theme.spacing(0, 1),
+            borderColor: 'rgba(0, 0, 0, 0.23)',
+          },
+        },
+      },
     },
     '& tbody': {
       '& tr': {
-        '& td:last-child': {
+        '& td:last-of-type': {
           borderRightWidth: '0px !important',
         },
       },
@@ -158,7 +186,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function DataTablePresentation(props) {
+const DataTablePresentation = (props) => {
   const { taxonQuery, columns, onToggleColumnManagerVisibility } = props;
   const { classes } = useStyles();
   return (
@@ -170,7 +198,7 @@ function DataTablePresentation(props) {
       />
     </div>
   );
-}
+};
 
 DataTablePresentation.propTypes = {
   taxonQuery: PropTypes.shape({

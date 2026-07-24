@@ -26,7 +26,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function InfoPresentation() {
+const InfoPresentation = () => {
   const { classes } = useStyles();
   return (
     <div data-selenium="info-section">
@@ -102,6 +102,6 @@ function InfoPresentation() {
       </Accordion>
     </div>
   );
-}
+};
 
 export default InfoPresentation;

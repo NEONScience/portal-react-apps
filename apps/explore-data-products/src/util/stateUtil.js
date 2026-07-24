@@ -171,7 +171,10 @@ export const applyAopProductFilter = (state, applyLocalStorage = false) => {
           appliedFilterValues = JSON.parse(localFilterValuesUnparsed);
         } catch {
           // eslint-disable-next-line no-console
-          console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
+          console.error(
+            'Unable to rebuild filter values from saved local storage. '
+              + 'Stored value is not parseable.',
+          );
         }
       }
     }
@@ -783,7 +786,10 @@ export const parseProductsByReleaseData = (state, release) => {
         });
       } catch {
         // eslint-disable-next-line no-console
-        console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
+        console.error(
+          'Unable to rebuild filter values from saved local storage. '
+            + 'Stored value is not parseable.',
+        );
       }
     }
     // Hydrate from local storage: Filter Item Visibility
@@ -800,7 +806,8 @@ export const parseProductsByReleaseData = (state, release) => {
             newState.filterItemVisibility[key] = localFilterItemVisibility[key];
           });
       } catch {
-        const msg = 'Unable to rebuild filter item visibility from saved local storage. Stored value is not parseable.';
+        const msg = 'Unable to rebuild filter item visibility from saved local storage. '
+          + 'Stored value is not parseable.';
         // eslint-disable-next-line no-console
         console.error(msg);
       }

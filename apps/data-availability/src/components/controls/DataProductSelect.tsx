@@ -17,6 +17,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
@@ -229,9 +231,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     return [!bundle ? value.productCode : bundleMessage, hasManyParents];
   };
   const renderOption = (
+    props: React.HTMLAttributes<HTMLLIElement> & { key: any },
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
-    props: any,
   ): JSX.Element => {
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
@@ -249,14 +251,12 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     const makeKey = (text: string): string => `key-${value.productCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        (
-          <span
-            key={makeKey(slice.text)}
-            className={slice.found ? classes.searchHighlight : undefined}
-          >
-            {slice.text}
-          </span>
-        )
+        <span
+          key={makeKey(slice.text)}
+          className={slice.found ? classes.searchHighlight : undefined}
+        >
+          {slice.text}
+        </span>
       )))
     ));
     return (
@@ -273,7 +273,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   const renderDataProductSelect = (): JSX.Element => {
     if ((products.length <= 0) || isLoading) {
-      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
+      return (
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
       <Autocomplete
@@ -296,7 +298,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         getOptionDisabled={(option: DataProductSelectOption): boolean => (
           getOptionsDisabled(option)
         )}
-        getOptionLabel={(): string => ''}
+        getOptionLabel={(option: DataProductSelectOption): string => ''}
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: DataProductSelectOption): string => {
@@ -304,19 +306,18 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            // @ts-expect-error - verify type of option in order to access productScienceTeam
-            const [secondaryMessage]: string = getProductSecondaryMessage(
+            const [secondaryMessage]: [string, boolean] = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
             );
-            return `${option.productName} ${secondaryMessage as string} ${option.productScienceTeam}`;
+            return `${option.productName} ${secondaryMessage} ${option.productScienceTeam}`;
           },
         })}
         renderOption={(
-          props: React.HTMLAttributes<HTMLLIElement>,
+          props: React.HTMLAttributes<HTMLLIElement> & { key: any },
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState, props)}
+        ): JSX.Element => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             {...params}
@@ -336,10 +337,12 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         onChange={(
           event: React.ChangeEvent<unknown>,
           nextValue: DataProductSelectOption | null,
+          reason: AutocompleteChangeReason,
+          details?: AutocompleteChangeDetails<DataProductSelectOption>,
         ): void => {
           if (!exists(nextValue)) return;
           const nextProduct: DataProduct = !exists(nextValue)
-            ? products.find((): boolean => true) as DataProduct
+            ? products.find((value: DataProduct): boolean => true) as DataProduct
             : products.find((value: DataProduct): boolean => {
               const coerced = (nextValue as DataProduct);
               return value.productCode.localeCompare(coerced.productCode) === 0;
@@ -397,7 +400,9 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   const renderSelectedProduct = (): JSX.Element => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
-      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
+      return (
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
       <Card className={classes.cardSelectedProduct}>

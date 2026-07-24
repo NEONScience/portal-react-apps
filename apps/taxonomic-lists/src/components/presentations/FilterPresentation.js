@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import FilterTaxonType from '../filters/FilterTaxonType';
 
-function FilterPresentation(props) {
+const FilterPresentation = (props) => {
   const {
     taxonTypes,
     taxonQuery,
@@ -19,7 +19,7 @@ function FilterPresentation(props) {
       />
     </div>
   );
-}
+};
 
 FilterPresentation.propTypes = {
   taxonTypes: PropTypes.arrayOf(PropTypes.shape({

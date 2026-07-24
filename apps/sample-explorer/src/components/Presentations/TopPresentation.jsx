@@ -10,7 +10,7 @@ import SampleEventPresentation from './SampleEventPresentation';
 import SampleGraphContainer from '../Containers/SampleGraphContainer';
 import InfoPresentation from './InfoPresentation';
 
-function TopPresentation(props) {
+const TopPresentation = (props) => {
   const {
     query: { queryErrorStr },
   } = props;
@@ -36,7 +36,7 @@ function TopPresentation(props) {
       )}
     </NeonPage>
   );
-}
+};
 
 TopPresentation.propTypes = {
   query: PropTypes.shape({

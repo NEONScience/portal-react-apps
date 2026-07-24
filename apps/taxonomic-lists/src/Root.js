@@ -7,16 +7,14 @@ import NeonThemeProvider from 'portal-core-components/lib/components/Theme/NeonT
 import App from './components/app/App';
 import store from './store/store';
 
-function Root() {
-  return (
-    <Provider store={store}>
-      <NeonRouter>
-        <NeonThemeProvider>
-          <App />
-        </NeonThemeProvider>
-      </NeonRouter>
-    </Provider>
-  );
-}
+const Root = () => ((
+  <Provider store={store}>
+    <NeonRouter>
+      <NeonThemeProvider>
+        <App />
+      </NeonThemeProvider>
+    </NeonRouter>
+  </Provider>
+));
 
 export default Root;

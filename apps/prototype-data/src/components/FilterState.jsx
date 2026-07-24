@@ -10,7 +10,9 @@ import FilterItemVisibilityButtons from './FilterItemVisibilityButtons';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
-const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
+const MapSelectionButton = React.lazy(
+  () => import('portal-core-components/lib/components/MapSelectionButton'),
+);
 
 const defaultProps = {
   skeleton: false,
@@ -46,7 +48,10 @@ const FilterState = (inProps) => {
     onResetFilter,
   };
 
-  const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
+  const selectedDisplay = filtersApplied.includes(filterKey)
+    ? filterValues[filterKey].length
+    : 'none';
+  const subtitle = `(${selectedDisplay} selected)`;
 
   const byVisibility = (item, idx) => {
     switch (filterItemVisibility[filterKey]) {

@@ -11,7 +11,7 @@ import DownloadSamplesPresentation from './DownloadSamplesPresentation';
 import DataGrid from '../DataGrid/DataGrid';
 import SampleSmsFieldsDialog from './SampleSmsFieldsDialog';
 
-function SampleEventPresentation(props) {
+const SampleEventPresentation = (props) => {
   const { tableDefinition, tableData, sampleUuid } = props;
   return (
     <div style={{ marginBottom: Theme.spacing(3) }} data-selenium="sample-events-section">
@@ -38,7 +38,7 @@ function SampleEventPresentation(props) {
       </div>
     </div>
   );
-}
+};
 
 SampleEventPresentation.propTypes = {
   tableDefinition: PropTypes.arrayOf(PropTypes.any).isRequired,

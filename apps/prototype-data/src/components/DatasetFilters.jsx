@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import Hidden from '@mui/material/Hidden';
+import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -45,7 +45,7 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
@@ -60,16 +60,16 @@ const useStyles = makeStyles()((theme) => ({
   twoColumns: {
     display: 'flex',
     marginBottom: 'unset',
-    '& > :first-of-type': {
+    '& > div:first-of-type': {
       marginRight: theme.spacing(3),
     },
-    '& > :last-child': {
+    '& > div:last-of-type': {
       marginLeft: theme.spacing(3),
     },
   },
   column: {
     flex: '50%',
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
@@ -150,10 +150,10 @@ const DatasetFilters = () => {
       data-selenium="prototype-data--page.filters"
       style={{ position: 'relative' }}
     >
-      <Hidden mdDown>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
         {title}
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1 }}>
             {title}
@@ -174,7 +174,7 @@ const DatasetFilters = () => {
             </IconButton>
           </Tooltip>
         </div>
-      </Hidden>
+      </Box>
       {belowMd ? (
         <Collapse
           in={visible}

@@ -27,7 +27,7 @@ import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
 import { AvailabilitySectionState } from '../states/AppStates';
 import { DataProduct, DataProductReleaseTombAva } from '../../types/store';
-import useStyles from '../../styles/overlay';
+import { useStyles } from '../../styles/overlay';
 import {
   AvailableDateRange,
   computeAvailableDateRange,
@@ -35,6 +35,7 @@ import {
 } from '../../util/availabilityUtil';
 
 const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
+  // eslint-disable-next-line max-len, @stylistic/max-len
   () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
 );
 

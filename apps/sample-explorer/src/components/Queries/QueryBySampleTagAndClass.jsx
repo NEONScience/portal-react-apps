@@ -22,7 +22,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function QueryBySampleTagAndClass(props) {
+const QueryBySampleTagAndClass = (props) => {
   const {
     cacheControl,
     onQueryClick,
@@ -74,7 +74,7 @@ function QueryBySampleTagAndClass(props) {
       </Select>
     </FormControl>
   );
-}
+};
 
 QueryBySampleTagAndClass.propTypes = {
   cacheControl: PropTypes.string.isRequired,

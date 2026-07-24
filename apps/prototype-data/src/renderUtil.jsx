@@ -21,7 +21,13 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-export const getSkeleton = (height = 10, width = 100, marginBottom = 0, widthIsPercent = true, variant = 'text') => {
+export const getSkeleton = (
+  height = 10,
+  width = 100,
+  marginBottom = 0,
+  widthIsPercent = true,
+  variant = 'text',
+) => {
   let widthValue = width || 100;
   if (Array.isArray(width) && width.length === 2) {
     widthValue = Math.round(width[0] + (Math.random() * (width[1] - width[0])));

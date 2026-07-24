@@ -30,7 +30,7 @@ const useStyles = makeStyles()((theme) => ({
     [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
@@ -42,16 +42,16 @@ const useStyles = makeStyles()((theme) => ({
   twoColumns: {
     display: 'flex',
     marginBottom: 'unset',
-    '& > :first-of-type': {
+    '& > div:first-of-type': {
       marginRight: theme.spacing(3),
     },
-    '& > :last-child': {
+    '& > div:last-of-type': {
       marginLeft: theme.spacing(3),
     },
   },
   column: {
     flex: '50%',
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },

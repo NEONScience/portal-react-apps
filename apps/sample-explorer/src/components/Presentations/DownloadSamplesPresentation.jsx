@@ -22,7 +22,7 @@ import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironme
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import Theme from 'portal-core-components/lib/components/Theme';
 
-function DownloadSamplesPresentation(props) {
+const DownloadSamplesPresentation = (props) => {
   const {
     sampleUuid,
     cacheControl,
@@ -66,17 +66,23 @@ function DownloadSamplesPresentation(props) {
         newState.dialogOpen = !!action.dialogOpen;
         break;
       case 'setDownloadType':
-        if (!['json', 'csv'].includes(action.downloadType)) { return prevState; }
+        if (!['json', 'csv'].includes(action.downloadType)) {
+          return prevState;
+        }
         newState.downloadType = action.downloadType;
         resetCanDownload();
         break;
       case 'setSampleSelection':
-        if (!['first', 'current', 'allSamples'].includes(action.sampleSelection)) { return prevState; }
+        if (!['first', 'current', 'allSamples'].includes(action.sampleSelection)) {
+          return prevState;
+        }
         newState.sampleSelection = action.sampleSelection;
         resetCanDownload();
         break;
       case 'setDegreeType':
-        if (!['chosen', 'degree'].includes(action.degreeType)) { return prevState; }
+        if (!['chosen', 'degree'].includes(action.degreeType)) {
+          return prevState;
+        }
         newState.degreeType = action.degreeType;
         resetCanDownload();
         break;
@@ -203,7 +209,11 @@ function DownloadSamplesPresentation(props) {
               >
                 <FormControlLabel value="first" control={<Radio />} label="First visited sample" />
                 <FormControlLabel value="current" control={<Radio />} label="Current sample" />
-                <FormControlLabel value="allSamples" control={<Radio />} label="All samples visited in session" />
+                <FormControlLabel
+                  value="allSamples"
+                  control={<Radio />}
+                  label="All samples visited in session"
+                />
               </RadioGroup>
             </FormControl>
           </div>
@@ -228,7 +238,11 @@ function DownloadSamplesPresentation(props) {
                   }}
                   data-selenium="download-samples-dialog.relationship-extent-radiogroup"
                 >
-                  <FormControlLabel value="chosen" control={<Radio />} label="The chosen sample only" />
+                  <FormControlLabel
+                    value="chosen"
+                    control={<Radio />}
+                    label="The chosen sample only"
+                  />
                   <FormControlLabel
                     value="degree"
                     control={<Radio />}
@@ -300,7 +314,7 @@ function DownloadSamplesPresentation(props) {
       </Dialog>
     </div>
   );
-}
+};
 
 DownloadSamplesPresentation.propTypes = {
   sampleUuid: PropTypes.string.isRequired,

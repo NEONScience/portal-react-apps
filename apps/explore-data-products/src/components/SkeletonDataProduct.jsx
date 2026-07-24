@@ -43,8 +43,18 @@ const SkeletonDataProduct = () => {
               lg: 3,
             }}
           >
-            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1.5) }} />
-            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1.5) }} />
+            <Skeleton
+              height={32}
+              width="100%"
+              variant="rectangular"
+              style={{ marginBottom: Theme.spacing(1.5) }}
+            />
+            <Skeleton
+              height={32}
+              width="100%"
+              variant="rectangular"
+              style={{ marginBottom: Theme.spacing(1.5) }}
+            />
           </Grid>
         </Grid>
 
@@ -56,13 +66,28 @@ const SkeletonDataProduct = () => {
           <Grid size={{ xs: 12, sm: 4 }}>
             <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
             <div style={{ display: 'flex' }}>
-              <Skeleton height={32} width={32} variant="rectangular" style={{ marginRight: Theme.spacing(0.5) }} />
-              <Skeleton height={32} width={32} variant="rectangular" style={{ marginRight: Theme.spacing(0.5) }} />
+              <Skeleton
+                height={32}
+                width={32}
+                variant="rectangular"
+                style={{ marginRight: Theme.spacing(0.5) }}
+              />
+              <Skeleton
+                height={32}
+                width={32}
+                variant="rectangular"
+                style={{ marginRight: Theme.spacing(0.5) }}
+              />
             </div>
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
             <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={32} width="100%" variant="rectangular" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton
+              height={32}
+              width="100%"
+              variant="rectangular"
+              style={{ marginBottom: Theme.spacing(1) }}
+            />
           </Grid>
         </Grid>
 

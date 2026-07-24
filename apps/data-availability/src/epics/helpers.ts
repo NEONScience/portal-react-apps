@@ -9,7 +9,7 @@ import {
 } from 'portal-core-components/lib/types/core';
 import { resolveAny } from '../util/typeUtil';
 
-export type CascadeActionFunction = () => AnyObject;
+export type CascadeActionFunction = (param?: unknown) => AnyObject;
 
 export const handleSuccess = (
   response: AjaxResponse<unknown>,

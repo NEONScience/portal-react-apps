@@ -74,7 +74,9 @@ export const querySample = (url, cacheControl, headers) => {
       .then((response) => response.json())
       .then((json) => dispatch(queryHasCompleted(json)))
       .catch((error) => {
-        if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
+            || error.response === null) {
           dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
@@ -236,7 +238,9 @@ export const querySupportedSampleClasses = (url, query, download) => {
         .then((response) => response.json())
         .then((json) => dispatch(querySupportedSampleClassHasCompleted(json, download)))
         .catch((error) => {
-          if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+          if (typeof error === 'undefined'
+              || typeof error.response === 'undefined'
+              || error.response === null) {
             dispatch(queryHasErrored('500'));
           } else {
             handleError(dispatch, queryHasErrored, error);
@@ -286,7 +290,9 @@ export const downloadSamples = (downloadType, url, cacheControl, headers) => {
       .then((response) => response.json())
       .then((json) => dispatch(downloadHasCompleted(downloadType, json)))
       .catch((error) => {
-        if (typeof error === 'undefined' || typeof error.response === 'undefined' || error.response === null) {
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
+            || error.response === null) {
           dispatch(downloadHasErrored('500'));
         } else {
           handleError(dispatch, downloadHasErrored, error);

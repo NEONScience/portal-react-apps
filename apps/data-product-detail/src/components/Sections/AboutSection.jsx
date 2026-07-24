@@ -142,12 +142,15 @@ const AboutSection = (props) => {
           />
           <Detail
             title="Design Description"
+            // eslint-disable-next-line max-len, @stylistic/max-len
             tooltip="More information about the science design can be found in this data product's documentation."
             content={(
               <ComponentErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components
                 fallbackComponent={() => ((
-                  <MarkdownFallbackComponent content={product.productDesignDescription || '_n/a_'} />
+                  <MarkdownFallbackComponent
+                    content={product.productDesignDescription || '_n/a_'}
+                  />
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >

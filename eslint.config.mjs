@@ -69,6 +69,7 @@ const rules = {
   ...reactHooksPlugin.configs.recommended.rules,
   ...nextPlugin.configs.recommended.rules,
   ...nextPlugin.configs['core-web-vitals'].rules,
+
   '@next/next/no-img-element': 'off',
   '@next/next/no-html-link-for-pages': 'off',
 
@@ -103,9 +104,9 @@ const rules = {
   'no-shadow': 'off',
   'no-restricted-exports': 'off',
   'no-unused-vars': 'off',
-  'max-len': ['error', { code: 120 }],
+  'max-len': ['error', { code: 100, ignorePattern: '^import\\s.+\\sfrom\\s.+;$' }],
 
-  '@stylistic/max-len': ['error', { code: 120 }],
+  '@stylistic/max-len': ['error', { code: 100, ignorePattern: '^import\\s.+\\sfrom\\s.+;$' }],
   '@stylistic/semi': ['error', 'always'],
   '@stylistic/quote-props': 'off',
   '@stylistic/space-infix-ops': 'off',
@@ -196,37 +197,6 @@ const buildAppConfig = (appDir) => ([
       ],
     },
   },
-  {
-    files: [
-      `./${appDir}/next.config.ts`,
-    ],
-    languageOptions: {
-      parser: tsParser,
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      parserOptions: {
-        project: './tsconfig.json',
-        tsconfigRootDir: `${__dirname}/${appDir}/`,
-        ecmaFeatures: {
-          impliedStrict: true,
-          jsx: true,
-          experimentalObjectRestSpread: true,
-        },
-      },
-      globals: {
-        ...globals.node,
-      },
-    },
-    plugins: tsPlugins,
-    settings,
-    rules: {
-      ...rules,
-      'import/no-extraneous-dependencies': [
-        'error',
-        { packageDir: `./${appDir}/`, devDependencies: true },
-      ],
-    },
-  },
 ]);
 
 export default defineConfig([
@@ -244,7 +214,7 @@ export default defineConfig([
     ],
   },
   {
-    files: ['*.{js,mjs}'],
+    files: ['./*.{js,mjs}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',

@@ -10,7 +10,9 @@ import FilterItemVisibilityButtons from './FilterItemVisibilityButtons';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
-const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
+const MapSelectionButton = React.lazy(
+  () => import('portal-core-components/lib/components/MapSelectionButton'),
+);
 
 const defaultProps = {
   skeleton: false,
@@ -71,6 +73,11 @@ const FilterDomain = (inProps) => {
     </Suspense>
   );
 
+  const getCountTitle = (filterItem) => (
+    '{n} data products have data available from sites in domain '
+      + `${filterItem.name} (${filterItem.subtitle})`
+  );
+
   return (
     <FilterBase
       title="Domains"
@@ -90,9 +97,7 @@ const FilterDomain = (inProps) => {
               value={filterItem.value}
               subtitle={filterItem.subtitle}
               count={filterItem.count}
-              countTitle={
-                `{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`
-              }
+              countTitle={getCountTitle(filterItem)}
               checked={filterValues[filterKey].includes(filterItem.value)}
               {...checkboxProps}
             />

@@ -29,13 +29,13 @@ const useStyles = makeStyles()((theme) => ({
       fontWeight: 600,
       fontSize: '1.15rem',
     },
-    '& h5:not(:first-of-type)': {
+    '& h5:not(h5:first-of-type)': {
       marginTop: theme.spacing(4),
     },
   },
 }));
 
-function InfoPresentation(props) {
+const InfoPresentation = (props) => {
   const { classes } = useStyles();
   const exploreDataProductsLink = (
     <Link href={RouteService.getDataProductExplorePath()}>
@@ -156,6 +156,6 @@ function InfoPresentation(props) {
       <DownloadSampleClassesButton {...props} />
     </div>
   );
-}
+};
 
 export default InfoPresentation;

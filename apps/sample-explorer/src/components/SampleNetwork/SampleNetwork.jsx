@@ -30,7 +30,7 @@ const useStyles = makeStyles()(() => ({
   },
 }));
 
-function SampleNetwork(props) {
+const SampleNetwork = (props) => {
   const { onNodeClick, graphData } = props;
   const { classes } = useStyles();
 
@@ -139,7 +139,7 @@ function SampleNetwork(props) {
       />
     </div>
   );
-}
+};
 
 SampleNetwork.propTypes = {
   onNodeClick: PropTypes.func.isRequired,

@@ -17,6 +17,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
+  AutocompleteChangeDetails,
+  AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
 } from '@mui/material/Autocomplete';
@@ -213,9 +215,9 @@ const SiteSelect: React.FC = (): JSX.Element => {
   );
 
   const renderOption = (
+    props: React.HTMLAttributes<HTMLLIElement> & { key: any },
     value: SiteSelectDataOption,
     renderOptionState: AutocompleteRenderOptionState,
-    props: any,
   ): JSX.Element => {
     const primarySlice: SearchSlice[] = calcSearchSlice(
       `${value.siteDescription}, ${value.stateCode}`,
@@ -236,14 +238,12 @@ const SiteSelect: React.FC = (): JSX.Element => {
     const makeKey = (text: string): string => `key-${value.siteCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        (
-          <span
-            key={makeKey(slice.text)}
-            className={slice.found ? classes.searchHighlight : undefined}
-          >
-            {slice.text}
-          </span>
-        )
+        <span
+          key={makeKey(slice.text)}
+          className={slice.found ? classes.searchHighlight : undefined}
+        >
+          {slice.text}
+        </span>
       )))
     ));
     return (
@@ -270,7 +270,9 @@ const SiteSelect: React.FC = (): JSX.Element => {
   };
   const renderSiteSelect = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading) {
-      return <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />;
+      return (
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
       <Autocomplete
@@ -293,7 +295,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
         getOptionDisabled={(option: SiteSelectDataOption): boolean => (
           !option.hasData
         )}
-        getOptionLabel={(): string => ''}
+        getOptionLabel={(option: SiteSelectDataOption): string => ''}
         filterOptions={createFilterOptions({
           trim: true,
           stringify: (option: SiteSelectDataOption) => (
@@ -304,10 +306,10 @@ const SiteSelect: React.FC = (): JSX.Element => {
           ),
         })}
         renderOption={(
-          props: React.HTMLAttributes<HTMLLIElement>,
+          props: React.HTMLAttributes<HTMLLIElement> & { key: any },
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState, props)}
+        ): JSX.Element => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             {...params}
@@ -327,10 +329,12 @@ const SiteSelect: React.FC = (): JSX.Element => {
         onChange={(
           event: React.ChangeEvent<unknown>,
           nextValue: SiteSelectDataOption | null,
+          reason: AutocompleteChangeReason,
+          details?: AutocompleteChangeDetails<SiteSelectDataOption>,
         ): void => {
           if (!exists(nextValue)) return;
           const nextSite: Site = !exists(nextValue)
-            ? sites.find((): boolean => true) as Site
+            ? sites.find((value: Site): boolean => true) as Site
             : sites.find((value: Site): boolean => (
               value.siteCode.localeCompare((nextValue as Site).siteCode) === 0
             )) as Site;
@@ -342,7 +346,9 @@ const SiteSelect: React.FC = (): JSX.Element => {
 
   const renderSelectedSite = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading || !selectedSiteOption) {
-      return (<Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />);
+      return (
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
       <Card className={classes.cardSelectedSite}>

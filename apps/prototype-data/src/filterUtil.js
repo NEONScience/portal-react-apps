@@ -48,6 +48,7 @@ const filterValuesIntersect = (filterValue, datasetFilterableValues) => (
 );
 
 export const getUuidFromURL = (pathname = window.location.pathname) => {
+  // eslint-disable-next-line max-len, @stylistic/max-len
   const uuid = String.raw`[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}`;
   const regex = RegExp(`${NeonEnvironment.getRouterBaseHomePath()}/(${uuid})`, 'g');
   const urlParts = regex.exec(pathname);

@@ -105,6 +105,7 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   workingAction: AppFlow.fetchProducts.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -115,7 +116,7 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchProducts.asyncErrorAction)
   ),
-  requestInjector: (request: AnyObject): AnyObject => ({
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
     ...request,
     ...NeonGraphQL.getGraphqlAjaxRequest(productsQuery),
   }),
@@ -135,6 +136,7 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   workingAction: AppFlow.fetchSites.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -145,7 +147,7 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchSites.asyncErrorAction)
   ),
-  requestInjector: (request: AnyObject): AnyObject => ({
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
     ...request,
     ...NeonGraphQL.getGraphqlAjaxRequest(sitesQuery),
   }),
@@ -164,6 +166,7 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   workingAction: AppFlow.fetchReleases.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -189,6 +192,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved)) {
@@ -215,6 +219,7 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   workingAction: AppFlow.fetchFocalProduct.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -254,6 +259,7 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   workingAction: AppFlow.fetchFocalSite.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+    action?: AppActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -293,6 +299,7 @@ const fetchFocalProductReleaseDoiEpic = EpicService
     workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
     successAction: (
       response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+      action?: AppActionType,
     ): Observable<unknown> => {
       const resolved: UnknownRecord = resolveAny(response as never, 'response');
       if (exists(resolved) && exists(resolved.data)) {
@@ -332,6 +339,7 @@ const fetchFocalProductReleaseTombAvaEpic = EpicService
     workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
     successAction: (
       response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+      action?: AppActionType,
     ): Observable<unknown> => {
       const resolved: UnknownRecord = resolveAny(response as never, 'response');
       if (exists(resolved) && exists(resolved.data)) {

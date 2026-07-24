@@ -261,7 +261,7 @@ const reducer = (state, action) => {
     // Sort
     case 'applySort':
       return applySort(state, action.sortMethod, action.sortDirection);
-    case 'toggleSortVisiblity':
+    case 'toggleSortVisibility':
       return { ...newState, sortVisible: !state.sortVisible };
 
     // Misc

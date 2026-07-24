@@ -20,7 +20,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function SelectSampleIdentifier(props) {
+const SelectSampleIdentifier = (props) => {
   const {
     sampleClassDesc,
     onSetQueryType,
@@ -53,7 +53,7 @@ function SelectSampleIdentifier(props) {
       </Select>
     </FormControl>
   );
-}
+};
 
 SelectSampleIdentifier.propTypes = {
   sampleClassDesc: PropTypes.instanceOf(Map).isRequired,

@@ -22,9 +22,9 @@ export const parseParams = (paramNames) => {
   if (typeof URLSearchParams === 'undefined') {
     // eslint-disable-next-line no-console
     console.log('using URLSearchParams polyfill');
-    import('url-search-params-polyfill').then(() => {
-      params = new URLSearchParams(window.location.search);
-    });
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    require('url-search-params-polyfill');
+    params = new URLSearchParams(window.location.search);
   } else {
     params = new URLSearchParams(window.location.search);
   }

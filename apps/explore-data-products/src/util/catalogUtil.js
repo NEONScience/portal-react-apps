@@ -177,9 +177,11 @@ const generatePdf = (
       case FILTER_KEYS.DOMAINS:
         return `Data available from ${orList(filterValues[key])}`;
       case FILTER_KEYS.STATES:
-        return `Data available from ${orList(filterValues[key].map((abb) => (statesJSON[abb].name || abb)))}`;
+        return 'Data available from '
+          + `${orList(filterValues[key].map((abb) => (statesJSON[abb].name || abb)))}`;
       case FILTER_KEYS.VISUALIZATIONS:
-        return `Can be visualized by ${orList(filterValues[key].map((viz) => (VISUALIZATIONS[viz].name || viz)))}`;
+        return 'Can be visualized by '
+          + `${orList(filterValues[key].map((viz) => (VISUALIZATIONS[viz].name || viz)))}`;
       default:
         return orList(filterValues[key]);
     }
@@ -338,7 +340,8 @@ const generatePdf = (
   return pdf;
 };
 
-const downloadCatalog = (
+// eslint-disable-next-line import/prefer-default-export
+export const downloadCatalog = (
   products,
   productOrder,
   ext = 'csv',
@@ -394,5 +397,3 @@ const downloadCatalog = (
     document.body.removeChild(link);
   }
 };
-
-export default downloadCatalog;

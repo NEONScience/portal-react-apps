@@ -27,7 +27,7 @@ import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyl
 import ExploreContext from '../ExploreContext';
 
 import { FILTER_KEYS, getCurrentProductsByRelease } from '../util/filterUtil';
-import downloadCatalog from '../util/catalogUtil';
+import { downloadCatalog } from '../util/catalogUtil';
 
 const useStyles = makeStyles()((theme) => ({
   card: {
@@ -190,7 +190,8 @@ const DataHeader = (inProps) => {
       ? moment(`${stats.dateRange[stat][offset]}-02`).format('MMM YYYY')
       : ''
   );
-  const totalAvailability = `Data available ${formatRange('total', 0)} – ${formatRange('total', 1)}`;
+  const totalAvailability = 'Data available '
+    + `${formatRange('total', 0)} – ${formatRange('total', 1)}`;
   let filteredAvailability = 'No data available';
   if (stats.dateRange.filtered.length === 2) {
     filteredAvailability = stats.dateRange.filtered[0] === stats.dateRange.filtered[1]
@@ -415,6 +416,8 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
     if (filtersApplied.length) {
       summary = `${summary}, ${stats.products.filtered} filtered`;
     }
+    const collapseExpand = catalogSummaryVisible ? 'Collapse' : 'Expand';
+    const toggleCatalogTooltip = `${collapseExpand} catalog summary and download options`;
     return (
       <Card className={classes.card}>
         <CardContent data-selenium="browse-data-products-page.catalog-summary">
@@ -427,7 +430,7 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             </div>
             <Tooltip
               placement="left"
-              title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
+              title={toggleCatalogTooltip}
             >
               <IconButton
                 onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}

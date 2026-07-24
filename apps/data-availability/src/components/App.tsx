@@ -42,9 +42,10 @@ import {
   DataProductParent,
 } from '../types/store';
 import { AppActionCreator } from '../actions/app';
-import useContextReleases from '../hooks/useContextReleases';
+import { useContextReleases } from '../hooks/useContextReleases';
 import { determineBundle, findBundle, findForwardParent } from '../util/bundleUtil';
 
+// eslint-disable-next-line max-len, @stylistic/max-len
 const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
 
 const useStyles = makeStyles()((theme: NeonTheme) => ({

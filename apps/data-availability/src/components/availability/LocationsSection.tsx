@@ -21,7 +21,7 @@ import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
 import { LocationsSectionState } from '../states/AppStates';
-import useStyles from '../../styles/overlay';
+import { useStyles } from '../../styles/overlay';
 import { Site } from '../../types/store';
 import { AppActionCreator } from '../../actions/app';
 

@@ -16,7 +16,7 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
-function QueryBySampleTag(props) {
+const QueryBySampleTag = (props) => {
   const {
     onSetQuerySampleTag,
     query: { sampleTag, queryErrorStr, queryIsLoading },
@@ -38,7 +38,7 @@ function QueryBySampleTag(props) {
       data-selenium="sample-search-form.sample-tag"
     />
   );
-}
+};
 
 QueryBySampleTag.propTypes = {
   query: PropTypes.shape({

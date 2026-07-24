@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Download from '../download/Download';
 
-function DownloadPresentation(props) {
+const DownloadPresentation = (props) => {
   const { taxonQuery } = props;
   return (
     <div>
       <Download taxonTypeCode={taxonQuery.taxonTypeCode} />
     </div>
   );
-}
+};
 
 DownloadPresentation.propTypes = {
   taxonQuery: PropTypes.shape({

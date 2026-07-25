@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
@@ -28,8 +27,9 @@ import DataProductContext from '../DataProductContext';
 
 import DetailTooltip from '../Details/DetailTooltip';
 
-// eslint-disable-next-line max-len, @stylistic/max-len
-const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable, permanent link to this data product release';
+const DOI_TOOLTIP = `
+Digital Object Identifier (DOI) - A citable, permanent link to this data product release
+`;
 
 const {
   APP_STATUS,
@@ -228,6 +228,19 @@ const ReleaseCard = () => {
           classes={{
             secondaryAction: classes.doiListItemSecondaryAction,
           }}
+          secondaryAction={(
+            <CopyToClipboard text={currentDoiUrl.doiUrl}>
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                className={classes.copyButton}
+              >
+                <CopyIcon fontSize="small" />
+                Copy DOI
+              </Button>
+            </CopyToClipboard>
+          )}
         >
           <ListItemText
             className={classes.doiListItemText}
@@ -248,19 +261,6 @@ const ReleaseCard = () => {
               </Typography>
             )}
           />
-          <ListItemSecondaryAction>
-            <CopyToClipboard text={currentDoiUrl.doiUrl}>
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                className={classes.copyButton}
-              >
-                <CopyIcon fontSize="small" />
-                Copy DOI
-              </Button>
-            </CopyToClipboard>
-          </ListItemSecondaryAction>
         </ListItem>
       ));
       let subTitleContent = (

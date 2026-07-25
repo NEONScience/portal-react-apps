@@ -1,5 +1,3 @@
-/* eslint-disable @stylistic/max-len */
-/* eslint-disable max-len */
 import React, {
   createContext,
   useContext,
@@ -777,20 +775,29 @@ const reducer = (state, action) => {
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
-      newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
+      newState.data.bundleParents[action.bundleParent]
+        .releases = sortReleases(action.data.releases);
       return calculateAppStatus(
         calculateFetches(
-          applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
+          applyReleasesGlobally(
+            newState,
+            newState.data.bundleParents[action.bundleParent].releases,
+          ),
         ),
       );
 
     case 'fetchBundleParentReleaseStarted':
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.FETCHING;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseFailed':
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
-      newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}; release ${action.release}`;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .status = FETCH_STATUS.ERROR;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .error = action.error;
+      newState.app.error = `${errorDetail}: bundle parent product code `
+        + `${action.bundleParent}; `
+        + `release ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
       newState

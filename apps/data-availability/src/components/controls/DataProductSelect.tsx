@@ -283,14 +283,16 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         openOnFocus
         blurOnSelect
         id="select-data-products"
-        options={products}
+        options={products.sort((a, b) => -b.productScienceTeam.localeCompare(a.productScienceTeam))}
         value={{ ...initialProduct, hasData: true }}
         popupIcon={(<SearchIcon />)}
         classes={{
           input: classes.autocompleteInput,
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
-        groupBy={(option: DataProductSelectOption): string => option.productScienceTeam}
+        groupBy={(option: DataProductSelectOption): string => (
+          option.productScienceTeam.toUpperCase()
+        )}
         isOptionEqualToValue={(
           option: DataProductSelectOption,
           value: DataProductSelectOption,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 
 import Button from '@mui/material/Button';
 import Slider from '@mui/material/Slider';
@@ -26,6 +26,17 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
+const dateRangeReducer = (state, action) => {
+  const newState = { ...state };
+  switch (action.type) {
+    case 'setActivelySlidingDateRange':
+      newState.activelySlidingDateRange = action.activelySlidingDateRange;
+      return newState;
+    default:
+      return state;
+  }
+};
+
 const FilterDateRange = () => {
   const { classes } = useStyles();
 
@@ -44,18 +55,30 @@ const FilterDateRange = () => {
 
   // Control the slider but do with local state. Only send slider values through the main reducer
   // when the change is committed (i.e. on mouse up / drag stop)
-  const [activelySlidingDateRange, setActivelySlidingDateRange] = useState([...currentRange]);
+  const initialState = { activelySlidingDateRange: [...currentRange] };
+  const [dateRangeState, dateRangeDispatch] = useReducer(dateRangeReducer, initialState);
   const [activelySliding, setActivelySliding] = useState(false);
-  const sliderValue = activelySlidingDateRange.map((x, i) => (
+  const sliderValue = dateRangeState.activelySlidingDateRange.map((x, i) => (
     selectableRange.indexOf(x || currentRange[i])
   ));
 
-  if ((
-    currentRange[0] !== activelySlidingDateRange[0]
-      || currentRange[1] !== activelySlidingDateRange[1]
-  ) && !activelySliding) {
-    setActivelySlidingDateRange([...currentRange]);
-  }
+  useEffect(() => {
+    if ((
+      currentRange[0] !== dateRangeState.activelySlidingDateRange[0]
+        || currentRange[1] !== dateRangeState.activelySlidingDateRange[1]
+    ) && !activelySliding) {
+      const action = {
+        type: 'setActivelySlidingDateRange',
+        activelySlidingDateRange: [...currentRange],
+      };
+      dateRangeDispatch(action);
+    }
+  }, [
+    activelySliding,
+    dateRangeState,
+    dateRangeDispatch,
+    currentRange,
+  ]);
 
   const filterBaseProps = {
     title: 'Available Dates',
@@ -148,10 +171,16 @@ const FilterDateRange = () => {
         valueLabelFormat={(x) => selectableRange[x]}
         onMouseDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
-          setActivelySlidingDateRange([
+          const sliderRange = [
             Math.max(values[0], sliderMin),
             Math.min(values[1], sliderMax),
-          ].map((x) => selectableRange[x]));
+          ];
+          const mappedDisplayRange = sliderRange.map((x) => selectableRange[x]);
+          const action = {
+            type: 'setActivelySlidingDateRange',
+            activelySlidingDateRange: mappedDisplayRange,
+          };
+          dateRangeDispatch(action);
         }}
         onChangeCommitted={(event, values) => {
           setActivelySliding(false);

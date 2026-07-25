@@ -40,9 +40,12 @@ export const APP_STATUS = {
 // Array of common strings that appear in short descriptions for bundle children.
 // We present the same info in a more visible callout, so we actively scrub it
 // from short descriptions.
+const SAE_BUNDLE_BLURB = `
+${' '}This data product is bundled into DP4.00200, Bundled data products - eddy covariance,
+${' '}and is not available as a stand-alone download.
+`;
 const EXCISE_BUNDLE_BLURBS = [
-  // eslint-disable-next-line max-len, @stylistic/max-len
-  ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
+  SAE_BUNDLE_BLURB,
 ];
 
 /**

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
@@ -29,6 +29,17 @@ const useStyles = makeStyles()((theme) => ({
   },
 }));
 
+const dateRangeReducer = (state, action) => {
+  const newState = { ...state };
+  switch (action.type) {
+    case 'setActivelySlidingTimeRange':
+      newState.activelySlidingTimeRange = action.activelySlidingTimeRange;
+      return newState;
+    default:
+      return state;
+  }
+};
+
 const FilterTimeRange = () => {
   const { classes } = useStyles();
 
@@ -47,24 +58,27 @@ const FilterTimeRange = () => {
 
   // Control the slider but do with local state. Only send slider values through the main reducer
   // when the change is committed (i.e. on mouse up / drag stop)
-  const [activelySlidingTimeRange, setActivelySlidingTimeRange] = useState([...currentRange]);
+  const initialState = { activelySlidingTimeRange: [...currentRange] };
+  const [dateRangeState, dateRangeDispatch] = useReducer(dateRangeReducer, initialState);
   const [activelySliding, setActivelySliding] = useState(false);
-  const sliderValue = activelySlidingTimeRange.map((x, i) => (
+  const sliderValue = dateRangeState.activelySlidingTimeRange.map((x, i) => (
     selectableRange.indexOf(x || currentRange[i])
   ));
   useEffect(() => {
     if ((
-      currentRange[0] !== activelySlidingTimeRange[0]
-        || currentRange[1] !== activelySlidingTimeRange[1]
+      currentRange[0] !== dateRangeState.activelySlidingTimeRange[0]
+        || currentRange[1] !== dateRangeState.activelySlidingTimeRange[1]
     ) && !activelySliding) {
-      setTimeout(() => {
-        setActivelySlidingTimeRange([...currentRange]);
-      }, 0);
+      const action = {
+        type: 'setActivelySlidingTimeRange',
+        activelySlidingTimeRange: [...currentRange],
+      };
+      dateRangeDispatch(action);
     }
   }, [
     activelySliding,
-    activelySlidingTimeRange,
-    setActivelySlidingTimeRange,
+    dateRangeState,
+    dateRangeDispatch,
     currentRange,
   ]);
 
@@ -152,10 +166,16 @@ const FilterTimeRange = () => {
         valueLabelFormat={(x) => selectableRange[x]}
         onMouseDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
-          setActivelySlidingTimeRange([
+          const sliderRange = [
             Math.max(values[0], sliderMin),
             Math.min(values[1], sliderMax),
-          ].map((x) => selectableRange[x]));
+          ];
+          const mappedDisplayRange = sliderRange.map((x) => selectableRange[x]);
+          const action = {
+            type: 'setActivelySlidingTimeRange',
+            activelySlidingTimeRange: mappedDisplayRange,
+          };
+          dateRangeDispatch(action);
         }}
         onChangeCommitted={(event, values) => {
           setActivelySliding(false);

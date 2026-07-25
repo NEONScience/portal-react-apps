@@ -280,14 +280,14 @@ const SiteSelect: React.FC = (): JSX.Element => {
         openOnFocus
         blurOnSelect
         id="select-sites"
-        options={siteOptions}
+        options={siteOptions.sort((a, b) => -b.stateName.localeCompare(a.stateName))}
         value={selectedSiteOption}
         popupIcon={(<SearchIcon />)}
         classes={{
           input: classes.autocompleteInput,
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
-        groupBy={(option: SiteSelectDataOption): string => option.stateName}
+        groupBy={(option: SiteSelectDataOption): string => option.stateName.toUpperCase()}
         isOptionEqualToValue={(
           option: SiteSelectDataOption,
           value: SiteSelectDataOption,

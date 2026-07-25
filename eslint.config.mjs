@@ -104,9 +104,21 @@ const rules = {
   'no-shadow': 'off',
   'no-restricted-exports': 'off',
   'no-unused-vars': 'off',
-  'max-len': ['error', { code: 100, ignorePattern: '^import\\s.+\\sfrom\\s.+;$' }],
+  'max-len': [
+    'error',
+    {
+      code: 100,
+      ignorePattern: '^import\\s.+\\sfrom\\s.+;$|^\\s*?\\(\\)\\s=>\\simport\\(.+\\).*$',
+    },
+  ],
 
-  '@stylistic/max-len': ['error', { code: 100, ignorePattern: '^import\\s.+\\sfrom\\s.+;$' }],
+  '@stylistic/max-len': [
+    'error',
+    {
+      code: 100,
+      ignorePattern: '^import\\s.+\\sfrom\\s.+;$|^\\s*?\\(\\)\\s=>\\simport\\(.+\\).*$',
+    },
+  ],
   '@stylistic/semi': ['error', 'always'],
   '@stylistic/quote-props': 'off',
   '@stylistic/space-infix-ops': 'off',

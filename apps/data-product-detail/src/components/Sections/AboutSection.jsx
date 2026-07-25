@@ -24,6 +24,10 @@ import KeywordsDetail from '../Details/KeywordsDetail';
 import TaxonDetail from '../Details/TaxonDetail';
 import BioRepoCollectionsDetail from '../Details/BioRepoCollectionsDetail';
 
+const DESIGN_DESCRIPTION_TOOLTIP = `
+More information about the science design can be found in this data product's documentation.
+`;
+
 const AboutSectionTextComponentDefaultProps = {
   content: null,
 };
@@ -142,8 +146,7 @@ const AboutSection = (props) => {
           />
           <Detail
             title="Design Description"
-            // eslint-disable-next-line max-len, @stylistic/max-len
-            tooltip="More information about the science design can be found in this data product's documentation."
+            tooltip={DESIGN_DESCRIPTION_TOOLTIP}
             content={(
               <ComponentErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components

@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 
 import { useNavigate, useLocation } from 'react-router';
 
+import { map, catchError } from 'rxjs';
+
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
@@ -958,61 +960,61 @@ const Provider = (inProps) => {
     // Base product fetch
     if (fetchIsAwaitingCall(fetches.product)) {
       dispatch({ type: 'fetchProductStarted' });
-      NeonApi.getProductObservable(productCode).subscribe(
-        (response) => {
+      NeonApi.getProductObservable(productCode).pipe(
+        map((response) => {
           dispatch({ type: 'fetchProductSucceeded', data: response.data });
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           dispatch({ type: 'fetchProductFailed', error });
-        },
-      );
+        }),
+      ).subscribe();
     }
     // Product release fetches
     Object.keys(fetches.productReleases)
       .filter((release) => fetchIsAwaitingCall(fetches.productReleases[release]))
       .forEach((release) => {
         dispatch({ type: 'fetchProductReleaseStarted', release });
-        NeonApi.getProductObservable(productCode, release).subscribe(
-          (response) => {
+        NeonApi.getProductObservable(productCode, release).pipe(
+          map((response) => {
             dispatch({ type: 'fetchProductReleaseSucceeded', release, data: response.data });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchProductReleaseFailed', release, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Product release DOI fetches
     Object.keys(fetches.productReleaseDois)
       .filter((release) => fetchIsAwaitingCall(fetches.productReleaseDois[release]))
       .forEach((release) => {
         dispatch({ type: 'fetchProductReleaseDoiStarted', release });
-        NeonApi.getProductDoisObservable(productCode, release).subscribe(
-          (response) => {
+        NeonApi.getProductDoisObservable(productCode, release).pipe(
+          map((response) => {
             dispatch({
               type: 'fetchProductReleaseDoiSucceeded',
               productCode,
               release,
               data: response.data,
             });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchProductReleaseDoiFailed', release, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Bundle parent fetches
     Object.keys(fetches.bundleParents)
       .filter((bundleParent) => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
       .forEach((bundleParent) => {
         dispatch({ type: 'fetchBundleParentStarted', bundleParent });
-        NeonApi.getProductObservable(bundleParent).subscribe(
-          (response) => {
+        NeonApi.getProductObservable(bundleParent).pipe(
+          map((response) => {
             dispatch({ type: 'fetchBundleParentSucceeded', bundleParent, data: response.data });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchBundleParentFailed', bundleParent, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Bundle parent release fetches
     Object.keys(fetches.bundleParentReleases)
@@ -1023,24 +1025,24 @@ const Provider = (inProps) => {
           ))
           .forEach((release) => {
             dispatch({ type: 'fetchBundleParentReleaseStarted', bundleParent, release });
-            NeonApi.getProductObservable(bundleParent, release).subscribe(
-              (response) => {
+            NeonApi.getProductObservable(bundleParent, release).pipe(
+              map((response) => {
                 dispatch({
                   type: 'fetchBundleParentReleaseSucceeded',
                   bundleParent,
                   release,
                   data: response.data,
                 });
-              },
-              (error) => {
+              }),
+              catchError((error) => {
                 dispatch({
                   type: 'fetchBundleParentReleaseFailed',
                   bundleParent,
                   release,
                   error,
                 });
-              },
-            );
+              }),
+            ).subscribe();
           });
       });
   }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
@@ -1053,22 +1055,22 @@ const Provider = (inProps) => {
       return;
     }
     dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
-    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
-      (response) => {
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).pipe(
+      map((response) => {
         dispatch({
           type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
           release: currentRelease,
           data: response.data,
         });
-      },
-      (error) => {
+      }),
+      catchError((error) => {
         dispatch({
           type: 'fetchProductReleaseTombstoneAvailabilityFailed',
           release: currentRelease,
           error,
         });
-      },
-    );
+      }),
+    ).subscribe();
   }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
 
   /**

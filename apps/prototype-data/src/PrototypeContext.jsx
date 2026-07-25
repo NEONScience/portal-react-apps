@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 
 import { useNavigate, useLocation } from 'react-router';
 
+import { map, catchError } from 'rxjs';
+
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
@@ -369,14 +371,14 @@ const Provider = (inProps) => {
       appStatus !== APP_STATUS.INITIALIZING
         || datasetsFetchStatus !== FETCH_STATUS.AWAITING_CALL
     ) { return; }
-    NeonApi.getPrototypeDatasetsObservable().subscribe(
-      (response) => {
+    NeonApi.getPrototypeDatasetsObservable().pipe(
+      map((response) => {
         dispatch({ type: 'fetchDatasetsSucceeded', data: response.data });
-      },
-      (error) => {
+      }),
+      catchError((error) => {
         dispatch({ type: 'fetchDatasetsFailed', error });
-      },
-    );
+      }),
+    ).subscribe();
     dispatch({ type: 'fetchDatasetsStarted' });
   }, [appStatus, datasetsFetchStatus, neonContextIsFinal]);
 
@@ -384,14 +386,14 @@ const Provider = (inProps) => {
   useEffect(() => {
     if (!awaitingManifestFetches.length) { return; }
     awaitingManifestFetches.forEach((uuid) => {
-      NeonApi.getPrototypeManifestRollupObservable(uuid).subscribe(
-        (response) => {
+      NeonApi.getPrototypeManifestRollupObservable(uuid).pipe(
+        map((response) => {
           dispatch({ type: 'fetchManifestRollupSucceeded', uuid, data: response.data });
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           dispatch({ type: 'fetchManifestRollupFailed', uuid, error });
-        },
-      );
+        }),
+      ).subscribe();
       dispatch({ type: 'fetchManifestRollupStarted', uuid });
     });
   }, [awaitingManifestFetches]);

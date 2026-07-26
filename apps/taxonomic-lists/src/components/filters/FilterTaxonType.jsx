@@ -104,7 +104,7 @@ class FilterTaxonType extends Component {
           ))}
         </Select>
         {(dataProductData?.data?.dataProducts)
-          ? <DataProductLinks props={dataProductData.data} />
+          ? <DataProductLinks dataProducts={dataProductData.data.dataProducts} />
           : (
             <div>
               <Button

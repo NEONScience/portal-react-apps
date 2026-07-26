@@ -4,7 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Slider from '@mui/material/Slider';
 
 import moment from 'moment';
@@ -164,7 +164,7 @@ const FilterTimeRange = () => {
         marks={marks}
         value={sliderValue}
         valueLabelFormat={(x) => selectableRange[x]}
-        onMouseDown={() => { setActivelySliding(true); }}
+        onPointerDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
           const sliderRange = [
             Math.max(values[0], sliderMin),

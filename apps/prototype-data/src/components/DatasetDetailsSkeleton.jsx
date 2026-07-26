@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';

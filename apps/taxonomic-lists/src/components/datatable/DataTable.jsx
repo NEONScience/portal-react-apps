@@ -508,8 +508,4 @@ DataTable.propTypes = {
   onToggleColumnManagerVisibility: PropTypes.func,
 };
 
-DataTable.defaultProps = {
-  onToggleColumnManagerVisibility: null,
-};
-
 export default DataTable;

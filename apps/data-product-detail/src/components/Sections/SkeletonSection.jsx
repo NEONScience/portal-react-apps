@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Skeleton from '@mui/material/Skeleton';
 
 import Section from './Section';

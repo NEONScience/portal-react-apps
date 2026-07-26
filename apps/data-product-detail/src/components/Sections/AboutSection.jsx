@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';

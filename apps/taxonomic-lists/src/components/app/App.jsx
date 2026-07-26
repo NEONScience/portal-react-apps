@@ -17,6 +17,8 @@ const App = () => {
   ];
   return (
     <NeonPage
+      useCoreAuth
+      customizeAuthContainer
       title="Taxonomic Lists"
       breadcrumbs={breadcrumbs}
       breadcrumbHomeHref={RouteService.getWebHomePath()}

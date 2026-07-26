@@ -7,7 +7,7 @@ import React, {
 import { Dispatch, AnyAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 

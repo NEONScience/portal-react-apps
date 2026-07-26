@@ -102,6 +102,8 @@ const PrototypePage = () => {
 
   return (
     <NeonPage
+      useCoreAuth
+      customizeAuthContainer
       title={title}
       breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}

@@ -2,7 +2,7 @@ import React, { useMemo, Suspense, type JSX } from 'react';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Skeleton from '@mui/material/Skeleton';

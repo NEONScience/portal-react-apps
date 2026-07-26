@@ -7,7 +7,7 @@ import React, {
 import { Dispatch, AnyAction } from 'redux';
 import { batch, useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
@@ -301,6 +301,8 @@ const App: React.FC = (): JSX.Element => {
 
   return (
     <NeonPage
+      useCoreAuth
+      customizeAuthContainer
       title={title}
       loading={isLoading ? 'Loading Availability...' : undefined}
       breadcrumbHomeHref={RouteService.getWebHomePath()}

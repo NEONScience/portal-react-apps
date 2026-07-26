@@ -10,7 +10,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import { getColumns, getColumnDisplayGroupLabel } from '../../api/dataTableColumns';
@@ -78,7 +78,7 @@ const ColumnManager = (props) => {
       const labelKey = getColumnDisplayGroupLabel(value);
       acc.push(
         // eslint-disable-next-line react/no-array-index-key
-        <Grid key={index} item xs={12} sm={6} md={3}>
+        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
           {!displayGroupLabels[labelKey] ? null : (
             <Typography variant="subtitle2" gutterBottom style={{ whiteSpace: 'nowrap' }}>
               {displayGroupLabels[labelKey]}

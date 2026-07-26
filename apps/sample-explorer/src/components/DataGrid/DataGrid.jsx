@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/styles/ag-grid.css';
-import 'ag-grid-community/styles/ag-theme-balham.css';
+import { AllCommunityModule, themeBalham } from 'ag-grid-community';
+import { AgGridProvider, AgGridReact } from 'ag-grid-react';
+
+const modules = [AllCommunityModule];
 
 class DataGrid extends Component {
   constructor(props) {
@@ -45,16 +46,17 @@ class DataGrid extends Component {
       containerStyle.height = height;
     }
     return (
-      <div style={containerStyle} className="ag-theme-balham">
-        <AgGridReact
-          enableCellTextSelection
-          // properties
-          columnDefs={columnDefs}
-          rowData={rowData}
-          // events
-          onGridReady={this.onGridReady}
-        />
-      </div>
+      <AgGridProvider modules={modules}>
+        <div style={containerStyle} className="ag-theme-balham">
+          <AgGridReact
+            enableCellTextSelection
+            theme={themeBalham}
+            columnDefs={columnDefs}
+            rowData={rowData}
+            onGridReady={this.onGridReady}
+          />
+        </div>
+      </AgGridProvider>
     );
   }
 }

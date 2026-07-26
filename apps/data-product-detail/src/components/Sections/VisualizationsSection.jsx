@@ -12,6 +12,7 @@ import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesVi
 import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -36,7 +37,7 @@ const aopVideoUrl = (
 const AopVizNode = () => {
   const { classes } = useStyles();
   return (
-    <div>
+    <div key="AopVizNode">
       <Typography variant="body2" gutterBottom>
         This Google Earth Engine (GEE) viewer allows for interactive exploration of remotely
         sensed data from the Airborne Observation Platform (AOP) that have been added to GEE.
@@ -47,16 +48,15 @@ const AopVizNode = () => {
         AOP data available on the data portal may be included in the GEE catalog at any given time.
       </Typography>
       <Divider className={classes.divider} />
-      {/* <Divider /> */}
       <AopGeeDataViewer isFullWidth={false} />
     </div>
   );
 };
 
 const SaeVizNode = (product) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
-    <div>
+    <div key="SaeVizNode">
       <Typography variant="body2" gutterBottom>
         This tool provides a quick, interactive view of fluxes and key meteorological drivers.
         Users can preview time series, QC information, and site-level patterns before downloading
@@ -71,7 +71,13 @@ const SaeVizNode = (product) => {
   );
 };
 
-const VisualizationsSection = (props) => {
+const defaultProps = {
+  skeleton: false,
+  children: null,
+};
+
+const VisualizationsSection = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
@@ -169,6 +175,5 @@ const VisualizationsSection = (props) => {
 };
 
 VisualizationsSection.propTypes = Section.propTypes;
-VisualizationsSection.defaultProps = Section.defaultProps;
 
 export default VisualizationsSection;

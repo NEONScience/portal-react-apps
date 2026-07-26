@@ -3,7 +3,7 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 

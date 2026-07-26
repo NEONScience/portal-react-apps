@@ -8,7 +8,7 @@ import truncate from 'lodash/truncate';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
@@ -20,7 +20,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
 
-import MaterialTable, { MTableToolbar } from 'material-table';
+import MaterialTable, { MTableToolbar } from '@material-table/core';
 
 import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
 import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
@@ -341,7 +341,7 @@ const IssueLogDetail = () => {
           issue,
           resolution,
           dateRangeEnd,
-        } = row;
+        } = row.rowData;
         return (
           <>
             <Container className={classes.container}>
@@ -409,9 +409,7 @@ const IssueLogDetail = () => {
 
   const localization = {
     pagination: {
-      labelRowsSelect: 'top-level issues',
-      labelRowsPerPage: null,
-      // labelRows: 'top-level issues',
+      labelRows: 'top-level issues',
     },
     toolbar: {
       searchPlaceholder: 'Search issues',

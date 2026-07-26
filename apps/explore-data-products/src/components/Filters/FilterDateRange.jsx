@@ -169,7 +169,7 @@ const FilterDateRange = () => {
         marks={marks}
         value={sliderValue}
         valueLabelFormat={(x) => selectableRange[x]}
-        onMouseDown={() => { setActivelySliding(true); }}
+        onPointerDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
           const sliderRange = [
             Math.max(values[0], sliderMin),

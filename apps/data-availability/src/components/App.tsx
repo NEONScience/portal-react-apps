@@ -59,15 +59,6 @@ const useStyles = makeStyles()((theme: NeonTheme) => ({
   infoContainer: {
     margin: theme.spacing(0, 0, 4, 0),
   },
-  callout: {
-    margin: theme.spacing(0.5, 0, 3, 0),
-    backgroundColor: '#ffffff',
-    borderColor: '#d7d9d9',
-  },
-  calloutIcon: {
-    color: theme.colors.LIGHT_BLUE[300],
-    marginRight: theme.spacing(2),
-  },
 }));
 
 const useAppSelector = (): AppComponentState => useSelector(
@@ -328,10 +319,6 @@ const App: React.FC = (): JSX.Element => {
         </Grid>
         <Grid size={{ xs: 12 }}>
           <InfoCard
-            classes={{
-              callout: classes.callout,
-              calloutIcon: classes.calloutIcon,
-            }}
             titleContent={(
               <Typography variant="subtitle2" component="div">
                 Learn more about&nbsp;

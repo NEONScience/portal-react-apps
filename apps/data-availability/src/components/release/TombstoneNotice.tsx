@@ -65,7 +65,6 @@ const TombstoneNotice: React.FC = (): JSX.Element | null => {
           disableGutters
           key={`TombstonedDoiUrlKey-${citationRelease.url}`}
           alignItems="flex-start"
-          component="div"
           slots={{ root: 'div' }}
         >
           <ListItemText

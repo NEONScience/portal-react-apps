@@ -75,7 +75,7 @@ const useStyles = makeStyles()((theme: NeonTheme) => ({
   },
   autocompleteLabel: {
     paddingLeft: `${theme.spacing(1)} !important`,
-    paddingTop: '6px !important',
+    paddingTop: `${theme.spacing(1)} !important`,
   },
   autocompleteLabelShrink: {
     transform: 'translate(6px, -9px) scale(0.75) !important',
@@ -215,10 +215,12 @@ const SiteSelect: React.FC = (): JSX.Element => {
   );
 
   const renderOption = (
-    props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+    props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
     value: SiteSelectDataOption,
     renderOptionState: AutocompleteRenderOptionState,
-  ): JSX.Element => {
+  ): React.ReactNode => {
+    // eslint-disable-next-line react/prop-types
+    const { key, ...optionProps } = props;
     const primarySlice: SearchSlice[] = calcSearchSlice(
       `${value.siteDescription}, ${value.stateCode}`,
       renderOptionState.inputValue,
@@ -235,11 +237,11 @@ const SiteSelect: React.FC = (): JSX.Element => {
       `${value.siteLatitude}, ${value.siteLongitude}`,
       renderOptionState.inputValue,
     );
-    const makeKey = (text: string): string => `key-${value.siteCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         <span
-          key={makeKey(slice.text)}
+          // eslint-disable-next-line react/no-array-index-key
+          key={`key-${idx}`}
           className={slice.found ? classes.searchHighlight : undefined}
         >
           {slice.text}
@@ -247,7 +249,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <li {...props} key={value.siteCode}>
+      <li {...optionProps} key={value.siteCode}>
         <ListItemText
           primary={(<div>{renderSlices(primarySlice)}</div>)}
           secondary={(
@@ -306,18 +308,19 @@ const SiteSelect: React.FC = (): JSX.Element => {
           ),
         })}
         renderOption={(
-          props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+          props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(props, value, renderOptionState)}
+        ): React.ReactNode => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             {...params}
             variant="outlined"
             label="Search Field Sites"
             slotProps={{
+              ...params.slotProps,
               inputLabel: {
-                ...params.InputLabelProps,
+                ...params.slotProps.inputLabel,
                 className: classes.autocompleteLabel,
                 classes: {
                   shrink: classes.autocompleteLabelShrink,

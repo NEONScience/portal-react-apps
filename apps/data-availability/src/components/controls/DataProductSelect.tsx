@@ -91,7 +91,7 @@ const useStyles = makeStyles()((theme: NeonTheme) => ({
   },
   autocompleteLabel: {
     paddingLeft: `${theme.spacing(1)} !important`,
-    paddingTop: '6px !important',
+    paddingTop: `${theme.spacing(1)} !important`,
   },
   autocompleteLabelShrink: {
     transform: 'translate(6px, -9px) scale(0.75) !important',
@@ -231,10 +231,12 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     return [!bundle ? value.productCode : bundleMessage, hasManyParents];
   };
   const renderOption = (
-    props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+    props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
-  ): JSX.Element => {
+  ): React.ReactNode => {
+    // eslint-disable-next-line react/prop-types
+    const { key, ...optionProps } = props;
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
       value as DataProduct,
@@ -248,11 +250,11 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       secondaryMessage,
       renderOptionState.inputValue,
     );
-    const makeKey = (text: string): string => `key-${value.productCode}-${text.replace(/\s/g, '')}`;
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
         <span
-          key={makeKey(slice.text)}
+          // eslint-disable-next-line react/no-array-index-key
+          key={`key-${idx}`}
           className={slice.found ? classes.searchHighlight : undefined}
         >
           {slice.text}
@@ -260,9 +262,16 @@ const DataProductSelect: React.FC = (): JSX.Element => {
       )))
     ));
     return (
-      <li {...props} key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
-        {!bundle ? null : <BundleListItemIcon isSplit={hasManyParents} />}
+      <li
+        {...optionProps}
+        key={value.productCode}
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
+        {!bundle ? null : (
+          <BundleListItemIcon key={`icon-${value.productCode}`} isSplit={hasManyParents} />
+        )}
         <ListItemText
+          key={value.productCode}
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
           secondary={(<>{renderSlices(secondarySlice)}</>)}
@@ -316,18 +325,19 @@ const DataProductSelect: React.FC = (): JSX.Element => {
           },
         })}
         renderOption={(
-          props: React.HTMLAttributes<HTMLLIElement> & { key: any },
+          props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(props, value, renderOptionState)}
+        ): React.ReactNode => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
             {...params}
             variant="outlined"
             label="Search Data Products"
             slotProps={{
+              ...params.slotProps,
               inputLabel: {
-                ...params.InputLabelProps,
+                ...params.slotProps.inputLabel,
                 className: classes.autocompleteLabel,
                 classes: {
                   shrink: classes.autocompleteLabelShrink,

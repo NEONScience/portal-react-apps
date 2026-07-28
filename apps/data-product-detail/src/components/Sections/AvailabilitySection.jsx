@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import moment from 'moment';
 
 import Divider from '@mui/material/Divider';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
@@ -9,6 +10,7 @@ import DataProductBundleCard from 'portal-core-components/lib/components/Bundles
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
+import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
 import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
@@ -22,6 +24,10 @@ import Section from './Section';
 import SkeletonSection from './SkeletonSection';
 import TombstoneNotice from '../Release/TombstoneNotice';
 
+const SiteMap = React.lazy(
+  () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
+);
+
 const useStyles = makeStyles()((theme) => ({
   summaryDivStyle: {
     width: '100%',
@@ -34,6 +40,15 @@ const useStyles = makeStyles()((theme) => ({
     color: theme.palette.grey[300],
     lineHeight: '1em',
     marginBottom: theme.spacing(1),
+  },
+  availableSitesContainer: {
+    marginTop: theme.spacing(6),
+  },
+  externalHostContainer: {
+    marginTop: theme.spacing(6),
+  },
+  divider: {
+    margin: theme.spacing(3, 0, 4, 0),
   },
 }));
 
@@ -49,6 +64,9 @@ const AvailabilitySection = (props) => {
     fromExternalHost,
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
+
+  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
+  const { sites } = neonContextData;
 
   const {
     route: {
@@ -217,15 +235,53 @@ const AvailabilitySection = (props) => {
     );
   };
 
+  const renderAvailableSites = () => {
+    if ((availableSiteCodes.length <= 0) || (Object.keys(sites).length <= 0)) {
+      return null;
+    }
+    const availabeSitesSkeleton = (
+      <Skeleton variant="rectangular" width="100%" height={600} className={classes.skeleton} />
+    );
+    const manualLocationData = Object.keys(sites)
+      .filter((siteCode) => availableSiteCodes.includes(siteCode))
+      .map((siteCode) => sites[siteCode])
+      .map((site) => ({
+        manualLocationType: 'PROTOTYPE_SITE',
+        domain: site.domainCode,
+        state: site.stateCode,
+        siteCode: site.siteCode,
+        siteName: site.description,
+        latitude: site.latitude,
+        longitude: site.longitude,
+      }));
+    return (
+      <Suspense fallback={availabeSitesSkeleton}>
+        <div className={classes.availableSitesContainer}>
+          <Typography variant="h5" gutterBottom>
+            Available Sites
+          </Typography>
+          <Divider className={classes.divider} />
+          <SiteMap manualLocationData={manualLocationData} />
+        </div>
+      </Suspense>
+    );
+  };
+
   const renderExternalHost = () => {
     if (!isStringNonEmpty(productData.productCode) || isTombstoned) return null;
     return (
-      <ExternalHostInfo
-        productCode={productData.productCode}
-        siteCodes={availableSiteCodes}
-        style={{ marginTop: Theme.spacing(4) }}
-        data-selenium="data-product-page.section.availability.external-host-info"
-      />
+      <div className={classes.externalHostContainer}>
+        <Typography variant="h5" gutterBottom>
+          Externally Hosted Data
+        </Typography>
+        <Divider className={classes.divider} />
+        <ExternalHostInfo
+          productCode={productData.productCode}
+          siteCodes={availableSiteCodes}
+          style={{ marginTop: Theme.spacing(4) }}
+          data-selenium="data-product-page.section.availability.external-host-info"
+        />
+      </div>
     );
   };
 
@@ -249,6 +305,7 @@ const AvailabilitySection = (props) => {
     return (
       <>
         {renderAvailability()}
+        {renderAvailableSites()}
         {renderExternalHost()}
       </>
     );

@@ -15,11 +15,11 @@ import Typography from '@mui/material/Typography';
 
 import MoreIcon from '@mui/icons-material/KeyboardArrowRight';
 import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
+import SaeViewerIcon from '@mui/icons-material/TimelineOutlined';
 import ProductDetailsIcon from '@mui/icons-material/InfoOutlined';
-import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
-import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
 
+import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
+import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
 import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
@@ -27,12 +27,11 @@ import DownloadDataButton from 'portal-core-components/lib/components/DownloadDa
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
 import Theme from 'portal-core-components/lib/components/Theme';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 
 import ExploreContext from '../ExploreContext';
 
@@ -326,11 +325,20 @@ const DataProduct = React.memo((props) => {
 
   const saeViewerButton = hasData && isSaeViewerProduct
     ? (
-      <SaeDataViewerButton
-        isFullWidth
-        product={productCode}
-        name="sae-visuialization-button"
-      />
+      <Button
+        data-gtm="explore-data-products.view-sae-data-viewer-button"
+        data-gtm-product-code={productCode}
+        data-selenium={
+          `browse-data-products-page.products.${productCode}.view-sae-data-viewer-button`
+        }
+        className={classes.productPaperButton}
+        variant="outlined"
+        color="primary"
+        endIcon={<SaeViewerIcon />}
+        onClick={() => handleChangeVisualization(VISUALIZATIONS.SAE_DATA_VIEWER.key)}
+      >
+        {VISUALIZATIONS.SAE_DATA_VIEWER.name}
+      </Button>
     ) : null;
 
   const viewTimeSeriesDataButton = hasTimeSeriesData
@@ -356,11 +364,10 @@ const DataProduct = React.memo((props) => {
 
   function handleSplitButtonClick(option) {
     const viz = getVizByName(option);
-    if (viz.key === 'TIME_SERIES_VIEWER') {
+    if (viz.key === VISUALIZATIONS.TIME_SERIES_VIEWER.key) {
       handleChangeVisualization(viz.key);
-    } else if (viz.key === 'SAE_DATA_VIEWER') {
-      const url = RouteService.getSaeViewerUrlPath(productCode);
-      window.open(url, '_blank', 'noreferrer');
+    } else if (viz.key === VISUALIZATIONS.SAE_DATA_VIEWER.key) {
+      handleChangeVisualization(viz.key);
     }
   }
 

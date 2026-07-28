@@ -10,6 +10,9 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
+const SaeDataViewer = React.lazy(
+  () => import('portal-core-components/lib/components/SaeDataViewer/SaeDataViewer'),
+);
 const TimeSeriesViewer = React.lazy(
   () => import('portal-core-components/lib/components/TimeSeriesViewer'),
 );
@@ -47,7 +50,13 @@ const DataVisualizationDialog = () => {
           <TimeSeriesViewer productCode={productCode} release={appliedRelease} />
         );
         break;
-
+      case VISUALIZATIONS.SAE_DATA_VIEWER.key:
+        title = `SAE Data Viewer - ${productCode} - ${product.productName}`;
+        dialogBaseProps.nopaper = true;
+        contents = (
+          <SaeDataViewer productCode={productCode} />
+        );
+        break;
       default:
         break;
     }

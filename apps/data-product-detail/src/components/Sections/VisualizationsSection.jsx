@@ -4,12 +4,12 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 
+import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
+import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer/SaeDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
@@ -20,7 +20,7 @@ import SkeletonSection from './SkeletonSection';
 
 const useStyles = makeStyles()((theme) => ({
   divider: {
-    margin: theme.spacing(2, 0),
+    margin: theme.spacing(3, 0, 4, 0),
   },
 }));
 
@@ -33,6 +33,23 @@ const aopVideoUrl = (
     {' '}
   </>
 );
+
+const TimeSeriesVizNode = (productCode, currentRelease) => {
+  const { classes } = useStyles();
+  return (
+    <div key="TimeSeriesVizNode">
+      <Typography variant="h5" gutterBottom>
+        Time Series Viewer
+      </Typography>
+      <Divider className={classes.divider} />
+      <TimeSeriesViewer
+        key="timeSeriesViewer"
+        productCode={productCode}
+        release={currentRelease}
+      />
+    </div>
+  );
+};
 
 const AopVizNode = () => {
   const { classes } = useStyles();
@@ -53,20 +70,24 @@ const AopVizNode = () => {
   );
 };
 
-const SaeVizNode = (product) => {
-  const { classes } = useStyles();
+const SaeVizNode = (productCode, isMultiViz = false) => {
+  const { classes, theme } = useStyles();
+  const vizNodeStyle = {};
+  if (isMultiViz) {
+    vizNodeStyle.marginTop = theme.spacing(6);
+  }
   return (
-    <div key="SaeVizNode">
+    <div key="SaeVizNode" style={vizNodeStyle}>
+      <Typography variant="h5" gutterBottom>
+        SAE Data Viewer
+      </Typography>
       <Typography variant="body2" gutterBottom>
         This tool provides a quick, interactive view of fluxes and key meteorological drivers.
         Users can preview time series, QC information, and site-level patterns before downloading
         data.
       </Typography>
       <Divider className={classes.divider} />
-      <SaeDataViewerButton
-        isFullWidth={false}
-        product={product}
-      />
+      <SaeDataViewer key="saeDataViewer" productCode={productCode} />
     </div>
   );
 };
@@ -78,6 +99,7 @@ const defaultProps = {
 
 const VisualizationsSection = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
+  const { theme } = useStyles();
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
   const {
     timeSeriesDataProducts: timeSeriesDataProductsJSON = { productCodes: [] },
@@ -94,9 +116,16 @@ const VisualizationsSection = (inProps) => {
 
   const [state, dispatch] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
-
+  const [{ productData: appliedProductData }] = DownloadDataContext.useDownloadDataState();
   const {
-    route: { productCode, release: currentRelease },
+    route: {
+      productCode,
+      release: currentRelease,
+      bundle: {
+        parentCodes,
+        forwardAvailabilityFromParent,
+      },
+    },
   } = state;
 
   const currentReleaseObject = DataProductContext.getCurrentReleaseObjectFromState(state);
@@ -106,37 +135,43 @@ const VisualizationsSection = (inProps) => {
   }
 
   let defaultVizMessage = 'This product does not currently have any visualizations.';
+  const hasViz = timeSeriesProductCodes.includes(productCode)
+    || aopProductCodes.includes(productCode)
+    || saeProductCodes.includes(productCode);
 
   // Build an object containing rendered visualization nodes
   const viz = {};
-  if (timeSeriesProductCodes.includes(productCode)) {
-    const hasData = exists(product) && existsNonEmpty(product.siteCodes);
+  if (hasViz) {
+    const isBundleChild = existsNonEmpty(parentCodes);
+    const shouldForwardAvailability = (forwardAvailabilityFromParent === true);
+    const hasData = (exists(product) && existsNonEmpty(product.siteCodes))
+      || (
+        isBundleChild
+        && shouldForwardAvailability
+        && (exists(appliedProductData) && existsNonEmpty(appliedProductData.siteCodes))
+      );
     if (!hasData) {
       defaultVizMessage = 'This product does not currently have any data to display.';
     } else {
-      viz.TIME_SERIES = {
-        name: 'Time Series Viewer',
-        node: (
-          <TimeSeriesViewer
-            key="timeSeriesViewer"
-            productCode={productCode}
-            release={currentRelease}
-          />
-        ),
-      };
+      if (timeSeriesProductCodes.includes(productCode)) {
+        viz.TIME_SERIES = {
+          name: 'Time Series Viewer',
+          node: TimeSeriesVizNode(productCode, currentRelease),
+        };
+      }
+      if (aopProductCodes.includes(productCode)) {
+        viz.AOP = {
+          name: 'AOP GEE Data Viewer',
+          node: AopVizNode(),
+        };
+      }
+      if (saeProductCodes.includes(productCode)) {
+        viz.SAE = {
+          name: 'SAE Data Viewer',
+          node: SaeVizNode(productCode, timeSeriesProductCodes.includes(productCode)),
+        };
+      }
     }
-  }
-  if (aopProductCodes.includes(productCode)) {
-    viz.AOP = {
-      name: 'AOP GEE Data Viewer',
-      node: AopVizNode(),
-    };
-  }
-  if (saeProductCodes.includes(productCode)) {
-    viz.SAE = {
-      name: 'SAE Data Viewer',
-      node: SaeVizNode(productCode),
-    };
   }
 
   const hideViz = currentReleaseObject && (currentReleaseObject.showViz === false);
@@ -148,7 +183,7 @@ const VisualizationsSection = (inProps) => {
     return (
       <Section {...props}>
         {/* eslint-disable react/jsx-one-expression-per-line */}
-        <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }} gutterBottom>
+        <Typography variant="subtitle1" style={{ color: theme.colors.GREY[500] }} gutterBottom>
           This page is specific to the {releaseTag} release for this data product.
           <br />
           Data visualizations for this product can be accessed on the general page for this product.
@@ -166,7 +201,7 @@ const VisualizationsSection = (inProps) => {
       {Object.keys(viz).length ? (
         Object.keys(viz).map((k) => viz[k].node)
       ) : (
-        <Typography variant="subtitle1" style={{ color: Theme.colors.GREY[500] }}>
+        <Typography variant="subtitle1" style={{ color: theme.colors.GREY[500] }}>
           {defaultVizMessage}
         </Typography>
       )}

@@ -23,7 +23,6 @@ const DetailTooltip = (props) => {
       placement="right"
       title={tooltip}
       className={classes.tooltip}
-      interactive="true"
     >
       <IconButton size="small" className={classes.iconButton} aria-label={tooltip}>
         <InfoIcon fontSize="small" />

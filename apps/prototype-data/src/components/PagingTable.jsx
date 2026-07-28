@@ -16,6 +16,17 @@ import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 
+import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+
+const useStyles = makeStyles()((theme) => ({
+  pagingTable: {
+    '& .MuiTablePagination-displayedRows': {
+      display: 'block !important',
+      margin: theme.spacing(0, 2),
+    },
+  },
+}));
+
 const PagingTableActions = (props) => {
   const {
     count,
@@ -90,6 +101,7 @@ const PagingTable = (props) => {
     renderRow,
     renderHeaderRow,
   } = props;
+  const { classes } = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -105,7 +117,7 @@ const PagingTable = (props) => {
   };
 
   return (
-    <TableContainer style={{ marginBottom: '25px' }}>
+    <TableContainer className={classes.pagingTable} style={{ marginBottom: '25px' }}>
       <Table size="small">
         <TableHead>
           {renderHeaderRow(rows)}

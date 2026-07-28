@@ -54,6 +54,10 @@ const useStyles = makeStyles()((theme) => ({
     marginBottom: theme.spacing(2),
   },
   unresolved: { ...unresolvedStyle },
+  xsRowsContainer: {
+    maxHeight: '800px',
+    overflow: 'auto',
+  },
   xsRowDivider: {
     margin: theme.spacing(1, 0),
   },
@@ -606,7 +610,9 @@ const IssueLogDetail = () => {
             <br />
             <i>Child issues not shown.</i>
           </div>
-          {renderIssueXsRows()}
+          <div className={classes.xsRowsContainer}>
+            {renderIssueXsRows()}
+          </div>
         </Detail>
       </Box>
     </>

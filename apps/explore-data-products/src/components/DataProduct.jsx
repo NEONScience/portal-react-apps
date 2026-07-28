@@ -68,11 +68,6 @@ const useStyles = makeStyles()((theme) => ({
     fontWeight: 600,
     cursor: 'help',
   },
-  descriptionButton: {
-    fontSize: theme.spacing(1.5),
-    padding: theme.spacing(0.25, 1),
-    backgroundColor: '#fff',
-  },
   productPaperButton: {
     width: '100%',
     whiteSpace: 'nowrap',
@@ -89,7 +84,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   moreIcon: {
     marginBottom: '-3px',
-    fontSize: theme.spacing(2),
+    fontSize: '16px',
   },
   startFlex: {
     display: 'flex',

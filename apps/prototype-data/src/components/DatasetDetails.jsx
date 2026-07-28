@@ -467,18 +467,17 @@ const DatasetDetails = (props) => {
         const { datasetUuid, datasetVersion, datasetVersionDescription } = relatedVersion;
         const href = RouteService.getPrototypeDatasetDetailPath(datasetUuid);
         return (
-          <ListItem
+          <ListItemButton
             key={datasetUuid}
             className={`${classes.listItemRelated} ${classes.listItemRelatedVersion}`}
             component="a"
             href={href}
-            button
           >
             <ListItemText
               primary={datasetVersion}
               secondary={datasetVersionDescription || '(no description)'}
             />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
@@ -542,7 +541,7 @@ const DatasetDetails = (props) => {
   const downloadFileList = !files.length ? getNA('none available') : (
     <PagingTable
       rows={files}
-      rowsPerPageOptions={[5]}
+      rowsPerPageOptions={[5, 10, 20]}
       rowHeight={90}
       renderRow={(row) => renderDataFileRow(row, uuid, classes)}
       renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}

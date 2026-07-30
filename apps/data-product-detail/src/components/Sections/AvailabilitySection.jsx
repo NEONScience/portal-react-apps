@@ -268,7 +268,12 @@ const AvailabilitySection = (props) => {
   };
 
   const renderExternalHost = () => {
-    if (!isStringNonEmpty(productData.productCode) || isTombstoned) return null;
+    if ((availableSiteCodes.length <= 0) || (Object.keys(sites).length <= 0)) {
+      return null;
+    }
+    if (!isStringNonEmpty(productData.productCode) || isTombstoned) {
+      return null;
+    }
     return (
       <div className={classes.externalHostContainer}>
         <Typography variant="h5" gutterBottom>

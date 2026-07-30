@@ -34,6 +34,13 @@ const getFetch = () => {
 };
 
 class Download extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+    };
+  }
+
   handleDownload() {
     this.handleDownloadProcessing();
     const fetchFunc = getFetch();
@@ -57,7 +64,9 @@ class Download extends Component {
         }
 
         window.location.href = url;
-        this.handleDownloadSuccess();
+        setTimeout(() => {
+          this.handleDownloadSuccess();
+        }, 5000);
       })
       .catch((error) => {
         // eslint-disable-next-line no-console
@@ -68,20 +77,17 @@ class Download extends Component {
 
   handleDownloadProcessing() {
     this.message.innerHTML = '';
-    this.button.disabled = true;
-    this.button.innerHTML += this.getTaxonDownloadLoadingIcon();
+    this.setState({ loading: true });
   }
 
   handleDownloadSuccess() {
     this.message.innerHTML = '';
-    this.button.innerHTML = this.getDownloadButtonLabel();
-    this.button.disabled = false;
+    this.setState({ loading: false });
   }
 
   handleDownloadError() {
     this.message.innerHTML = 'Download failed';
-    this.button.innerText = this.getDownloadButtonLabel();
-    this.button.disabled = false;
+    this.setState({ loading: false });
   }
 
   getTaxonDownloadApiQuery() {
@@ -93,11 +99,8 @@ class Download extends Component {
     return 'Download Taxonomic List';
   }
 
-  getTaxonDownloadLoadingIcon() {
-    return '<i class="fa fa-circle-o-notch fa-spin fa-fw" style="margin-left: 8px;"></i>';
-  }
-
   render() {
+    const { loading } = this.state;
     const messageStyle = {
       color: '#75030E',
       marginLeft: '10px',
@@ -109,14 +112,18 @@ class Download extends Component {
     return (
       <div>
         <Button
-          ref={(button) => { this.button = button; }}
           variant="contained"
           color="primary"
           onClick={() => this.handleDownload()}
           data-selenium="download-taxonomic-list-button"
+          disabled={loading}
+          loading={loading}
+          loadingPosition="end"
         >
           {buttonLabel}
-          <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+          {loading ? null : (
+            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+          )}
         </Button>
         <span ref={(message) => { this.message = message; }} style={messageStyle} />
       </div>

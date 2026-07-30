@@ -111,7 +111,7 @@ const TombstoneNotice = () => {
           latestAvailableReleaseBlurb = (
             <>
               {/* eslint-disable react/jsx-one-expression-per-line */}
-              has been replaced by a {dataProductDetailLink} and&nbsp;
+              has been replaced by a {dataProductDetailLink}&nbsp;and&nbsp;
               {/* eslint-enable react/jsx-one-expression-per-line */}
             </>
           );

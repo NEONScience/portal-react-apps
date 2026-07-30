@@ -2540,10 +2540,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "bootstrap@npm:3.4.1"
-  checksum: 10c0/3ac443985a432fd77f1d6df2972d8f0a06e93bb0e10893fa890e6503e6d2b36e601f4a9894429223afa867c2232ead1af5c55ded4c23a64dc706ca25e49dc2da
+"bootstrap@npm:^5.3.8":
+  version: 5.3.8
+  resolution: "bootstrap@npm:5.3.8"
+  peerDependencies:
+    "@popperjs/core": ^2.11.8
+  checksum: 10c0/0039a9df2c3e7bfa04f1abca199c299ff3b75869d578c0cb1721c6f1f203c91531788a5631ecbee01513481979314d0e4ba0d90c2011e6ce18fc2e0bc93e18d9
   languageName: node
   linkType: hard
 
@@ -2557,7 +2559,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"brace-expansion@npm:^5.0.5":
+"brace-expansion@npm:^5.0.8":
   version: 5.0.8
   resolution: "brace-expansion@npm:5.0.8"
   dependencies:
@@ -3626,43 +3628,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"datatables.net-bs@npm:^1.13.0, datatables.net-bs@npm:^1.13.11":
-  version: 1.13.11
-  resolution: "datatables.net-bs@npm:1.13.11"
+"datatables.net-bs5@npm:^3, datatables.net-bs5@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "datatables.net-bs5@npm:3.0.0"
   dependencies:
-    datatables.net: "npm:1.13.11"
-    jquery: "npm:1.8 - 4"
-  checksum: 10c0/0e858594b09b7cd164112265704392e93e23fff1abfdb18a5f6220c30f60a6bad49809a1d4a7075b0749373177e8d80f1765672c0ca0a3f2a0226453603766ac
+    datatables.net: "npm:3.0.0"
+  checksum: 10c0/a68149c04436b25574feac3c3f5a2ed6ab595742702c4c6bf7731c425adc8797768ffde27c5289c27321af0ed6179cbeba1f45fe25ef06d463632fb484cb2052
   languageName: node
   linkType: hard
 
-"datatables.net-responsive-bs@npm:^2.5.1":
-  version: 2.5.1
-  resolution: "datatables.net-responsive-bs@npm:2.5.1"
-  dependencies:
-    datatables.net-bs: "npm:^1.13.0"
-    datatables.net-responsive: "npm:2.5.1"
-    jquery: "npm:>=1.7"
-  checksum: 10c0/478ed618ced0c5325d82e9b4b8630f6b3c64672dea6ef71f55f6ef1545a99cf483dbe3cc0d9ba1ed7019d3cf7af927cf3b049c502ad7863671ed591f917a1375
+"datatables.net-react@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "datatables.net-react@npm:1.0.2"
+  peerDependencies:
+    datatables.net: ^2.1.3 || ^3.0.0-0
+  checksum: 10c0/c5a210b8b340a22a804729123a59ddfd9423c3c3d408e82171650f4d2e4569854f559f3f125745c7e929f5be5ebbd857145b9aa18c8b6b6ca56d08c1e682a053
   languageName: node
   linkType: hard
 
-"datatables.net-responsive@npm:2.5.1, datatables.net-responsive@npm:^2.5.1":
-  version: 2.5.1
-  resolution: "datatables.net-responsive@npm:2.5.1"
+"datatables.net-responsive-bs5@npm:4.0.0":
+  version: 4.0.0
+  resolution: "datatables.net-responsive-bs5@npm:4.0.0"
   dependencies:
-    datatables.net: "npm:^1.13.0"
-    jquery: "npm:>=1.7"
-  checksum: 10c0/9bbc8dbe55a54d9c8e6abf2f7a15ce1d675a0c747a14943d700f1ecb09f4815c28a88702df91efa3512fb6283569538c67223c8ddd0d253d7f2b22c4967fe997
+    datatables.net-bs5: "npm:^3"
+    datatables.net-responsive: "npm:4.0.0"
+  checksum: 10c0/dc5c89b394ea631fcaab7658f37f862fe0ca43f3ef67215a89e48f90a50b9fd41378dfa027c051038f043227480eff6818f7d7afe06fd505c126a62e1ad70e10
   languageName: node
   linkType: hard
 
-"datatables.net@npm:1.13.11, datatables.net@npm:^1.13.0, datatables.net@npm:^1.13.11":
-  version: 1.13.11
-  resolution: "datatables.net@npm:1.13.11"
+"datatables.net-responsive@npm:4.0.0":
+  version: 4.0.0
+  resolution: "datatables.net-responsive@npm:4.0.0"
   dependencies:
-    jquery: "npm:1.8 - 4"
-  checksum: 10c0/943e3d64943dde2740880f5c193c75472e7877b4c2f197d6c0e5a99fdb148770542b1e3f66016ad596a14aaf5dab4202c4585e7a1aa8b9c4b7dd8782dbcfa0ac
+    datatables.net: "npm:^3"
+  checksum: 10c0/319b350b71ae2d04023ecd684e3633d850878eb81b28027576c631cb93d859b5669927f63a28a8d17e01cd3789f3d593cbc4a9b41d674b72da2595f7bba5d8ab
+  languageName: node
+  linkType: hard
+
+"datatables.net@npm:3.0.0, datatables.net@npm:^3":
+  version: 3.0.0
+  resolution: "datatables.net@npm:3.0.0"
+  checksum: 10c0/55463eb768ca8cb299165d8c45a1b7c7cbc26fe181642a54c31bbdab40e82ff01325706debf5e4459c313774a77fd3a0745707cf1365dcd5baba2327a4e0a87c
   languageName: node
   linkType: hard
 
@@ -6612,11 +6618,11 @@ __metadata:
   linkType: hard
 
 "minimatch@npm:^10.2.2":
-  version: 10.2.5
-  resolution: "minimatch@npm:10.2.5"
+  version: 10.2.6
+  resolution: "minimatch@npm:10.2.6"
   dependencies:
-    brace-expansion: "npm:^5.0.5"
-  checksum: 10c0/6bb058bd6324104b9ec2f763476a35386d05079c1f5fe4fbf1f324a25237cd4534d6813ecd71f48208f4e635c1221899bef94c3c89f7df55698fe373aaae20fd
+    brace-expansion: "npm:^5.0.8"
+  checksum: 10c0/4559a836243b98bd4d17ea9f7edae698717c76399eea7be374f3737f33164e4907f19e9726891ddeb122f750a5a7fa80d2ac43e851d6e5984dc4ff42ec127d3a
   languageName: node
   linkType: hard
 
@@ -7646,8 +7652,8 @@ __metadata:
   linkType: hard
 
 "proj4@npm:^2.11.0":
-  version: 2.20.9
-  resolution: "proj4@npm:2.20.9"
+  version: 2.21.0
+  resolution: "proj4@npm:2.21.0"
   dependencies:
     mgrs: "npm:1.0.0"
     wkt-parser: "npm:^1.5.5"
@@ -7656,7 +7662,7 @@ __metadata:
   peerDependenciesMeta:
     geotiff:
       optional: true
-  checksum: 10c0/9917dc75627a3198b0226741a04e29ecd084f3613ba4a9359815fddab4f579d3135cf68d3ba914659470c45a5ca9c3d52b6f68a43365d6b9484d8603761ecdf9
+  checksum: 10c0/7a4c5d160492636114ecb3719191734dc2b0094b421b9139466a363e479cd907c63ac35a10277f3b7a4649470c8f02446acd45cc6155829364c2fa0ae2d91aae
   languageName: node
   linkType: hard
 
@@ -9001,17 +9007,15 @@ __metadata:
     "@types/node": "npm:^24.13.3"
     "@types/react": "npm:^19.2.17"
     "@types/react-dom": "npm:^19.2.3"
-    bootstrap: "npm:^3.4.1"
+    bootstrap: "npm:^5.3.8"
     commander: "npm:^15.0.0"
     core-js: "npm:^3.49.0"
     cross-env: "npm:^10.1.0"
     cssnano: "npm:^8.0.2"
-    datatables.net: "npm:^1.13.11"
-    datatables.net-bs: "npm:^1.13.11"
-    datatables.net-responsive: "npm:^2.5.1"
-    datatables.net-responsive-bs: "npm:^2.5.1"
+    datatables.net-bs5: "npm:^3.0.0"
+    datatables.net-react: "npm:^1.0.2"
+    datatables.net-responsive-bs5: "npm:4.0.0"
     express: "npm:^5.2.1"
-    jquery: "npm:3.7.1"
     jsdom: "npm:^30.0.0"
     lodash: "npm:^4.18.1"
     next: "npm:^16.2.12"

@@ -93,7 +93,7 @@ class FilterTaxonType extends Component {
             this.getDataProducts(event.target.value); // the selected value is the taxon type code
           }}
           style={{ minWidth: '180px', marginBottom: '16px' }}
-          SelectDisplayProps={{ style: { padding: '10.5px 16px' } }}
+          SelectDisplayProps={{ style: { padding: '8.5px 16px' } }}
           aria-labelledby="taxon-type-title"
           data-selenium="select-taxon-type"
         >

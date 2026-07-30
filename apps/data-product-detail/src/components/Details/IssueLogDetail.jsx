@@ -398,7 +398,7 @@ const IssueLogDetail = () => {
                       <Typography variant="subtitle2">Duration</Typography>
                     </Grid>
                     <Grid size={{ xs: 12, sm: 9, md: 10 }}>
-                      <Typography variant="body2">{formatDuration(row)}</Typography>
+                      <Typography variant="body2">{formatDuration(row.rowData)}</Typography>
                     </Grid>
                   </>
                 ) : null}

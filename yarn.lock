@@ -7128,7 +7128,7 @@ __metadata:
 
 "portal-core-components@github:NEONScience/portal-core-components#next":
   version: 3.0.0-next
-  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=f4a8cc964cfaf2b4931af3e70503b5084af90565"
+  resolution: "portal-core-components@https://github.com/NEONScience/portal-core-components.git#commit=5beb658d2fc86cee39c44782b00748c28aec7af3"
   dependencies:
     "@bokeh/bokehjs": "npm:^3.9.2"
     "@emotion/cache": "npm:^11.14.0"
@@ -7202,7 +7202,7 @@ __metadata:
       optional: true
     prettier:
       optional: true
-  checksum: 10c0/8e7fcc0cc16e74694b8a0ccd09945f53dbf2dfdb35700be4b97d95382f3145623da61bc0dc1e1b1220940ce7f1610f3e8e51a2ac25ccc7b1fae9b4d6dde417a6
+  checksum: 10c0/a670a5a398f79256f6a6ed22dee236de70c7d2247a52d4bdd6d6b88247010adfd0b634c651f5c10c7d826dd8448a0d3db795464246d8fbed154789b1e2513059
   languageName: node
   linkType: hard
 

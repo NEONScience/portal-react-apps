@@ -16,6 +16,7 @@ import {
 } from "./TreeWithParentsRenderer";
 import type {
   TreeNode,
+  StyledTreeNode,
   SampleView,
   TreeConfig,
   GraphData,
@@ -41,7 +42,7 @@ type RenderTreeProps = {
   parentSpineX: number;
   focusNode: TreeNode;
   focusRadius: number;
-  nodes: TreeNode[];
+  nodes: StyledTreeNode[];
   labelConfig: any;
   onClickNode?: (node: TreeNode) => void;
   nodeById: Map<string, TreeNode>;

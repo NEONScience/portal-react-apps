@@ -28,6 +28,7 @@
     "whatwg-fetch": "^3.6.20"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/lodash": "^4.17.25",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",

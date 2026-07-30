@@ -5,6 +5,7 @@ import {
 } from "./TreeWithParentsConstants";
 import type {
   TreeNode,
+  StyledTreeNode,
   LinkData,
 } from "./TreeWithParents.types";
 
@@ -69,7 +70,7 @@ type GraphLayerSelection = d3.Selection<
 
 type RenderNodesProps = {
   graphLayer: GraphLayerSelection;
-  nodes: TreeNode[];
+  nodes: StyledTreeNode[];
   labelConfig: any;
   onClickNode?: (node: TreeNode) => void;
 };
@@ -185,17 +186,17 @@ const renderNodeSymbols = ({
 }: RenderNodeSymbolsProps) => {
   nodeGroups
     .append("path")
-    .attr("d", (d: TreeNode) => {
+    .attr("d", (d: StyledTreeNode) => {
       const type =
         symbolMap[d.symbolType] ??
         d3.symbolCircle;
       return symbolGenerator
         .type(type)
-        .size(d.style!.symbolSize)();
+        .size(d.style.symbolSize)();
     })
-    .attr("fill", (d: TreeNode) => d.style!.fill)
-    .attr("stroke", (d: TreeNode) => d.style!.stroke)
-    .attr("stroke-width", (d: TreeNode) => d.style!.strokeWidth
+    .attr("fill", (d: StyledTreeNode) => d.style.fill)
+    .attr("stroke", (d: StyledTreeNode) => d.style.stroke)
+    .attr("stroke-width", (d: StyledTreeNode) => d.style.strokeWidth
     )
     .style("cursor", "pointer")
     .on("mousedown", (event: MouseEvent) => {

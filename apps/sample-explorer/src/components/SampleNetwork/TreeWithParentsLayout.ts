@@ -1,8 +1,6 @@
 import type {
   TreeNode,
-  // TreeNode,
-  // PositionedTreeNode,
-  // RenderTreeNode,
+  StyledTreeNode,
   NodeStyleOverrides,
   SampleView,
   GraphData,
@@ -25,15 +23,20 @@ type BuildConfigProps = {
 };
 
 type ClassifyPreviousNodesProps = {
-  previousNodes: TreeNode[];
+  previousNodes: StyledTreeNode[];
   currentSampleView?: SampleView;
 };
 
+type ClassifyPreviousNodesResult = {
+  previousParentNodes: StyledTreeNode[];
+  previousChildNodes: StyledTreeNode[];
+};
+
 type PrepareTreeDataProps = {
-  focusNodes: TreeNode[];
-  previousNodes: TreeNode[];
-  parentNodes: TreeNode[];
-  childNodes: TreeNode[];
+  focusNodes: StyledTreeNode[];
+  previousNodes: StyledTreeNode[];
+  parentNodes: StyledTreeNode[];
+  childNodes: StyledTreeNode[];
   sampleViews?: SampleView[];
   labelFont: string;
 };
@@ -128,9 +131,9 @@ const DEFAULT_SYMBOL_SIZE = 200;
 const classifyPreviousNodes = ({
   previousNodes,
   currentSampleView,
-}: ClassifyPreviousNodesProps) => {
-const previousParentNodes: TreeNode[] = [];
-const previousChildNodes: TreeNode[] = [];
+}: ClassifyPreviousNodesProps): ClassifyPreviousNodesResult => {
+const previousParentNodes: StyledTreeNode[] = [];
+const previousChildNodes: StyledTreeNode[] = [];
 
   if (!currentSampleView) {
     return {
@@ -234,9 +237,9 @@ const getParentBounds = (parentNodes: TreeNode[]) => {
   };
 };
 
-const getFocusNodeRadius = (focusNode: TreeNode) => {
+const getFocusNodeRadius = (focusNode: StyledTreeNode) => {
   return Math.sqrt(
-    focusNode.style!.symbolSize / Math.PI
+    focusNode.style.symbolSize / Math.PI
   );
 };
 
@@ -244,15 +247,15 @@ export const buildGraphData = ({
   data,
   nodeStyles,
 }: BuildGraphDataProps) => {
-  const nodes: TreeNode[] = [];
-  const nodeById = new Map<string, TreeNode>();
-  const focusNodes: TreeNode[] = [];
-  const previousNodes: TreeNode[] = [];
-  const parentNodes: TreeNode[] = [];
-  const childNodes: TreeNode[] = [];
+  const nodes: StyledTreeNode[] = [];
+  const nodeById = new Map<string, StyledTreeNode>();
+  const focusNodes: StyledTreeNode[] = [];
+  const previousNodes: StyledTreeNode[] = [];
+  const parentNodes: StyledTreeNode[] = [];
+  const childNodes: StyledTreeNode[] = [];
   // Clone incoming redux nodes and precompute styles
   data.nodes.forEach(node => {
-    const styledNode: TreeNode = {
+    const styledNode: StyledTreeNode = {
       ...node,
       style: getNodeStyle(
         node,

@@ -61,9 +61,9 @@ export type TreeNode = {
 //   previousRelationship?: string;
 // };
 
-// export type StyledTreeNode = TreeNode & {
-//   style: NodeStyle;
-// };
+export type StyledTreeNode = TreeNode & {
+  style: NodeStyle;
+};
 
 // export type PositionedTreeNode = StyledTreeNode & {
 //   x: number;

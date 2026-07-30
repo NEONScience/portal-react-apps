@@ -3,6 +3,91 @@ import {
   NODE_TYPES,
   PREVIOUS_RELATIONSHIPS
 } from "./TreeWithParentsConstants";
+import type {
+  TreeNode,
+  LinkData,
+} from "./TreeWithParents.types";
+
+type BuildParentLinkPathProps = {
+  sourceNode: TreeNode;
+  parentSpineX: number;
+  parentLabelToLineGap: number;
+};
+
+type BuildLinkPathProps = {
+  sourceNode: TreeNode;
+  targetNode: TreeNode;
+  parentSpineX: number;
+  labelPadding: number;
+  parentLabelToLineGap: number;
+};
+
+type RenderNodeSymbolsProps = {
+  nodeGroups: any;
+  symbolGenerator: any;
+  onClickNode?: (node: TreeNode) => void;
+};
+
+type RenderNodeLabelsProps = {
+  nodeGroups: any;
+  labelConfig: any;
+};
+
+type CreateGraphLayersProps = {
+  container: d3.Selection<
+    HTMLDivElement,
+    unknown,
+    null,
+    undefined
+  >;
+  svgHeight: number;
+  config: any;
+};
+
+type LinkLayerSelection = d3.Selection<
+  SVGGElement,
+  unknown,
+  null,
+  undefined
+>;
+
+type RenderParentSpineProps = {
+  linkLayer: LinkLayerSelection;
+  firstParent: TreeNode | null;
+  parentSpineX: number;
+  parentSpineBottomY: number;
+  focusNode: TreeNode;
+  focusRadius: number;
+};
+
+type GraphLayerSelection = d3.Selection<
+  SVGGElement,
+  unknown,
+  null,
+  undefined
+>;
+
+type RenderNodesProps = {
+  graphLayer: GraphLayerSelection;
+  nodes: TreeNode[];
+  labelConfig: any;
+  onClickNode?: (node: TreeNode) => void;
+};
+
+type LinkLayoutConfig = {
+  parentSpineX: number;
+  LABEL_PADDING: number;
+  PARENT_LABEL_TO_LINE_GAP: number;
+};
+
+type RenderLinksProps = {
+  linkLayer: LinkLayerSelection;
+  links: LinkData[];
+  nodeById: Map<string, TreeNode>;
+  childNodes: TreeNode[];
+  focusNode: TreeNode;
+  linkLayoutConfig: LinkLayoutConfig;
+};
 
 const symbolMap = Object.freeze({
   [NODE_TYPES.FOCUS]: d3.symbolCircle,
@@ -17,9 +102,9 @@ const buildParentLinkPath = ({
   sourceNode,
   parentSpineX,
   parentLabelToLineGap,
-}) => {
+}: BuildParentLinkPathProps) => {
   const startX =
-    (sourceNode.labelRightX ?? sourceNode.x) +
+    (sourceNode.labelRightX ?? sourceNode.x!) +
     parentLabelToLineGap;
   return `
     M${startX},${sourceNode.y}
@@ -31,14 +116,18 @@ const buildChildLinkPath = ({
   sourceNode,
   targetNode,
   labelPadding,
+}: {
+  sourceNode: TreeNode;
+  targetNode: TreeNode;
+  labelPadding: number;
 }) => {
   const endX =
     targetNode.symbolType === NODE_TYPES.PREVIOUS
-      ? targetNode.x - labelPadding
-      : targetNode.x;
+      ? targetNode.x! - labelPadding
+      : targetNode.x!;
   return `
-    M${sourceNode.x},${targetNode.y}
-    L${endX},${targetNode.y}
+    M${sourceNode.x!},${targetNode.y!}
+    L${endX},${targetNode.y!}
   `;
 };
 
@@ -48,7 +137,7 @@ const buildLinkPath = ({
   parentSpineX,
   labelPadding,
   parentLabelToLineGap,
-}) => {
+}: BuildLinkPathProps) => {
   let s = sourceNode;
   let t = targetNode;
   if (
@@ -93,28 +182,26 @@ const renderNodeSymbols = ({
   nodeGroups,
   symbolGenerator,
   onClickNode,
-}) => {
+}: RenderNodeSymbolsProps) => {
   nodeGroups
     .append("path")
-    .attr("d", d => {
+    .attr("d", (d: TreeNode) => {
       const type =
         symbolMap[d.symbolType] ??
         d3.symbolCircle;
       return symbolGenerator
         .type(type)
-        .size(d.style.symbolSize)();
+        .size(d.style!.symbolSize)();
     })
-    .attr("fill", d => d.style.fill)
-    .attr("stroke", d => d.style.stroke)
-    .attr(
-      "stroke-width",
-      d => d.style.strokeWidth
+    .attr("fill", (d: TreeNode) => d.style!.fill)
+    .attr("stroke", (d: TreeNode) => d.style!.stroke)
+    .attr("stroke-width", (d: TreeNode) => d.style!.strokeWidth
     )
     .style("cursor", "pointer")
-    .on("mousedown", event => {
+    .on("mousedown", (event: MouseEvent) => {
       event.stopPropagation();
     })
-    .on("click", (event, d) => {
+    .on("click", (event: MouseEvent, d: TreeNode) => {
       event.stopPropagation();
       if (onClickNode) {
         onClickNode(d);
@@ -125,7 +212,7 @@ const renderNodeSymbols = ({
 const renderNodeLabels = ({
   nodeGroups,
   labelConfig,
-}) => {
+}: RenderNodeLabelsProps) => {
   const {
     LABEL_PADDING,
     LABEL_VERTICAL_OFFSET,
@@ -135,20 +222,23 @@ const renderNodeLabels = ({
   const textLabels = nodeGroups
     .append("text")
     .attr("text-anchor", "start")
-    .attr("x", function () {
-      const bbox = d3
-        .select(this.parentNode)
+    .attr("x", function (
+      this: SVGTextElement
+    ) {
+      const path = d3
+        .select(this.parentNode as SVGGElement)
         .select("path")
-        .node()
-        .getBBox();
+        .node() as SVGGraphicsElement;
+      const bbox = path.getBBox();
       return (
         bbox.x +
         bbox.width +
         LABEL_PADDING
       );
     })
+
     .attr("dy", LABEL_VERTICAL_OFFSET)
-    .text(d => d.sampleName);
+    .text((d: TreeNode) => d.sampleName ?? "")
   textLabels
     .attr(
       "font-size",
@@ -160,32 +250,34 @@ const renderNodeLabels = ({
     );
 };
 
-const cacheLabelPositions = nodeGroups => {
-  nodeGroups.each(function (d) {
+const cacheLabelPositions = (nodeGroups: any) => {
+  nodeGroups.each(function (
+    this: SVGGElement,
+    d: TreeNode
+  ) {
     const textElement = d3
       .select(this)
       .select("text")
-      .node();
+      .node() as SVGGraphicsElement | null;
     if (textElement) {
       const textBounds =
         textElement.getBBox();
-      // Used for parent link positioning.
       d.labelRightX =
-        d.x +
+        d.x! +
         textBounds.x +
         textBounds.width;
     }
   });
 };
 
-export const getGraphContainer = element =>
+export const getGraphContainer = (element: HTMLDivElement | null) =>
   d3.select(element);
 
 export const createGraphLayers = ({
   container,
   svgHeight,
   config,
-}) => {
+}: CreateGraphLayersProps) => {
   const linkConfig = config?.link ?? {};
   const svg = container
     .append("svg")
@@ -217,7 +309,7 @@ export const renderParentSpine = ({
   parentSpineBottomY,
   focusNode,
   focusRadius,
-}) => {
+}: RenderParentSpineProps) => {
   if (!firstParent) {
     return;
   }
@@ -236,7 +328,7 @@ export const renderParentSpine = ({
       "d",
       `
         M${parentSpineX},${parentSpineBottomY}
-        L${parentSpineX},${focusNode.y - focusRadius}
+        L${parentSpineX},${focusNode.y! - focusRadius}
       `
     );
 };
@@ -246,7 +338,7 @@ export const renderNodes = ({
   nodes,
   labelConfig,
   onClickNode,
-}) => {
+}: RenderNodesProps) => {
   const symbolGenerator = d3.symbol();
   const nodeGroups = graphLayer
     .append("g")
@@ -255,7 +347,7 @@ export const renderNodes = ({
     .join("g")
     .attr(
       "transform",
-      d => `translate(${d.x},${d.y})`
+      (d: TreeNode) => `translate(${d.x},${d.y})`
     );
   renderNodeSymbols({
     nodeGroups,
@@ -276,7 +368,7 @@ export const renderLinks = ({
   childNodes,
   focusNode,
   linkLayoutConfig,
-}) => {
+}: RenderLinksProps) => {
   const {
     parentSpineX,
     LABEL_PADDING,
@@ -287,8 +379,8 @@ export const renderLinks = ({
   const spineEndY =
     childNodes.length > 0
       ? childNodes.reduce((a, b) =>
-          a.y > b.y ? a : b
-        ).y
+          a.y! > b.y! ? a : b
+        ).y!
       : spineStartY;
   if (childNodes.length > 0) {
     linkLayer
@@ -306,7 +398,7 @@ export const renderLinks = ({
     .data(links)
     .join("path")
     .attr("class", "link")
-    .attr("d", d => {
+    .attr("d", (d: LinkData) => {
       const sourceNode = nodeById.get(d.source);
       const targetNode = nodeById.get(d.target);
       if (!sourceNode || !targetNode) {

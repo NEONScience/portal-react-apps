@@ -14,6 +14,44 @@ import {
   renderLinks,
   getGraphContainer,
 } from "./TreeWithParentsRenderer";
+import type {
+  TreeNode,
+  SampleView,
+  TreeConfig,
+  GraphData,
+  LinkData,
+} from "./TreeWithParents.types";
+
+type TreeWithParentsProps = {
+  data?: GraphData;
+  visitedSamples?: {
+    sampleViews?: SampleView[];
+  };
+  config?: TreeConfig;
+  containerHeight?: number;
+  onClickNode?: (node: TreeNode) => void;
+};
+
+type RenderTreeProps = {
+  container: any;
+  svgHeight: number;
+  config: any;
+  firstParent: TreeNode | null;
+  parentSpineBottomY: number;
+  parentSpineX: number;
+  focusNode: TreeNode;
+  focusRadius: number;
+  nodes: TreeNode[];
+  labelConfig: any;
+  onClickNode?: (node: TreeNode) => void;
+  nodeById: Map<string, TreeNode>;
+  childNodes: TreeNode[];
+  links: LinkData[];
+  layoutConfig: any;
+};
+
+
+
 
 const renderTree = ({
   container,
@@ -31,7 +69,7 @@ const renderTree = ({
   childNodes,
   links,
   layoutConfig,
-}) => {
+}: RenderTreeProps) => {
   const {
     graphLayer,
     linkLayer,
@@ -71,14 +109,16 @@ const renderTree = ({
   });
 };
 
+
+
 const TreeWithParents = ({
   data = { nodes: [], links: [] },
   visitedSamples,
   config = {},
   containerHeight = 0,
   onClickNode,
-}) => {
-  const ref = useRef(null);
+}: TreeWithParentsProps) => {
+  const ref = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
     const container = getGraphContainer(ref.current);
     const {

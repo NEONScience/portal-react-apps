@@ -1,3 +1,12 @@
+import type {
+  TreeNode,
+  // TreeNode,
+  // PositionedTreeNode,
+  // RenderTreeNode,
+  NodeStyleOverrides,
+  SampleView,
+  GraphData,
+} from "./TreeWithParents.types";
 import {
   NODE_TYPES,
   PREVIOUS_RELATIONSHIPS,
@@ -7,7 +16,46 @@ import {
   LAYOUT_DEFAULTS,
 } from "./TreeWithParentsConstants";
 
-export const buildConfig = config => {
+
+type BuildConfigProps = {
+  layout?: any;
+  spacing?: any;
+  labels?: any;
+  svg?: any;
+};
+
+type ClassifyPreviousNodesProps = {
+  previousNodes: TreeNode[];
+  currentSampleView?: SampleView;
+};
+
+type PrepareTreeDataProps = {
+  focusNodes: TreeNode[];
+  previousNodes: TreeNode[];
+  parentNodes: TreeNode[];
+  childNodes: TreeNode[];
+  sampleViews?: SampleView[];
+  labelFont: string;
+};
+
+type BuildGraphDataProps = {
+  data: GraphData;
+  nodeStyles?: Partial<NodeStyleOverrides>;
+};
+
+type ComputeLayoutProps = {
+  parentNodes: TreeNode[];
+  childNodes: TreeNode[];
+  focusNode: TreeNode;
+  longestParentLabelWidth: number;
+  containerHeight: number;
+  layoutConfig: any;
+};
+
+
+export const buildConfig = (
+  config: BuildConfigProps
+) => {
   const layout = config.layout ?? {};
   const spacing = config.spacing ?? {};
   const labels = config.labels ?? {};
@@ -67,12 +115,12 @@ export const buildConfig = config => {
   };
 };
 
-const DEFAULT_NODE_COLORS = Object.freeze({
+const DEFAULT_NODE_COLORS = {
   [NODE_TYPES.FOCUS]: "#002c77",
   [NODE_TYPES.PARENT]: "#558807",
   [NODE_TYPES.PREVIOUS]: "#f0ab00",
   [NODE_TYPES.CHILD]: "#5ca6e3",
-});
+} as const;
 const DEFAULT_NODE_STROKE_WIDTH = 1.5;
 const DEFAULT_SYMBOL_SIZE = 200;
 
@@ -80,9 +128,9 @@ const DEFAULT_SYMBOL_SIZE = 200;
 const classifyPreviousNodes = ({
   previousNodes,
   currentSampleView,
-}) => {
-  const previousParentNodes = [];
-  const previousChildNodes = [];
+}: ClassifyPreviousNodesProps) => {
+const previousParentNodes: TreeNode[] = [];
+const previousChildNodes: TreeNode[] = [];
 
   if (!currentSampleView) {
     return {
@@ -93,13 +141,11 @@ const classifyPreviousNodes = ({
   previousNodes.forEach(previousNode => {
     const isParent =
       currentSampleView.parentSampleIdentifiers?.some(
-        parent =>
-          parent.sampleUuid === previousNode.id
+        parent => parent.sampleUuid === previousNode.id
       );
     const isChild =
       currentSampleView.childSampleIdentifiers?.some(
-        child =>
-          child.sampleUuid === previousNode.id
+        child => child.sampleUuid === previousNode.id
       );
     if (isParent) {
       previousNode.previousRelationship =
@@ -119,8 +165,8 @@ const classifyPreviousNodes = ({
 };
 
 export const getNodeStyle = (
-  node,
-  nodeStyles = {}
+  node: TreeNode,
+  nodeStyles: Partial<NodeStyleOverrides> = {}
 ) => {
   const defaultColor = DEFAULT_NODE_COLORS[node.symbolType];
   const nodeColor = node.color;
@@ -145,15 +191,18 @@ export const getNodeStyle = (
 };
 
 const textMeasureCanvas = document.createElement("canvas");
-const measureTextWidth = (text, font) => {
-  const context = textMeasureCanvas.getContext("2d");
+const measureTextWidth = (
+  text: string,
+  font: string
+) => {
+  const context = textMeasureCanvas.getContext("2d")!;
   context.font = font;
   return context.measureText(text).width;
 };
 
 const getLongestParentLabelWidth = (
-  parentNodes,
-  labelFont
+  parentNodes: TreeNode[],
+  labelFont: string
 ) => {
   if (parentNodes.length === 0) {
     return 0;
@@ -168,7 +217,7 @@ const getLongestParentLabelWidth = (
   );
 };
 
-const getParentBounds = parentNodes => {
+const getParentBounds = (parentNodes: TreeNode[]) => {
   if (parentNodes.length === 0) {
     return {
       firstParent: null,
@@ -177,32 +226,33 @@ const getParentBounds = parentNodes => {
   }
   return {
     firstParent: parentNodes.reduce((a, b) =>
-      a.y < b.y ? a : b
+      a.y! < b.y! ? a : b
     ),
     lastParent: parentNodes.reduce((a, b) =>
-      a.y > b.y ? a : b
+      a.y! > b.y! ? a : b
     ),
   };
 };
 
-const getFocusNodeRadius = focusNode =>
-  Math.sqrt(
-    focusNode.style.symbolSize / Math.PI
+const getFocusNodeRadius = (focusNode: TreeNode) => {
+  return Math.sqrt(
+    focusNode.style!.symbolSize / Math.PI
   );
+};
 
 export const buildGraphData = ({
   data,
   nodeStyles,
-}) => {
-  const nodes = [];
-  const nodeById = new Map();
-  const focusNodes = [];
-  const previousNodes = [];
-  const parentNodes = [];
-  const childNodes = [];
+}: BuildGraphDataProps) => {
+  const nodes: TreeNode[] = [];
+  const nodeById = new Map<string, TreeNode>();
+  const focusNodes: TreeNode[] = [];
+  const previousNodes: TreeNode[] = [];
+  const parentNodes: TreeNode[] = [];
+  const childNodes: TreeNode[] = [];
   // Clone incoming redux nodes and precompute styles
   data.nodes.forEach(node => {
-    const styledNode = {
+    const styledNode: TreeNode = {
       ...node,
       style: getNodeStyle(
         node,
@@ -249,12 +299,11 @@ export const prepareTreeData = ({
   childNodes,
   sampleViews,
   labelFont,
-}) => {
-  const focusNode = focusNodes[0];
+}: PrepareTreeDataProps) => {
+  const focusNode = focusNodes[0]!;
   const currentSampleView =
     sampleViews?.find(
-      sample =>
-        sample.sampleUuid === focusNode.id
+      sample => sample.sampleUuid === focusNode.id
     );
   const {
     previousParentNodes,
@@ -291,7 +340,7 @@ export const computeLayout = ({
   longestParentLabelWidth,
   containerHeight,
   layoutConfig,
-}) => {
+}: ComputeLayoutProps) => {
   const {
     LEFT_MARGIN,
     TOP_MARGIN,
@@ -320,7 +369,7 @@ export const computeLayout = ({
     LABEL_PADDING +
     PARENT_LABEL_TO_LINE_GAP +
     PARENT_CONNECTOR_LENGTH;
-  const parentSpineX = focusNode.x;
+  const parentSpineX = focusNode.x!;
   focusNode.y =
     parentNodes.length === 0
       ? TOP_MARGIN
@@ -328,13 +377,13 @@ export const computeLayout = ({
   childNodes.forEach((n, i) => {
     n.x = focusNode.x + COLUMN_SPACING;
     n.y =
-      focusNode.y +
+      focusNode.y! +
       ((i + 1) * ROW_SPACING);
   });
   const maxNodeY =
     childNodes.length > 0
       ? Math.max(
-          ...childNodes.map(n => n.y)
+          ...childNodes.map(n => n.y!)
         )
       : focusNode.y;
   const svgHeight = Math.max(

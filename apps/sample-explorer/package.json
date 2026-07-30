@@ -49,6 +49,7 @@
     "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/sample-explorer/public --workdir=/app/apps/sample-explorer portal-react-apps/sample-explorer:latest-builder-base npm run build:sync-assets"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "@types/node": "26.1.1",
     "commander": "^14.0.3",
     "cross-env": "^10.1.0",

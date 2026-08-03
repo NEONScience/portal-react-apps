@@ -26,7 +26,6 @@ import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
 import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
 import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
-import Theme from 'portal-core-components/lib/components/Theme';
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import RouteService from 'portal-core-components/lib/service/RouteService';
 import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
@@ -56,14 +55,14 @@ const useStyles = makeStyles()((theme) => ({
     cursor: 'help',
   },
   releaseChipIcon: {
-    color: Theme.colors.GREEN[800],
+    color: theme.colors.GREEN[800],
     fontSize: '1em',
     marginRight: theme.spacing(0.75),
   },
   releaseChip: {
-    color: Theme.colors.LIGHT_BLUE[800],
-    border: `1px solid ${Theme.colors.LIGHT_BLUE[300]}`,
-    backgroundColor: Theme.colors.LIGHT_BLUE[50],
+    color: theme.colors.LIGHT_BLUE[800],
+    border: `1px solid ${theme.colors.LIGHT_BLUE[300]}`,
+    backgroundColor: theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
     cursor: 'help',
   },
@@ -96,7 +95,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const DataProduct = React.memo((props) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const { productCode, highestOrderDownloadSubject } = props;
 
@@ -183,7 +182,7 @@ const DataProduct = React.memo((props) => {
   const delineateAvaRelease = ReleaseService.determineDelineateAvaRelease(currentRelease);
 
   const code = (
-    <div className={classes.startFlex} style={{ margin: Theme.spacing(1.5, 0) }}>
+    <div className={classes.startFlex} style={{ margin: theme.spacing(1.5, 0) }}>
       <Tooltip
         title="The unique identifier for this data product independent of release"
       >
@@ -197,7 +196,7 @@ const DataProduct = React.memo((props) => {
         <ReleaseChip
           chipLabel={`Release: ${currentRelease}`}
           chipStyle={{
-            marginLeft: Theme.spacing(1.5),
+            marginLeft: theme.spacing(1.5),
           }}
           classes={{
             chip: classes.releaseChip,
@@ -222,7 +221,7 @@ const DataProduct = React.memo((props) => {
     && truncatedDescription !== productDescription
     && productDescription.length > 325;
   const description = (
-    <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
+    <Typography variant="body2" style={{ marginTop: theme.spacing(1) }}>
       {showTruncatedDescription ? (
         <>
           {`${truncatedDescription}… `}
@@ -263,12 +262,13 @@ const DataProduct = React.memo((props) => {
         productName: bundleParentProduct.productName,
       }));
       detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        theme,
         dataProductLikes,
         currentRelease,
       );
     }
     return (
-      <div style={{ marginBottom: Theme.spacing(2) }}>
+      <div style={{ marginBottom: theme.spacing(2) }}>
         <DataProductBundleCard
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
@@ -431,7 +431,7 @@ const DataProduct = React.memo((props) => {
   );
 
   const themeIcons = (themes || []).sort().map((dataTheme) => (
-    <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
+    <div key={dataTheme} style={{ marginRight: theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
@@ -439,7 +439,7 @@ const DataProduct = React.memo((props) => {
   return (
     <Card className={classes.productCard}>
       <CardContent data-selenium={`browse-data-products-page.product-card.${productCode}`}>
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(2) }}>
           <Grid
             size={{
               xs: 12,
@@ -467,7 +467,7 @@ const DataProduct = React.memo((props) => {
 
         {renderBundleInfo()}
 
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(1) }}>
           {!timeRange ? null : (
             <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>

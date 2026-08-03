@@ -10,6 +10,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
 
 import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
@@ -19,7 +20,7 @@ import { Parser } from 'json2csv';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+
 import DataGrid from '../DataGrid/DataGrid';
 
 const COLUMN_DEFS = [
@@ -135,6 +136,7 @@ const fetchFields = (dispatch) => {
 };
 
 const SampleSmsFieldsDialog = () => {
+  const theme = useTheme();
   const initialState = {
     dialogOpen: false,
     fields: [],
@@ -188,7 +190,7 @@ const SampleSmsFieldsDialog = () => {
         <Grid size={{ xs: 12 }}>
           <Alert
             severity="error"
-            style={{ margin: Theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
             data-selenium="download-sms-fields-dialog.error"
           >
             <AlertTitle>Error</AlertTitle>
@@ -199,9 +201,9 @@ const SampleSmsFieldsDialog = () => {
     );
   };
   return (
-    <div style={{ margin: Theme.spacing(0, 3, 3, 3) }}>
+    <div style={{ margin: theme.spacing(0, 3, 3, 3) }}>
       <Button
-        style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+        style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
         variant="outlined"
         color="primary"
         data-selenium="download-sms-fields-list-button"
@@ -211,7 +213,7 @@ const SampleSmsFieldsDialog = () => {
         }}
       >
         Download SMS Fields
-        <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+        <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
       </Button>
       <Dialog
         fullWidth
@@ -237,7 +239,7 @@ const SampleSmsFieldsDialog = () => {
         </DialogContent>
         <DialogActions>
           <Button
-            style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
             color="primary"
             variant="outlined"
             onClick={() => {
@@ -245,10 +247,10 @@ const SampleSmsFieldsDialog = () => {
             }}
           >
             Close
-            <CancelIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <CancelIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
           <Button
-            style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
             color="primary"
             variant="contained"
             disabled={state.isErrorState || (state.fields.length <= 0)}
@@ -256,7 +258,7 @@ const SampleSmsFieldsDialog = () => {
             data-selenium="download-sms-fields-dialog-button"
           >
             Download
-            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
         </DialogActions>
       </Dialog>

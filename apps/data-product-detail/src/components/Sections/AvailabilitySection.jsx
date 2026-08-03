@@ -12,7 +12,6 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
@@ -53,7 +52,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const AvailabilitySection = (props) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state] = DataProductContext.useDataProductContextState();
 
@@ -154,12 +153,13 @@ const AvailabilitySection = (props) => {
         productName: bundleParents[parentCode].productName,
       }));
       detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        theme,
         dataProductLikes,
         currentRelease,
       );
     }
     return (
-      <div style={{ marginBottom: Theme.spacing(4) }}>
+      <div style={{ marginBottom: theme.spacing(4) }}>
         <DataProductBundleCard
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
@@ -229,7 +229,7 @@ const AvailabilitySection = (props) => {
           </div>
           {downloadDataButton}
         </div>
-        <Divider style={{ margin: Theme.spacing(3, 0) }} />
+        <Divider style={{ margin: theme.spacing(3, 0) }} />
         {dataProductAva}
       </>
     );
@@ -283,7 +283,7 @@ const AvailabilitySection = (props) => {
         <ExternalHostInfo
           productCode={productData.productCode}
           siteCodes={availableSiteCodes}
-          style={{ marginTop: Theme.spacing(4) }}
+          style={{ marginTop: theme.spacing(4) }}
           data-selenium="data-product-page.section.availability.external-host-info"
         />
       </div>
@@ -295,7 +295,7 @@ const AvailabilitySection = (props) => {
       let externalAvailability = null;
       if (dataAvailable) {
         externalAvailability = (
-          <div style={{ marginBottom: Theme.spacing(4) }}>
+          <div style={{ marginBottom: theme.spacing(4) }}>
             <DataProductAvailability view="ungrouped" disableSelection delineateRelease />
           </div>
         );

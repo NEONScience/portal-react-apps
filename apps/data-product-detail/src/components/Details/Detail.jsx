@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -27,7 +26,7 @@ const defaultProps = {
 };
 
 const Detail = (inProps) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const props = resolveProps(defaultProps, inProps);
   const {
     title,
@@ -49,7 +48,7 @@ const Detail = (inProps) => {
     ) : children;
 
   const titleStyle = {
-    marginBottom: Theme.spacing(tooltip ? 0.5 : 1),
+    marginBottom: theme.spacing(tooltip ? 0.5 : 1),
   };
 
   return (

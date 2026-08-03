@@ -33,7 +33,6 @@ import LinkIcon from '@mui/icons-material/Link';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -108,7 +107,7 @@ const useStyles = makeStyles()((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },
@@ -118,7 +117,7 @@ const useStyles = makeStyles()((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },
@@ -357,7 +356,7 @@ const renderDataFileRow = (file, uuid, classes) => {
 
 const DatasetDetails = (props) => {
   const { uuid } = props;
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state] = usePrototypeContextState();
   const {
@@ -424,7 +423,7 @@ const DatasetDetails = (props) => {
 
   // Theme Icons
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
-    <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
+    <div key={dataTheme} style={{ marginRight: theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
@@ -601,9 +600,9 @@ const DatasetDetails = (props) => {
         )}
       </Button>
       {(!allowDownload
-        ? <div style={{ margin: Theme.spacing(1, 0, 2, 0) }} />
+        ? <div style={{ margin: theme.spacing(1, 0, 2, 0) }} />
         : (
-          <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
+          <div style={{ margin: theme.spacing(1, 0, 2, 0) }}>
             <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
               {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
             </Typography>

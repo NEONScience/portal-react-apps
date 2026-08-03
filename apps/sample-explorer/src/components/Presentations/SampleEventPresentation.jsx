@@ -3,8 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
-
-import Theme from 'portal-core-components/lib/components/Theme';
+import { useTheme } from '@mui/material/styles';
 
 import SampleInfoPresentation from './SampleInfoPresentation';
 import DownloadSamplesPresentation from './DownloadSamplesPresentation';
@@ -13,8 +12,9 @@ import SampleSmsFieldsDialog from './SampleSmsFieldsDialog';
 
 const SampleEventPresentation = (props) => {
   const { tableDefinition, tableData, sampleUuid } = props;
+  const theme = useTheme();
   return (
-    <div style={{ marginBottom: Theme.spacing(3) }} data-selenium="sample-events-section">
+    <div style={{ marginBottom: theme.spacing(3) }} data-selenium="sample-events-section">
       <Typography variant="h4" gutterBottom>
         Sample Events
       </Typography>
@@ -22,17 +22,17 @@ const SampleEventPresentation = (props) => {
         History of Sample Custody Events along with all Sample Management
         System (SMS) fields (taxon excepted) available for the focal sample tag.
       </Typography>
-      <div style={{ margin: Theme.spacing(3, 0) }}>
+      <div style={{ margin: theme.spacing(3, 0) }}>
         <SampleInfoPresentation {...props} />
       </div>
-      <div style={{ marginBottom: Theme.spacing(3) }}>
+      <div style={{ marginBottom: theme.spacing(3) }}>
         <DataGrid
           columnDefs={tableDefinition}
           rowData={tableData}
           uuid={sampleUuid}
         />
       </div>
-      <div style={{ marginBottom: Theme.spacing(3), display: 'flex', flexWrap: 'wrap' }}>
+      <div style={{ marginBottom: theme.spacing(3), display: 'flex', flexWrap: 'wrap' }}>
         <DownloadSamplesPresentation {...props} />
         <SampleSmsFieldsDialog {...props} />
       </div>

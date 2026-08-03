@@ -8,7 +8,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import moment from 'moment';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
@@ -21,8 +20,8 @@ const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
 const useStyles = makeStyles()((theme) => ({
   slider: {
     width: `calc(100% - ${theme.spacing(6)})`,
-    marginLeft: Theme.spacing(3),
-    marginBottom: Theme.spacing(5.5),
+    marginLeft: theme.spacing(3),
+    marginBottom: theme.spacing(5.5),
   },
 }));
 
@@ -38,7 +37,7 @@ const dateRangeReducer = (state, action) => {
 };
 
 const FilterDateRange = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -211,7 +210,7 @@ const FilterDateRange = () => {
             textField: {
               size: 'small',
               style: {
-                marginBottom: Theme.spacing(2),
+                marginBottom: theme.spacing(2),
                 width: '100%',
               },
             },
@@ -233,7 +232,7 @@ const FilterDateRange = () => {
             textField: {
               size: 'small',
               style: {
-                marginBottom: Theme.spacing(2),
+                marginBottom: theme.spacing(2),
                 width: '100%',
               },
             },

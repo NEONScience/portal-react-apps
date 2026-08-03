@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import SampleNetwork from '../SampleNetwork/SampleNetwork';
@@ -31,11 +30,11 @@ const useStyles = makeStyles()((theme) => ({
 
 const SampleGraphPresentation = (props) => {
   const { onQueryClick, graphData } = props;
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
 
   return (
-    <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-graph-section">
+    <div style={{ marginBottom: theme.spacing(4) }} data-selenium="sample-graph-section">
       <Typography variant="h4" gutterBottom>
         Sample Graph
       </Typography>

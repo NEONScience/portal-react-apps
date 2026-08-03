@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import Theme from 'portal-core-components/lib/components/Theme';
 
 import { fetch as fetchPolyfill } from 'whatwg-fetch';
 import { getTaxonDownloadApiPath } from '../../api/taxon';
@@ -122,7 +121,7 @@ class Download extends Component {
         >
           {buttonLabel}
           {loading ? null : (
-            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <DownloadIcon fontSize="small" style={{ marginLeft: '4px' }} />
           )}
         </Button>
         <span ref={(message) => { this.message = message; }} style={messageStyle} />

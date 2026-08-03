@@ -2,7 +2,6 @@ import React from 'react';
 
 import Grid from '@mui/material/Grid';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import { getSkeleton } from '../renderUtil';
@@ -28,16 +27,16 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const DatasetDetailsSkeleton = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const getFileSkeleton = () => (
-    <div className={classes.startFlex} style={{ marginBottom: Theme.spacing(1.5) }}>
-      <div style={{ marginRight: Theme.spacing(2) }}>
-        {getSkeleton(48, 48, 0, false, 'rect')}
+    <div className={classes.startFlex} style={{ marginBottom: theme.spacing(1.5) }}>
+      <div style={{ marginRight: theme.spacing(2) }}>
+        {getSkeleton(theme, 48, 48, 0, false, 'rect')}
       </div>
       <div style={{ flexGrow: 1 }}>
-        {getSkeleton(18, [40, 65], 0.5)}
-        {getSkeleton(18, [70, 100], 0)}
+        {getSkeleton(theme, 18, [40, 65], 0.5)}
+        {getSkeleton(theme, 18, [70, 100], 0)}
       </div>
     </div>
   );
@@ -57,38 +56,38 @@ const DatasetDetailsSkeleton = () => {
           }}
         >
           <div className={classes.section}>
-            {getSkeleton(27, 240, 1.5, false)}
-            {getSkeleton(30, 300, 0, false, 'rect')}
+            {getSkeleton(theme, 27, 240, 1.5, false)}
+            {getSkeleton(theme, 30, 300, 0, false, 'rect')}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 120, 1.5, false)}
-            {getSkeleton(33, 340, 2, false, 'rect')}
-            {getSkeleton(23, 180, 1, false)}
+            {getSkeleton(theme, 27, 120, 1.5, false)}
+            {getSkeleton(theme, 33, 340, 2, false, 'rect')}
+            {getSkeleton(theme, 23, 180, 1, false)}
             {getFileSkeleton()}
             {getFileSkeleton()}
-            {getSkeleton(18, 100, 0)}
-            {getSkeleton(18, [30, 70], 0)}
+            {getSkeleton(theme, 18, 100, 0)}
+            {getSkeleton(theme, 18, [30, 70], 0)}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 220, 1.5, false)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, [40, 80])}
+            {getSkeleton(theme, 27, 220, 1.5, false)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, [40, 80])}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 220, 1.5, false)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, [40, 80])}
+            {getSkeleton(theme, 27, 220, 1.5, false)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, [40, 80])}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 200, 1.5, false)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, 100)}
-            {getSkeleton(18, [40, 80])}
+            {getSkeleton(theme, 27, 200, 1.5, false)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, 100)}
+            {getSkeleton(theme, 18, [40, 80])}
           </div>
         </Grid>
 
@@ -103,44 +102,44 @@ const DatasetDetailsSkeleton = () => {
           }}
         >
           <div className={classes.section}>
-            {getSkeleton(27, 140, 1.5, false)}
-            {getSkeleton(23, 80, 0, false)}
+            {getSkeleton(theme, 27, 140, 1.5, false)}
+            {getSkeleton(theme, 23, 80, 0, false)}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 120, 1.5, false)}
-            {getSkeleton(23, 180, 0, false)}
+            {getSkeleton(theme, 27, 120, 1.5, false)}
+            {getSkeleton(theme, 23, 180, 0, false)}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 150, 1.5, false)}
-            {getSkeleton(32, 32, 0, false, 'rect')}
+            {getSkeleton(theme, 27, 150, 1.5, false)}
+            {getSkeleton(theme, 32, 32, 0, false, 'rect')}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 160, 1.5, false)}
-            {getSkeleton(23, 80, 0)}
+            {getSkeleton(theme, 27, 160, 1.5, false)}
+            {getSkeleton(theme, 23, 80, 0)}
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 160, 1.5, false)}
+            {getSkeleton(theme, 27, 160, 1.5, false)}
             <div className={classes.keywordChips}>
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
             </div>
           </div>
           <div className={classes.section}>
-            {getSkeleton(27, 160, 1.5, false)}
-            <div style={{ margin: Theme.spacing(0, 0, 2, 1.5) }}>
-              {getSkeleton(18, 100, 0.5)}
-              {getSkeleton(18, 100, 0, false)}
+            {getSkeleton(theme, 27, 160, 1.5, false)}
+            <div style={{ margin: theme.spacing(0, 0, 2, 1.5) }}>
+              {getSkeleton(theme, 18, 100, 0.5)}
+              {getSkeleton(theme, 18, 100, 0, false)}
             </div>
-            <div style={{ margin: Theme.spacing(0, 0, 2, 1.5) }}>
-              {getSkeleton(18, 100, 0.5)}
-              {getSkeleton(18, 100, 0, false)}
+            <div style={{ margin: theme.spacing(0, 0, 2, 1.5) }}>
+              {getSkeleton(theme, 18, 100, 0.5)}
+              {getSkeleton(theme, 18, 100, 0, false)}
             </div>
           </div>
         </Grid>

@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import { COLORS } from 'portal-core-components/lib/components/Theme/Theme';
 import { Parser } from 'json2csv';
 
 import { QUERY_TYPE } from './queryUtil';
@@ -158,12 +158,12 @@ export const createEventTable = (sampleView, tableDefinition) => {
 
 export const GRAPH_COLORS = {
   NODES: {
-    FOCUS: Theme.colors.NEON_BLUE[700],
-    PARENT: Theme.colors.GREEN[600],
-    CHILD: Theme.colors.LIGHT_BLUE[300],
-    PREVIOUS: Theme.colors.GOLD[500],
+    FOCUS: COLORS.NEON_BLUE[700],
+    PARENT: COLORS.GREEN[600],
+    CHILD: COLORS.LIGHT_BLUE[300],
+    PREVIOUS: COLORS.GOLD[500],
   },
-  LINKS: Theme.colors.GREY[200],
+  LINKS: COLORS.GREY[200],
 };
 
 export const createSampleGraph = (sampleView, uuidBreadcrumbs) => {

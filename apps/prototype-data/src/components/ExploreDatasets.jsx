@@ -6,7 +6,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
@@ -39,7 +38,7 @@ const DEBOUNCE_MILLISECONDS = 100;
 const SCROLL_PADDING = 400;
 
 const ExploreDatasets = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const [state, dispatch] = usePrototypeContextState();
 
   const {
@@ -89,7 +88,7 @@ const ExploreDatasets = () => {
 
   return (
     <div>
-      <Grid container spacing={4} style={{ marginBottom: Theme.spacing(5) }}>
+      <Grid container spacing={4} style={{ marginBottom: theme.spacing(5) }}>
         <Grid size={{ xs: 12, sm: 6 }} className={classes.showingContainer}>
           <Typography variant="h5" component="h3" className={classes.showing}>{showing}</Typography>
         </Grid>
@@ -99,8 +98,8 @@ const ExploreDatasets = () => {
       </Grid>
       <div id="data-presentation">
         {datasetsOrder.length === 0 ? (
-          <div style={{ margin: Theme.spacing(5), textAlign: 'center' }}>
-            <Typography variant="h6" style={{ color: Theme.palette.grey[400] }}>
+          <div style={{ margin: theme.spacing(5), textAlign: 'center' }}>
+            <Typography variant="h6" style={{ color: theme.palette.grey[400] }}>
               Try a less restrictive combination of filters to see prototype datasets.
             </Typography>
           </div>

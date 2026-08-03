@@ -34,38 +34,38 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const SkeletonDataset = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   return (
     <Card className={classes.datasetCard}>
       <CardContent>
-        {getSkeleton(25, [60, 80], 2)}
+        {getSkeleton(theme, 25, [60, 80], 2)}
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, sm: 2 }}>
             <div className={classes.cardFirstColumnSection}>
-              {getSkeleton(22, 60, 1)}
-              {getSkeleton(18, 30, 0)}
+              {getSkeleton(theme, 22, 60, 1)}
+              {getSkeleton(theme, 18, 30, 0)}
             </div>
             <div className={classes.cardFirstColumnSection}>
-              {getSkeleton(22, 70, 1)}
-              {getSkeleton(32, 32, 0, false, 'rect')}
+              {getSkeleton(theme, 22, 70, 1)}
+              {getSkeleton(theme, 32, 32, 0, false, 'rect')}
             </div>
           </Grid>
           <Grid size={{ xs: 12, sm: 10 }}>
-            {getSkeleton(18, 100, 0.5)}
-            {getSkeleton(18, 100, 0.5)}
-            {getSkeleton(18, [30, 85], 3)}
-            {getSkeleton(22, 60, 1)}
+            {getSkeleton(theme, 18, 100, 0.5)}
+            {getSkeleton(theme, 18, 100, 0.5)}
+            {getSkeleton(theme, 18, [30, 85], 3)}
+            {getSkeleton(theme, 22, 60, 1)}
             <div className={classes.keywordChips}>
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
-              {getSkeleton(24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
+              {getSkeleton(theme, 24, [60, 170], 1, false, 'rect')}
             </div>
           </Grid>
         </Grid>
       </CardContent>
       <CardActions className={classes.actions}>
-        {getSkeleton(32, 235, 0, false, 'rect')}
+        {getSkeleton(theme, 32, 235, 0, false, 'rect')}
       </CardActions>
     </Card>
   );

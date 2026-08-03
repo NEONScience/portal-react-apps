@@ -14,8 +14,6 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import CopyIcon from '@mui/icons-material/Assignment';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
 import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
 import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
@@ -86,7 +84,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   multiBundleBlurbSubtext: {
     fontWeight: 400,
-    marginTop: Theme.spacing(1),
+    marginTop: theme.spacing(1),
   },
 }));
 

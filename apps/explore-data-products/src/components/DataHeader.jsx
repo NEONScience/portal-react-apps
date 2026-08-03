@@ -20,7 +20,6 @@ import ListIcon from '@mui/icons-material/List';
 import NoneIcon from '@mui/icons-material/NotInterested';
 import ClearIcon from '@mui/icons-material/Clear';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -103,7 +102,7 @@ const defaultProps = {
 
 const DataHeader = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const { skeleton } = props;
 
@@ -121,16 +120,17 @@ const DataHeader = (inProps) => {
   } = state;
   const products = getCurrentProductsByRelease(state);
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
   const visible = catalogSummaryVisible || !belowMd;
 
   const { states: statesJSON = {} } = neonContextState.data;
 
   const handleDownload = (ext, filtered) => {
     if (!filtered) {
-      downloadCatalog(products, productOrder, ext);
+      downloadCatalog(theme, products, productOrder, ext);
     } else {
       downloadCatalog(
+        theme,
         products,
         productOrder,
         ext,
@@ -213,7 +213,7 @@ const DataHeader = (inProps) => {
   };
 
   let catalogSummaryContents = (
-    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 2.5) }}>
+    <Grid container spacing={3} style={{ marginBottom: theme.spacing(belowMd ? -3 : 2.5) }}>
       <Grid size={{ xs: 12, sm: 6 }}>
         <div className={classes.catalogContainer}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
@@ -386,15 +386,15 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
 
   if (skeleton) {
     catalogSummaryContents = (
-      <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
+      <Grid container spacing={3} style={{ marginBottom: theme.spacing(1) }}>
         <Grid size={{ xs: 12, sm: 6 }}>
           <div className={classes.catalogContainer}>
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               All Products
             </Typography>
-            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="70%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
           </div>
         </Grid>
         <Grid size={{ xs: 12, sm: 6 }}>
@@ -402,9 +402,9 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               Filtered Products
             </Typography>
-            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="70%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
           </div>
         </Grid>
       </Grid>

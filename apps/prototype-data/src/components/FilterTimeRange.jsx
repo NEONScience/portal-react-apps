@@ -9,7 +9,6 @@ import Slider from '@mui/material/Slider';
 
 import moment from 'moment';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
@@ -24,8 +23,8 @@ const getYearMoment = (year) => moment(`${year}-06-01`);
 const useStyles = makeStyles()((theme) => ({
   slider: {
     width: `calc(100% - ${theme.spacing(6)})`,
-    marginLeft: Theme.spacing(3),
-    marginBottom: Theme.spacing(5.5),
+    marginLeft: theme.spacing(3),
+    marginBottom: theme.spacing(5.5),
   },
 }));
 

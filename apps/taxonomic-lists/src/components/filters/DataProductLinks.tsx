@@ -5,15 +5,14 @@ import Link from '@mui/material/Link';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
-import Theme from 'portal-core-components/lib/components/Theme';
 
 /**
  * Style the component using the imported theme
  */
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   linkList: {
     listStyleType: 'none',
-    padding: Theme.spacing(3),
+    padding: theme.spacing(3),
   },
 }));
 

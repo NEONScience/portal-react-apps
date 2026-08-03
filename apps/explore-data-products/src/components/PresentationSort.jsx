@@ -22,7 +22,6 @@ import AscIcon from '@mui/icons-material/ArrowDownward';
 import DescIcon from '@mui/icons-material/ArrowUpward';
 import ClearIcon from '@mui/icons-material/Clear';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -97,7 +96,7 @@ const PresentationSort = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -110,14 +109,14 @@ const PresentationSort = (inProps) => {
     currentProducts: { order: productOrder },
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
-  const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const belowSm = useMediaQuery(theme.breakpoints.only('xs'));
   const visible = sortVisible || !belowMd;
 
   const collapsedContentDivStyle = {
     display: 'flex',
     flexDirection: belowSm ? 'column' : 'row',
-    marginTop: Theme.spacing(2),
+    marginTop: theme.spacing(2),
   };
 
   const filtered = filtersApplied.length ? 'filtered' : 'total';
@@ -141,7 +140,7 @@ const PresentationSort = (inProps) => {
     <Typography
       variant="body2"
       className={classes.subtitle}
-      style={{ margin: Theme.spacing(0, (belowSm ? 0 : 2), (belowSm ? 2 : 0), 0) }}
+      style={{ margin: theme.spacing(0, (belowSm ? 0 : 2), (belowSm ? 2 : 0), 0) }}
     >
       &quot;Available&quot; data products will always show above
       &quot;Coming Soon&quot; data products, except when sorting
@@ -152,7 +151,7 @@ const PresentationSort = (inProps) => {
   const sortShowing = (
     <div style={{ width: '100%', textAlign: 'right' }}>
       {skeleton ? (
-        <Skeleton width="100%" height={12} style={{ marginTop: Theme.spacing(2) }} />
+        <Skeleton width="100%" height={12} style={{ marginTop: theme.spacing(2) }} />
       ) : (
         <Typography
           variant="subtitle2"

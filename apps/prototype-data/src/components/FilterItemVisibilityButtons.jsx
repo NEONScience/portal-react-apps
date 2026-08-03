@@ -6,7 +6,6 @@ import ExpandIcon from '@mui/icons-material/Add';
 import CollapseIcon from '@mui/icons-material/Remove';
 import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
@@ -17,8 +16,8 @@ const useStyles = makeStyles()((theme) => ({
     margin: theme.spacing(1, 1, 0, 0),
   },
   container: {
-    marginTop: Theme.spacing(0.5),
-    marginBottom: Theme.spacing(5),
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(5),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',

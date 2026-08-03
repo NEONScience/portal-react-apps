@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
@@ -36,12 +35,12 @@ const SampleInfoPresentation = (props) => {
     sampleClassDesc,
   } = props;
 
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   if (queryErrorStr !== 'success') { return null; }
 
   const na = (
-    <span style={{ fontStyle: 'italic', color: Theme.palette.grey[300] }}>n/a</span>
+    <span style={{ fontStyle: 'italic', color: theme.palette.grey[300] }}>n/a</span>
   );
 
   const sampleClassDescription = sampleClassDesc.get(sampleClass);
@@ -80,7 +79,7 @@ const SampleInfoPresentation = (props) => {
           {sampleClass || na}
         </Typography>
         {!sampleClassDescription ? null : (
-          <Typography variant="body1" style={{ marginTop: Theme.spacing(1) }}>
+          <Typography variant="body1" style={{ marginTop: theme.spacing(1) }}>
             {sampleClassDescription}
           </Typography>
         )}

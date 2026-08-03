@@ -28,7 +28,6 @@ import LocationIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -101,7 +100,7 @@ const useStyles = makeStyles()((theme: NeonTheme) => ({
     flexWrap: 'wrap',
   },
   siteDetail: {
-    marginRight: Theme.spacing(4),
+    marginRight: theme.spacing(4),
   },
   startFlex: {
     display: 'flex',
@@ -153,7 +152,7 @@ const transformOptions = (
 
 const SiteSelect: React.FC = (): JSX.Element => {
   const state: SiteSelectState = useSiteSelectSelector();
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     sitesFetchState,
@@ -366,7 +365,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 {selectedSiteOption.siteDescription}
               </Link>
             </Typography>
-            <div style={{ margin: Theme.spacing(1.5, 0, 1.5, 0) }}>
+            <div style={{ margin: theme.spacing(1.5, 0, 1.5, 0) }}>
               <Chip
                 size="small"
                 label={selectedSiteOption.siteCode}

@@ -113,7 +113,7 @@ const normalizeSearchTerm = (value: unknown): string|null => (
   isStringNonEmpty(value) ? (value as string).trim() : null
 );
 
-const creatTaxonQueryFilter = (
+const createTaxonQueryFilter = (
   request: TaxonQueryRequest,
   columns: TaxonDataTableColumn[],
 ): TaxonApiQueryFilter => {
@@ -243,7 +243,7 @@ const TaxonDataTable: React.FC<TaxonDataTableProps> = (
     const requestInit = {
       method: 'POST',
       headers,
-      body: JSON.stringify(creatTaxonQueryFilter(request, columns)),
+      body: JSON.stringify(createTaxonQueryFilter(request, columns)),
     };
     try {
       const response = await fetch(url, requestInit);

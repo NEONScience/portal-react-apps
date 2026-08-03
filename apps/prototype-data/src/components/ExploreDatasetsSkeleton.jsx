@@ -1,6 +1,5 @@
 import React from 'react';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import SkeletonDataset from './SkeletonDataset';
@@ -17,22 +16,22 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const ExploreDatasetsSkeleton = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   return (
     <div>
       <div className={classes.filters}>
-        <div style={{ marginRight: Theme.spacing(4) }}>
-          {getSkeleton(27, 60, 1, false)}
-          {getSkeleton(48, 225, 0, false, 'rect')}
+        <div style={{ marginRight: theme.spacing(4) }}>
+          {getSkeleton(theme, 27, 60, 1, false)}
+          {getSkeleton(theme, 48, 225, 0, false, 'rect')}
         </div>
         <div style={{ width: '70%' }}>
-          {getSkeleton(27, 100, 1, false)}
-          {getSkeleton(37, 100, 1, true, 'rect')}
-          {getSkeleton(16, 80, 0)}
+          {getSkeleton(theme, 27, 100, 1, false)}
+          {getSkeleton(theme, 37, 100, 1, true, 'rect')}
+          {getSkeleton(theme, 16, 80, 0)}
         </div>
       </div>
-      {getSkeleton(22, 250, 4, false)}
+      {getSkeleton(theme, 22, 250, 4, false)}
       <div>
         <SkeletonDataset />
         <SkeletonDataset />

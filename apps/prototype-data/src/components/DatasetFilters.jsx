@@ -11,7 +11,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterIcon from '@mui/icons-material/FilterList';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
@@ -76,7 +75,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const DatasetFilters = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const [state, dispatch] = usePrototypeContextState();
 
   const {
@@ -85,7 +84,7 @@ const DatasetFilters = () => {
     filtersVisible,
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
   const visible = filtersVisible || !belowMd;
   const skeleton = [
     APP_STATUS.INITIALIZING,
@@ -179,7 +178,7 @@ const DatasetFilters = () => {
         <Collapse
           in={visible}
           className={classes.collapse}
-          style={{ marginTop: Theme.spacing(visible ? 3 : 0) }}
+          style={{ marginTop: theme.spacing(visible ? 3 : 0) }}
         >
           {filterContent}
         </Collapse>

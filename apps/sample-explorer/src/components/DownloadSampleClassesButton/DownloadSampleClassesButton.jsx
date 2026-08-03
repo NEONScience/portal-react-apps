@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 
 import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
+import { useTheme } from '@mui/material/styles';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
 
 const DownloadSampleClassesButton = (props) => {
   const {
     sampleClassDesc,
     onDownloadSupportedClassesClick,
   } = props;
+  const theme = useTheme();
 
   const downloadSupportedSampleClasses = () => {
     if (sampleClassDesc.size === 0) {
@@ -30,7 +31,7 @@ const DownloadSampleClassesButton = (props) => {
       data-selenium="download-sample-classes-button"
     >
       Download current list of supported sample classes
-      <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+      <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
     </Button>
   );
 };

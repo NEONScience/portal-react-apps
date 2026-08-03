@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
 import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -36,7 +35,7 @@ const defaultProps = {
 };
 
 const FilterRelease = (inProps) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
@@ -77,7 +76,7 @@ const FilterRelease = (inProps) => {
         {FILTER_LABELS[filterKey]}
       </Typography>
       <Tooltip placement="right" title={tooltip}>
-        <IconButton size="small" aria-label={tooltip} style={{ marginLeft: Theme.spacing(0.5) }}>
+        <IconButton size="small" aria-label={tooltip} style={{ marginLeft: theme.spacing(0.5) }}>
           <InfoIcon fontSize="small" />
         </IconButton>
       </Tooltip>

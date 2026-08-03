@@ -28,7 +28,6 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
 import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
@@ -116,7 +115,7 @@ const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
 
 const DataProductSelect: React.FC = (): JSX.Element => {
   const state: DataProductSelectState = useDataProductSelectSelector();
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const dispatch: Dispatch<AnyAction> = useDispatch();
   const {
     bundlesFetchState,
@@ -400,7 +399,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
     const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(true, false);
     return (
-      <div style={{ marginTop: Theme.spacing(3) }}>
+      <div style={{ marginTop: theme.spacing(3) }}>
         <DataProductBundleCard
           isSplit={false}
           titleContent={titleContent}
@@ -429,14 +428,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
                 {initialProduct.productName}
               </Link>
             </Typography>
-            <div style={{ margin: Theme.spacing(1.5, 0) }}>
+            <div style={{ margin: theme.spacing(1.5, 0) }}>
               <Chip
                 size="small"
                 label={initialProduct.productCode}
                 className={classes.productCodeChip}
               />
             </div>
-            <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
+            <Typography variant="body2" style={{ marginTop: theme.spacing(1) }}>
               {initialProduct.productDescription}
             </Typography>
           </div>

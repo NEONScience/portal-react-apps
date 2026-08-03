@@ -6,7 +6,6 @@ import Chip from '@mui/material/Chip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
@@ -50,7 +49,7 @@ const defaultProps = {
 
 const FilterCheckBox = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const {
     name,
     value,
@@ -92,7 +91,7 @@ const FilterCheckBox = (inProps) => {
       label={(
         showCount ? (
           <div className={classes.countLabel}>
-            <div style={{ paddingRight: Theme.spacing(1) }}>{label}</div>
+            <div style={{ paddingRight: theme.spacing(1) }}>{label}</div>
             <Chip
               className={classes.chip}
               variant="outlined"

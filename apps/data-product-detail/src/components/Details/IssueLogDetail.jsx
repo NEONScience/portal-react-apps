@@ -25,7 +25,7 @@ import MaterialTable, { MTableToolbar } from '@material-table/core';
 import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
 import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import { COLORS } from 'portal-core-components/lib/components/Theme/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -41,7 +41,7 @@ const {
 } = DataProductContext;
 
 const unresolvedStyle = {
-  color: '#9a3036', // portal-core-components Theme COLORS.RED[600]
+  color: COLORS.RED[600],
   fontWeight: 700,
 };
 
@@ -124,7 +124,7 @@ const MarkdownFallbackComponent = (props) => ((
 ));
 
 const IssueLogDetail = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state] = useDataProductContextState();
   const product = getCurrentProductFromState(state);
@@ -229,9 +229,9 @@ const IssueLogDetail = () => {
     render: (row) => formatSummary(row.issue),
     cellStyle: (fieldData, rowData) => (rowData.parentIssueID
       ? {
-        borderLeft: `1px dotted ${Theme.palette.grey[100]}`,
-        paddingLeft: Theme.spacing(4),
-        boxShadow: `${Theme.spacing(-10)} ${Theme.spacing(0)} ${Theme.palette.grey[50]}`,
+        borderLeft: `1px dotted ${theme.palette.grey[100]}`,
+        paddingLeft: theme.spacing(4),
+        boxShadow: `${theme.spacing(-10)} ${theme.spacing(0)} ${theme.palette.grey[50]}`,
       } : {}),
   }, {
     title: 'Resolution',
@@ -525,7 +525,7 @@ const IssueLogDetail = () => {
               detailPanelColumnAlignment: 'right',
               detailPanelType: 'single',
               rowStyle: (row) => (!rowGetsUnresolvedStyling(row) ? {} : {
-                backgroundColor: Theme.colors.GOLD[50],
+                backgroundColor: theme.colors.GOLD[50],
               }),
             }}
           />
@@ -603,7 +603,7 @@ const IssueLogDetail = () => {
               </FormControl>
             </Grid>
           </Grid>
-          <div style={{ margin: Theme.spacing(1.5, 0) }}>
+          <div style={{ margin: theme.spacing(1.5, 0) }}>
             <b>
               {showingIssues}
             </b>

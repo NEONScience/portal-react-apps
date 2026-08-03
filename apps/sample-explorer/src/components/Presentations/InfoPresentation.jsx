@@ -10,7 +10,6 @@ import Link from '@mui/material/Link';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import RouteService from 'portal-core-components/lib/service/RouteService';
@@ -36,7 +35,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const InfoPresentation = (props) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const exploreDataProductsLink = (
     <Link href={RouteService.getDataProductExplorePath()}>
       Explore Data Products
@@ -45,10 +44,10 @@ const InfoPresentation = (props) => {
 
   return (
     <div
-      style={{ marginTop: Theme.spacing(2), marginBottom: Theme.spacing(5) }}
+      style={{ marginTop: theme.spacing(2), marginBottom: theme.spacing(5) }}
       data-selenium="info-section"
     >
-      <Typography variant="subtitle1" style={{ marginBottom: Theme.spacing(3) }}>
+      <Typography variant="subtitle1" style={{ marginBottom: theme.spacing(3) }}>
         Find current or past physical locations of a sample and explore its place in the hierarchy
         with other samples.
       </Typography>

@@ -44,11 +44,6 @@ const useStyles = makeStyles()((theme) => ({
           0 1px 10px 0 rgba(0, 0, 0, 0.12)
         `,
       },
-      '& i': {
-        marginLeft: theme.spacing(1),
-        fontSize: '1rem',
-        verticalAlign: 'middle',
-      },
       '& span': {
         fontSize: '0.7rem',
         verticalAlign: 'middle',

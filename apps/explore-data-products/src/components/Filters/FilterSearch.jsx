@@ -18,7 +18,6 @@ import AddIcon from '@mui/icons-material/Add';
 import debounce from 'lodash/debounce';
 
 import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
@@ -39,7 +38,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   dialogContent: {
     display: 'flex',
-    marginBottom: Theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   keywordColumn: {
     display: 'flex',
@@ -48,14 +47,14 @@ const useStyles = makeStyles()((theme) => ({
     flex: 1,
   },
   keywordLetter: {
-    marginBottom: Theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   keywords: {
     display: 'flex',
     flexWrap: 'wrap',
     '& p': {
-      marginRight: Theme.spacing(3),
-      marginBottom: Theme.spacing(2),
+      marginRight: theme.spacing(3),
+      marginBottom: theme.spacing(2),
     },
   },
   keywordChip: {
@@ -74,8 +73,8 @@ const useStyles = makeStyles()((theme) => ({
   },
   subtitle: {
     fontSize: '0.725rem',
-    color: Theme.palette.grey[400],
-    marginTop: Theme.spacing(1),
+    color: theme.palette.grey[400],
+    marginTop: theme.spacing(1),
   },
   searchInput: {
     '& input': {
@@ -85,7 +84,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const FilterSearch = (props) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const { searchRef } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -103,9 +102,9 @@ const FilterSearch = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const dialogSearchRef = useRef(null);
 
-  const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
-  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
-  const belowLg = useMediaQuery(Theme.breakpoints.down('lg'));
+  const belowSm = useMediaQuery(theme.breakpoints.only('xs'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const belowLg = useMediaQuery(theme.breakpoints.down('lg'));
 
   const debouncedSearch = debounce((searchTerm, searchRefCurrent, applyValueToInput = false) => {
     if (applyValueToInput) {
@@ -183,11 +182,11 @@ const FilterSearch = (props) => {
         aria-labelledby="keywords-dialog-title"
       >
         <DialogTitle className={classes.dialogTitle}>
-          <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3) }}>
+          <div style={{ flexBasis: '45%', marginRight: theme.spacing(3) }}>
             <Typography
               variant="h4"
               component="span"
-              style={{ marginBottom: Theme.spacing(2) }}
+              style={{ marginBottom: theme.spacing(2) }}
               id="keywords-dialog-title"
             >
               Browse Keywords
@@ -201,7 +200,7 @@ const FilterSearch = (props) => {
               term.
             </Typography>
           </div>
-          <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3), textAlign: 'right' }}>
+          <div style={{ flexBasis: '45%', marginRight: theme.spacing(3), textAlign: 'right' }}>
             <TextField
               fullWidth
               margin="dense"
@@ -223,7 +222,7 @@ const FilterSearch = (props) => {
               {filterSubtitle}
             </Typography>
           </div>
-          <div style={{ flexBasis: Theme.spacing(6), textAlign: 'right' }}>
+          <div style={{ flexBasis: theme.spacing(6), textAlign: 'right' }}>
             <IconButton
               aria-label="close"
               className={classes.closeButton}

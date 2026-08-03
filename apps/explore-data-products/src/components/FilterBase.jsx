@@ -6,7 +6,6 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
@@ -38,8 +37,8 @@ const useStyles = makeStyles()((theme) => ({
   subtitle: {
     fontSize: '0.725rem',
     color: theme.palette.grey[400],
-    marginTop: Theme.spacing(1),
-    marginBottom: Theme.spacing(2),
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
 }));
 
@@ -54,7 +53,7 @@ const defaultProps = {
 
 const FilterBase = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   const {
     title,
     subtitle,
@@ -75,7 +74,7 @@ const FilterBase = (inProps) => {
           key={`skeleton-${i}`}
           width="100%"
           height={12}
-          style={{ marginTop: Theme.spacing(2.5), marginBottom: Theme.spacing(2.5) }}
+          style={{ marginTop: theme.spacing(2.5), marginBottom: theme.spacing(2.5) }}
         />,
       );
     }

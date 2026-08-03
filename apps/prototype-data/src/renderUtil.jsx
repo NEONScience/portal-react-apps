@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 
 import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
@@ -22,6 +21,7 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 export const getSkeleton = (
+  theme,
   height = 10,
   width = 100,
   marginBottom = 0,
@@ -40,7 +40,7 @@ export const getSkeleton = (
       variant={variant}
       height={height}
       width={widthProp}
-      style={!marginBottom ? null : { marginBottom: Theme.spacing(marginBottom) }}
+      style={!marginBottom ? null : { marginBottom: theme.spacing(marginBottom) }}
     />
   );
 };

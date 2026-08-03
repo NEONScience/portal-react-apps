@@ -5,7 +5,6 @@ import Link from '@mui/material/Link';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import RouteService from 'portal-core-components/lib/service/RouteService';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
@@ -19,7 +18,7 @@ const useStyles = makeStyles()((theme) => ({
     paddingLeft: 0,
   },
   link: {
-    marginBottom: Theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
 }));
 

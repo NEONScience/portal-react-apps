@@ -13,7 +13,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import LoginRequiredCard from 'portal-core-components/lib/components/Card/LoginRequiredCard';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
@@ -37,8 +36,8 @@ const useStyles = makeStyles()((theme) => ({
     },
   },
   searchIcon: {
-    marginLeft: Theme.spacing(1.5),
-    marginRight: Theme.spacing(-0.5),
+    marginLeft: theme.spacing(1.5),
+    marginRight: theme.spacing(-0.5),
   },
 }));
 
@@ -61,7 +60,7 @@ const SampleQueryPresentation = (props) => {
     onSetUrlParams,
   } = props;
 
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
   // Check preconditions for initial status
@@ -148,7 +147,7 @@ const SampleQueryPresentation = (props) => {
       >
         <AlertTitle style={{ marginBottom: 0 }}>{queryErrorStr}</AlertTitle>
         {!/sample class/i.test(queryErrorStr) ? null : (
-          <div style={{ marginTop: Theme.spacing(1.5) }}>
+          <div style={{ marginTop: theme.spacing(1.5) }}>
             <DownloadSampleClassesButton {...props} />
           </div>
         )}
@@ -184,7 +183,7 @@ const SampleQueryPresentation = (props) => {
   const getSearchDisabled = () => queryIsLoading || !canAccessData || !preconditionsSatisfied;
 
   return (
-    <div style={{ marginBottom: Theme.spacing(5) }} data-selenium="search-samples-section">
+    <div style={{ marginBottom: theme.spacing(5) }} data-selenium="search-samples-section">
       <Typography variant="h4" gutterBottom>
         Search Samples
       </Typography>

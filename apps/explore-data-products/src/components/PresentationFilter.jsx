@@ -3,7 +3,6 @@ import React, { useRef } from 'react';
 import Collapse from '@mui/material/Collapse';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
@@ -58,13 +57,13 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const PresentationFilter = (props) => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
 
   const [state] = ExploreContext.useExploreContextState();
   const { filtersVisible } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('md'));
-  const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const atSm = useMediaQuery(theme.breakpoints.only('sm'));
   const visible = filtersVisible || !belowMd;
 
   // Refs for filter inputs that we can't directly control due to poor performance
@@ -123,7 +122,7 @@ const PresentationFilter = (props) => {
         <Collapse
           in={visible}
           className={classes.collapse}
-          style={{ marginTop: Theme.spacing(visible ? 3 : 0) }}
+          style={{ marginTop: theme.spacing(visible ? 3 : 0) }}
         >
           {filterContent}
         </Collapse>

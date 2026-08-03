@@ -12,7 +12,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
 import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import DetailsIcon from '@mui/icons-material/InfoOutlined';
@@ -77,10 +76,10 @@ const useStyles = makeStyles()((theme) => ({
 
 const Dataset = (props) => {
   const { uuid } = props;
-  const { classes } = useStyles();
-  const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
-  const downSm = useMediaQuery(Theme.breakpoints.down('md'));
-  const atMd = useMediaQuery(Theme.breakpoints.only('md'));
+  const { classes, theme } = useStyles();
+  const atSm = useMediaQuery(theme.breakpoints.only('sm'));
+  const downSm = useMediaQuery(theme.breakpoints.down('md'));
+  const atMd = useMediaQuery(theme.breakpoints.only('md'));
   const showDetailIconOnly = atSm || atMd;
 
   const [state, dispatch] = usePrototypeContextState();
@@ -101,7 +100,7 @@ const Dataset = (props) => {
   } = dataset;
 
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
-    <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
+    <div key={dataTheme} style={{ marginRight: theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
@@ -247,7 +246,7 @@ const Dataset = (props) => {
   return (
     <Card className={classes.datasetCard}>
       <CardContent className={classes.content}>
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(1) }}>
           <Grid
             size={{
               xs: 12,
@@ -287,7 +286,7 @@ const Dataset = (props) => {
                 <Typography variant="subtitle2" className={classes.sectionTitle}>
                   DOI
                 </Typography>
-                <div style={{ marginBottom: Theme.spacing(3) }}>
+                <div style={{ marginBottom: theme.spacing(3) }}>
                   <Chip label={getDoiDisplay(doi)} className={classes.datasetIdChip} />
                 </div>
               </Grid>
@@ -302,7 +301,7 @@ const Dataset = (props) => {
                 <Typography variant="subtitle2" className={classes.sectionTitle}>
                   Prototype Dataset ID
                 </Typography>
-                <div style={{ marginBottom: Theme.spacing(3) }}>
+                <div style={{ marginBottom: theme.spacing(3) }}>
                   <Chip label={uuid} className={classes.datasetIdChip} />
                 </div>
               </Grid>
@@ -310,7 +309,7 @@ const Dataset = (props) => {
             <Typography variant="subtitle2" className={classes.sectionTitle}>
               Project Description
             </Typography>
-            <Typography variant="body2" style={{ marginBottom: Theme.spacing(3) }}>
+            <Typography variant="body2" style={{ marginBottom: theme.spacing(3) }}>
               {projectDescription}
             </Typography>
             <div>

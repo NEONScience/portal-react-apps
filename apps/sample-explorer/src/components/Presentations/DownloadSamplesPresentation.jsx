@@ -14,13 +14,13 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import TextField from '@mui/material/TextField';
+import { useTheme } from '@mui/material/styles';
 
 import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme';
 
 const DownloadSamplesPresentation = (props) => {
   const {
@@ -33,6 +33,7 @@ const DownloadSamplesPresentation = (props) => {
       sampleViews: visitedSampleViews,
     },
   } = props;
+  const theme = useTheme();
 
   const neonContextSessionState = NeonContext.useNeonContextSessionState();
   const { canAccessData } = neonContextSessionState;
@@ -147,11 +148,11 @@ const DownloadSamplesPresentation = (props) => {
           });
         }}
         disabled={!canAccessData}
-        style={{ marginBottom: Theme.spacing(3), whiteSpace: 'nowrap' }}
+        style={{ marginBottom: theme.spacing(3), whiteSpace: 'nowrap' }}
         data-selenium="download-samples-button"
       >
         {canAccessData ? 'Download Sample(s)' : 'Login Required' }
-        <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+        <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
       </Button>
       <Dialog
         open={state.dialogOpen}
@@ -168,12 +169,12 @@ const DownloadSamplesPresentation = (props) => {
           Download Sample(s)
         </DialogTitle>
         <DialogContent>
-          <div style={{ display: 'flex', marginBottom: Theme.spacing(3), flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', marginBottom: theme.spacing(3), flexWrap: 'wrap' }}>
             {/* Data Format */}
             <FormControl
               variant="standard"
               component="fieldset"
-              style={{ marginRight: Theme.spacing(5) }}
+              style={{ marginRight: theme.spacing(5) }}
             >
               <FormLabel component="legend">Data format</FormLabel>
               <RadioGroup
@@ -219,11 +220,11 @@ const DownloadSamplesPresentation = (props) => {
           </div>
           {/* Relationship Extent */}
           {!['first', 'current'].includes(state.sampleSelection) ? null : (
-            <div style={{ marginBottom: Theme.spacing(3) }}>
+            <div style={{ marginBottom: theme.spacing(3) }}>
               <FormControl
                 variant="standard"
                 component="fieldset"
-                style={{ marginBottom: Theme.spacing(1) }}
+                style={{ marginBottom: theme.spacing(1) }}
               >
                 <FormLabel component="legend">Relationship extent for selected sample</FormLabel>
                 <RadioGroup
@@ -274,7 +275,7 @@ const DownloadSamplesPresentation = (props) => {
           {!downloadErrorStr ? null : (
             <Alert
               severity="error"
-              style={{ marginBottom: Theme.spacing(3) }}
+              style={{ marginBottom: theme.spacing(3) }}
               data-selenium="download-samples-dialog.error"
             >
               <AlertTitle style={{ marginBottom: 0 }}>{downloadErrorStr}</AlertTitle>
@@ -293,7 +294,7 @@ const DownloadSamplesPresentation = (props) => {
             }}
           >
             Cancel
-            <CancelIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <CancelIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
           <Button
             color="primary"
@@ -308,7 +309,7 @@ const DownloadSamplesPresentation = (props) => {
             }}
           >
             Download
-            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
         </DialogActions>
       </Dialog>

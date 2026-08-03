@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import Theme from 'portal-core-components/lib/components/Theme';
-
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { useTheme } from '@mui/material/styles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -19,6 +18,7 @@ const defaultProps = {
 const FilterTheme = (inProps) => {
   const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
+  const theme = useTheme();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -49,7 +49,7 @@ const FilterTheme = (inProps) => {
             <FilterCheckBox
               name={(
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ margin: Theme.spacing(0.5, 1, 0, 0) }}>
+                  <div style={{ margin: theme.spacing(0.5, 1, 0, 0) }}>
                     <DataThemeIcon theme={filterItem.value} size={3} />
                   </div>
                   <span>

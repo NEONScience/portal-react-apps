@@ -6,7 +6,6 @@ import CardContent from '@mui/material/CardContent';
 
 import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
@@ -16,12 +15,12 @@ const useStyles = makeStyles()((theme) => ({
 }));
 
 const SkeletonDataProduct = () => {
-  const { classes } = useStyles();
+  const { classes, theme } = useStyles();
   return (
     <Card className={classes.productCard}>
       <CardContent>
 
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(2) }}>
           <Grid
             size={{
               xs: 12,
@@ -30,10 +29,10 @@ const SkeletonDataProduct = () => {
               lg: 9,
             }}
           >
-            <Skeleton height={16} width="80%" style={{ marginBottom: Theme.spacing(2) }} />
-            <Skeleton height={8} width="100%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="100%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton height={16} width="80%" style={{ marginBottom: theme.spacing(2) }} />
+            <Skeleton height={8} width="100%" style={{ marginBottom: theme.spacing(1) }} />
+            <Skeleton height={8} width="100%" style={{ marginBottom: theme.spacing(1) }} />
+            <Skeleton height={8} width="60%" style={{ marginBottom: theme.spacing(1) }} />
           </Grid>
           <Grid
             size={{
@@ -47,46 +46,46 @@ const SkeletonDataProduct = () => {
               height={32}
               width="100%"
               variant="rectangular"
-              style={{ marginBottom: Theme.spacing(1.5) }}
+              style={{ marginBottom: theme.spacing(1.5) }}
             />
             <Skeleton
               height={32}
               width="100%"
               variant="rectangular"
-              style={{ marginBottom: Theme.spacing(1.5) }}
+              style={{ marginBottom: theme.spacing(1.5) }}
             />
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(2) }}>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
-            <Skeleton height={8} width="40%" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton height={8} width="50%" style={{ marginBottom: theme.spacing(1) }} />
+            <Skeleton height={8} width="40%" style={{ marginBottom: theme.spacing(1) }} />
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <Skeleton height={8} width="50%" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton height={8} width="50%" style={{ marginBottom: theme.spacing(1) }} />
             <div style={{ display: 'flex' }}>
               <Skeleton
                 height={32}
                 width={32}
                 variant="rectangular"
-                style={{ marginRight: Theme.spacing(0.5) }}
+                style={{ marginRight: theme.spacing(0.5) }}
               />
               <Skeleton
                 height={32}
                 width={32}
                 variant="rectangular"
-                style={{ marginRight: Theme.spacing(0.5) }}
+                style={{ marginRight: theme.spacing(0.5) }}
               />
             </div>
           </Grid>
           <Grid size={{ xs: 12, sm: 4 }}>
-            <Skeleton height={8} width="60%" style={{ marginBottom: Theme.spacing(1) }} />
+            <Skeleton height={8} width="60%" style={{ marginBottom: theme.spacing(1) }} />
             <Skeleton
               height={32}
               width="100%"
               variant="rectangular"
-              style={{ marginBottom: Theme.spacing(1) }}
+              style={{ marginBottom: theme.spacing(1) }}
             />
           </Grid>
         </Grid>

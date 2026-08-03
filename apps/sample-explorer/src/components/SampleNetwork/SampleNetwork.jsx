@@ -11,17 +11,16 @@ import { Graph } from 'react-d3-graph';
 
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import { GRAPH_COLORS } from '../../util/appUtil';
 
-const useStyles = makeStyles()(() => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     cursor: 'move',
-    border: `1px solid ${Theme.palette.grey[400]}`,
-    backgroundColor: Theme.palette.grey[50],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[50],
     overflow: 'auto',
     resize: 'vertical',
     '& div#sample-network-graph-graph-wrapper': {

@@ -12,6 +12,7 @@ import DownloadDataContext from 'portal-core-components/lib/components/DownloadD
 import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
 import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
 import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
+import ExternalHost from 'portal-core-components/lib/components/ExternalHost';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
 
 import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
@@ -272,6 +273,10 @@ const AvailabilitySection = (props) => {
       return null;
     }
     if (!isStringNonEmpty(productData.productCode) || isTombstoned) {
+      return null;
+    }
+    const externalHost = ExternalHost.getByProductCode(productData.productCode);
+    if (!externalHost) {
       return null;
     }
     return (

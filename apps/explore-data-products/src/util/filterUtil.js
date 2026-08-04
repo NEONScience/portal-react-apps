@@ -37,7 +37,6 @@ export const getContinuousDatesArray = (dateRange, roundToYears = false) => {
   return contionuousRange;
 };
 
-// TODO: Move to Core Components?
 export const VISUALIZATIONS = {
   TIME_SERIES_VIEWER: {
     key: 'TIME_SERIES_VIEWER',

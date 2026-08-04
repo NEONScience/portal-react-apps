@@ -10,8 +10,9 @@ import NeonContext from 'portal-core-components/lib/components/NeonContext';
 import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
 import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer/SaeDataViewer';
 import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
+import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
 import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
 import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
@@ -51,8 +52,32 @@ const TimeSeriesVizNode = (productCode, currentRelease) => {
   );
 };
 
-const AopVizNode = () => {
+const AopVizNode = (theme, dispatch, currentRelease = undefined) => {
   const { classes } = useStyles();
+  // Determine release when not a "non" release and not a special case release.
+  const isRelease = isStringNonEmpty(currentRelease)
+    && !ReleaseService.isNonRelease(currentRelease)
+    && !ReleaseService.isLatestNonProv(currentRelease);
+  if (isRelease) {
+    const releaseTag = <b>{currentRelease}</b>;
+    const handleOnClick = () => {
+      dispatch({ type: 'setNextRelease', release: null, hash: 'visualizations' });
+    };
+    return (
+      <div key="AopVizNode">
+        {/* eslint-disable react/jsx-one-expression-per-line, react/destructuring-assignment */}
+        <Typography variant="subtitle1" style={{ color: theme.colors.GREY[500] }} gutterBottom>
+          This page is specific to the {releaseTag} release for this data product.
+          <br />
+          Data visualizations for this product can be accessed on the general page for this product.
+        </Typography>
+        {/* eslint-enable react/jsx-one-expression-per-line */}
+        <Button variant="outlined" onClick={handleOnClick}>
+          Go to visualizations for this product
+        </Button>
+      </div>
+    );
+  }
   return (
     <div key="AopVizNode">
       <Typography variant="body2" gutterBottom>
@@ -70,17 +95,19 @@ const AopVizNode = () => {
   );
 };
 
-const SaeVizNode = (productCode, isMultiViz = false) => {
+const SaeVizNode = (
+  dispatch,
+  productCode,
+  currentRelease = undefined,
+  isMultiViz = false,
+) => {
   const { classes, theme } = useStyles();
   const vizNodeStyle = {};
   if (isMultiViz) {
     vizNodeStyle.marginTop = theme.spacing(6);
   }
-  return (
-    <div key="SaeVizNode" style={vizNodeStyle}>
-      <Typography variant="h5" gutterBottom>
-        SAE Data Viewer
-      </Typography>
+  let content = (
+    <>
       <Typography variant="body2" gutterBottom>
         This tool provides a quick, interactive view of fluxes and key meteorological drivers.
         Users can preview time series, QC information, and site-level patterns before downloading
@@ -88,6 +115,40 @@ const SaeVizNode = (productCode, isMultiViz = false) => {
       </Typography>
       <Divider className={classes.divider} />
       <SaeDataViewer key="saeDataViewer" productCode={productCode} />
+    </>
+  );
+  // Determine release when not a "non" release and not a special case release.
+  const isRelease = isStringNonEmpty(currentRelease)
+    && !ReleaseService.isNonRelease(currentRelease)
+    && !ReleaseService.isLatestNonProv(currentRelease);
+  if (isRelease) {
+    const releaseTag = <b>{currentRelease}</b>;
+    const handleOnClick = () => {
+      dispatch({ type: 'setNextRelease', release: null, hash: 'visualizations' });
+    };
+    content = (
+      <>
+        <Divider className={classes.divider} />
+        {/* eslint-disable react/jsx-one-expression-per-line */}
+        <Typography variant="subtitle1" style={{ color: theme.colors.GREY[500] }} gutterBottom>
+          This page is specific to the {releaseTag} release for this data product.
+          <br />
+          This data visualization for this product can be accessed on the general
+          page for this product.
+        </Typography>
+        {/* eslint-enable react/jsx-one-expression-per-line */}
+        <Button variant="outlined" onClick={handleOnClick}>
+          Go to visualizations for this product
+        </Button>
+      </>
+    );
+  }
+  return (
+    <div key="SaeVizNode" style={vizNodeStyle}>
+      <Typography variant="h5" gutterBottom>
+        SAE Data Viewer
+      </Typography>
+      {content}
     </div>
   );
 };
@@ -162,13 +223,18 @@ const VisualizationsSection = (inProps) => {
       if (aopProductCodes.includes(productCode)) {
         viz.AOP = {
           name: 'AOP GEE Data Viewer',
-          node: AopVizNode(),
+          node: AopVizNode(theme, dispatch, currentRelease),
         };
       }
       if (saeProductCodes.includes(productCode)) {
         viz.SAE = {
           name: 'SAE Data Viewer',
-          node: SaeVizNode(productCode, timeSeriesProductCodes.includes(productCode)),
+          node: SaeVizNode(
+            dispatch,
+            productCode,
+            currentRelease,
+            timeSeriesProductCodes.includes(productCode),
+          ),
         };
       }
     }

@@ -162,8 +162,6 @@ const DataProduct = React.memo((props) => {
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
 
-  const hasVisualization = hasTimeSeriesData || isAopViewerProduct || isSaeViewerProduct;
-
   let timeRange = null;
   if (hasData) {
     timeRange = productDateRange[0]
@@ -302,20 +300,25 @@ const DataProduct = React.memo((props) => {
 
   function getVisList() {
     const visList = [];
+    // Determine release for viz when not a "non" release and not a special case release.
+    const hideVizForRelease = isStringNonEmpty(currentRelease)
+      && !ReleaseService.isNonRelease(currentRelease)
+      && !ReleaseService.isLatestNonProv(currentRelease);
     if (hasTimeSeriesData) {
       visList.push(VISUALIZATIONS.TIME_SERIES_VIEWER);
     }
-    if (isSaeViewerProduct) {
+    if (isSaeViewerProduct && !hideVizForRelease) {
       visList.push(VISUALIZATIONS.SAE_DATA_VIEWER);
     }
-    if (isAopViewerProduct) {
+    if (isAopViewerProduct && !hideVizForRelease) {
       visList.push(VISUALIZATIONS.AOP_DATA_VIEWER);
     }
     return visList;
   }
   const visList = getVisList();
+  const hasVisualization = (visList.length > 0);
 
-  const aopViewerButton = hasData && isAopViewerProduct
+  const aopViewerButton = hasData && visList.includes(VISUALIZATIONS.AOP_DATA_VIEWER)
     ? (
       <AopGeeDataViewer
         name="aop-visuialization-button"
@@ -323,7 +326,7 @@ const DataProduct = React.memo((props) => {
       />
     ) : null;
 
-  const saeViewerButton = hasData && isSaeViewerProduct
+  const saeViewerButton = hasData && visList.includes(VISUALIZATIONS.SAE_DATA_VIEWER)
     ? (
       <Button
         data-gtm="explore-data-products.view-sae-data-viewer-button"
@@ -341,7 +344,9 @@ const DataProduct = React.memo((props) => {
       </Button>
     ) : null;
 
-  const viewTimeSeriesDataButton = hasTimeSeriesData
+  const includeTimeSeriesViewer = hasTimeSeriesData
+    && visList.includes(VISUALIZATIONS.TIME_SERIES_VIEWER);
+  const viewTimeSeriesDataButton = includeTimeSeriesViewer
     ? (
       <Button
         data-gtm="explore-data-products.view-time-series-button"
@@ -478,7 +483,7 @@ const DataProduct = React.memo((props) => {
               </Typography>
             </Grid>
           )}
-          {!timeRange && !hasVisualization ? null : (
+          {!timeRange ? null : (
             <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Data Themes

@@ -110,88 +110,6 @@ const withContextReleases = (neonContextState) => (
   neonContextState?.auth?.userData?.data?.releases || []
 );
 
-export const applyAopProductFilter = (state, applyLocalStorage = false) => {
-  let newState = { ...state };
-  const releaseKeys = Object.keys(newState.productsByRelease);
-  if (!Array.isArray(releaseKeys) || (releaseKeys.length <= 0)) {
-    return newState;
-  }
-  const {
-    aopDataProducts: aopDataProductsJSON,
-  } = state.neonContextState.data;
-  const { productCodes: aopProductCodes } = aopDataProductsJSON;
-  if (!Array.isArray(aopProductCodes) || (aopProductCodes.length <= 0)) {
-    return newState;
-  }
-  const filterItemCounts = { [FILTER_KEYS.VISUALIZATIONS]: {} };
-  const addProductToFilterItemCounts = (product) => {
-    const key = FILTER_KEYS.VISUALIZATIONS;
-    const items = product.filterableValues[FILTER_KEYS.VISUALIZATIONS];
-    for (let j = 0; j < items.length; j += 1) {
-      if (!filterItemCounts[key][items[j]]) { filterItemCounts[key][items[j]] = 0; }
-      filterItemCounts[key][items[j]] += 1;
-    }
-  };
-  releaseKeys.forEach((releaseKey) => {
-    const productRelease = newState.productsByRelease[releaseKey];
-    const productKeys = Object.keys(productRelease);
-    if (productKeys && Array.isArray(productKeys)) {
-      productKeys.forEach((productKey) => {
-        const product = productRelease[productKey];
-        if (aopProductCodes.includes(product.productCode)
-          && Array.isArray(product.siteCodes)
-          && (product.siteCodes.length > 0)
-        ) {
-          const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-            .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-          if (!hasFilterableValue) {
-            product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-              VISUALIZATIONS.AOP_DATA_VIEWER.key,
-            );
-            addProductToFilterItemCounts(product);
-          }
-        }
-      });
-    }
-  });
-  const key = FILTER_KEYS.VISUALIZATIONS;
-  const existingFilterItemsValues = newState.filterItems[key].map((item) => item.value);
-  const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
-    .filter((item) => !existingFilterItemsValues.includes(item))
-    .map((item) => ({
-      name: VISUALIZATIONS[item] ? VISUALIZATIONS[item].name : null,
-      value: item,
-      subtitle: null,
-      count: filterItemCounts[key][item],
-    }));
-  newState.filterItems[key] = [...newState.filterItems[key], ...nonDuplicateNewFilterItems];
-  if (applyLocalStorage) {
-    let appliedFilterValues = newState.localStorageFilterValuesInitialLoad;
-    if (!appliedFilterValues) {
-      const localFilterValuesUnparsed = localStorage.getItem('filterValues');
-      if (localFilterValuesUnparsed) {
-        try {
-          appliedFilterValues = JSON.parse(localFilterValuesUnparsed);
-        } catch {
-          // eslint-disable-next-line no-console
-          console.error(
-            'Unable to rebuild filter values from saved local storage. '
-              + 'Stored value is not parseable.',
-          );
-        }
-      }
-    }
-    Object.keys(appliedFilterValues)
-      .filter((filterKey) => filterKey === FILTER_KEYS.VISUALIZATIONS)
-      .filter((filterKey) => (newState.filterValues[filterKey] || []).length <= 0)
-      .forEach((filterKey) => {
-        newState = applyFilter(newState, filterKey, appliedFilterValues[filterKey], false);
-      });
-    newState = applyCurrentProducts(newState);
-  }
-  return newState;
-};
-
 const mergeDataAva = (dataAvas) => {
   // For multi bundle products, merge bundled availabilities,
   // and consider this product as available
@@ -533,26 +451,29 @@ export const parseProductsByReleaseData = (state, release) => {
         VISUALIZATIONS.TIME_SERIES_VIEWER.key,
       );
     }
-    if ((aopProductCodes || []).includes(productCode)) {
-      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-        .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-      const hasAvailableData = Array.isArray(availabilitySiteCodes)
-        && (availabilitySiteCodes.length > 0);
-      if (!hasFilterableValue && hasAvailableData) {
-        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-          VISUALIZATIONS.AOP_DATA_VIEWER.key,
-        );
+    // Apply non-release aware viz filters when non-release and not special case.
+    if (!isRelease) {
+      if ((aopProductCodes || []).includes(productCode)) {
+        const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+          .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
+        const hasAvailableData = Array.isArray(availabilitySiteCodes)
+          && (availabilitySiteCodes.length > 0);
+        if (!hasFilterableValue && hasAvailableData) {
+          product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+            VISUALIZATIONS.AOP_DATA_VIEWER.key,
+          );
+        }
       }
-    }
-    if ((saeProductCodes || []).includes(productCode)) {
-      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-        .includes(VISUALIZATIONS.SAE_DATA_VIEWER.key);
-      const hasAvailableData = Array.isArray(availabilitySiteCodes)
-        && (availabilitySiteCodes.length > 0);
-      if (!hasFilterableValue && hasAvailableData) {
-        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-          VISUALIZATIONS.SAE_DATA_VIEWER.key,
-        );
+      if ((saeProductCodes || []).includes(productCode)) {
+        const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+          .includes(VISUALIZATIONS.SAE_DATA_VIEWER.key);
+        const hasAvailableData = Array.isArray(availabilitySiteCodes)
+          && (availabilitySiteCodes.length > 0);
+        if (!hasFilterableValue && hasAvailableData) {
+          product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+            VISUALIZATIONS.SAE_DATA_VIEWER.key,
+          );
+        }
       }
     }
 

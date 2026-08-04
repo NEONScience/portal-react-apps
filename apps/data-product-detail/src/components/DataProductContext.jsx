@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { map, catchError } from 'rxjs';
 
@@ -826,6 +826,9 @@ const reducer = (state, action) => {
       newState.data.tombstoneAvailability = null;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseTombstoneAvailabilitySucceeded':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
       newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.SUCCESS;
       if (action.data) {
         if (!newState.data.tombstoneAvailability) {
@@ -919,8 +922,7 @@ const Provider = (inProps) => {
   // 2. location.pathname - literally the URL, route.release follows this
   // 3. route.release - only ever set from URL parsing
   const navigate = useNavigate();
-  const location = useLocation();
-  const { pathname } = location;
+  const { pathname } = window.location;
   useEffect(() => {
     if (status === APP_STATUS.INITIALIZING) { return; }
     const [locationProductCode, locationRelease] = getProductCodeAndReleaseFromURL(pathname);
@@ -940,7 +942,7 @@ const Provider = (inProps) => {
       dispatch({ type: 'applyNextRelease' });
       return;
     }
-    // Next release diffres from current: apply next release to state (used after browser nav)
+    // Next release differs from current: apply next release to state (used after browser nav)
     if (nextRelease !== undefined && nextRelease !== currentRelease) {
       dispatch({ type: 'applyNextRelease' });
       return;
@@ -949,7 +951,15 @@ const Provider = (inProps) => {
     if (locationRelease !== currentRelease) {
       dispatch({ type: 'setNextRelease', release: locationRelease });
     }
-  }, [status, navigate, pathname, productCode, currentRelease, nextRelease, nextHash]);
+  }, [
+    status,
+    navigate,
+    pathname,
+    productCode,
+    currentRelease,
+    nextRelease,
+    nextHash,
+  ]);
 
   // Trigger any fetches that are awaiting call
   const fetchesStringified = JSON.stringify(fetches);

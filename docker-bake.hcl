@@ -2,7 +2,7 @@ variable "NODE_VERSION" {
   default = "24.18"
 }
 variable "YARN_VERSION" {
-  default = "4.17.1"
+  default = "4.18.0"
 }
 variable "PORTAL_WEB_SERVER_BUILDER_TAG" {
   default = "v2.2.0"

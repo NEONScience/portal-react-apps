@@ -32,7 +32,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>NEON | Data Product</title>
         <meta name="theme-color" content="#002c77" />
         <link rel="manifest" href="/data-products/manifest.json" />
         <link rel="shortcut icon" href="/data-products/favicon.ico?201912" />

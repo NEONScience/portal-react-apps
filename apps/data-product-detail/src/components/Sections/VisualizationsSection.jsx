@@ -69,7 +69,8 @@ const AopVizNode = (theme, dispatch, currentRelease = undefined) => {
         <Typography variant="subtitle1" style={{ color: theme.colors.GREY[500] }} gutterBottom>
           This page is specific to the {releaseTag} release for this data product.
           <br />
-          Data visualizations for this product can be accessed on the general page for this product.
+          This data visualization for this product can be accessed on the general
+          page for this product.
         </Typography>
         {/* eslint-enable react/jsx-one-expression-per-line */}
         <Button variant="outlined" onClick={handleOnClick}>

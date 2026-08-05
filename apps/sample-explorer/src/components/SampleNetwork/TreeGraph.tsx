@@ -9,22 +9,14 @@ import {
   buildConfig,
 } from "./TreeGraphLayout";
 import {
-  createGraphLayers,
-  renderParentSpine,
-  renderNodes,
-  renderLinks,
+  renderTree,
   getGraphContainer,
 } from "./TreeGraphRenderer";
 import type {
   TreeNode,
-  PositionedTreeNode,
   SampleView,
   TreeConfig,
   GraphData,
-  LinkData,
-  LayoutRuntimeConfig,
-  LabelRuntimeConfig,
-  LinkLayoutConfig,
 } from "./TreeGraph.types";
 
 type TreeGraphProps = {
@@ -35,77 +27,6 @@ type TreeGraphProps = {
   config?: TreeConfig;
   containerHeight?: number;
   onClickNode?: (node: TreeNode) => void;
-};
-
-type RenderTreeProps = {
-  container: any;
-  svgHeight: number;
-  config: TreeConfig;
-  firstParent: PositionedTreeNode | null;
-  parentSpineX: number;
-  focusNode: PositionedTreeNode;
-  focusRadius: number;
-  nodes: PositionedTreeNode[];
-  labelConfig: LabelRuntimeConfig;
-  onClickNode?: (node: TreeNode) => void;
-  nodeById: Map<string, PositionedTreeNode>;
-  childNodes: PositionedTreeNode[];
-  links: LinkData[];
-  layoutConfig: LayoutRuntimeConfig;
-};
-
-const renderTree = ({
-  container,
-  svgHeight,
-  config,
-  firstParent,
-  parentSpineX,
-  focusNode,
-  focusRadius,
-  nodes,
-  labelConfig,
-  onClickNode,
-  nodeById,
-  childNodes,
-  links,
-  layoutConfig,
-}: RenderTreeProps) => {
-  const {
-    graphLayer,
-    linkLayer,
-  } = createGraphLayers({
-    container,
-    svgHeight,
-    config,
-  });
-  renderParentSpine({
-    linkLayer,
-    firstParent,
-    parentSpineX,
-    focusNode,
-    focusRadius,
-  });
-  renderNodes({
-    graphLayer,
-    nodes,
-    labelConfig,
-    onClickNode,
-  });
-  const linkLayoutConfig: LinkLayoutConfig = {
-    parentSpineX,
-    LABEL_PADDING:
-      labelConfig.LABEL_PADDING,
-    PARENT_LABEL_TO_LINE_GAP:
-      layoutConfig.PARENT_LABEL_TO_LINE_GAP,
-  };
-  renderLinks({
-    linkLayer,
-    links,
-    nodeById,
-    childNodes,
-    focusNode,
-    linkLayoutConfig,
-  });
 };
 
 const TreeWithParents = ({

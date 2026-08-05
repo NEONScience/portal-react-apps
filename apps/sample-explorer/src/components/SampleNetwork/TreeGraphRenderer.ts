@@ -1,12 +1,14 @@
 import {
   select,
+  type Selection,
+} from "d3-selection";
+import {
   symbol,
   symbolCircle,
   symbolSquare,
   symbolTriangle,
   symbolDiamond,
-  type Selection,
-} from "d3";
+} from "d3-shape";
 import {
   NODE_TYPES,
   RELATIONSHIPS
@@ -18,7 +20,25 @@ import type {
   LinkData,
   LabelRuntimeConfig,
   LinkLayoutConfig,
+  LayoutRuntimeConfig,
 } from "./TreeGraph.types";
+
+type RenderTreeProps = {
+  container: any;
+  svgHeight: number;
+  config: TreeConfig;
+  firstParent: PositionedTreeNode | null;
+  parentSpineX: number;
+  focusNode: PositionedTreeNode;
+  focusRadius: number;
+  nodes: PositionedTreeNode[];
+  labelConfig: LabelRuntimeConfig;
+  onClickNode?: (node: TreeNode) => void;
+  nodeById: Map<string, PositionedTreeNode>;
+  childNodes: PositionedTreeNode[];
+  links: LinkData[];
+  layoutConfig: LayoutRuntimeConfig;
+};
 
 type BuildParentLinkPathProps = {
   sourceNode: PositionedTreeNode;
@@ -270,6 +290,62 @@ const cacheLabelPositions = (nodeGroups: any) => {
     }
   });
 };
+
+
+export const renderTree = ({
+  container,
+  svgHeight,
+  config,
+  firstParent,
+  parentSpineX,
+  focusNode,
+  focusRadius,
+  nodes,
+  labelConfig,
+  onClickNode,
+  nodeById,
+  childNodes,
+  links,
+  layoutConfig,
+}: RenderTreeProps) => {
+  const {
+    graphLayer,
+    linkLayer,
+  } = createGraphLayers({
+    container,
+    svgHeight,
+    config,
+  });
+  renderParentSpine({
+    linkLayer,
+    firstParent,
+    parentSpineX,
+    focusNode,
+    focusRadius,
+  });
+  renderNodes({
+    graphLayer,
+    nodes,
+    labelConfig,
+    onClickNode,
+  });
+  const linkLayoutConfig: LinkLayoutConfig = {
+    parentSpineX,
+    LABEL_PADDING:
+      labelConfig.LABEL_PADDING,
+    PARENT_LABEL_TO_LINE_GAP:
+      layoutConfig.PARENT_LABEL_TO_LINE_GAP,
+  };
+  renderLinks({
+    linkLayer,
+    links,
+    nodeById,
+    childNodes,
+    focusNode,
+    linkLayoutConfig,
+  });
+};
+
 
 export const getGraphContainer = (element: HTMLDivElement | null) =>
   select(element);

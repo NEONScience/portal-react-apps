@@ -16,10 +16,10 @@ import { exists } from 'portal-core-components/lib/util/typeUtil';
 
 import { GRAPH_COLORS } from '../../util/appUtil';
 
-import TreeWithParents from './TreeWithParents';
+import TreeGraph from './TreeGraph';
 
 // This may not be importable once moved to portal-core-components, so we will keep it here for now.
-import { NODE_TYPES } from './TreeWithParentsConstants';
+import { NODE_TYPES } from './TreeGraphConstants';
 
 const useStyles = makeStyles()(() => ({
   container: {
@@ -42,7 +42,7 @@ const treeConfig = {
     scale: 1,
   },
   labels: {
-    fontSize: 12.8,
+    fontSize: 13,
     fontFamily: "Inter, Helvetica, Arial, sans-serif",
     labelPadding: 8,
     parentLabelLineGap: 5,
@@ -174,7 +174,7 @@ function SampleNetwork(props) {
         className={classes.container}
         style={{ height }}
       >
-      <TreeWithParents
+      <TreeGraph
         data={graphData}
         visitedSamples={visitedSamples}
         config={treeConfig}

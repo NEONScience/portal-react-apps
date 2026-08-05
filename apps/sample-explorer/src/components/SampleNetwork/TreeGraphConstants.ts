@@ -1,3 +1,4 @@
+//Node Rendering Constants
 export const NODE_TYPES = {
   FOCUS: "circle",
   PARENT: "square",
@@ -5,14 +6,28 @@ export const NODE_TYPES = {
   CHILD: "triangle",
 } as const;
 
-export const PREVIOUS_RELATIONSHIPS = {
+//Relationship Constants
+export const RELATIONSHIPS = {
   PARENT: "parent",
   CHILD: "child",
 } as const;
 
+//Layout Default Constants
+export const LAYOUT_DEFAULTS = {
+  leftMargin: 25,
+  topMargin: 25,
+  scale: 1,
+  parentConnectorLength: 50,
+} as const;
+
+export const SPACING_DEFAULTS = {
+  row: 30,
+  column: 80,
+} as const;
+
 export const LABEL_DEFAULTS = {
   padding: 8,
-  fontSize: 12.8,
+  fontSize: 13,
   fontFamily:
     "Inter, Helvetica, Arial, sans-serif",
   parentLabelLineGap: 5,
@@ -22,16 +37,4 @@ export const LABEL_DEFAULTS = {
 export const SVG_DEFAULTS = {
   bottomPadding: 100,
   containerPadding: 15,
-} as const;
-
-export const SPACING_DEFAULTS = {
-  row: 30,
-  column: 80,
-} as const;
-
-export const LAYOUT_DEFAULTS = {
-  leftMargin: 25,
-  topMargin: 25,
-  scale: 1,
-  parentConnectorLength: 50,
 } as const;

@@ -1,4 +1,5 @@
-import { useLayoutEffect,
+import {
+  useLayoutEffect,
   useRef
 } from "react";
 import {
@@ -6,24 +7,27 @@ import {
   prepareTreeData,
   computeLayout,
   buildConfig,
-} from "./TreeWithParentsLayout";
+} from "./TreeGraphLayout";
 import {
   createGraphLayers,
   renderParentSpine,
   renderNodes,
   renderLinks,
   getGraphContainer,
-} from "./TreeWithParentsRenderer";
+} from "./TreeGraphRenderer";
 import type {
   TreeNode,
-  StyledTreeNode,
+  PositionedTreeNode,
   SampleView,
   TreeConfig,
   GraphData,
   LinkData,
-} from "./TreeWithParents.types";
+  LayoutRuntimeConfig,
+  LabelRuntimeConfig,
+  LinkLayoutConfig,
+} from "./TreeGraph.types";
 
-type TreeWithParentsProps = {
+type TreeGraphProps = {
   data?: GraphData;
   visitedSamples?: {
     sampleViews?: SampleView[];
@@ -36,30 +40,25 @@ type TreeWithParentsProps = {
 type RenderTreeProps = {
   container: any;
   svgHeight: number;
-  config: any;
-  firstParent: TreeNode | null;
-  parentSpineBottomY: number;
+  config: TreeConfig;
+  firstParent: PositionedTreeNode | null;
   parentSpineX: number;
-  focusNode: TreeNode;
+  focusNode: PositionedTreeNode;
   focusRadius: number;
-  nodes: StyledTreeNode[];
-  labelConfig: any;
+  nodes: PositionedTreeNode[];
+  labelConfig: LabelRuntimeConfig;
   onClickNode?: (node: TreeNode) => void;
-  nodeById: Map<string, TreeNode>;
-  childNodes: TreeNode[];
+  nodeById: Map<string, PositionedTreeNode>;
+  childNodes: PositionedTreeNode[];
   links: LinkData[];
-  layoutConfig: any;
+  layoutConfig: LayoutRuntimeConfig;
 };
-
-
-
 
 const renderTree = ({
   container,
   svgHeight,
   config,
   firstParent,
-  parentSpineBottomY,
   parentSpineX,
   focusNode,
   focusRadius,
@@ -83,7 +82,6 @@ const renderTree = ({
     linkLayer,
     firstParent,
     parentSpineX,
-    parentSpineBottomY,
     focusNode,
     focusRadius,
   });
@@ -93,7 +91,7 @@ const renderTree = ({
     labelConfig,
     onClickNode,
   });
-  const linkLayoutConfig = {
+  const linkLayoutConfig: LinkLayoutConfig = {
     parentSpineX,
     LABEL_PADDING:
       labelConfig.LABEL_PADDING,
@@ -110,21 +108,17 @@ const renderTree = ({
   });
 };
 
-
-
 const TreeWithParents = ({
   data = { nodes: [], links: [] },
   visitedSamples,
   config = {},
   containerHeight = 0,
   onClickNode,
-}: TreeWithParentsProps) => {
+}: TreeGraphProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
     const container = getGraphContainer(ref.current);
     const {
-      nodes,
-      nodeById,
       focusNodes,
       previousNodes,
       parentNodes,
@@ -159,8 +153,11 @@ const TreeWithParents = ({
     // keep the graph clean by removing any existing SVG elements before rendering a new one.
     container.selectAll("*").remove();
     const {
+      positionedNodes,
+      positionedNodeById,
+      positionedChildNodes,
+      positionedFocusNode,
       firstParent,
-      parentSpineBottomY,
       parentSpineX,
       svgHeight,
     } = computeLayout({
@@ -176,15 +173,14 @@ const TreeWithParents = ({
       svgHeight,
       config,
       firstParent,
-      parentSpineBottomY,
       parentSpineX,
-      focusNode,
+      focusNode: positionedFocusNode,
       focusRadius,
-      nodes,
+      nodes: positionedNodes,
       labelConfig,
       onClickNode,
-      nodeById,
-      childNodes,
+      nodeById: positionedNodeById,
+      childNodes: positionedChildNodes,
       links: data.links,
       layoutConfig,
     });

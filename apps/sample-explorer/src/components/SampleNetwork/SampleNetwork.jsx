@@ -16,6 +16,7 @@ import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 import TreeWithParents from './TreeWithParents';
 import { NODE_TYPES } from './TreeWithParentsConstants';
 import { GRAPH_COLORS } from '../../util/appUtil';
+import TreeGraph from './TreeGraph';
 
 const useStyles = makeStyles()((theme) => ({
   container: {
@@ -38,7 +39,7 @@ const treeConfig = {
     scale: 1,
   },
   labels: {
-    fontSize: 12.8,
+    fontSize: 13,
     fontFamily: "Inter, Helvetica, Arial, sans-serif",
     labelPadding: 8,
     parentLabelLineGap: 5,
@@ -162,7 +163,7 @@ const SampleNetwork = (props) => {
         className={classes.container}
         style={{ height }}
       >
-      <TreeWithParents
+      <TreeGraph
         data={graphData}
         visitedSamples={visitedSamples}
         config={treeConfig}

@@ -1,26 +1,22 @@
 import type {
   TreeNode,
   StyledTreeNode,
+  PositionedTreeNode,
   NodeStyleOverrides,
   SampleView,
   GraphData,
-} from "./TreeWithParents.types";
+  TreeConfig,
+  LayoutRuntimeConfig,
+  LabelRuntimeConfig,
+} from "./TreeGraph.types";
 import {
   NODE_TYPES,
-  PREVIOUS_RELATIONSHIPS,
+  RELATIONSHIPS,
   LABEL_DEFAULTS,
   SVG_DEFAULTS,
   SPACING_DEFAULTS,
   LAYOUT_DEFAULTS,
-} from "./TreeWithParentsConstants";
-
-
-type BuildConfigProps = {
-  layout?: any;
-  spacing?: any;
-  labels?: any;
-  svg?: any;
-};
+} from "./TreeGraphConstants";
 
 type ClassifyPreviousNodesProps = {
   previousNodes: StyledTreeNode[];
@@ -41,24 +37,46 @@ type PrepareTreeDataProps = {
   labelFont: string;
 };
 
+type PrepareTreeDataResult = {
+  focusNode: StyledTreeNode;
+  longestParentLabelWidth: number;
+  focusRadius: number;
+};
+
 type BuildGraphDataProps = {
   data: GraphData;
   nodeStyles?: Partial<NodeStyleOverrides>;
 };
 
 type ComputeLayoutProps = {
-  parentNodes: TreeNode[];
-  childNodes: TreeNode[];
-  focusNode: TreeNode;
+  parentNodes: StyledTreeNode[];
+  childNodes: StyledTreeNode[];
+  focusNode: StyledTreeNode;
   longestParentLabelWidth: number;
   containerHeight: number;
-  layoutConfig: any;
+  layoutConfig: LayoutRuntimeConfig;
 };
 
+type ComputeLayoutResult = {
+  positionedNodes: PositionedTreeNode[];
+  positionedNodeById: Map<string, PositionedTreeNode>;
+  positionedParentNodes: PositionedTreeNode[];
+  positionedChildNodes: PositionedTreeNode[];
+  positionedFocusNode: PositionedTreeNode;
+  firstParent: PositionedTreeNode | null;
+  parentSpineX: number;
+  svgHeight: number;
+};
+
+type BuildConfigResult = {
+  labelFont: string;
+  labelConfig: LabelRuntimeConfig;
+  layoutConfig: LayoutRuntimeConfig;
+};
 
 export const buildConfig = (
-  config: BuildConfigProps
-) => {
+  config: TreeConfig
+): BuildConfigResult => {
   const layout = config.layout ?? {};
   const spacing = config.spacing ?? {};
   const labels = config.labels ?? {};
@@ -132,9 +150,8 @@ const classifyPreviousNodes = ({
   previousNodes,
   currentSampleView,
 }: ClassifyPreviousNodesProps): ClassifyPreviousNodesResult => {
-const previousParentNodes: StyledTreeNode[] = [];
-const previousChildNodes: StyledTreeNode[] = [];
-
+  const previousParentNodes: StyledTreeNode[] = [];
+  const previousChildNodes: StyledTreeNode[] = [];
   if (!currentSampleView) {
     return {
       previousParentNodes,
@@ -152,12 +169,12 @@ const previousChildNodes: StyledTreeNode[] = [];
       );
     if (isParent) {
       previousNode.previousRelationship =
-        PREVIOUS_RELATIONSHIPS.PARENT;
+        RELATIONSHIPS.PARENT;
       previousParentNodes.push(previousNode);
     }
     if (isChild) {
       previousNode.previousRelationship =
-        PREVIOUS_RELATIONSHIPS.CHILD;
+        RELATIONSHIPS.CHILD;
       previousChildNodes.push(previousNode);
     }
   });
@@ -218,23 +235,6 @@ const getLongestParentLabelWidth = (
       )
     )
   );
-};
-
-const getParentBounds = (parentNodes: TreeNode[]) => {
-  if (parentNodes.length === 0) {
-    return {
-      firstParent: null,
-      lastParent: null,
-    };
-  }
-  return {
-    firstParent: parentNodes.reduce((a, b) =>
-      a.y! < b.y! ? a : b
-    ),
-    lastParent: parentNodes.reduce((a, b) =>
-      a.y! > b.y! ? a : b
-    ),
-  };
 };
 
 const getFocusNodeRadius = (focusNode: StyledTreeNode) => {
@@ -302,7 +302,7 @@ export const prepareTreeData = ({
   childNodes,
   sampleViews,
   labelFont,
-}: PrepareTreeDataProps) => {
+}: PrepareTreeDataProps): PrepareTreeDataResult => {
   const focusNode = focusNodes[0]!;
   const currentSampleView =
     sampleViews?.find(
@@ -335,7 +335,7 @@ export const prepareTreeData = ({
   };
 };
 
-// Mutates node positions in-place.
+// Computes layout coordinates.
 export const computeLayout = ({
   parentNodes,
   childNodes,
@@ -343,7 +343,7 @@ export const computeLayout = ({
   longestParentLabelWidth,
   containerHeight,
   layoutConfig,
-}: ComputeLayoutProps) => {
+}: ComputeLayoutProps): ComputeLayoutResult => {
   const {
     LEFT_MARGIN,
     TOP_MARGIN,
@@ -355,48 +355,88 @@ export const computeLayout = ({
     SVG_CONTAINER_PADDING,
     SVG_BOTTOM_PADDING,
   } = layoutConfig;
-  parentNodes.forEach((n, i) => {
-    n.x = LEFT_MARGIN;
-    n.y = TOP_MARGIN + (i * ROW_SPACING);
+
+  const positionedParentNodes: PositionedTreeNode[] =
+    parentNodes.map((n, i) => ({
+      ...n,
+      x: LEFT_MARGIN,
+      y: TOP_MARGIN + (i * ROW_SPACING),
+    }));
+
+  const firstParent =
+    positionedParentNodes.length > 0
+      ? positionedParentNodes[0]
+      : null;
+
+  const positionedFocusNode: PositionedTreeNode = {
+    ...focusNode,
+    x:
+      LEFT_MARGIN +
+      longestParentLabelWidth +
+      LABEL_PADDING +
+      PARENT_LABEL_TO_LINE_GAP +
+      PARENT_CONNECTOR_LENGTH,
+    y:
+      positionedParentNodes.length === 0
+        ? TOP_MARGIN
+        : positionedParentNodes[
+            positionedParentNodes.length - 1
+          ].y + ROW_SPACING,
+  };
+
+  const parentSpineX = positionedFocusNode.x;
+
+  const positionedChildNodes: PositionedTreeNode[] =
+    childNodes.map((n, i) => ({
+      ...n,
+      x:
+        positionedFocusNode.x +
+        COLUMN_SPACING,
+
+      y:
+        positionedFocusNode.y +
+        ((i + 1) * ROW_SPACING),
+    }));
+
+  const positionedNodes: PositionedTreeNode[] = [
+    ...positionedParentNodes,
+    positionedFocusNode,
+    ...positionedChildNodes,
+  ];
+
+  const positionedNodeById:
+    Map<string, PositionedTreeNode> =
+    new Map<string, PositionedTreeNode>();
+
+  positionedNodes.forEach(node => {
+    positionedNodeById.set(
+      node.id,
+      node
+    );
   });
-  const {
-    firstParent,
-    lastParent,
-  } = getParentBounds(parentNodes);
-  const parentSpineBottomY = lastParent
-    ? lastParent.y + ROW_SPACING
-    : TOP_MARGIN + ROW_SPACING;
-  focusNode.x =
-    LEFT_MARGIN +
-    longestParentLabelWidth +
-    LABEL_PADDING +
-    PARENT_LABEL_TO_LINE_GAP +
-    PARENT_CONNECTOR_LENGTH;
-  const parentSpineX = focusNode.x!;
-  focusNode.y =
-    parentNodes.length === 0
-      ? TOP_MARGIN
-      : parentSpineBottomY;
-  childNodes.forEach((n, i) => {
-    n.x = focusNode.x + COLUMN_SPACING;
-    n.y =
-      focusNode.y! +
-      ((i + 1) * ROW_SPACING);
-  });
+
   const maxNodeY =
-    childNodes.length > 0
+    positionedChildNodes.length > 0
       ? Math.max(
-          ...childNodes.map(n => n.y!)
+          ...positionedChildNodes.map(
+            n => n.y
+          )
         )
-      : focusNode.y;
+      : positionedFocusNode.y;
+
   const svgHeight = Math.max(
     containerHeight -
       SVG_CONTAINER_PADDING,
     maxNodeY + SVG_BOTTOM_PADDING
   );
+
   return {
+    positionedNodes,
+    positionedNodeById,
+    positionedParentNodes,
+    positionedChildNodes,
+    positionedFocusNode,
     firstParent,
-    parentSpineBottomY,
     parentSpineX,
     svgHeight,
   };

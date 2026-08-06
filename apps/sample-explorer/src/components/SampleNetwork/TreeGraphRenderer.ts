@@ -346,11 +346,10 @@ export const renderTree = ({
   });
 };
 
-
 export const getGraphContainer = (element: HTMLDivElement | null) =>
   select(element);
 
-export const createGraphLayers = ({
+const createGraphLayers = ({
   container,
   svgHeight,
   config,
@@ -379,7 +378,7 @@ export const createGraphLayers = ({
   };
 };
 
-export const renderParentSpine = ({
+const renderParentSpine = ({
   linkLayer,
   firstParent,
   parentSpineX,
@@ -402,7 +401,7 @@ export const renderParentSpine = ({
     );
   };
 
-export const renderNodes = ({
+const renderNodes = ({
   graphLayer,
   nodes,
   labelConfig,
@@ -431,7 +430,7 @@ export const renderNodes = ({
   cacheLabelPositions(nodeGroups);
 };
 
-export const renderLinks = ({
+const renderLinks = ({
   linkLayer,
   links,
   nodeById,

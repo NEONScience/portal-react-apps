@@ -509,7 +509,7 @@ const IssueLogDetail = () => {
 
   return (
     <>
-      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
+      <Box sx={{ fontSize: '0.875rem', display: { xs: 'none', sm: 'none', md: 'block' } }}>
         <Detail seleniumKey="issue-log">
           <MaterialTable
             title=""
@@ -531,7 +531,7 @@ const IssueLogDetail = () => {
           />
         </Detail>
       </Box>
-      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
+      <Box sx={{ fontSize: '0.875rem', display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <Detail title="Issue Log" seleniumKey="issue-log">
           <Grid container spacing={1}>
             <Grid size={{ xs: 6, sm: 4 }}>

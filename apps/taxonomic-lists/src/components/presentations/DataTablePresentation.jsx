@@ -66,6 +66,7 @@ const useStyles = makeStyles()((theme) => ({
     },
     '& .dt-container': {
       width: '100%',
+      fontSize: '0.8rem',
     },
     '& .dt-container .dt-layout-row': {
       alignItems: 'center',

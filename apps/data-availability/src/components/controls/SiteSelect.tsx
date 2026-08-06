@@ -77,7 +77,7 @@ const useStyles = makeStyles()((theme: NeonTheme) => ({
     paddingTop: `${theme.spacing(1)} !important`,
   },
   autocompleteLabelShrink: {
-    transform: 'translate(6px, -9px) scale(0.75) !important',
+    transform: 'translate(12px, -14px) scale(0.70) !important',
   },
   siteName: {
     fontWeight: 600,

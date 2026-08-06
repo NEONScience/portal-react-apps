@@ -60,6 +60,7 @@ const useStyles = makeStyles()((theme) => ({
   keywordChip: {
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
+    color: theme.palette.primary.main,
     borderColor: alpha(theme.palette.primary.main, 0.4),
     borderStyle: 'dotted',
     backgroundColor: 'transparent',
@@ -69,6 +70,7 @@ const useStyles = makeStyles()((theme) => ({
     height: '0.75em',
     marginLeft: '8px !important',
     marginRight: theme.spacing(-1),
+    color: `${theme.palette.primary.main} !important`,
     opacity: 0.4,
   },
   subtitle: {
@@ -203,7 +205,6 @@ const FilterSearch = (props) => {
           <div style={{ flexBasis: '45%', marginRight: theme.spacing(3), textAlign: 'right' }}>
             <TextField
               fullWidth
-              margin="dense"
               variant="outlined"
               defaultValue={searchRef.current ? searchRef.current.querySelector('input').value : ''}
               placeholder={placeholder}
@@ -247,7 +248,6 @@ const FilterSearch = (props) => {
                         clickable
                         key={keyword}
                         label={keyword}
-                        color="primary"
                         variant="outlined"
                         className={classes.keywordChip}
                         onClick={() => addKeywordToSearch(keyword)}

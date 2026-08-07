@@ -16,6 +16,7 @@ const useStyles = makeStyles()((theme) => ({
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     height: '28px',
+    paddingTop: '1px',
   },
 }));
 

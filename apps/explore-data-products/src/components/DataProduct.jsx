@@ -53,6 +53,7 @@ const useStyles = makeStyles()((theme) => ({
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     cursor: 'help',
+    paddingTop: '1px',
   },
   releaseChipIcon: {
     color: theme.colors.GREEN[800],
@@ -65,6 +66,7 @@ const useStyles = makeStyles()((theme) => ({
     backgroundColor: theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
     cursor: 'help',
+    paddingTop: '1px',
   },
   productPaperButton: {
     width: '100%',

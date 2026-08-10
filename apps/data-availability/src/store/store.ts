@@ -7,7 +7,7 @@ import {
 } from 'redux';
 import { EpicMiddleware } from 'redux-observable';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 import AppState from './appState';
 import RootReducer from '../reducers/root';

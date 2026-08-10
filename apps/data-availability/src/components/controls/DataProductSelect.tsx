@@ -26,16 +26,16 @@ import Skeleton from '@mui/material/Skeleton';
 
 import SearchIcon from '@mui/icons-material/Search';
 
-import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import BundleListItemIcon from '@neonscience/portal-core-components/components/Bundles/BundleListItemIcon';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
-import { IDataProductLike } from 'portal-core-components/lib/types/internal';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
+import { IDataProductLike } from '@neonscience/portal-core-components/types/internal';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';

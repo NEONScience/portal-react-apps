@@ -1,5 +1,5 @@
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { Nullable } from 'portal-core-components/lib/types/core';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
 
 import {
   DataProduct,

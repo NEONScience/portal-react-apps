@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import SampleQueryPresentation from './SampleQueryPresentation';
 import SampleEventPresentation from './SampleEventPresentation';

@@ -5,7 +5,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import DataProductLinks from './DataProductLinks';
 
 import { taxonTypes } from '../../api/taxonTypes';

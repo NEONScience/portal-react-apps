@@ -8,9 +8,9 @@ import cloneDeep from 'lodash/cloneDeep';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import DataProduct from './DataProduct';
 import SkeletonDataProduct from './SkeletonDataProduct';

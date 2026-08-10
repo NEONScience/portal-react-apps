@@ -14,13 +14,13 @@ import Typography from '@mui/material/Typography';
 import CopyIcon from '@mui/icons-material/Assignment';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import CitationService from 'portal-core-components/lib/service/CitationService';
+import CitationService from '@neonscience/portal-core-components/service/CitationService';
 import DataCiteService, {
   CitationDownloadType,
-} from 'portal-core-components/lib/service/DataCiteService';
-import RouteService from 'portal-core-components/lib/service/RouteService';
+} from '@neonscience/portal-core-components/service/DataCiteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import PrototypeContext from '../PrototypeContext';
 

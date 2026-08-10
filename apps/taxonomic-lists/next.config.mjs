@@ -20,7 +20,7 @@ const nextConfig = {
   basePath: '/taxonomic-lists',
   trailingSlash: false,
   reactStrictMode: false,
-  transpilePackages: ['portal-core-components/lib'],
+  transpilePackages: ['@neonscience/portal-core-components'],
   turbopack: {
     root: isBuildContainer ? path.join(__dirname, '..', '..') : undefined,
   },

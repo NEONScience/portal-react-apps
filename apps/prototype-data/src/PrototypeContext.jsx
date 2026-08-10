@@ -13,11 +13,11 @@ import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import {
   /* constants */

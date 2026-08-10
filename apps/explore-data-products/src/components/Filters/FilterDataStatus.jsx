@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';

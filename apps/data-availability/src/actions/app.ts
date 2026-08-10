@@ -1,4 +1,4 @@
-import { Nullable } from 'portal-core-components/lib/types/core';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
 import {
   DataProduct,
   Release,

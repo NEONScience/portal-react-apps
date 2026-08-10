@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DetailTooltip from './DetailTooltip';
 

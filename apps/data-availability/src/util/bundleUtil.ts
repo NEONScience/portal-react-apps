@@ -1,4 +1,4 @@
-import BundleService from 'portal-core-components/lib/service/BundleService';
+import BundleService from '@neonscience/portal-core-components/service/BundleService';
 
 import { DataProductBundle, DataProductParent } from '../types/store';
 

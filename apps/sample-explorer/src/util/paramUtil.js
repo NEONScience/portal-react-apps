@@ -1,4 +1,4 @@
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
 /**
  * Determines if the current location has search params

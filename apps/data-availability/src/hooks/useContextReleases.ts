@@ -1,5 +1,5 @@
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import { Release } from '../types/store';
 

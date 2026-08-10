@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import Dataset from './Dataset';

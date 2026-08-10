@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 /**
  * Style the component using the imported theme

@@ -3,7 +3,7 @@ import JSPDF from 'jspdf';
 import moment from 'moment';
 import camelCase from 'lodash/camelCase';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import {
   FILTER_KEYS,

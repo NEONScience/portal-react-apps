@@ -12,11 +12,11 @@ import Skeleton from '@mui/material/Skeleton';
 
 import debounce from 'lodash/debounce';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import ExploreContext from './ExploreContext';
 

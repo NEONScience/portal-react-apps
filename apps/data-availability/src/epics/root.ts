@@ -6,7 +6,7 @@ import {
   EpicMiddleware,
 } from 'redux-observable';
 
-import { EpicDependencies } from 'portal-core-components/lib/types/epic';
+import { EpicDependencies } from '@neonscience/portal-core-components/types/epic';
 import {
   fetchProductsEpic,
   fetchReleasesEpic,

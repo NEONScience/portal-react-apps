@@ -1,4 +1,4 @@
-import { AsyncActionType } from 'portal-core-components/lib/types/asyncFlow';
+import { AsyncActionType } from '@neonscience/portal-core-components/types/asyncFlow';
 import { AppActionTypes } from './app';
 
 export type AppActionType = AsyncActionType;

@@ -3,7 +3,7 @@ import {
   applyMiddleware,
 } from 'redux';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 import dataApp from '../reducers/reducer';
 import { getTaxonApiPath } from '../api/taxon';

@@ -1,14 +1,14 @@
-import { Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
+import { Nullable, UnknownRecord } from '@neonscience/portal-core-components/types/core';
 import {
   ReleaseDataProductBundles,
   DataProductBundle as NeonDataProductBundle,
   BundledDataProduct,
-} from 'portal-core-components/lib/types/neonApi';
+} from '@neonscience/portal-core-components/types/neonApi';
 import {
   exists,
   existsNonEmpty,
   isStringNonEmpty,
-} from 'portal-core-components/lib/util/typeUtil';
+} from '@neonscience/portal-core-components/util/typeUtil';
 
 import { AjaxResponse } from 'rxjs/ajax';
 import {

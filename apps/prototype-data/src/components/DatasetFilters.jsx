@@ -11,7 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ClearIcon from '@mui/icons-material/Clear';
 import FilterIcon from '@mui/icons-material/FilterList';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterScienceTeam from './FilterScienceTeam';

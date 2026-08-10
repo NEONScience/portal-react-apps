@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import Collapse from '@mui/material/Collapse';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 

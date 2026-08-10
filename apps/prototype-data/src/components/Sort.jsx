@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import AscIcon from '@mui/icons-material/ArrowDownward';
 import DescIcon from '@mui/icons-material/ArrowUpward';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 

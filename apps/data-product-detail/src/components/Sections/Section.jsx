@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 // Theme and override styles are (re)introduced here because without them
 // the primary color is lost and the expansion panel layout gets messed up.

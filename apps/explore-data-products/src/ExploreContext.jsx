@@ -11,10 +11,10 @@ import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import {
   APP_STATUS,

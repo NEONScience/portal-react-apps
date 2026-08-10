@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 import Typography from '@mui/material/Typography';
 
 import FilterContainer from '../containers/FilterContainer';

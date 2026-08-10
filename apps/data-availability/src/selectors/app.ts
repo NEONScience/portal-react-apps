@@ -5,11 +5,11 @@ import {
 } from 'reselect';
 import isEqual from 'lodash/isEqual';
 
-import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { Nullable } from 'portal-core-components/lib/types/core';
-import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
+import ReleaseService from '@neonscience/portal-core-components/service/ReleaseService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
+import { DoiStatusType } from '@neonscience/portal-core-components/types/neonApi';
 
 import {
   BaseStoreAppState,

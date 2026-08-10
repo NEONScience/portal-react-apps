@@ -6,9 +6,9 @@ import remarkGfm from 'remark-gfm';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
-import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import ComponentErrorBoundary from '@neonscience/portal-core-components/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from '@neonscience/portal-core-components/components/Error/CustomComponentFallback';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 

@@ -3,11 +3,11 @@ import React from 'react';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
-import DocumentList from 'portal-core-components/lib/components/Documents/DocumentList';
-import DocumentSelect from 'portal-core-components/lib/components/Documents/DocumentSelect';
+import DocumentList from '@neonscience/portal-core-components/components/Documents/DocumentList';
+import DocumentSelect from '@neonscience/portal-core-components/components/Documents/DocumentSelect';
 
-import DocumentService from 'portal-core-components/lib/service/DocumentService';
-import { existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import DocumentService from '@neonscience/portal-core-components/service/DocumentService';
+import { existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

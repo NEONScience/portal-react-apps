@@ -6,8 +6,8 @@ import ExpandIcon from '@mui/icons-material/Add';
 import CollapseIcon from '@mui/icons-material/Remove';
 import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 

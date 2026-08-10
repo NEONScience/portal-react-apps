@@ -9,10 +9,10 @@ import PropTypes from 'prop-types';
 
 import { Graph } from 'react-d3-graph';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
 import { GRAPH_COLORS } from '../../util/appUtil';
 

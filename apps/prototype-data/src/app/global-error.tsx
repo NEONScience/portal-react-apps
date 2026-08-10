@@ -2,8 +2,8 @@
 
 import React from 'react';
 
-import NeonErrorPage from 'portal-core-components/lib/components/NeonPage/NeonErrorPage';
-import NeonThemeProvider from 'portal-core-components/lib/components/Theme/NeonThemeProvider';
+import NeonErrorPage from '@neonscience/portal-core-components/components/NeonPage/NeonErrorPage';
+import NeonThemeProvider from '@neonscience/portal-core-components/components/Theme/NeonThemeProvider';
 
 export default function GlobalError({
   error,

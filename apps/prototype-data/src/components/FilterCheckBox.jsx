@@ -6,8 +6,8 @@ import Chip from '@mui/material/Chip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Typography from '@mui/material/Typography';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 const useStyles = makeStyles()((theme) => ({
   formControl: {

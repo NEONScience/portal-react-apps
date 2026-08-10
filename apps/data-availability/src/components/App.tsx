@@ -12,17 +12,17 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
-import SidebarFilter from 'portal-core-components/lib/components/SidebarFilter/SidebarFilter';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage/NeonPage';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
+import ReleaseFilter from '@neonscience/portal-core-components/components/ReleaseFilter/ReleaseFilter';
+import SidebarFilter from '@neonscience/portal-core-components/components/SidebarFilter/SidebarFilter';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { Nullable } from 'portal-core-components/lib/types/core';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import DataProductSelect from './controls/DataProductSelect';
 import AvailabilitySection from './availability/AvailabilitySection';

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
-import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
-import NeonThemeProvider from 'portal-core-components/lib/components/Theme/NeonThemeProvider';
+import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
+import NeonRouter from '@neonscience/portal-core-components/components/NeonRouter';
+import NeonThemeProvider from '@neonscience/portal-core-components/components/Theme/NeonThemeProvider';
 
 import PrototypeContext from './PrototypeContext';
 import PrototypePage from './PrototypePage';

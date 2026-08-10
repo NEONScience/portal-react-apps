@@ -3,8 +3,8 @@ import React from 'react';
 
 import Chip from '@mui/material/Chip';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

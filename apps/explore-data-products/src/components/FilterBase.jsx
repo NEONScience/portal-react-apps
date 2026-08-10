@@ -6,8 +6,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import ClearIcon from '@mui/icons-material/Clear';
 
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
   filter: {

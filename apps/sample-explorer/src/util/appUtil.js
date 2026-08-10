@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { COLORS } from 'portal-core-components/lib/components/Theme/Theme';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { COLORS } from '@neonscience/portal-core-components/components/Theme/Theme';
 import { Parser } from 'json2csv';
 
 import { QUERY_TYPE } from './queryUtil';

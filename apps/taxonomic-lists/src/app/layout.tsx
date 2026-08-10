@@ -14,7 +14,7 @@ import './assets/css/drupal-fonts.css';
 import './assets/css/global-styles.css';
 
 // DO NOT REMOVE OR EDIT THIS LINE WITHOUT UPDATING
-// portal-core-components/scripts/sync-assets.mjs
+// @neonscience/portal-core-components/bin/sync-assets.js
 // This hash will be updated whenever fresh cached
 // assets are fetched.
 // -----------------------------------------------------------------------------

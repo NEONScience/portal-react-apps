@@ -1,4 +1,4 @@
-import AsyncFlow from 'portal-core-components/lib/flow/AsyncFlow';
+import AsyncFlow from '@neonscience/portal-core-components/flow/AsyncFlow';
 
 import AppState from '../store/appState';
 import AppActions, {

@@ -1,7 +1,7 @@
 import { keyframes } from 'tss-react';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 // const blurOverlay = keyframes({
 //   '0%, 100%': {

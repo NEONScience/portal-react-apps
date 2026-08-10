@@ -1,4 +1,4 @@
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 import { taxonTypes } from './taxonTypes';
 

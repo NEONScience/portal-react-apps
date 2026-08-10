@@ -10,11 +10,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
 
-import LoginRequiredCard from 'portal-core-components/lib/components/Card/LoginRequiredCard';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import LoginRequiredCard from '@neonscience/portal-core-components/components/Card/LoginRequiredCard';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
 import SelectSampleIdentifier from '../Queries/SelectSampleIdentifier';
 import QueryBySampleTag from '../Queries/QueryBySampleTag';

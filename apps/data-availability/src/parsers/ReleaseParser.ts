@@ -1,5 +1,5 @@
-import { UnknownRecord } from 'portal-core-components/lib/types/core';
-import { existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { UnknownRecord } from '@neonscience/portal-core-components/types/core';
+import { existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import { AjaxResponse } from 'rxjs/ajax';
 import { DataProduct, Release } from '../types/store';

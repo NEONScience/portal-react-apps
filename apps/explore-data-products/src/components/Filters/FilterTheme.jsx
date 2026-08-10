@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 import { useTheme } from '@mui/material/styles';
 
 import ExploreContext from '../../ExploreContext';

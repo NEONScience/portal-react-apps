@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 
 import debounce from 'lodash/debounce';
 
-import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import AnalyticsService from '@neonscience/portal-core-components/service/AnalyticsService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';

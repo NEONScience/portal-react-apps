@@ -1,11 +1,11 @@
-import AsyncFlow from 'portal-core-components/lib/flow/AsyncFlow';
+import AsyncFlow from '@neonscience/portal-core-components/flow/AsyncFlow';
 import {
   AsyncState,
   AsyncFlowHandler,
   AsyncActionType,
   FlowActionTypes,
-} from 'portal-core-components/lib/types/asyncFlow';
-import { Nullable } from 'portal-core-components/lib/types/core';
+} from '@neonscience/portal-core-components/types/asyncFlow';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
 
 import AppActions from '../app';
 import ProductParser from '../../parsers/ProductParser';

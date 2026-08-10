@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
 
 import { fetch as fetchPolyfill } from 'whatwg-fetch';
 import { getTaxonDownloadApiPath } from '../../api/taxon';

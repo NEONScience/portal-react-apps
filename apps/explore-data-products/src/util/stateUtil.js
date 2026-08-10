@@ -1,9 +1,9 @@
 import isEqual from 'lodash/isEqual';
 
-import ExternalHost from 'portal-core-components/lib/components/ExternalHost/ExternalHost';
-import BundleService from 'portal-core-components/lib/service/BundleService';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import ExternalHost from '@neonscience/portal-core-components/components/ExternalHost/ExternalHost';
+import BundleService from '@neonscience/portal-core-components/service/BundleService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import {
   /* constants */

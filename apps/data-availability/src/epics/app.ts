@@ -1,12 +1,12 @@
 import { Observable, of } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL/NeonGraphQL';
-import EpicService from 'portal-core-components/lib/flow/EpicService';
-import { AnyObject, UnknownRecord } from 'portal-core-components/lib/types/core';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { AsyncParamAction } from 'portal-core-components/lib/types/asyncFlow';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL/NeonGraphQL';
+import EpicService from '@neonscience/portal-core-components/flow/EpicService';
+import { AnyObject, UnknownRecord } from '@neonscience/portal-core-components/types/core';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { AsyncParamAction } from '@neonscience/portal-core-components/types/asyncFlow';
 
 import AppActions from '../actions/app';
 import AppFlow from '../actions/flows/app';

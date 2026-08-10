@@ -17,8 +17,8 @@ import DataTablesBootstrap5, { ApiColumnMethods } from 'datatables.net-bs5';
 
 import 'datatables.net-responsive-bs5';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import { isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 const SEARCH_DELAY_MS = 400;
 

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Chip from '@mui/material/Chip';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';

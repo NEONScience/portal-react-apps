@@ -5,7 +5,7 @@ import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
 import AopViewerIcon from '@mui/icons-material/SatelliteOutlined';
 import SaeViewerIcon from '@mui/icons-material/TimelineOutlined';
 
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 /**
  * Generate a continuous list of "YYYY-MM" strings given an input date range

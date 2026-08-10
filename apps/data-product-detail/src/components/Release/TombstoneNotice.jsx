@@ -7,11 +7,11 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 

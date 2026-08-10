@@ -11,12 +11,12 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Skeleton from '@mui/material/Skeleton';
 
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { AnyObject, Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { AnyObject, Nullable, UnknownRecord } from '@neonscience/portal-core-components/types/core';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
@@ -26,7 +26,7 @@ import { Site } from '../../types/store';
 import { AppActionCreator } from '../../actions/app';
 
 const SiteMap: React.ExoticComponent<AnyObject> = React.lazy(
-  () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
+  () => import('@neonscience/portal-core-components/components/SiteMap/SiteMap'),
 );
 
 const useComponentStyles = makeStyles()((theme: NeonTheme) => ({

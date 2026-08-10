@@ -6,8 +6,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
   formControl: {

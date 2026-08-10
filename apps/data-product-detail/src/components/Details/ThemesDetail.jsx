@@ -3,9 +3,9 @@ import React from 'react';
 import Link from '@mui/material/Link';
 import { useTheme } from '@mui/material/styles';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

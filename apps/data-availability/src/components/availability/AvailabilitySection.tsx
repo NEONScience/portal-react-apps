@@ -13,14 +13,14 @@ import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Skeleton from '@mui/material/Skeleton';
 
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { AnyObject, Nullable } from 'portal-core-components/lib/types/core';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { AnyObject, Nullable } from '@neonscience/portal-core-components/types/core';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
@@ -35,7 +35,7 @@ import {
 } from '../../util/availabilityUtil';
 
 const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
-  () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
+  () => import('@neonscience/portal-core-components/components/DataProductAvailability/DataProductAvailability'),
 );
 
 const useComponentStyles = makeStyles()((theme: NeonTheme) => ({

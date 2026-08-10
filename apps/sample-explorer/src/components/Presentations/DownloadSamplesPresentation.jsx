@@ -19,8 +19,8 @@ import { useTheme } from '@mui/material/styles';
 import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
 
 const DownloadSamplesPresentation = (props) => {
   const {

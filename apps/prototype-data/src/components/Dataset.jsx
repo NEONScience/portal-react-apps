@@ -10,9 +10,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import SiteChip from '@neonscience/portal-core-components/components/SiteChip/SiteChip';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DetailsIcon from '@mui/icons-material/InfoOutlined';
 

@@ -18,19 +18,19 @@ import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
 import SaeViewerIcon from '@mui/icons-material/TimelineOutlined';
 import ProductDetailsIcon from '@mui/icons-material/InfoOutlined';
 
-import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
-import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import AopGeeDataViewer from '@neonscience/portal-core-components/components/AopGEEDataViewer';
+import SplitButton from '@neonscience/portal-core-components/components/Button/SplitButton';
+import DataProductAvailability from '@neonscience/portal-core-components/components/DataProductAvailability';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import DownloadDataButton from '@neonscience/portal-core-components/components/DownloadDataButton';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import ReleaseChip from '@neonscience/portal-core-components/components/Chip/ReleaseChip';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import ExploreContext from '../ExploreContext';
 
@@ -84,7 +84,7 @@ const useStyles = makeStyles()((theme) => ({
   },
   moreIcon: {
     marginBottom: '-3px',
-    fontSize: '16px',
+    fontSize: '1rem',
   },
   startFlex: {
     display: 'flex',

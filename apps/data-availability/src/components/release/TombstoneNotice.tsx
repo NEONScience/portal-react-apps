@@ -7,10 +7,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
 import { TombstoneNoticeState } from '../states/AppStates';

@@ -27,13 +27,13 @@ import Skeleton from '@mui/material/Skeleton';
 import LocationIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';

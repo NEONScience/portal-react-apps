@@ -14,12 +14,12 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import CopyIcon from '@mui/icons-material/Assignment';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import ReleaseMessageCard from '@neonscience/portal-core-components/components/Card/ReleaseMessageCard';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 

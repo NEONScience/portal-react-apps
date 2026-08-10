@@ -10,9 +10,9 @@ import Link from '@mui/material/Link';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import DownloadSampleClassesButton from '../DownloadSampleClassesButton/DownloadSampleClassesButton';
 

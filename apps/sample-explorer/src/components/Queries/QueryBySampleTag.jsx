@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import TextField from '@mui/material/TextField';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
   textField: {

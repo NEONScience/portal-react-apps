@@ -18,8 +18,8 @@ import DownloadIcon from '@mui/icons-material/SaveAlt';
 import fileDownload from 'js-file-download';
 import { Parser } from 'json2csv';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 import DataGrid from '../DataGrid/DataGrid';
 

@@ -22,12 +22,12 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import MaterialTable, { MTableToolbar } from '@material-table/core';
 
-import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
-import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
-import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
-import { COLORS } from 'portal-core-components/lib/components/Theme/Theme';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import ComponentErrorBoundary from '@neonscience/portal-core-components/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from '@neonscience/portal-core-components/components/Error/CustomComponentFallback';
+import SiteChip from '@neonscience/portal-core-components/components/SiteChip/SiteChip';
+import { COLORS } from '@neonscience/portal-core-components/components/Theme/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

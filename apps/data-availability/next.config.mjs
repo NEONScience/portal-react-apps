@@ -20,7 +20,7 @@ const nextConfig = {
   basePath: '/visualizations/data-availability',
   trailingSlash: false,
   reactStrictMode: true,
-  transpilePackages: ['portal-core-components/lib'],
+  transpilePackages: ['@neonscience/portal-core-components'],
   turbopack: {
     root: isBuildContainer ? path.join(__dirname, '..', '..') : undefined,
   },

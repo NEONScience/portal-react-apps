@@ -1,12 +1,12 @@
 import { of, Observable } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 import {
   Nullable,
   AnyObject,
   UnknownRecord,
-} from 'portal-core-components/lib/types/core';
+} from '@neonscience/portal-core-components/types/core';
 import { resolveAny } from '../util/typeUtil';
 
 export type CascadeActionFunction = (param?: unknown) => AnyObject;

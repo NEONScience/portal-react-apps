@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 
-import DialogBase from 'portal-core-components/lib/components/DialogBase';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import DialogBase from '@neonscience/portal-core-components/components/DialogBase';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
@@ -11,10 +11,10 @@ import {
 } from '../util/filterUtil';
 
 const SaeDataViewer = React.lazy(
-  () => import('portal-core-components/lib/components/SaeDataViewer/SaeDataViewer'),
+  () => import('@neonscience/portal-core-components/components/SaeDataViewer/SaeDataViewer'),
 );
 const TimeSeriesViewer = React.lazy(
-  () => import('portal-core-components/lib/components/TimeSeriesViewer'),
+  () => import('@neonscience/portal-core-components/components/TimeSeriesViewer'),
 );
 
 const DataVisualizationDialog = () => {

@@ -7,11 +7,11 @@ import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import ReleaseFilter from '@neonscience/portal-core-components/components/ReleaseFilter';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';

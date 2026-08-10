@@ -4,7 +4,7 @@ import {
 } from 'redux';
 import thunk from 'redux-thunk';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 import dataApp from '../reducers/reducers';
 import { QUERY_TYPE, getQueryTypeNameOptions } from '../util/queryUtil';

@@ -9,8 +9,8 @@ import Tooltip from '@mui/material/Tooltip';
 
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import { existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

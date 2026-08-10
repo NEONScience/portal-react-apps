@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
 
 export const FILTER_KEYS = {
   SEARCH: 'SEARCH',

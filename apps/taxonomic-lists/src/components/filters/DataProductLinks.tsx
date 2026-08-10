@@ -2,9 +2,9 @@ import * as React from 'react';
 import Popover from '@mui/material/Popover';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 /**
  * Style the component using the imported theme

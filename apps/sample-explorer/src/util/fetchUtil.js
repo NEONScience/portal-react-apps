@@ -1,8 +1,8 @@
 import { fetch as fetchPolyfill } from 'whatwg-fetch';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 import { handleError } from './actionUtil';
 
 import {

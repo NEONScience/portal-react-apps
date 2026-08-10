@@ -31,18 +31,18 @@ import InfoIcon from '@mui/icons-material/InfoOutlined';
 import CopyIcon from '@mui/icons-material/Assignment';
 import LinkIcon from '@mui/icons-material/Link';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
 import PagingTable from './PagingTable';
 import { DoiDetail } from '../renderUtil';
 
-const SiteMap = React.lazy(() => import('portal-core-components/lib/components/SiteMap'));
+const SiteMap = React.lazy(() => import('@neonscience/portal-core-components/components/SiteMap'));
 
 const { usePrototypeContextState } = PrototypeContext;
 

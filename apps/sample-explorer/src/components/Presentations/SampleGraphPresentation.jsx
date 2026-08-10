@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import SampleNetwork from '../SampleNetwork/SampleNetwork';
 import { GRAPH_COLORS } from '../../util/appUtil';

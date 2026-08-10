@@ -4,16 +4,16 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewer from 'portal-core-components/lib/components/SaeDataViewer/SaeDataViewer';
-import TimeSeriesViewer from 'portal-core-components/lib/components/TimeSeriesViewer';
-import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import AopGeeDataViewer from '@neonscience/portal-core-components/components/AopGEEDataViewer';
+import SaeDataViewer from '@neonscience/portal-core-components/components/SaeDataViewer/SaeDataViewer';
+import TimeSeriesViewer from '@neonscience/portal-core-components/components/TimeSeriesViewer';
+import ReleaseService from '@neonscience/portal-core-components/service/ReleaseService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';

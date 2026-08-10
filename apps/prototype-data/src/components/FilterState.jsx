@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
 
-import { resolveProps } from 'portal-core-components/lib/util/defaultProps';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -11,7 +11,7 @@ import FilterItemVisibilityButtons from './FilterItemVisibilityButtons';
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
 const MapSelectionButton = React.lazy(
-  () => import('portal-core-components/lib/components/MapSelectionButton'),
+  () => import('@neonscience/portal-core-components/components/MapSelectionButton'),
 );
 
 const defaultProps = {

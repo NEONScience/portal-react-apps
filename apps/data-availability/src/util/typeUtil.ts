@@ -1,5 +1,5 @@
-import { UnknownRecord, NullableRecord } from 'portal-core-components/lib/types/core';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { UnknownRecord, NullableRecord } from '@neonscience/portal-core-components/types/core';
+import { exists, existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 /**
  * Resolves any value to a record by

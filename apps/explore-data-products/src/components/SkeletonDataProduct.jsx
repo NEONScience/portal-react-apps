@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 
 import Skeleton from '@mui/material/Skeleton';
 
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 const useStyles = makeStyles()((theme) => ({
   productCard: {

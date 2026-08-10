@@ -5,19 +5,19 @@ import Divider from '@mui/material/Divider';
 import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 
-import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
-import ExternalHost from 'portal-core-components/lib/components/ExternalHost';
-import { makeStyles } from 'portal-core-components/lib/components/Theme/makeStyles';
+import DataProductAvailability from '@neonscience/portal-core-components/components/DataProductAvailability';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import DownloadDataButton from '@neonscience/portal-core-components/components/DownloadDataButton';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import DownloadStepForm from '@neonscience/portal-core-components/components/DownloadStepForm';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import ExternalHostInfo from '@neonscience/portal-core-components/components/ExternalHostInfo';
+import ExternalHost from '@neonscience/portal-core-components/components/ExternalHost';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
@@ -25,7 +25,7 @@ import SkeletonSection from './SkeletonSection';
 import TombstoneNotice from '../Release/TombstoneNotice';
 
 const SiteMap = React.lazy(
-  () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
+  () => import('@neonscience/portal-core-components/components/SiteMap/SiteMap'),
 );
 
 const useStyles = makeStyles()((theme) => ({

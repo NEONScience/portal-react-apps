@@ -1,4 +1,4 @@
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
 
 import { BaseStoreAppState } from '../types/store';
 

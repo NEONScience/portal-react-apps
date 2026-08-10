@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 import { useTheme } from '@mui/material/styles';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
 const DownloadSampleClassesButton = (props) => {
   const {

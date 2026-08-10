@@ -33,7 +33,7 @@ type RenderTreeProps = {
   focusRadius: number;
   nodes: PositionedTreeNode[];
   labelConfig: LabelRuntimeConfig;
-  onClickNode?: (node: TreeNode) => void;
+  onClickNode?: (node: PositionedTreeNode) => void;
   nodeById: Map<string, PositionedTreeNode>;
   childNodes: PositionedTreeNode[];
   links: LinkData[];
@@ -63,7 +63,7 @@ type BuildLinkPathProps = {
 type RenderNodeSymbolsProps = {
   nodeGroups: any;
   symbolGenerator: any;
-  onClickNode?: (node: TreeNode) => void;
+  onClickNode?: (node: PositionedTreeNode) => void;
 };
 
 type RenderNodeLabelsProps = {
@@ -101,7 +101,7 @@ type RenderNodesProps = {
   graphLayer: GraphSelection;
   nodes: PositionedTreeNode[];
   labelConfig: LabelRuntimeConfig;
-  onClickNode?: (node: TreeNode) => void;
+  onClickNode?: (node: PositionedTreeNode) => void;
 };
 
 type RenderLinksProps = {
@@ -121,6 +121,60 @@ const symbolMap = Object.freeze({
 });
 const DEFAULT_LINK_STROKE = '#d7d9d9';
 const DEFAULT_LINK_STROKE_WIDTH = 1.5;
+
+const isFocusNode = (
+  node: PositionedTreeNode,
+) => (
+  node.symbolType === NODE_TYPES.FOCUS
+);
+
+const isParentNode = (
+  node: PositionedTreeNode,
+) => (
+  node.symbolType === NODE_TYPES.PARENT
+);
+
+const isPreviousParentNode = (
+  node: PositionedTreeNode,
+) => (
+  node.symbolType === NODE_TYPES.PREVIOUS
+  && node.previousRelationship === RELATIONSHIPS.PARENT
+);
+
+const isChildSideNode = (
+  node: PositionedTreeNode,
+) => (
+  node.symbolType === NODE_TYPES.CHILD
+  || node.symbolType === NODE_TYPES.PREVIOUS
+);
+
+const shouldReverseLink = (
+  sourceNode: PositionedTreeNode,
+  targetNode: PositionedTreeNode,
+) => (
+  isFocusNode(sourceNode)
+  && (
+    isParentNode(targetNode)
+    || isPreviousParentNode(targetNode)
+  )
+);
+
+const isParentLink = (
+  sourceNode: PositionedTreeNode,
+  targetNode: PositionedTreeNode,
+) => (
+  (
+    isParentNode(sourceNode)
+    || sourceNode.symbolType === NODE_TYPES.PREVIOUS
+  )
+  && isFocusNode(targetNode)
+);
+
+const isChildLink = (
+  targetNode: PositionedTreeNode,
+) => (
+  isChildSideNode(targetNode)
+);
 
 const buildParentLinkPath = ({
   sourceNode,
@@ -157,35 +211,24 @@ const buildLinkPath = ({
 }: BuildLinkPathProps) => {
   let s = sourceNode;
   let t = targetNode;
-  if (
-    s.symbolType === NODE_TYPES.FOCUS && (
-      t.symbolType === NODE_TYPES.PARENT || (
-        t.symbolType === NODE_TYPES.PREVIOUS && t.previousRelationship === RELATIONSHIPS.PARENT
-      )
-    )
-  ) {
+  if (shouldReverseLink(s, t)) {
     [s, t] = [t, s];
   }
-  if (
-    (
-      s.symbolType === NODE_TYPES.PARENT || s.symbolType === NODE_TYPES.PREVIOUS
-    ) && t.symbolType === NODE_TYPES.FOCUS
-  ) {
+  if (isParentLink(s, t)) {
     return buildParentLinkPath({
       sourceNode: s,
       parentSpineX,
       parentLabelToLineGap,
     });
   }
-  if (
-    t.symbolType === NODE_TYPES.CHILD || t.symbolType === NODE_TYPES.PREVIOUS
-  ) {
+  if (isChildLink(t)) {
     return buildChildLinkPath({
       sourceNode: s,
       targetNode: t,
       labelPadding,
     });
   }
+
   return null;
 };
 
@@ -209,7 +252,7 @@ const renderNodeSymbols = ({
     .on('mousedown', (event: MouseEvent) => {
       event.stopPropagation();
     })
-    .on('click', (event: MouseEvent, d: TreeNode) => {
+    .on('click', (event: MouseEvent, d: PositionedTreeNode) => {
       event.stopPropagation();
       if (onClickNode) {
         onClickNode(d);

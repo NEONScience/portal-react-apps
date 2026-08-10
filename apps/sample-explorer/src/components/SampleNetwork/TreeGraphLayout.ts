@@ -84,7 +84,7 @@ export const buildConfig = (
   const layoutScale = layout.scale ?? LAYOUT_DEFAULTS.scale;
   const labelFontSize = labels.fontSize ?? LABEL_DEFAULTS.fontSize;
   const labelFontFamily = labels.fontFamily ?? LABEL_DEFAULTS.fontFamily;
-  const labelPadding = labels.labelPadding ?? (LABEL_DEFAULTS.padding * layoutScale);
+  const labelPadding = labels.labelPadding ?? (LABEL_DEFAULTS.labelPadding * layoutScale);
   return {
     labelFont:
       `${labelFontSize}px ${labelFontFamily}`,

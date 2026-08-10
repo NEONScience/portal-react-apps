@@ -29,8 +29,13 @@ type TreeGraphProps = {
   onClickNode?: (node: TreeNode) => void;
 };
 
+const EMPTY_GRAPH_DATA: GraphData = {
+  nodes: [],
+  links: [],
+};
+
 const TreeWithParents = ({
-  data = { nodes: [], links: [] },
+  data = EMPTY_GRAPH_DATA,
   visitedSamples,
   config = {},
   containerHeight = 0,

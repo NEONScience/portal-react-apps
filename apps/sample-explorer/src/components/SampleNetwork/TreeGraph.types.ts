@@ -1,7 +1,7 @@
 import {
   NODE_TYPES,
   RELATIONSHIPS,
-} from "./TreeGraphConstants";
+} from './TreeGraphConstants';
 
 export type NodeType = typeof NODE_TYPES[keyof typeof NODE_TYPES];
 
@@ -17,10 +17,7 @@ export type NodeStyleOverrides = Record<
   Partial<NodeStyle>
 >;
 
-export type PreviousRelationship =
-  typeof RELATIONSHIPS[
-    keyof typeof RELATIONSHIPS
-  ];
+export type PreviousRelationship = typeof RELATIONSHIPS[keyof typeof RELATIONSHIPS];
 
 export type SampleIdentifier = {
   sampleUuid: string;

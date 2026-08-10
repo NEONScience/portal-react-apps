@@ -38,8 +38,7 @@ function SampleGraphPresentation(props) {
 
   const { classes } = useStyles();
 
-  const neonContextSessionState =
-    NeonContext.useNeonContextSessionState();
+  const neonContextSessionState = NeonContext.useNeonContextSessionState();
   return (
     <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-graph-section">
       <Typography variant="h4" gutterBottom>
@@ -93,7 +92,7 @@ function SampleGraphPresentation(props) {
 
           onQueryClick(url, null, headers);
         }}
-    />
+      />
     </div>
   );
 }
@@ -102,6 +101,8 @@ SampleGraphPresentation.propTypes = {
   onQueryClick: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   graphData: PropTypes.arrayOf(PropTypes.any).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  visitedSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default SampleGraphPresentation;

@@ -1,8 +1,6 @@
-import {
+import React, {
   useRef,
   useState,
-  useEffect,
-  useCallback,
   useLayoutEffect,
 } from 'react';
 
@@ -40,10 +38,10 @@ const treeConfig = {
   },
   labels: {
     fontSize: 13,
-    fontFamily: "Inter, Helvetica, Arial, sans-serif",
+    fontFamily: 'Inter, Helvetica, Arial, sans-serif',
     labelPadding: 8,
     parentLabelLineGap: 5,
-    verticalOffset: "0.32em",
+    verticalOffset: '0.32em',
   },
   svg: {
     bottomPadding: 100,
@@ -90,12 +88,10 @@ const SampleNetwork = (props) => {
   const { canAccessData } = neonAuthContextSessionState;
 
   const [height, setHeight] = useState(600);
-
   // Observe wrapper instead of container.
   // Observing container and updating its height
   // can trigger ResizeObserver loop warnings.
   const wrapperRef = useRef(null);
-
   // stores a mutable value between renders,
   // does not trigger re-render when changed. f94feec (Complete TreeWithParents refactor)
   const clickCooldownRef = useRef(false);
@@ -103,28 +99,21 @@ const SampleNetwork = (props) => {
   // Keeps the height of the container in sync with the wrapper.
   useLayoutEffect(() => {
     if (!wrapperRef.current) {
-      return;
+      return undefined;
     }
-
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
 
       if (!entry) {
         return;
       }
-
       const newHeight = Math.ceil(entry.contentRect.height);
-
       if (newHeight > 100) {
         setHeight(newHeight);
       }
     });
-
     observer.observe(wrapperRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, []);
   const resetClickCooldown = () => {
     setTimeout(() => {
@@ -163,19 +152,19 @@ const SampleNetwork = (props) => {
         className={classes.container}
         style={{ height }}
       >
-      <TreeGraph
-        data={graphData}
-        visitedSamples={visitedSamples}
-        config={treeConfig}
-        containerHeight={height}
-        onClickNode={(nodeData) => {
-          if (!canAccessData) {
-            return;
-          }
+        <TreeGraph
+          data={graphData}
+          visitedSamples={visitedSamples}
+          config={treeConfig}
+          containerHeight={height}
+          onClickNode={(nodeData) => {
+            if (!canAccessData) {
+              return;
+            }
 
-          handleNodeClick(nodeData);
-        }}
-      />
+            handleNodeClick(nodeData);
+          }}
+        />
       </div>
     </div>
   );
@@ -191,5 +180,26 @@ SampleNetwork.propTypes = {
       }),
     ).isRequired,
   }).isRequired,
+  visitedSamples: PropTypes.arrayOf(
+    PropTypes.shape({
+      sampleUuid: PropTypes.string.isRequired,
+
+      parentSampleIdentifiers: PropTypes.arrayOf(
+        PropTypes.shape({
+          sampleUuid: PropTypes.string,
+          sampleTag: PropTypes.string,
+          sampleClass: PropTypes.string,
+        }),
+      ).isRequired,
+
+      childSampleIdentifiers: PropTypes.arrayOf(
+        PropTypes.shape({
+          sampleUuid: PropTypes.string,
+          sampleTag: PropTypes.string,
+          sampleClass: PropTypes.string,
+        }),
+      ).isRequired,
+    }),
+  ).isRequired,
 };
 export default SampleNetwork;

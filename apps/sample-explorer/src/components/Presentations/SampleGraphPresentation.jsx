@@ -89,7 +89,7 @@ const SampleGraphPresentation = (props) => {
 
           onQueryClick(url, null, headers);
         }}
-    />
+      />
     </div>
   );
 };
@@ -98,6 +98,8 @@ SampleGraphPresentation.propTypes = {
   onQueryClick: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   graphData: PropTypes.arrayOf(PropTypes.any).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  visitedSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default SampleGraphPresentation;

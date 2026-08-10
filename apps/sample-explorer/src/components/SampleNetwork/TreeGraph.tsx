@@ -1,23 +1,23 @@
-import {
+import React, {
   useLayoutEffect,
-  useRef
-} from "react";
+  useRef,
+} from 'react';
 import {
   buildGraphData,
   prepareTreeData,
   computeLayout,
   buildConfig,
-} from "./TreeGraphLayout";
+} from './TreeGraphLayout';
 import {
   renderTree,
   getGraphContainer,
-} from "./TreeGraphRenderer";
+} from './TreeGraphRenderer';
 import type {
   TreeNode,
   SampleView,
   TreeConfig,
   GraphData,
-} from "./TreeGraph.types";
+} from './TreeGraph.types';
 
 type TreeGraphProps = {
   data?: GraphData;
@@ -54,10 +54,11 @@ const TreeWithParents = ({
       layoutConfig,
     } = buildConfig(config);
     if (focusNodes.length !== 1) {
+      // eslint-disable-next-line no-console
       console.error(
-        `TreeWithParents requires exactly one focus node. Found ${focusNodes.length}.`
+        `TreeWithParents requires exactly one focus node. Found ${focusNodes.length}.`,
       );
-      return () => { container.selectAll("*").remove(); };
+      return () => { container.selectAll('*').remove(); };
     }
     const {
       focusNode,
@@ -72,7 +73,7 @@ const TreeWithParents = ({
       labelFont,
     });
     // keep the graph clean by removing any existing SVG elements before rendering a new one.
-    container.selectAll("*").remove();
+    container.selectAll('*').remove();
     const {
       positionedNodes,
       positionedNodeById,
@@ -105,7 +106,7 @@ const TreeWithParents = ({
       links: data.links,
       layoutConfig,
     });
-    return () => { container.selectAll("*").remove(); };
+    return () => { container.selectAll('*').remove(); };
   }, [
     data,
     config,
@@ -117,10 +118,10 @@ const TreeWithParents = ({
     <div
       ref={ref}
       style={{
-        width: "100%",
-        overflow: "visible",
+        width: '100%',
+        overflow: 'visible',
       }}
     />
-  )
+  );
 };
 export default TreeWithParents;

@@ -60,22 +60,22 @@ export type LinkConfigOverrides = {
 };
 
 export type LayoutRuntimeConfig = {
-  LEFT_MARGIN: number;
-  TOP_MARGIN: number;
-  LABEL_PADDING: number;
-  ROW_SPACING: number;
-  COLUMN_SPACING: number;
-  PARENT_LABEL_TO_LINE_GAP: number;
-  PARENT_CONNECTOR_LENGTH: number;
-  SVG_CONTAINER_PADDING: number;
-  SVG_BOTTOM_PADDING: number;
+  leftMargin: number;
+  topMargin: number;
+  labelPadding: number;
+  rowSpacing: number;
+  columnSpacing: number;
+  parentLabelToLineGap: number;
+  parentConnectorLength: number;
+  svgContainerPadding: number;
+  svgBottomPadding: number;
 };
 
 export type LabelRuntimeConfig = {
-  LABEL_PADDING: number;
-  LABEL_VERTICAL_OFFSET: string;
-  LABEL_FONT_SIZE: number;
-  LABEL_FONT_FAMILY: string;
+  labelPadding: number;
+  labelVerticalOffset: string;
+  labelFontSize: number;
+  labelFontFamily: string;
 };
 
 export type TreeConfig = {
@@ -99,8 +99,8 @@ export type GraphData = {
 
 export type LinkLayoutConfig = {
   parentSpineX: number;
-  LABEL_PADDING: number;
-  PARENT_LABEL_TO_LINE_GAP: number;
+  labelPadding: number;
+  parentLabelToLineGap: number;
 };
 
 export type TreeNode = {

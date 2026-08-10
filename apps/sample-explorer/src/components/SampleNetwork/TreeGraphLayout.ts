@@ -89,21 +89,21 @@ export const buildConfig = (
     labelFont:
       `${labelFontSize}px ${labelFontFamily}`,
     labelConfig: {
-      LABEL_PADDING: labelPadding,
-      LABEL_VERTICAL_OFFSET: labels.verticalOffset ?? LABEL_DEFAULTS.verticalOffset,
-      LABEL_FONT_SIZE: labelFontSize,
-      LABEL_FONT_FAMILY: labelFontFamily,
+      labelPadding,
+      labelVerticalOffset: labels.verticalOffset ?? LABEL_DEFAULTS.verticalOffset,
+      labelFontSize,
+      labelFontFamily,
     },
     layoutConfig: {
-      LEFT_MARGIN: layout.leftMargin ?? LAYOUT_DEFAULTS.leftMargin,
-      TOP_MARGIN: layout.topMargin ?? LAYOUT_DEFAULTS.topMargin,
-      LABEL_PADDING: labelPadding,
-      ROW_SPACING: (spacing.row ?? SPACING_DEFAULTS.row) * layoutScale,
-      COLUMN_SPACING: (spacing.column ?? SPACING_DEFAULTS.column) * layoutScale,
-      PARENT_LABEL_TO_LINE_GAP: labels.parentLabelLineGap ?? (LABEL_DEFAULTS.parentLabelLineGap * layoutScale),
-      PARENT_CONNECTOR_LENGTH: (layout.parentConnectorLength ?? LAYOUT_DEFAULTS.parentConnectorLength) * layoutScale,
-      SVG_CONTAINER_PADDING: svg.containerPadding ?? SVG_DEFAULTS.containerPadding,
-      SVG_BOTTOM_PADDING: svg.bottomPadding ?? (SVG_DEFAULTS.bottomPadding * layoutScale),
+      leftMargin: layout.leftMargin ?? LAYOUT_DEFAULTS.leftMargin,
+      topMargin: layout.topMargin ?? LAYOUT_DEFAULTS.topMargin,
+      labelPadding,
+      rowSpacing: (spacing.row ?? SPACING_DEFAULTS.row) * layoutScale,
+      columnSpacing: (spacing.column ?? SPACING_DEFAULTS.column) * layoutScale,
+      parentLabelToLineGap: labels.parentLabelLineGap ?? (LABEL_DEFAULTS.parentLabelLineGap * layoutScale),
+      parentConnectorLength: (layout.parentConnectorLength ?? LAYOUT_DEFAULTS.parentConnectorLength) * layoutScale,
+      svgContainerPadding: svg.containerPadding ?? SVG_DEFAULTS.containerPadding,
+      svgBottomPadding: svg.bottomPadding ?? (SVG_DEFAULTS.bottomPadding * layoutScale),
     },
   };
 };
@@ -206,9 +206,6 @@ const getLongestParentLabelWidth = (
 const getFocusNodeRadius = (focusNode: StyledTreeNode) => Math.sqrt(
   focusNode.style.symbolSize / Math.PI,
 );
-// const getFocusNodeRadius = (focusNode: StyledTreeNode) => {
-//   return Math.sqrt(focusNode.style.symbolSize / Math.PI);
-// };
 
 export const buildGraphData = ({
   data,
@@ -300,21 +297,21 @@ export const computeLayout = ({
   layoutConfig,
 }: ComputeLayoutProps): ComputeLayoutResult => {
   const {
-    LEFT_MARGIN,
-    TOP_MARGIN,
-    ROW_SPACING,
-    COLUMN_SPACING,
-    LABEL_PADDING,
-    PARENT_LABEL_TO_LINE_GAP,
-    PARENT_CONNECTOR_LENGTH,
-    SVG_CONTAINER_PADDING,
-    SVG_BOTTOM_PADDING,
+    leftMargin,
+    topMargin,
+    rowSpacing,
+    columnSpacing,
+    labelPadding,
+    parentLabelToLineGap,
+    parentConnectorLength,
+    svgContainerPadding,
+    svgBottomPadding,
   } = layoutConfig;
 
   const positionedParentNodes: PositionedTreeNode[] = parentNodes.map((n, i) => ({
     ...n,
-    x: LEFT_MARGIN,
-    y: TOP_MARGIN + (i * ROW_SPACING),
+    x: leftMargin,
+    y: topMargin + (i * rowSpacing),
   }));
 
   const firstParent = positionedParentNodes.length > 0
@@ -323,12 +320,9 @@ export const computeLayout = ({
 
   const positionedFocusNode: PositionedTreeNode = {
     ...focusNode,
-    x:
-      LEFT_MARGIN + longestParentLabelWidth + LABEL_PADDING + PARENT_LABEL_TO_LINE_GAP + PARENT_CONNECTOR_LENGTH,
-    y:
-    positionedParentNodes.length === 0
-      ? TOP_MARGIN
-      : positionedParentNodes[positionedParentNodes.length - 1].y + ROW_SPACING,
+    x: leftMargin + longestParentLabelWidth + labelPadding + parentLabelToLineGap + parentConnectorLength,
+    y: positionedParentNodes.length === 0
+      ? topMargin : positionedParentNodes[positionedParentNodes.length - 1].y + rowSpacing,
   };
 
   const parentSpineX = positionedFocusNode.x;
@@ -336,9 +330,9 @@ export const computeLayout = ({
   const positionedChildNodes: PositionedTreeNode[] = childNodes.map((n, i) => ({
     ...n,
     x:
-      positionedFocusNode.x + COLUMN_SPACING,
+      positionedFocusNode.x + columnSpacing,
     y:
-      positionedFocusNode.y + ((i + 1) * ROW_SPACING),
+      positionedFocusNode.y + ((i + 1) * rowSpacing),
   }));
 
   const positionedNodes: PositionedTreeNode[] = [
@@ -362,8 +356,8 @@ export const computeLayout = ({
     ) : positionedFocusNode.y;
 
   const svgHeight = Math.max(
-    containerHeight - SVG_CONTAINER_PADDING,
-    maxNodeY + SVG_BOTTOM_PADDING,
+    containerHeight - svgContainerPadding,
+    maxNodeY + svgBottomPadding,
   );
 
   return {

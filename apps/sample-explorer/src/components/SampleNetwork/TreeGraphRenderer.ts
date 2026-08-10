@@ -222,10 +222,10 @@ const renderNodeLabels = ({
   labelConfig,
 }: RenderNodeLabelsProps) => {
   const {
-    LABEL_PADDING,
-    LABEL_VERTICAL_OFFSET,
-    LABEL_FONT_SIZE,
-    LABEL_FONT_FAMILY,
+    labelPadding,
+    labelVerticalOffset,
+    labelFontSize,
+    labelFontFamily,
   } = labelConfig;
   const textLabels = nodeGroups
     .append('text')
@@ -236,19 +236,19 @@ const renderNodeLabels = ({
         .node() as SVGGraphicsElement;
       const bbox = path.getBBox();
       return (
-        bbox.x + bbox.width + LABEL_PADDING
+        bbox.x + bbox.width + labelPadding
       );
     })
-    .attr('dy', LABEL_VERTICAL_OFFSET)
+    .attr('dy', labelVerticalOffset)
     .text((d: PositionedTreeNode) => d.sampleName ?? '');
   textLabels
     .attr(
       'font-size',
-      LABEL_FONT_SIZE,
+      labelFontSize,
     )
     .attr(
       'font-family',
-      LABEL_FONT_FAMILY,
+      labelFontFamily,
     );
 };
 
@@ -358,18 +358,14 @@ const renderLinks = ({
 }: RenderLinksProps) => {
   const {
     parentSpineX,
-    LABEL_PADDING,
-    PARENT_LABEL_TO_LINE_GAP,
+    labelPadding,
+    parentLabelToLineGap,
   } = linkLayoutConfig;
   const spineStartX = focusNode.x;
   const spineStartY = focusNode.y;
   const spineEndY = childNodes.length > 0
     ? childNodes[childNodes.length - 1].y
     : spineStartY;
-  // const spineEndY = childNodes.length > 0
-  //   ? childNodes.reduce((a, b) => (
-  //     a.y > b.y ? a : b
-  //   )).y : spineStartY;
   if (childNodes.length > 0) {
     linkLayer
       .append('path')
@@ -396,8 +392,8 @@ const renderLinks = ({
         sourceNode,
         targetNode,
         parentSpineX,
-        labelPadding: LABEL_PADDING,
-        parentLabelToLineGap: PARENT_LABEL_TO_LINE_GAP,
+        labelPadding,
+        parentLabelToLineGap,
       });
     });
 };
@@ -441,10 +437,8 @@ export const renderTree = ({
   });
   const linkLayoutConfig: LinkLayoutConfig = {
     parentSpineX,
-    LABEL_PADDING:
-      labelConfig.LABEL_PADDING,
-    PARENT_LABEL_TO_LINE_GAP:
-      layoutConfig.PARENT_LABEL_TO_LINE_GAP,
+    labelPadding: labelConfig.labelPadding,
+    parentLabelToLineGap: layoutConfig.parentLabelToLineGap,
   };
   renderLinks({
     linkLayer,

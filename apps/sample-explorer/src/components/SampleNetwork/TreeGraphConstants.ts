@@ -26,10 +26,9 @@ export const SPACING_DEFAULTS = {
 } as const;
 
 export const LABEL_DEFAULTS = {
-  padding: 8,
+  labelPadding: 8,
   fontSize: 13,
-  fontFamily:
-    'Inter, Helvetica, Arial, sans-serif',
+  fontFamily: 'Inter, Helvetica, Arial, sans-serif',
   parentLabelLineGap: 5,
   verticalOffset: '0.32em',
 } as const;

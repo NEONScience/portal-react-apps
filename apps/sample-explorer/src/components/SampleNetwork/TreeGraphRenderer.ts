@@ -228,7 +228,6 @@ const buildLinkPath = ({
       labelPadding,
     });
   }
-
   return null;
 };
 

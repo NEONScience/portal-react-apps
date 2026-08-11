@@ -2,6 +2,7 @@ import { Observable, of } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi/NeonApi';
 import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL/NeonGraphQL';
 import EpicService from '@neonscience/portal-core-components/flow/EpicService';
 import { AnyObject, UnknownRecord } from '@neonscience/portal-core-components/types/core';
@@ -97,8 +98,6 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -128,8 +127,6 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -158,8 +155,6 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   takeUntilTypeFilter: AppActions.RESET_FETCH_RELEASES,
   request: {
     method: 'GET',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: NeonEnvironment.getFullApiPath('releases'),
   },
@@ -177,6 +172,13 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchReleases.asyncErrorAction)
   ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
+    ...request,
+    headers: {
+      ...request.headers,
+      ...NeonApi.getApiTokenHeader(),
+    },
+  }),
 });
 
 const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
@@ -184,8 +186,6 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCT_BUNDLES,
   request: {
     method: 'GET',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: NeonEnvironment.getFullApiPath('productBundles'),
   },
@@ -203,6 +203,13 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchProductBundles.asyncErrorAction)
   ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
+    ...request,
+    headers: {
+      ...request.headers,
+      ...NeonApi.getApiTokenHeader(),
+    },
+  }),
 });
 
 const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
@@ -211,8 +218,6 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -251,8 +256,6 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
@@ -292,8 +295,6 @@ const fetchFocalProductReleaseDoiEpic = EpicService
     request: {
       method: 'GET',
       url: '',
-      crossDomain: true,
-      withCredentials: NeonEnvironment.requireCors(),
       responseType: 'json',
     },
     workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
@@ -321,6 +322,10 @@ const fetchFocalProductReleaseDoiEpic = EpicService
       return {
         ...request,
         url: `${NeonEnvironment.getFullApiPath('products')}/${productCode}/dois/${release}`,
+        headers: {
+          ...request.headers,
+          ...NeonApi.getApiTokenHeader(),
+        },
       };
     },
   });
@@ -332,8 +337,6 @@ const fetchFocalProductReleaseTombAvaEpic = EpicService
     request: {
       method: 'GET',
       url: '',
-      crossDomain: true,
-      withCredentials: NeonEnvironment.requireCors(),
       responseType: 'json',
     },
     workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
@@ -362,6 +365,10 @@ const fetchFocalProductReleaseTombAvaEpic = EpicService
       return {
         ...request,
         url: `${NeonEnvironment.getFullApiPath('products')}${path}`,
+        headers: {
+          ...request.headers,
+          ...NeonApi.getApiTokenHeader(),
+        },
       };
     },
   });

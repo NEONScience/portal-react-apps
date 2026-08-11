@@ -42,8 +42,6 @@ const TaxonDetail = (inProps) => {
     const baseUrl = NeonEnvironment.getDataProductTaxonTypesPath();
     const fullUrl = `${baseUrl}/${productCode}`;
     const init = {
-      mode: 'cors',
-      credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
       },

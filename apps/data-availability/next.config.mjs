@@ -19,7 +19,7 @@ const nextConfig = {
   distDir: 'build',
   basePath: '/visualizations/data-availability',
   trailingSlash: false,
-  reactStrictMode: true,
+  reactStrictMode: false,
   transpilePackages: ['@neonscience/portal-core-components'],
   turbopack: {
     root: isBuildContainer ? path.join(__dirname, '..', '..') : undefined,

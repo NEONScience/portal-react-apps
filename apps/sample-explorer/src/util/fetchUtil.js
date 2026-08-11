@@ -52,8 +52,6 @@ export const querySample = (url, cacheControl, headers) => {
   const fetchInit = {
     method: 'GET',
     headers: fetchHeaders,
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: 'default',
   };
 
@@ -94,8 +92,6 @@ export const querySampleTagClasses = (classUrl, headers) => {
   const fetchInit = {
     method: 'GET',
     headers: fetchHeaders,
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: 'default',
   };
 
@@ -138,8 +134,6 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, h
   const fetchInit = {
     method: 'GET',
     headers: fetchHeaders,
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: 'default',
   };
 
@@ -217,8 +211,6 @@ export const querySupportedSampleClasses = (url, query, download) => {
       Accept: 'application/json;charset=UTF-8; text/plain',
       ...NeonApi.getApiTokenHeader(),
     },
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: 'default',
   };
 
@@ -267,8 +259,6 @@ export const downloadSamples = (downloadType, url, cacheControl, headers) => {
       ...NeonApi.getApiTokenHeader(),
       ...headers,
     },
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
     cache: 'default',
   };
 

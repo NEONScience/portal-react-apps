@@ -14,8 +14,9 @@ import { map, catchError } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
 
 import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
-import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
 import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
 import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
@@ -78,6 +79,7 @@ const DEFAULT_STATE = {
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
+  neonAuthContextState: cloneDeep(NeonAuthContext.DEFAULT_STATE),
 };
 
 const fetchIsInStatus = (fetchObject, status) => (
@@ -214,7 +216,11 @@ const calculateAppStatus = (state) => {
     updatedState.app.status = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
+  if (
+    stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING)
+    || !state.neonContextState.isFinal
+    || !state.neonAuthContextState.isFinal
+  ) {
     updatedState.app.status = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -230,8 +236,8 @@ const sortReleases = (unsortedReleases) => {
   return releases;
 };
 
-const withContextReleases = (neonContextState) => (
-  neonContextState?.auth?.userData?.data?.releases || []
+const withContextReleases = (neonAuthContextState) => (
+  neonAuthContextState?.auth?.userData?.data?.releases || []
 );
 
 const applyUserRelease = (current, userReleases) => {
@@ -617,11 +623,18 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
  * derivation of bundles, and the resulting fetch and app status.
  * @param newState The DataProductContext state to build on.
  * @param neonContextState The new NeonContext state to integrate.
+ * @param neonAuthContextState The new NeonAuthContext state to integrate.
  * @param release The release to work from.
  * @param productCode The product code to work from.
  * @return The next DataProductContext state.
  */
-const calculateContextState = (newState, neonContextState, release, productCode) => {
+const calculateContextState = (
+  newState,
+  neonContextState,
+  neonAuthContextState,
+  release,
+  productCode,
+) => {
   const isErrorState = (newState.app.status === APP_STATUS.ERROR);
   const routeBundles = calculateBundles(
     neonContextState.data.bundles,
@@ -638,6 +651,7 @@ const calculateContextState = (newState, neonContextState, release, productCode)
   const newAppStatusState = calculateAppStatus({
     ...newFetchState,
     neonContextState,
+    neonAuthContextState,
   });
   // If the existing app state was errored due to initialization,
   // keep the current error state.
@@ -675,10 +689,11 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'reinitialize':
       // Reset the context state to default state, but keep the
-      // finalized NeonContext state.
+      // finalized NeonContext, NeonAuthContext state.
       return {
         ...cloneDeep(DEFAULT_STATE),
         neonContextState: state.neonContextState,
+        neonAuthContextState: state.neonAuthContextState,
       };
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
@@ -686,10 +701,19 @@ const reducer = (state, action) => {
       return newState;
 
     case 'storeFinalizedNeonContextState':
-      applyUserRelease(newState.data.releases, withContextReleases(action.neonContextState));
       return calculateContextState(
         newState,
         action.neonContextState,
+        newState.neonAuthContextState,
+        newState.route.release,
+        newState.route.productCode,
+      );
+    case 'storeFinalizedNeonAuthContextState':
+      applyUserRelease(newState.data.releases, withContextReleases(action.neonAuthContextState));
+      return calculateContextState(
+        newState,
+        newState.neonContextState,
+        action.neonAuthContextState,
         newState.route.release,
         newState.route.productCode,
       );
@@ -856,6 +880,7 @@ const reducer = (state, action) => {
       return calculateContextState(
         newState,
         newState.neonContextState,
+        newState.neonAuthContextState,
         newState.route.release,
         newState.route.productCode,
       );

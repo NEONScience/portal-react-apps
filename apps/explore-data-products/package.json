@@ -9,7 +9,7 @@
     "@mui/icons-material": "^9.2.0",
     "@mui/material": "^9.2.0",
     "@mui/x-date-pickers": "^9.10.1",
-    "@neonscience/portal-core-components": "3.0.0-next-dev.27b52a3",
+    "@neonscience/portal-core-components": "3.0.0-next-dev.da05844",
     "core-js": "^3.49.0",
     "jspdf": "^4.2.1",
     "lodash": "^4.18.1",
@@ -37,7 +37,7 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "cross-env NEXT_PUBLIC_NEON_API_HOST_OVERRIDE=${NEON_REACT_LOCAL_DEV_NEXT_PUBLIC_NEON_API_HOST_OVERRIDE:-} NEXT_PUBLIC_NEON_ALLOWED_DEV_ORIGIN=${NEON_REACT_LOCAL_DEV_NEXT_PUBLIC_ALLOWED_DEV_ORIGIN:-} next dev",
+    "start": "cross-env NEXT_PUBLIC_NEON_API_HOST_OVERRIDE=${NEON_REACT_LOCAL_DEV_NEXT_PUBLIC_NEON_API_HOST_OVERRIDE:-} NEXT_PUBLIC_NEON_API_SESSION_TOKEN_HEADER_OVERRIDE=${NEON_REACT_LOCAL_DEV_NEXT_PUBLIC_API_SESSION_TOKEN_HEADER_OVERRIDE:-} NEXT_PUBLIC_NEON_ALLOWED_DEV_ORIGIN=${NEON_REACT_LOCAL_DEV_NEXT_PUBLIC_ALLOWED_DEV_ORIGIN:-} next dev",
     "start:prod": "node server.mjs",
     "build": "next build",
     "build:sync-assets": "npx neonscience-portal-core-components--sync-assets --prettify-index --cwd-relative-public-dir-path=\"public\" --cwd-relative-app-dir-path=\"src/app\"",

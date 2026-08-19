@@ -31,7 +31,6 @@ const App = () => {
   return (
     <div className={classes.pageContainer}>
       <NeonPage
-        useCoreAuth
         customizeAuthContainer
         title="Taxonomic Lists"
         breadcrumbs={breadcrumbs}

@@ -12,7 +12,7 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import LoginRequiredCard from '@neonscience/portal-core-components/components/Card/LoginRequiredCard';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
@@ -62,17 +62,17 @@ const SampleQueryPresentation = (props) => {
 
   const { classes, theme } = useStyles();
 
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
   // Check preconditions for initial status
   const {
     ready: preconditionsSatisfied,
     canAccessData,
-  } = neonContextSessionState;
+  } = neonAuthContextSessionState;
 
   const submitQuery = () => {
     let url = NeonEnvironment.getFullApiPath('samples');
     const headers = {
-      ...neonContextSessionState.sessionHeaders,
+      ...neonAuthContextSessionState.sessionHeaders,
     };
     switch (queryType) {
       case QUERY_TYPE.SAMPLE_TAG: {
@@ -107,7 +107,7 @@ const SampleQueryPresentation = (props) => {
     if (!preconditionsSatisfied) { return; }
     if (!canAccessData) { return; }
     const headers = {
-      ...neonContextSessionState.sessionHeaders,
+      ...neonAuthContextSessionState.sessionHeaders,
     };
     if (!urlParams.parsed) {
       onSetUrlParams();
@@ -117,7 +117,7 @@ const SampleQueryPresentation = (props) => {
   }, [
     preconditionsSatisfied,
     canAccessData,
-    neonContextSessionState,
+    neonAuthContextSessionState,
     onSetUrlParams,
     onQuerySampleFromUrl,
     urlParams,
@@ -129,9 +129,9 @@ const SampleQueryPresentation = (props) => {
     return (
       <LoginRequiredCard
         showValidation
-        isAuthenticated={neonContextSessionState.authenticated}
-        accountValidated={neonContextSessionState.accountValidated}
-        accountValidationSteps={neonContextSessionState.accountValidationSteps}
+        isAuthenticated={neonAuthContextSessionState.authenticated}
+        accountValidated={neonAuthContextSessionState.accountValidated}
+        accountValidationSteps={neonAuthContextSessionState.accountValidationSteps}
       />
     );
   };

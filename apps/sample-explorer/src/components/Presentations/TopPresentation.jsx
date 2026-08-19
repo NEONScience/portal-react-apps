@@ -22,7 +22,6 @@ const TopPresentation = (props) => {
   ];
   return (
     <NeonPage
-      useCoreAuth
       customizeAuthContainer
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}

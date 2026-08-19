@@ -1,7 +1,7 @@
 import React, { type JSX } from 'react';
 import { Provider } from 'react-redux';
 
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonContextProvider from '@neonscience/portal-core-components/components/NeonContext/NeonContextProvider';
 import NeonRouter from '@neonscience/portal-core-components/components/NeonRouter/NeonRouter';
 import NeonThemeProvider from '@neonscience/portal-core-components/components/Theme/NeonThemeProvider';
 
@@ -11,11 +11,11 @@ import RootStore from '../store/store';
 const Root = (): JSX.Element => (
   <Provider store={RootStore.configureInitialStore()}>
     <NeonRouter>
-      <NeonContext.Provider useCoreAuth fetchPartials>
+      <NeonContextProvider>
         <NeonThemeProvider>
           <App />
         </NeonThemeProvider>
-      </NeonContext.Provider>
+      </NeonContextProvider>
     </NeonRouter>
   </Provider>
 );

@@ -11,7 +11,8 @@ import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
 import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL';
 import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
@@ -56,6 +57,7 @@ const DEFAULT_STATE = {
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
+  neonAuthContextState: cloneDeep(NeonAuthContext.DEFAULT_STATE),
 
   // Unparsed values sniffed from URL params to seed initial filter values
   // This is here primarily for backward-compatibility with legacy portal pages.
@@ -165,7 +167,11 @@ const calculateAppStatus = (state) => {
     updatedState.appStatus = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
+  if (
+    stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING)
+    || !state.neonContextState.isFinal
+    || !state.neonAuthContextState.isFinal
+  ) {
     updatedState.appStatus = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -201,6 +207,12 @@ const reducer = (state, action) => {
       return calculateAppStatus(parseAnyUnparsedProductSets({
         ...newState,
         neonContextState: action.neonContextState,
+      }));
+    // Neon Auth Context
+    case 'storeFinalizedNeonAuthContextState':
+      return calculateAppStatus(parseAnyUnparsedProductSets({
+        ...newState,
+        neonAuthContextState: action.neonAuthContextState,
       }));
 
     // Fetch Handling

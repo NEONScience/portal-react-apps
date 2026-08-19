@@ -20,7 +20,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/SaveAlt';
 
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 
 const DownloadSamplesPresentation = (props) => {
   const {
@@ -35,8 +35,8 @@ const DownloadSamplesPresentation = (props) => {
   } = props;
   const theme = useTheme();
 
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
-  const { canAccessData } = neonContextSessionState;
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
+  const { canAccessData } = neonAuthContextSessionState;
 
   const degreeIsValid = (d) => /^[0-9]+$/.test(d) && Number.parseInt(d, 10) >= 1;
 
@@ -127,7 +127,7 @@ const DownloadSamplesPresentation = (props) => {
     }
 
     const headers = {
-      ...neonContextSessionState.sessionHeaders,
+      ...neonAuthContextSessionState.sessionHeaders,
     };
     const url = `${NeonEnvironment.getFullApiPath('samples')}/download?`
       + `sampleTag=${encodeURIComponent(sampleList[0].sampleTag)}`

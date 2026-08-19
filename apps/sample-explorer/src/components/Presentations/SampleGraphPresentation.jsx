@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Typography from '@mui/material/Typography';
 
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import SampleNetwork from '../SampleNetwork/SampleNetwork';
@@ -31,7 +31,7 @@ const useStyles = makeStyles()((theme) => ({
 const SampleGraphPresentation = (props) => {
   const { onQueryClick, graphData } = props;
   const { classes, theme } = useStyles();
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
 
   return (
     <div style={{ marginBottom: theme.spacing(4) }} data-selenium="sample-graph-section">
@@ -83,7 +83,7 @@ const SampleGraphPresentation = (props) => {
         graphData={graphData}
         onNodeClick={(url) => {
           const headers = {
-            ...neonContextSessionState.sessionHeaders,
+            ...neonAuthContextSessionState.sessionHeaders,
           };
           onQueryClick(url, null, headers);
         }}

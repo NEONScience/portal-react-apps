@@ -170,7 +170,6 @@ const DataProductPage = () => {
 
   return (
     <NeonPage
-      useCoreAuth
       customizeAuthContainer
       title={title}
       breadcrumbHomeHref={RouteService.getWebHomePath()}
@@ -184,6 +183,11 @@ const DataProductPage = () => {
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
+      }}
+      NeonAuthContextProviderProps={{
+        whenFinal: (neonAuthContextState) => {
+          dispatch({ type: 'storeFinalizedNeonAuthContextState', neonAuthContextState });
         },
       }}
     >

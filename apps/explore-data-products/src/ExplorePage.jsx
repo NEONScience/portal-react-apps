@@ -117,7 +117,6 @@ const ExplorePage = (props) => {
   */
   return (
     <NeonPage
-      useCoreAuth
       customizeAuthContainer
       loading={loading}
       error={error}
@@ -130,6 +129,11 @@ const ExplorePage = (props) => {
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
+      }}
+      NeonAuthContextProviderProps={{
+        whenFinal: (neonAuthContextState) => {
+          dispatch({ type: 'storeFinalizedNeonAuthContextState', neonAuthContextState });
         },
       }}
     >

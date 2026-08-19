@@ -83,7 +83,7 @@ const App: React.FC = (): JSX.Element => {
     viewModes,
   }: AppComponentState = state;
 
-  // Hook into NeonContext to pull authenticated user data
+  // Hook into NeonAuthContext to pull authenticated user data
   const appliedReleases: Release[] = useContextReleases(releases);
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
@@ -104,7 +104,7 @@ const App: React.FC = (): JSX.Element => {
   );
   useEffect(
     () => {
-      // Synchronize NeonContext state with redux store
+      // Synchronize NeonAuthContext state with redux store
       dispatch(AppActionCreator.setReleases(appliedReleases));
     },
     [dispatch, appliedReleases],
@@ -292,7 +292,6 @@ const App: React.FC = (): JSX.Element => {
 
   return (
     <NeonPage
-      useCoreAuth
       customizeAuthContainer
       title={title}
       loading={isLoading ? 'Loading Availability...' : undefined}

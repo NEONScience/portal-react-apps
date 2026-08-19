@@ -106,8 +106,8 @@ const applyUserRelease = (current, userReleases) => {
   });
 };
 
-const withContextReleases = (neonContextState) => (
-  neonContextState?.auth?.userData?.data?.releases || []
+const withContextReleases = (neonAuthContextState) => (
+  neonAuthContextState?.auth?.userData?.data?.releases || []
 );
 
 const mergeDataAva = (dataAvas) => {
@@ -206,8 +206,10 @@ export const parseProductsByReleaseData = (state, release) => {
   const { unparsedData } = state.fetches.productsByRelease[release];
   if (!unparsedData) { return state; }
 
-  // NeonContext data must be finalized
-  if (!state.neonContextState.isFinal) { return state; }
+  // NeonContext and NeonAuthContext data must be finalized
+  if (!state.neonContextState.isFinal || !state.neonAuthContextState.isFinal) {
+    return state;
+  }
   const {
     sites: sitesJSON,
     states: statesJSON,
@@ -224,7 +226,7 @@ export const parseProductsByReleaseData = (state, release) => {
   let newState = { ...state };
 
   // Get the applicable user releases to apply
-  const userReleases = withContextReleases(newState.neonContextState);
+  const userReleases = withContextReleases(newState.neonAuthContextState);
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -807,11 +809,13 @@ export const parseProductsByReleaseData = (state, release) => {
 /**
    parseAnyUnparsedProductSets
    Call parseProductData on any product data sets that were fetched but not parsed, provided that
-   the copy of NeonContext state in our main state object is now finalized.
+   the copy of NeonContext and NeonAuthContext state in our main state object is now finalized.
 */
 export const parseAnyUnparsedProductSets = (state) => {
   let newState = { ...state };
-  if (!state.neonContextState.isFinal) { return state; }
+  if (!state.neonContextState.isFinal || !state.neonAuthContextState.isFinal) {
+    return state;
+  }
   Object.keys(state.fetches.productsByRelease).forEach((release) => {
     if (!state.fetches.productsByRelease[release].unparsedData) { return; }
     newState = parseProductsByReleaseData(newState, release);

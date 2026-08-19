@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 
 import { Graph } from 'react-d3-graph';
 
-import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 import { exists } from '@neonscience/portal-core-components/util/typeUtil';
@@ -33,8 +33,8 @@ const SampleNetwork = (props) => {
   const { onNodeClick, graphData } = props;
   const { classes } = useStyles();
 
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
-  const { canAccessData } = neonContextSessionState;
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
+  const { canAccessData } = neonAuthContextSessionState;
 
   const [width, setWidth] = useState(1100);
   const [height, setHeight] = useState(500);

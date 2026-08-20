@@ -4,8 +4,8 @@ import React, {
   useMemo,
   type JSX,
 } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { useDispatch, useSelector, batch } from 'react-redux';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
@@ -116,7 +116,7 @@ const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
 const DataProductSelect: React.FC = (): JSX.Element => {
   const state: DataProductSelectState = useDataProductSelectSelector();
   const { classes, theme } = useStyles();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     bundlesFetchState,
     bundles,
@@ -141,25 +141,23 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const releaseBundles: DataProductBundle[] = determineBundle(bundles, selectedRelease?.release);
 
   const handleChangeCb = useCallback(
-    (productCb: DataProduct, parentCb?: DataProductParent, releaseCb?: string) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedProduct(productCb));
-        dispatch(AppFlow.fetchFocalProduct.asyncAction({
-          productCodes: parentCb
-            ? [productCb.productCode, parentCb.parentProductCode]
-            : [productCb.productCode],
-          release: releaseCb,
-        }));
-        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
-        }
-        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
-        }
-      })
-    ),
+    (productCb: DataProduct, parentCb?: DataProductParent, releaseCb?: string) => {
+      dispatch(AppActionCreator.setSelectedProduct(productCb));
+      dispatch(AppFlow.fetchFocalProduct.asyncAction({
+        productCodes: parentCb
+          ? [productCb.productCode, parentCb.parentProductCode]
+          : [productCb.productCode],
+        release: releaseCb,
+      }));
+      if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+      }
+      if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+      }
+    },
     [dispatch],
   );
 

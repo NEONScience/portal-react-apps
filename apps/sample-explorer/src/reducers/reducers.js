@@ -328,11 +328,13 @@ const reducer = (state = {}, action) => {
           const { barcode } = fieldDatum;
           const { archiveGuid } = fieldDatum;
           let { previousSampleUuid } = state;
-          const { visitedSamples } = state;
+          const visitedSamples = { ...state.visitedSamples };
 
           if (visitedSamples.sampleUuids.indexOf(sampleUuid) === -1) {
-            visitedSamples.sampleUuids.push(sampleUuid);
-            visitedSamples.sampleViews.push(data.sampleViews[i]);
+            const newVisitedSampleUuids = [...visitedSamples.sampleUuids];
+            newVisitedSampleUuids.push(sampleUuid);
+            newVisitedSampleUuids.push(data.sampleViews[i]);
+            visitedSamples.sampleUuids = newVisitedSampleUuids;
           }
 
           // check to make sure this is a new query.
@@ -350,7 +352,7 @@ const reducer = (state = {}, action) => {
           }
           previousSampleUuid = sampleUuid;
 
-          const { uuidBreadcrumbs } = state;
+          const uuidBreadcrumbs = [...state.uuidBreadcrumbs];
           // remove sample from bread crumb
           if (uuidBreadcrumbs.length > 1) {
             if (uuidBreadcrumbs[uuidBreadcrumbs.length - 2] === sampleUuid) {

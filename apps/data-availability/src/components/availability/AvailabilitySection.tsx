@@ -4,7 +4,7 @@ import React, {
   useEffect,
   type JSX,
 } from 'react';
-import { Dispatch, AnyAction } from 'redux';
+import { Dispatch, UnknownAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
@@ -63,7 +63,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
   const state: AvailabilitySectionState = useAvailabilitySelector();
   const { classes } = useStyles();
   const { classes: componentClasses } = useComponentStyles();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     focalProductFetchState,
     focalProduct,

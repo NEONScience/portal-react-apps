@@ -1,3 +1,4 @@
+import { UnknownAction } from 'redux';
 import { Observable, of } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
@@ -11,9 +12,9 @@ import { AsyncParamAction } from '@neonscience/portal-core-components/types/asyn
 
 import AppActions from '../actions/app';
 import AppFlow from '../actions/flows/app';
-import { AppActionType } from '../actions/actionTypes';
+import { AnyActionType } from '../actions/actionTypes';
 import { handleError } from './helpers';
-import { BaseStoreAppState } from '../types/store';
+import { StoreRootState } from '../types/store';
 import { resolveAny } from '../util/typeUtil';
 
 const productsQuery = `query Products {
@@ -92,7 +93,7 @@ const buildSiteQuery = (siteCode: string, release?: string): string => {
   }`;
 };
 
-const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchProductsEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_PRODUCTS,
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCTS,
   request: {
@@ -104,7 +105,7 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   workingAction: AppFlow.fetchProducts.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -121,7 +122,7 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   }),
 });
 
-const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchSitesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_SITES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_SITES,
   request: {
@@ -133,7 +134,7 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   workingAction: AppFlow.fetchSites.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -150,7 +151,7 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   }),
 });
 
-const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchReleasesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_RELEASES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_RELEASES,
   request: {
@@ -161,7 +162,7 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   workingAction: AppFlow.fetchReleases.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -181,7 +182,7 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   }),
 });
 
-const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchBundlesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_PRODUCT_BUNDLES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCT_BUNDLES,
   request: {
@@ -192,7 +193,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved)) {
@@ -212,7 +213,7 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   }),
 });
 
-const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchFocalProductEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT,
   request: {
@@ -224,7 +225,7 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   workingAction: AppFlow.fetchFocalProduct.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -250,7 +251,7 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   },
 });
 
-const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchFocalSiteEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_SITE,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_SITE,
   request: {
@@ -262,7 +263,7 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   workingAction: AppFlow.fetchFocalSite.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -289,7 +290,7 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
 });
 
 const fetchFocalProductReleaseDoiEpic = EpicService
-  .createEpicFromProps<AppActionType, BaseStoreAppState>({
+  .createEpicFromProps<UnknownAction, StoreRootState>({
     ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
     takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
     request: {
@@ -300,7 +301,7 @@ const fetchFocalProductReleaseDoiEpic = EpicService
     workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
     successAction: (
       response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-      action?: AppActionType,
+      action?: AnyActionType,
     ): Observable<unknown> => {
       const resolved: UnknownRecord = resolveAny(response as never, 'response');
       if (exists(resolved) && exists(resolved.data)) {
@@ -331,7 +332,7 @@ const fetchFocalProductReleaseDoiEpic = EpicService
   });
 
 const fetchFocalProductReleaseTombAvaEpic = EpicService
-  .createEpicFromProps<AppActionType, BaseStoreAppState>({
+  .createEpicFromProps<UnknownAction, StoreRootState>({
     ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
     takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
     request: {
@@ -342,7 +343,7 @@ const fetchFocalProductReleaseTombAvaEpic = EpicService
     workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
     successAction: (
       response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-      action?: AppActionType,
+      action?: AnyActionType,
     ): Observable<unknown> => {
       const resolved: UnknownRecord = resolveAny(response as never, 'response');
       if (exists(resolved) && exists(resolved.data)) {

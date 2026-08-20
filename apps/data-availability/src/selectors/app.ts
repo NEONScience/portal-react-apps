@@ -1,7 +1,7 @@
 import {
   createSelector,
   createSelectorCreator,
-  defaultMemoize,
+  lruMemoize,
 } from 'reselect';
 import isEqual from 'lodash/isEqual';
 
@@ -46,10 +46,7 @@ const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
 );
 
-const appStateSelector = createSelector(
-  [appState],
-  (state: BaseStoreAppState): BaseStoreAppState => state,
-);
+const appStateSelector = appState;
 
 const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] => (
   determineBundle(state.bundles, state.selectedRelease?.release)
@@ -206,7 +203,7 @@ const transformSiteForBundles = (
   if (!exists(focalSite)) {
     return focalSite;
   }
-  const appliedProducts: Record<string, unknown>[] = (focalSite as Site).dataProducts;
+  const appliedProducts: Record<string, unknown>[] = [...(focalSite as Site).dataProducts];
   const forwardCodeMap: { [key: string]: string } = findForwardChildren(bundles);
   const bundledProducts: Record<string, unknown>[] = [];
   Object.keys(forwardCodeMap).forEach((childCode: string): void => {
@@ -243,10 +240,12 @@ const transformSiteForBundles = (
   };
 };
 
-const createDeepEqualSelector = createSelectorCreator(
-  defaultMemoize,
-  isEqual,
-);
+const createDeepEqualSelector = createSelectorCreator({
+  memoize: lruMemoize,
+  memoizeOptions: {
+    equalityCheck: isEqual,
+  },
+});
 
 const productSorter = (a: DataProduct, b: DataProduct): number => {
   const scienceTeamSort: number = a.productScienceTeam.localeCompare(b.productScienceTeam);

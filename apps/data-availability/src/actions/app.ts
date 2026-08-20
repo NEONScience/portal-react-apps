@@ -1,3 +1,5 @@
+import { UnknownAction } from 'redux';
+
 import { Nullable } from '@neonscience/portal-core-components/types/core';
 import {
   DataProduct,
@@ -68,33 +70,33 @@ enum AppActions {
   RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA = 'RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA',
 }
 
-export interface SetSelectedViewModeAction {
+export interface SetSelectedViewModeAction extends UnknownAction {
   type: typeof AppActions.SET_SELECTED_VIEW_MODE;
   viewMode: SelectOption;
 }
-export interface ResetViewModeSwitchingAction {
+export interface ResetViewModeSwitchingAction extends UnknownAction {
   type: typeof AppActions.RESET_VIEW_MODE_SWITCHING;
 }
-export interface SetReleasesAction {
+export interface SetReleasesAction extends UnknownAction {
   type: typeof AppActions.SET_RELEASES;
   releases: Release[];
 }
-export interface SetSelectedProductAction {
+export interface SetSelectedProductAction extends UnknownAction {
   type: typeof AppActions.SET_SELECTED_PRODUCT;
   product: DataProduct;
 }
-export interface SetSelectedReleaseAction {
+export interface SetSelectedReleaseAction extends UnknownAction {
   type: typeof AppActions.SET_SELECTED_RELEASE;
   release: Nullable<Release>;
 }
-export interface SetSelectedSiteAction {
+export interface SetSelectedSiteAction extends UnknownAction {
   type: typeof AppActions.SET_SELECTED_SITE;
   site: Site;
 }
-export interface ResetFocalProductReleaseDoi {
+export interface ResetFocalProductReleaseDoi extends UnknownAction {
   type: typeof AppActions.RESET_FOCAL_PRODUCT_RELEASE_DOI;
 }
-export interface ResetFocalProductReleaseTombAva {
+export interface ResetFocalProductReleaseTombAva extends UnknownAction {
   type: typeof AppActions.RESET_FOCAL_PRODUCT_RELEASE_TOMB_AVA;
 }
 

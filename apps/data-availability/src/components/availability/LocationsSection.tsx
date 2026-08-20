@@ -4,7 +4,7 @@ import React, {
   Suspense,
   type JSX,
 } from 'react';
-import { Dispatch, AnyAction } from 'redux';
+import { Dispatch, UnknownAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
@@ -44,7 +44,7 @@ const useLocationsSelector = (): LocationsSectionState => useSelector(
 
 const LocationsSection: React.FC = (): JSX.Element => {
   const state: LocationsSectionState = useLocationsSelector();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const { classes } = useStyles();
   const { classes: componentClasses } = useComponentStyles();
   const {

@@ -320,6 +320,7 @@ const renderDataFileRow = (file, uuid, classes) => {
                   const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
                   const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
                   const filePath = `${fileRoot}?download=true`;
+                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
                   window.location.href = filePath;
                 }}
                 size="large"

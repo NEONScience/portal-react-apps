@@ -4,8 +4,8 @@ import React, {
   useMemo,
   type JSX,
 } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { useDispatch, useSelector, batch } from 'react-redux';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
@@ -153,7 +153,7 @@ const transformOptions = (
 const SiteSelect: React.FC = (): JSX.Element => {
   const state: SiteSelectState = useSiteSelectSelector();
   const { classes, theme } = useStyles();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     sitesFetchState,
     sites,
@@ -185,15 +185,13 @@ const SiteSelect: React.FC = (): JSX.Element => {
   );
 
   const handleChangeCb = useCallback(
-    (siteCb: Site, releaseCb?: string) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedSite(siteCb));
-        dispatch(AppFlow.fetchFocalSite.asyncAction({
-          siteCode: siteCb.siteCode,
-          release: releaseCb,
-        }));
-      })
-    ),
+    (siteCb: Site, releaseCb?: string) => {
+      dispatch(AppActionCreator.setSelectedSite(siteCb));
+      dispatch(AppFlow.fetchFocalSite.asyncAction({
+        siteCode: siteCb.siteCode,
+        release: releaseCb,
+      }));
+    },
     [dispatch],
   );
 

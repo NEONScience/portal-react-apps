@@ -1,7 +1,4 @@
-import {
-  legacy_createStore as createStore,
-  applyMiddleware,
-} from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
@@ -22,17 +19,20 @@ const dataStore = {
   },
 };
 
-const middlewares = [];
-if (NeonEnvironment.isDevEnv) {
-  // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
-  const { logger } = require('redux-logger');
-  middlewares.push(logger);
-}
-
-const store = createStore(
-  dataApp,
-  dataStore,
-  applyMiddleware(...middlewares),
-);
+const store = configureStore({
+  reducer: dataApp,
+  preloadedState: dataStore,
+  middleware: (getDefaultMiddleware) => {
+    const middleware = getDefaultMiddleware({
+      thunk: false,
+    });
+    if (NeonEnvironment.isDevEnv) {
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+      const { logger } = require('redux-logger');
+      return middleware.concat(logger);
+    }
+    return middleware;
+  },
+});
 
 export default store;

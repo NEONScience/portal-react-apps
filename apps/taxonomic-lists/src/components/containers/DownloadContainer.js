@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { legacy_connect as connect } from 'react-redux';
 import DownloadPresentation from '../presentations/DownloadPresentation';
 
 const mapStateToProps = (state) => ({

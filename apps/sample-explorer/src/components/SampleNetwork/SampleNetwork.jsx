@@ -7,8 +7,6 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { Graph } from 'react-d3-graph';
-
 import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
@@ -129,14 +127,7 @@ const SampleNetwork = (props) => {
   };
 
   return (
-    <div className={classes.container} ref={containerRef}>
-      <Graph
-        id="sample-network-graph"
-        data={graphData}
-        config={graphConfig}
-        onClickNode={getNodeClick()}
-      />
-    </div>
+    <div className={classes.container} ref={containerRef} />
   );
 };
 

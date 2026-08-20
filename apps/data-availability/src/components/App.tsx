@@ -4,8 +4,8 @@ import React, {
   useMemo,
   type JSX,
 } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -68,7 +68,7 @@ const useAppSelector = (): AppComponentState => useSelector(
 const App: React.FC = (): JSX.Element => {
   const state: AppComponentState = useAppSelector();
   const { classes } = useStyles();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     productsFetchState,
     sitesFetchState,
@@ -93,12 +93,10 @@ const App: React.FC = (): JSX.Element => {
 
   useEffect(
     () => {
-      batch(() => {
-        dispatch(AppFlow.fetchProducts.asyncAction());
-        dispatch(AppFlow.fetchSites.asyncAction());
-        dispatch(AppFlow.fetchReleases.asyncAction());
-        dispatch(AppFlow.fetchProductBundles.asyncAction());
-      });
+      dispatch(AppFlow.fetchProducts.asyncAction());
+      dispatch(AppFlow.fetchSites.asyncAction());
+      dispatch(AppFlow.fetchReleases.asyncAction());
+      dispatch(AppFlow.fetchProductBundles.asyncAction());
     },
     [dispatch],
   );
@@ -123,41 +121,39 @@ const App: React.FC = (): JSX.Element => {
       siteCb: Nullable<Site>,
       releaseCb: Nullable<Release>,
       bundlesCb: DataProductBundle[],
-    ) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedRelease(releaseCb));
-        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+    ) => {
+      dispatch(AppActionCreator.setSelectedRelease(releaseCb));
+      if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+      }
+      if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+      }
+      if (exists(productCb)) {
+        let parentBundle: DataProductParent|undefined;
+        const bundle: DataProductBundle|undefined = findBundle(
+          bundlesCb,
+          (productCb as DataProduct).productCode,
+        );
+        if (bundle) {
+          parentBundle = findForwardParent(bundle);
         }
-        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
-        }
-        if (exists(productCb)) {
-          let parentBundle: DataProductParent|undefined;
-          const bundle: DataProductBundle|undefined = findBundle(
-            bundlesCb,
-            (productCb as DataProduct).productCode,
-          );
-          if (bundle) {
-            parentBundle = findForwardParent(bundle);
-          }
-          dispatch(AppFlow.fetchFocalProduct.asyncAction({
-            productCodes: parentBundle
-              ? [(productCb as DataProduct).productCode, parentBundle.parentProductCode]
-              : [(productCb as DataProduct).productCode],
-            release: releaseCb?.release,
-          }));
-        }
-        if (exists(siteCb)) {
-          dispatch(AppFlow.fetchFocalSite.asyncAction({
-            siteCode: (siteCb as Site).siteCode,
-            release: releaseCb?.release,
-          }));
-        }
-      })
-    ),
+        dispatch(AppFlow.fetchFocalProduct.asyncAction({
+          productCodes: parentBundle
+            ? [(productCb as DataProduct).productCode, parentBundle.parentProductCode]
+            : [(productCb as DataProduct).productCode],
+          release: releaseCb?.release,
+        }));
+      }
+      if (exists(siteCb)) {
+        dispatch(AppFlow.fetchFocalSite.asyncAction({
+          siteCode: (siteCb as Site).siteCode,
+          release: releaseCb?.release,
+        }));
+      }
+    },
     [dispatch],
   );
 

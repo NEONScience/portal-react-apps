@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.3.1",
     "@mui/material": "^9.3.1",
-    "@neonscience/portal-core-components": "3.0.0-next-dev.921016a",
+    "@neonscience/portal-core-components": "3.0.0-next-dev.41f4744",
     "@reduxjs/toolkit": "^2.12.0",
     "ag-grid-community": "~36.1.0",
     "ag-grid-react": "~36.1.0",

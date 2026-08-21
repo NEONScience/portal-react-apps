@@ -9,7 +9,7 @@
     "@material-table/core": "^8.0.3",
     "@mui/icons-material": "^9.3.1",
     "@mui/material": "^9.3.1",
-    "@neonscience/portal-core-components": "3.0.0-next-dev.921016a",
+    "@neonscience/portal-core-components": "3.0.0-next-dev.41f4744",
     "core-js": "^3.50.0",
     "dateformat": "^5.0.3",
     "lodash": "^4.18.1",

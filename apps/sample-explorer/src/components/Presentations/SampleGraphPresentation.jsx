@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import SampleNetwork from '../SampleNetwork/SampleNetwork';
+import SampleGraphContainer from '../SampleGraph/SampleGraphContainer';
 import { GRAPH_COLORS } from '../../util/appUtil';
 
 const useStyles = makeStyles()((theme) => ({
@@ -79,14 +79,13 @@ const SampleGraphPresentation = (props) => {
           </Typography>
         </div>
       </div>
-      <SampleNetwork
+      <SampleGraphContainer
         graphData={graphData}
         visitedSamples={visitedSamples}
         onNodeClick={(url) => {
           const headers = {
             ...neonAuthContextSessionState.sessionHeaders,
           };
-
           onQueryClick(url, null, headers);
         }}
       />

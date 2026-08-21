@@ -332,9 +332,11 @@ const reducer = (state = {}, action) => {
 
           if (visitedSamples.sampleUuids.indexOf(sampleUuid) === -1) {
             const newVisitedSampleUuids = [...visitedSamples.sampleUuids];
+            const newVisitedSampleViews = [...visitedSamples.sampleViews];
             newVisitedSampleUuids.push(sampleUuid);
-            newVisitedSampleUuids.push(data.sampleViews[i]);
+            newVisitedSampleViews.push(data.sampleViews[i]);
             visitedSamples.sampleUuids = newVisitedSampleUuids;
+            visitedSamples.sampleViews = newVisitedSampleViews;
           }
 
           // check to make sure this is a new query.

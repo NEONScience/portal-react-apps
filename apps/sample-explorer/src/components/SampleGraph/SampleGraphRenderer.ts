@@ -12,49 +12,48 @@ import {
 import {
   NODE_TYPES,
   RELATIONSHIPS,
-} from './TreeGraphConstants';
+} from './SampleGraphConstants';
 import type {
-  TreeNode,
-  TreeConfig,
-  PositionedTreeNode,
+  GraphConfig,
+  PositionedGraphNode,
   LinkData,
   LabelRuntimeConfig,
   LinkLayoutConfig,
   LayoutRuntimeConfig,
-} from './TreeGraph.types';
+} from './types';
 
-type RenderTreeProps = {
+type RenderGraphProps = {
   container: any;
   svgHeight: number;
-  config: TreeConfig;
-  firstParent: PositionedTreeNode | null;
+  config: GraphConfig;
+  firstParent: PositionedGraphNode | null;
   parentSpineX: number;
-  focusNode: PositionedTreeNode;
+  focusNode: PositionedGraphNode;
   focusRadius: number;
-  nodes: PositionedTreeNode[];
+  nodes: PositionedGraphNode[];
   labelConfig: LabelRuntimeConfig;
-  onClickNode?: (node: PositionedTreeNode) => void;
-  nodeById: Map<string, PositionedTreeNode>;
-  childNodes: PositionedTreeNode[];
+  onClickNode?: (node: PositionedGraphNode) => void;
+  nodeById: Map<string, PositionedGraphNode>;
+  childNodes: PositionedGraphNode[];
   links: LinkData[];
   layoutConfig: LayoutRuntimeConfig;
 };
 
 type BuildParentLinkPathProps = {
-  sourceNode: PositionedTreeNode;
+  sourceNode: PositionedGraphNode;
   parentSpineX: number;
   parentLabelToLineGap: number;
 };
 
 type BuildChildLinkPathProps = {
-  sourceNode: PositionedTreeNode;
-  targetNode: PositionedTreeNode;
+  sourceNode: PositionedGraphNode;
+  targetNode: PositionedGraphNode;
   labelPadding: number;
 };
 
 type BuildLinkPathProps = {
-  sourceNode: PositionedTreeNode;
-  targetNode: PositionedTreeNode;
+  sourceNode: PositionedGraphNode;
+  targetNode: PositionedGraphNode;
   parentSpineX: number;
   labelPadding: number;
   parentLabelToLineGap: number;
@@ -63,7 +62,7 @@ type BuildLinkPathProps = {
 type RenderNodeSymbolsProps = {
   nodeGroups: any;
   symbolGenerator: any;
-  onClickNode?: (node: PositionedTreeNode) => void;
+  onClickNode?: (node: PositionedGraphNode) => void;
 };
 
 type RenderNodeLabelsProps = {
@@ -79,7 +78,7 @@ type CreateGraphLayersProps = {
     undefined
   >;
   svgHeight: number;
-  config: TreeConfig;
+  config: GraphConfig;
 };
 
 type GraphSelection = Selection<
@@ -91,25 +90,25 @@ type GraphSelection = Selection<
 
 type RenderParentSpineProps = {
   linkLayer: GraphSelection;
-  firstParent: PositionedTreeNode | null;
+  firstParent: PositionedGraphNode | null;
   parentSpineX: number;
-  focusNode: PositionedTreeNode;
+  focusNode: PositionedGraphNode;
   focusRadius: number;
 };
 
 type RenderNodesProps = {
   graphLayer: GraphSelection;
-  nodes: PositionedTreeNode[];
+  nodes: PositionedGraphNode[];
   labelConfig: LabelRuntimeConfig;
-  onClickNode?: (node: PositionedTreeNode) => void;
+  onClickNode?: (node: PositionedGraphNode) => void;
 };
 
 type RenderLinksProps = {
   linkLayer: GraphSelection;
   links: LinkData[];
-  nodeById: Map<string, PositionedTreeNode>;
-  childNodes: PositionedTreeNode[];
-  focusNode: PositionedTreeNode;
+  nodeById: Map<string, PositionedGraphNode>;
+  childNodes: PositionedGraphNode[];
+  focusNode: PositionedGraphNode;
   linkLayoutConfig: LinkLayoutConfig;
 };
 
@@ -123,34 +122,34 @@ const DEFAULT_LINK_STROKE = '#d7d9d9';
 const DEFAULT_LINK_STROKE_WIDTH = 1.5;
 
 const isFocusNode = (
-  node: PositionedTreeNode,
+  node: PositionedGraphNode,
 ) => (
   node.symbolType === NODE_TYPES.FOCUS
 );
 
 const isParentNode = (
-  node: PositionedTreeNode,
+  node: PositionedGraphNode,
 ) => (
   node.symbolType === NODE_TYPES.PARENT
 );
 
 const isPreviousParentNode = (
-  node: PositionedTreeNode,
+  node: PositionedGraphNode,
 ) => (
   node.symbolType === NODE_TYPES.PREVIOUS
   && node.previousRelationship === RELATIONSHIPS.PARENT
 );
 
 const isChildSideNode = (
-  node: PositionedTreeNode,
+  node: PositionedGraphNode,
 ) => (
   node.symbolType === NODE_TYPES.CHILD
   || node.symbolType === NODE_TYPES.PREVIOUS
 );
 
 const shouldReverseLink = (
-  sourceNode: PositionedTreeNode,
-  targetNode: PositionedTreeNode,
+  sourceNode: PositionedGraphNode,
+  targetNode: PositionedGraphNode,
 ) => (
   isFocusNode(sourceNode)
   && (
@@ -160,8 +159,8 @@ const shouldReverseLink = (
 );
 
 const isParentLink = (
-  sourceNode: PositionedTreeNode,
-  targetNode: PositionedTreeNode,
+  sourceNode: PositionedGraphNode,
+  targetNode: PositionedGraphNode,
 ) => (
   (
     isParentNode(sourceNode)
@@ -171,7 +170,7 @@ const isParentLink = (
 );
 
 const isChildLink = (
-  targetNode: PositionedTreeNode,
+  targetNode: PositionedGraphNode,
 ) => (
   isChildSideNode(targetNode)
 );
@@ -238,20 +237,20 @@ const renderNodeSymbols = ({
 }: RenderNodeSymbolsProps) => {
   nodeGroups
     .append('path')
-    .attr('d', (d: PositionedTreeNode) => {
+    .attr('d', (d: PositionedGraphNode) => {
       const type = symbolMap[d.symbolType] ?? symbolCircle;
       return symbolGenerator
         .type(type)
         .size(d.style.symbolSize)();
     })
-    .attr('fill', (d: PositionedTreeNode) => d.style.fill)
-    .attr('stroke', (d: PositionedTreeNode) => d.style.stroke)
-    .attr('stroke-width', (d: PositionedTreeNode) => d.style.strokeWidth)
+    .attr('fill', (d: PositionedGraphNode) => d.style.fill)
+    .attr('stroke', (d: PositionedGraphNode) => d.style.stroke)
+    .attr('stroke-width', (d: PositionedGraphNode) => d.style.strokeWidth)
     .style('cursor', 'pointer')
     .on('mousedown', (event: MouseEvent) => {
       event.stopPropagation();
     })
-    .on('click', (event: MouseEvent, d: PositionedTreeNode) => {
+    .on('click', (event: MouseEvent, d: PositionedGraphNode) => {
       event.stopPropagation();
       if (onClickNode) {
         onClickNode(d);
@@ -282,7 +281,7 @@ const renderNodeLabels = ({
       );
     })
     .attr('dy', labelVerticalOffset)
-    .text((d: PositionedTreeNode) => d.sampleName ?? '');
+    .text((d: PositionedGraphNode) => d.sampleName ?? '');
   textLabels
     .attr(
       'font-size',
@@ -297,7 +296,7 @@ const renderNodeLabels = ({
 const cacheLabelPositions = (nodeGroups: any) => {
   nodeGroups.each(function getLabelRightX(
     this: SVGGElement,
-    d: PositionedTreeNode,
+    d: PositionedGraphNode,
   ) {
     const textElement = select(this)
       .select('text')
@@ -376,7 +375,7 @@ const renderNodes = ({
     .join('g')
     .attr(
       'transform',
-      (d: PositionedTreeNode) => `translate(${d.x},${d.y})`,
+      (d: PositionedGraphNode) => `translate(${d.x},${d.y})`,
     );
   renderNodeSymbols({
     nodeGroups,
@@ -440,7 +439,7 @@ const renderLinks = ({
     });
 };
 
-export const renderTree = ({
+export const renderGraph = ({
   container,
   svgHeight,
   config,
@@ -455,7 +454,7 @@ export const renderTree = ({
   childNodes,
   links,
   layoutConfig,
-}: RenderTreeProps) => {
+}: RenderGraphProps) => {
   const {
     graphLayer,
     linkLayer,

@@ -38,7 +38,7 @@ class DataGrid extends Component {
   render() {
     const { columnDefs, rowData } = this.props;
     const containerStyle = {
-      height: '280px',
+      height: '400px',
       width: '100%',
     };
     const { height } = this.props;

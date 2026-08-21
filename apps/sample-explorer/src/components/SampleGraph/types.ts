@@ -1,7 +1,7 @@
 import {
   NODE_TYPES,
   RELATIONSHIPS,
-} from './TreeGraphConstants';
+} from './SampleGraphConstants';
 
 export type NodeType = typeof NODE_TYPES[keyof typeof NODE_TYPES];
 
@@ -78,7 +78,7 @@ export type LabelRuntimeConfig = {
   labelFontFamily: string;
 };
 
-export type TreeConfig = {
+export type GraphConfig = {
   nodeStyles?: Partial<NodeStyleOverrides>;
   layout?: LayoutConfigOverrides;
   spacing?: SpacingConfigOverrides;
@@ -93,7 +93,7 @@ export type LinkData = {
 };
 
 export type GraphData = {
-  nodes: TreeNode[];
+  nodes: GraphNode[];
   links: LinkData[];
 };
 
@@ -103,7 +103,7 @@ export type LinkLayoutConfig = {
   parentLabelToLineGap: number;
 };
 
-export type TreeNode = {
+export type GraphNode = {
   id: string;
   symbolType: NodeType;
   sampleName?: string;
@@ -115,11 +115,11 @@ export type TreeNode = {
   style?: NodeStyle;
 };
 
-export type StyledTreeNode = TreeNode & {
+export type StyledGraphNode = GraphNode & {
   style: NodeStyle;
 };
 
-export type PositionedTreeNode = StyledTreeNode & {
+export type PositionedGraphNode = StyledGraphNode & {
   x: number;
   y: number;
 };

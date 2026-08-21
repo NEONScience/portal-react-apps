@@ -4,29 +4,29 @@ import React, {
 } from 'react';
 import {
   buildGraphData,
-  prepareTreeData,
+  prepareGraphData,
   computeLayout,
   buildConfig,
-} from './TreeGraphLayout';
+} from './SampleGraphLayout';
 import {
-  renderTree,
+  renderGraph,
   getGraphContainer,
-} from './TreeGraphRenderer';
+} from './SampleGraphRenderer';
 import type {
-  TreeNode,
+  GraphNode,
   SampleView,
-  TreeConfig,
+  GraphConfig,
   GraphData,
-} from './TreeGraph.types';
+} from './types';
 
-type TreeGraphProps = {
+type SampleGraphProps = {
   data?: GraphData;
   visitedSamples?: {
     sampleViews?: SampleView[];
   };
-  config?: TreeConfig;
+  config?: GraphConfig;
   containerHeight?: number;
-  onClickNode?: (node: TreeNode) => void;
+  onClickNode?: (node: GraphNode) => void;
 };
 
 const EMPTY_GRAPH_DATA: GraphData = {
@@ -34,13 +34,13 @@ const EMPTY_GRAPH_DATA: GraphData = {
   links: [],
 };
 
-const TreeWithParents = ({
+const SampleGraph = ({
   data = EMPTY_GRAPH_DATA,
   visitedSamples,
   config = {},
   containerHeight = 0,
   onClickNode,
-}: TreeGraphProps) => {
+}: SampleGraphProps) => {
   const ref = useRef<HTMLDivElement | null>(null);
   useLayoutEffect(() => {
     const container = getGraphContainer(ref.current);
@@ -61,7 +61,7 @@ const TreeWithParents = ({
     if (focusNodes.length !== 1) {
       // eslint-disable-next-line no-console
       console.error(
-        `TreeWithParents requires exactly one focus node. Found ${focusNodes.length}.`,
+        `SampleGraph requires exactly one focus node. Found ${focusNodes.length}.`,
       );
       return () => { container.selectAll('*').remove(); };
     }
@@ -69,7 +69,7 @@ const TreeWithParents = ({
       focusNode,
       longestParentLabelWidth,
       focusRadius,
-    } = prepareTreeData({
+    } = prepareGraphData({
       focusNodes,
       previousNodes,
       parentNodes,
@@ -95,7 +95,7 @@ const TreeWithParents = ({
       containerHeight,
       layoutConfig,
     });
-    renderTree({
+    renderGraph({
       container,
       svgHeight,
       config,
@@ -124,9 +124,10 @@ const TreeWithParents = ({
       ref={ref}
       style={{
         width: '100%',
+        height: '100%',
         overflow: 'visible',
       }}
     />
   );
 };
-export default TreeWithParents;
+export default SampleGraph;

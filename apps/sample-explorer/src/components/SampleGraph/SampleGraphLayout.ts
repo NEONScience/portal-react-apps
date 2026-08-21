@@ -1,14 +1,14 @@
 import type {
-  TreeNode,
-  StyledTreeNode,
-  PositionedTreeNode,
+  GraphNode,
+  StyledGraphNode,
+  PositionedGraphNode,
   NodeStyleOverrides,
   SampleView,
   GraphData,
-  TreeConfig,
+  GraphConfig,
   LayoutRuntimeConfig,
   LabelRuntimeConfig,
-} from './TreeGraph.types';
+} from './types';
 import {
   NODE_TYPES,
   RELATIONSHIPS,
@@ -16,29 +16,29 @@ import {
   SVG_DEFAULTS,
   SPACING_DEFAULTS,
   LAYOUT_DEFAULTS,
-} from './TreeGraphConstants';
+} from './SampleGraphConstants';
 
 type ClassifyPreviousNodesProps = {
-  previousNodes: StyledTreeNode[];
+  previousNodes: StyledGraphNode[];
   currentSampleView?: SampleView;
 };
 
 type ClassifyPreviousNodesResult = {
-  previousParentNodes: StyledTreeNode[];
-  previousChildNodes: StyledTreeNode[];
+  previousParentNodes: StyledGraphNode[];
+  previousChildNodes: StyledGraphNode[];
 };
 
-type PrepareTreeDataProps = {
-  focusNodes: StyledTreeNode[];
-  previousNodes: StyledTreeNode[];
-  parentNodes: StyledTreeNode[];
-  childNodes: StyledTreeNode[];
+type PrepareGraphDataProps = {
+  focusNodes: StyledGraphNode[];
+  previousNodes: StyledGraphNode[];
+  parentNodes: StyledGraphNode[];
+  childNodes: StyledGraphNode[];
   sampleViews?: SampleView[];
   labelFont: string;
 };
 
-type PrepareTreeDataResult = {
-  focusNode: StyledTreeNode;
+type PrepareGraphDataResult = {
+  focusNode: StyledGraphNode;
   longestParentLabelWidth: number;
   focusRadius: number;
 };
@@ -49,21 +49,21 @@ type BuildGraphDataProps = {
 };
 
 type ComputeLayoutProps = {
-  parentNodes: StyledTreeNode[];
-  childNodes: StyledTreeNode[];
-  focusNode: StyledTreeNode;
+  parentNodes: StyledGraphNode[];
+  childNodes: StyledGraphNode[];
+  focusNode: StyledGraphNode;
   longestParentLabelWidth: number;
   containerHeight: number;
   layoutConfig: LayoutRuntimeConfig;
 };
 
 type ComputeLayoutResult = {
-  positionedNodes: PositionedTreeNode[];
-  positionedNodeById: Map<string, PositionedTreeNode>;
-  positionedParentNodes: PositionedTreeNode[];
-  positionedChildNodes: PositionedTreeNode[];
-  positionedFocusNode: PositionedTreeNode;
-  firstParent: PositionedTreeNode | null;
+  positionedNodes: PositionedGraphNode[];
+  positionedNodeById: Map<string, PositionedGraphNode>;
+  positionedParentNodes: PositionedGraphNode[];
+  positionedChildNodes: PositionedGraphNode[];
+  positionedFocusNode: PositionedGraphNode;
+  firstParent: PositionedGraphNode | null;
   parentSpineX: number;
   svgHeight: number;
 };
@@ -75,7 +75,7 @@ type BuildConfigResult = {
 };
 
 export const buildConfig = (
-  config: TreeConfig,
+  config: GraphConfig,
 ): BuildConfigResult => {
   const layout = config.layout ?? {};
   const spacing = config.spacing ?? {};
@@ -100,8 +100,10 @@ export const buildConfig = (
       labelPadding,
       rowSpacing: (spacing.row ?? SPACING_DEFAULTS.row) * layoutScale,
       columnSpacing: (spacing.column ?? SPACING_DEFAULTS.column) * layoutScale,
-      parentLabelToLineGap: labels.parentLabelLineGap ?? (LABEL_DEFAULTS.parentLabelLineGap * layoutScale),
-      parentConnectorLength: (layout.parentConnectorLength ?? LAYOUT_DEFAULTS.parentConnectorLength) * layoutScale,
+      parentLabelToLineGap: labels.parentLabelLineGap
+        ?? (LABEL_DEFAULTS.parentLabelLineGap * layoutScale),
+      parentConnectorLength: (layout.parentConnectorLength
+        ?? LAYOUT_DEFAULTS.parentConnectorLength) * layoutScale,
       svgContainerPadding: svg.containerPadding ?? SVG_DEFAULTS.containerPadding,
       svgBottomPadding: svg.bottomPadding ?? (SVG_DEFAULTS.bottomPadding * layoutScale),
     },
@@ -122,8 +124,8 @@ const classifyPreviousNodes = ({
   previousNodes,
   currentSampleView,
 }: ClassifyPreviousNodesProps): ClassifyPreviousNodesResult => {
-  const previousParentNodes: StyledTreeNode[] = [];
-  const previousChildNodes: StyledTreeNode[] = [];
+  const previousParentNodes: StyledGraphNode[] = [];
+  const previousChildNodes: StyledGraphNode[] = [];
   if (!currentSampleView) {
     return {
       previousParentNodes,
@@ -157,7 +159,7 @@ const classifyPreviousNodes = ({
 };
 
 export const getNodeStyle = (
-  node: TreeNode,
+  node: GraphNode,
   nodeStyles: Partial<NodeStyleOverrides> = {},
 ) => {
   const defaultColor = DEFAULT_NODE_COLORS[node.symbolType];
@@ -189,7 +191,7 @@ const measureTextWidth = (
 };
 
 const getLongestParentLabelWidth = (
-  parentNodes: TreeNode[],
+  parentNodes: GraphNode[],
   labelFont: string,
 ) => {
   if (parentNodes.length === 0) {
@@ -203,7 +205,7 @@ const getLongestParentLabelWidth = (
   );
 };
 
-const getFocusNodeRadius = (focusNode: StyledTreeNode) => Math.sqrt(
+const getFocusNodeRadius = (focusNode: StyledGraphNode) => Math.sqrt(
   focusNode.style.symbolSize / Math.PI,
 );
 
@@ -211,13 +213,13 @@ export const buildGraphData = ({
   data,
   nodeStyles,
 }: BuildGraphDataProps) => {
-  const focusNodes: StyledTreeNode[] = [];
-  const previousNodes: StyledTreeNode[] = [];
-  const parentNodes: StyledTreeNode[] = [];
-  const childNodes: StyledTreeNode[] = [];
+  const focusNodes: StyledGraphNode[] = [];
+  const previousNodes: StyledGraphNode[] = [];
+  const parentNodes: StyledGraphNode[] = [];
+  const childNodes: StyledGraphNode[] = [];
   // Clone incoming redux nodes and precompute styles
   data.nodes.forEach((node) => {
-    const styledNode: StyledTreeNode = {
+    const styledNode: StyledGraphNode = {
       ...node,
       style: getNodeStyle(
         node,
@@ -250,14 +252,14 @@ export const buildGraphData = ({
 };
 
 // Mutates parentNodes and childNodes collections by merging previous-node relationships
-export const prepareTreeData = ({
+export const prepareGraphData = ({
   focusNodes,
   previousNodes,
   parentNodes,
   childNodes,
   sampleViews,
   labelFont,
-}: PrepareTreeDataProps): PrepareTreeDataResult => {
+}: PrepareGraphDataProps): PrepareGraphDataResult => {
   const focusNode = focusNodes[0]!;
   const currentSampleView = sampleViews?.find(
     (sample) => sample.sampleUuid === focusNode.id,
@@ -308,7 +310,7 @@ export const computeLayout = ({
     svgBottomPadding,
   } = layoutConfig;
 
-  const positionedParentNodes: PositionedTreeNode[] = parentNodes.map((n, i) => ({
+  const positionedParentNodes: PositionedGraphNode[] = parentNodes.map((n, i) => ({
     ...n,
     x: leftMargin,
     y: topMargin + (i * rowSpacing),
@@ -318,16 +320,20 @@ export const computeLayout = ({
     ? positionedParentNodes[0]
     : null;
 
-  const positionedFocusNode: PositionedTreeNode = {
+  const positionedFocusNode: PositionedGraphNode = {
     ...focusNode,
-    x: leftMargin + longestParentLabelWidth + labelPadding + parentLabelToLineGap + parentConnectorLength,
+    x: leftMargin
+      + longestParentLabelWidth
+      + labelPadding
+      + parentLabelToLineGap
+      + parentConnectorLength,
     y: positionedParentNodes.length === 0
       ? topMargin : positionedParentNodes[positionedParentNodes.length - 1].y + rowSpacing,
   };
 
   const parentSpineX = positionedFocusNode.x;
 
-  const positionedChildNodes: PositionedTreeNode[] = childNodes.map((n, i) => ({
+  const positionedChildNodes: PositionedGraphNode[] = childNodes.map((n, i) => ({
     ...n,
     x:
       positionedFocusNode.x + columnSpacing,
@@ -335,13 +341,16 @@ export const computeLayout = ({
       positionedFocusNode.y + ((i + 1) * rowSpacing),
   }));
 
-  const positionedNodes: PositionedTreeNode[] = [
+  const positionedNodes: PositionedGraphNode[] = [
     ...positionedParentNodes,
     positionedFocusNode,
     ...positionedChildNodes,
   ];
 
-  const positionedNodeById: Map<string, PositionedTreeNode> = new Map<string, PositionedTreeNode>();
+  const positionedNodeById: Map<string, PositionedGraphNode> = new Map<
+    string,
+    PositionedGraphNode
+  >();
 
   positionedNodes.forEach((node) => {
     positionedNodeById.set(

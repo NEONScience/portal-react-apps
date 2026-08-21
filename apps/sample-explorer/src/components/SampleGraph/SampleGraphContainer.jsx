@@ -6,26 +6,26 @@ import React, {
 
 import PropTypes from 'prop-types';
 
+import Card from '@mui/material/Card';
+
 import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
-import TreeWithParents from './TreeWithParents';
-import { NODE_TYPES } from './TreeWithParentsConstants';
+import SampleGraph from './SampleGraph';
 import { GRAPH_COLORS } from '../../util/appUtil';
-import TreeGraph from './TreeGraph';
+import { NODE_TYPES } from './SampleGraphConstants';
 
 const useStyles = makeStyles()((theme) => ({
   container: {
     cursor: 'default',
-    border: `1px solid ${theme.palette.grey[400]}`,
     backgroundColor: theme.palette.grey[50],
+    padding: theme.spacing(2, 2),
     overflow: 'auto',
-    resize: 'vertical',
   },
 }));
-const treeConfig = {
+const graphConfig = {
   spacing: {
     column: 80,
     row: 30,
@@ -37,6 +37,8 @@ const treeConfig = {
     scale: 1,
   },
   labels: {
+    // Keeping this an integer instead of rem due to calculations
+    // based on this as a number value
     fontSize: 13,
     fontFamily: 'Inter, Helvetica, Arial, sans-serif',
     labelPadding: 8,
@@ -45,7 +47,7 @@ const treeConfig = {
   },
   svg: {
     bottomPadding: 100,
-    containerPadding: 15,
+    containerPadding: 32,
   },
   link: {
     stroke: GRAPH_COLORS.LINKS,
@@ -79,27 +81,27 @@ const treeConfig = {
   },
 };
 const CLICK_COOLDOWN_MS = 800; // milliseconds
+const DEFAULT_CONTAINER_HEIGHT = 600;
 
-const SampleNetwork = (props) => {
+const SampleGraphContainer = (props) => {
   const { onNodeClick, graphData, visitedSamples } = props;
   const { classes } = useStyles();
 
   const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
   const { canAccessData } = neonAuthContextSessionState;
 
-  const [height, setHeight] = useState(600);
+  const [height, setHeight] = useState(DEFAULT_CONTAINER_HEIGHT);
   // Observe wrapper instead of container.
   // Observing container and updating its height
   // can trigger ResizeObserver loop warnings.
   const wrapperRef = useRef(null);
   // stores a mutable value between renders,
-  // does not trigger re-render when changed. f94feec (Complete TreeWithParents refactor)
   const clickCooldownRef = useRef(false);
   // creates and register browser-managed objects.
   // Keeps the height of the container in sync with the wrapper.
   useLayoutEffect(() => {
     if (!wrapperRef.current) {
-      return undefined;
+      return () => {};
     }
     const observer = new ResizeObserver((entries) => {
       const entry = entries[0];
@@ -133,44 +135,37 @@ const SampleNetwork = (props) => {
       return;
     }
     const safeId = encodeURIComponent(String(id).trim());
-    let url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${safeId}`;
-    if (typeof nodeData === 'object' && nodeData !== null && nodeData.sampleClass) {
-      url += `&sampleClass=${encodeURIComponent(String(nodeData.sampleClass).trim())}`;
-    }
+    const url = `${NeonEnvironment.getFullApiPath('samples')}/view?sampleUuid=${safeId}`;
     try {
       onNodeClick(url);
     } finally {
       resetClickCooldown();
     }
   };
-  if (!exists(graphData?.nodes) || graphData.nodes.length <= 0) {
+  if (!exists(graphData?.nodes) || (graphData.nodes.length <= 0)) {
     return null;
   }
   return (
     <div ref={wrapperRef}>
-      <div
-        className={classes.container}
-        style={{ height }}
-      >
-        <TreeGraph
+      <Card className={classes.container} style={{ height }}>
+        <SampleGraph
           data={graphData}
           visitedSamples={visitedSamples}
-          config={treeConfig}
+          config={graphConfig}
           containerHeight={height}
           onClickNode={(nodeData) => {
             if (!canAccessData) {
               return;
             }
-
             handleNodeClick(nodeData);
           }}
         />
-      </div>
+      </Card>
     </div>
   );
 };
 
-SampleNetwork.propTypes = {
+SampleGraphContainer.propTypes = {
   onNodeClick: PropTypes.func.isRequired,
   graphData: PropTypes.shape({
     nodes: PropTypes.arrayOf(
@@ -202,4 +197,4 @@ SampleNetwork.propTypes = {
     }),
   ).isRequired,
 };
-export default SampleNetwork;
+export default SampleGraphContainer;

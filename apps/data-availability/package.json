@@ -8,7 +8,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.3.1",
     "@mui/material": "^9.3.1",
-    "@neonscience/portal-core-components": "^3.0.0-next-dev.f38824d",
+    "@neonscience/portal-core-components": "3.0.0-next-dev.de7e6a5",
     "@reduxjs/toolkit": "^2.12.0",
     "core-js": "^3.50.0",
     "lodash": "^4.18.1",

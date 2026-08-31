@@ -3,12 +3,10 @@
 .yarn
 
 node_modules
-build
 templates
 .next
 
 **/*/node_modules
-**/*/build
 **/*/.next
 
 .DS_Store

@@ -1,45 +1,14 @@
 #-------------------------------------------------------------------------------
-# Builder container for reproducible build environment
-
-FROM portal-react-apps-parent:latest-builder-base AS builder-parent
-FROM portal-react-apps/node:current AS builder
-
-ARG YARN_VERSION
-
-RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
-
-WORKDIR /usr/src/app
-
-# Copy react app and parent modules
-COPY . /usr/src/app/build-temp/portal-react-apps
-COPY --from=builder-parent /usr/src/app/build-stage/portal-react-apps/node_module[s] \
-  /usr/src/app/build-temp/portal-react-apps/node_modules
-COPY --from=builder-parent /usr/src/app/build-stage/portal-react-apps/.yarn \
-  /usr/src/app/build-temp/portal-react-apps/.yarn
-# Copy app specific modules
-COPY --from=builder-parent /usr/src/app/build-stage/portal-react-apps/apps/explore-data-products/node_module[s] \
-  /usr/src/app/build-temp/portal-react-apps/apps/explore-data-products/node_modules
-
-# Build the explore-data-products app
-RUN cd /usr/src/app/build-temp/portal-react-apps/apps/explore-data-products \
-  && yarn run build
-# Move build to working directory
-RUN mv /usr/src/app/build-temp/portal-react-apps/apps/explore-data-products/build /usr/src/app/
-
-# Remove source files
-RUN rm -rf /usr/src/app/build-temp
-
-#-------------------------------------------------------------------------------
 # Build production container with only necessary artifacts
 
 FROM portal-web-server-builder:current AS server-builder-parent
-FROM alpine:3.23
+FROM alpine:3.24
 
 EXPOSE 3000
 
 WORKDIR /opt/go/app
 
-COPY --from=builder /usr/src/app .
+COPY apps/explore-data-products/build /opt/go/app/build
 COPY --from=server-builder-parent /usr/src/app/go-web-server .
 
 ENV PORTAL_PORT=3000

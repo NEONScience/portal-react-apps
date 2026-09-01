@@ -9,7 +9,7 @@ EXPOSE 3012
 WORKDIR /opt/go/app
 
 COPY apps/data-availability/build /opt/go/app/build
-COPY --from=server-builder-parent /usr/src/app/go-web-server .
+COPY --from=server-builder-parent --chmod=500 /usr/src/app/go-web-server .
 
 ENV PORTAL_PORT=3012
 ENV PORTAL_CLIENT_ROUTE="/visualizations/data-availability"

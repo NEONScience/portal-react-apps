@@ -9,7 +9,7 @@ EXPOSE 3004
 WORKDIR /opt/go/app
 
 COPY apps/data-product-detail/build /opt/go/app/build
-COPY --from=server-builder-parent /usr/src/app/go-web-server .
+COPY --from=server-builder-parent --chmod=500 /usr/src/app/go-web-server .
 
 # Set app wide env variables
 ENV PORTAL_PORT=3004

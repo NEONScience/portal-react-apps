@@ -9,7 +9,7 @@ EXPOSE 3001
 WORKDIR /opt/go/app
 
 COPY apps/taxonomic-lists/build /opt/go/app/build
-COPY --from=server-builder-parent /usr/src/app/go-web-server .
+COPY --from=server-builder-parent --chmod=500 /usr/src/app/go-web-server .
 
 ENV PORTAL_PORT=3001
 ENV PORTAL_CLIENT_ROUTE="/taxonomic-lists"

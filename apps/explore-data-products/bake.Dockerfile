@@ -9,7 +9,7 @@ EXPOSE 3000
 WORKDIR /opt/go/app
 
 COPY apps/explore-data-products/build /opt/go/app/build
-COPY --from=server-builder-parent /usr/src/app/go-web-server .
+COPY --from=server-builder-parent --chmod=500 /usr/src/app/go-web-server .
 
 ENV PORTAL_PORT=3000
 ENV PORTAL_CLIENT_ROUTE="/data-products/explore"

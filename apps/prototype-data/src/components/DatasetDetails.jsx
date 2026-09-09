@@ -34,6 +34,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import LoginRequiredCard from '@neonscience/portal-core-components/components/Card/LoginRequiredCard';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 
 import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
@@ -365,6 +367,9 @@ const DatasetDetails = (props) => {
     manifestRollups: { [uuid]: manifestRollup },
   } = state;
 
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
+  const { canAccessData, ready: preconditionsSatisfied } = neonAuthContextSessionState;
+
   if (typeof dataset === 'undefined') { return null; }
 
   const {
@@ -584,6 +589,20 @@ const DatasetDetails = (props) => {
   );
 
   // Download Button
+  const buttonText = () => {
+    let text = '';
+    // allowDowload involves data being available whereas canAccessData
+    // tells us if a user is logged in and their account allows data access.
+    if (allowDownload && canAccessData) {
+      text = 'Download Package';
+    } else if (!allowDownload) {
+      text = 'Download not available';
+    } else {
+      text = 'Login Required';
+    }
+    return text;
+  };
+
   const downloadButton = (
     <>
       <Button
@@ -592,12 +611,10 @@ const DatasetDetails = (props) => {
         onClick={() => { downloadUuid(uuid); }}
         endIcon={<DownloadIcon />}
         data-selenium="prototype-dataset-download-button"
-        disabled={!allowDownload}
+        disabled={!allowDownload || !canAccessData}
       >
         {(
-          allowDownload
-            ? 'Download Package'
-            : 'Download not available'
+          buttonText()
         )}
       </Button>
       {(!allowDownload
@@ -612,6 +629,19 @@ const DatasetDetails = (props) => {
       )}
     </>
   );
+
+  const renderDataAccessCard = () => {
+    if (!preconditionsSatisfied) { return null; }
+    if (canAccessData) { return null; }
+    return (
+      <LoginRequiredCard
+        showValidation
+        isAuthenticated={neonAuthContextSessionState.authenticated}
+        accountValidated={neonAuthContextSessionState.accountValidated}
+        accountValidationSteps={neonAuthContextSessionState.accountValidationSteps}
+      />
+    );
+  };
 
   // Manual Location Data
   const manualLocationData = [];
@@ -681,6 +711,7 @@ const DatasetDetails = (props) => {
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
           </div>
           <div className={classes.section} id="dataset-about">
@@ -814,14 +845,15 @@ const DatasetDetails = (props) => {
             </Typography>
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
-            {getSectionSubtitle('Package Contents')}
-            {downloadFileList}
+            {canAccessData ? getSectionSubtitle('Package Contents') : null}
+            {canAccessData ? downloadFileList : null}
             {allowDownload ? null : <br />}
             {dataLocationsList}
             {dataLocationsList ? <br /> : null}
-            {getSectionSubtitle('Metadata Description')}
-            {!metadataDescription ? null : (
+            {canAccessData ? getSectionSubtitle('Metadata Description') : null}
+            {!metadataDescription || !canAccessData ? null : (
               <Typography variant="body2">
                 {metadataDescription}
               </Typography>

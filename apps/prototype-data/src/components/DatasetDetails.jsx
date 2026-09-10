@@ -288,7 +288,7 @@ const renderHeaderRow = (rows, classes) => ((
   </TableRow>
 ));
 
-const renderDataFileRow = (file, uuid, classes) => {
+const renderDataFileRow = (file, uuid, classes, canAccessData) => {
   const {
     description,
     fileName,
@@ -314,21 +314,24 @@ const renderDataFileRow = (file, uuid, classes) => {
             <Tooltip
               style={{ flex: 0 }}
               placement="right"
-              title={`Download ${fileName} (${formattedSize})`}
+              title={!canAccessData ? 'Login Required' : `Download ${fileName} (${formattedSize})`}
             >
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                  const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
-                  const filePath = `${fileRoot}?download=true`;
-                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                  window.location.href = filePath;
-                }}
-                size="large"
-              >
-                <DownloadIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                    const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
+                    const filePath = `${fileRoot}?download=true`;
+                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                    window.location.href = filePath;
+                  }}
+                  disabled={!canAccessData}
+                  size="large"
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </ListItemIcon>
           <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
@@ -548,7 +551,7 @@ const DatasetDetails = (props) => {
       rows={files}
       rowsPerPageOptions={[5, 10, 20]}
       rowHeight={90}
-      renderRow={(row) => renderDataFileRow(row, uuid, classes)}
+      renderRow={(row) => renderDataFileRow(row, uuid, classes, canAccessData)}
       renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}
     />
   );
@@ -576,6 +579,7 @@ const DatasetDetails = (props) => {
                 href={path}
                 target="_blank"
                 rel="noopener noreferrer"
+                disabled={!canAccessData}
               >
                 <ListItemIcon className={classes.listItemIcon}>
                   <LinkIcon />
@@ -847,13 +851,13 @@ const DatasetDetails = (props) => {
           <div className={classes.section}>
             {renderDataAccessCard()}
             {downloadButton}
-            {canAccessData ? getSectionSubtitle('Package Contents') : null}
-            {canAccessData ? downloadFileList : null}
+            {getSectionSubtitle('Package Contents')}
+            {downloadFileList}
             {allowDownload ? null : <br />}
             {dataLocationsList}
             {dataLocationsList ? <br /> : null}
-            {canAccessData ? getSectionSubtitle('Metadata Description') : null}
-            {!metadataDescription || !canAccessData ? null : (
+            {getSectionSubtitle('Metadata Description')}
+            {!metadataDescription ? null : (
               <Typography variant="body2">
                 {metadataDescription}
               </Typography>

@@ -34,6 +34,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
 import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import LoginRequiredCard from '@neonscience/portal-core-components/components/Card/LoginRequiredCard';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 
 import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
@@ -286,7 +288,7 @@ const renderHeaderRow = (rows, classes) => ((
   </TableRow>
 ));
 
-const renderDataFileRow = (file, uuid, classes) => {
+const renderDataFileRow = (file, uuid, classes, canAccessData) => {
   const {
     description,
     fileName,
@@ -312,21 +314,24 @@ const renderDataFileRow = (file, uuid, classes) => {
             <Tooltip
               style={{ flex: 0 }}
               placement="right"
-              title={`Download ${fileName} (${formattedSize})`}
+              title={!canAccessData ? 'Login Required' : `Download ${fileName} (${formattedSize})`}
             >
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                  const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
-                  const filePath = `${fileRoot}?download=true`;
-                  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                  window.location.href = filePath;
-                }}
-                size="large"
-              >
-                <DownloadIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+                    const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
+                    const filePath = `${fileRoot}?download=true`;
+                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+                    window.location.href = filePath;
+                  }}
+                  disabled={!canAccessData}
+                  size="large"
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </ListItemIcon>
           <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
@@ -364,6 +369,9 @@ const DatasetDetails = (props) => {
     datasets: { [uuid]: dataset },
     manifestRollups: { [uuid]: manifestRollup },
   } = state;
+
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
+  const { canAccessData, ready: preconditionsSatisfied } = neonAuthContextSessionState;
 
   if (typeof dataset === 'undefined') { return null; }
 
@@ -543,7 +551,7 @@ const DatasetDetails = (props) => {
       rows={files}
       rowsPerPageOptions={[5, 10, 20]}
       rowHeight={90}
-      renderRow={(row) => renderDataFileRow(row, uuid, classes)}
+      renderRow={(row) => renderDataFileRow(row, uuid, classes, canAccessData)}
       renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}
     />
   );
@@ -571,6 +579,7 @@ const DatasetDetails = (props) => {
                 href={path}
                 target="_blank"
                 rel="noopener noreferrer"
+                disabled={!canAccessData}
               >
                 <ListItemIcon className={classes.listItemIcon}>
                   <LinkIcon />
@@ -584,6 +593,20 @@ const DatasetDetails = (props) => {
   );
 
   // Download Button
+  const buttonText = () => {
+    let text = '';
+    // allowDowload involves data being available whereas canAccessData
+    // tells us if a user is logged in and their account allows data access.
+    if (allowDownload && canAccessData) {
+      text = 'Download Package';
+    } else if (!allowDownload) {
+      text = 'Download not available';
+    } else {
+      text = 'Login Required';
+    }
+    return text;
+  };
+
   const downloadButton = (
     <>
       <Button
@@ -592,12 +615,10 @@ const DatasetDetails = (props) => {
         onClick={() => { downloadUuid(uuid); }}
         endIcon={<DownloadIcon />}
         data-selenium="prototype-dataset-download-button"
-        disabled={!allowDownload}
+        disabled={!allowDownload || !canAccessData}
       >
         {(
-          allowDownload
-            ? 'Download Package'
-            : 'Download not available'
+          buttonText()
         )}
       </Button>
       {(!allowDownload
@@ -612,6 +633,19 @@ const DatasetDetails = (props) => {
       )}
     </>
   );
+
+  const renderDataAccessCard = () => {
+    if (!preconditionsSatisfied) { return null; }
+    if (canAccessData) { return null; }
+    return (
+      <LoginRequiredCard
+        showValidation
+        isAuthenticated={neonAuthContextSessionState.authenticated}
+        accountValidated={neonAuthContextSessionState.accountValidated}
+        accountValidationSteps={neonAuthContextSessionState.accountValidationSteps}
+      />
+    );
+  };
 
   // Manual Location Data
   const manualLocationData = [];
@@ -681,6 +715,7 @@ const DatasetDetails = (props) => {
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
           </div>
           <div className={classes.section} id="dataset-about">
@@ -814,6 +849,7 @@ const DatasetDetails = (props) => {
             </Typography>
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
             {getSectionSubtitle('Package Contents')}
             {downloadFileList}

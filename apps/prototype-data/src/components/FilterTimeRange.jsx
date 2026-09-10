@@ -55,6 +55,9 @@ const FilterTimeRange = () => {
   const sliderMin = 0;
   const sliderMax = selectableRange.length - 1;
 
+  const [datePickerStartOpen, setDatePickerStartOpen] = useState(false);
+  const [datePickerEndOpen, setDatePickerEndOpen] = useState(false);
+
   // Control the slider but do with local state. Only send slider values through the main reducer
   // when the change is committed (i.e. on mouse up / drag stop)
   const initialState = { activelySlidingTimeRange: [...currentRange] };
@@ -194,9 +197,12 @@ const FilterTimeRange = () => {
           <Grid size={{ xs: 6 }}>
             <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.from-input"
+              open={datePickerStartOpen}
               orientation="portrait"
               value={getYearMoment(currentRange[0] || selectableRange[sliderMin])}
               onChange={(value) => handleChangeDatePicker(0, value)}
+              onOpen={() => setDatePickerStartOpen(true)}
+              onClose={() => setDatePickerStartOpen(false)}
               views={['year']}
               label="From"
               openTo="year"
@@ -208,6 +214,7 @@ const FilterTimeRange = () => {
                   width: '100%',
                   margin: 'dense',
                   variant: 'outlined',
+                  onClick: () => setDatePickerStartOpen(true),
                 },
               }}
             />
@@ -215,9 +222,12 @@ const FilterTimeRange = () => {
           <Grid size={{ xs: 6 }}>
             <DatePicker
               data-selenium="browse-data-products-page.filters.time-range.through-input"
+              open={datePickerEndOpen}
               orientation="portrait"
               value={getYearMoment(currentRange[1] || selectableRange[sliderMax])}
               onChange={(value) => handleChangeDatePicker(1, value)}
+              onOpen={() => setDatePickerEndOpen(true)}
+              onClose={() => setDatePickerEndOpen(false)}
               views={['year']}
               label="Through"
               openTo="year"
@@ -229,6 +239,7 @@ const FilterTimeRange = () => {
                   width: '100%',
                   margin: 'dense',
                   variant: 'outlined',
+                  onClick: () => setDatePickerEndOpen(true),
                 },
               }}
             />

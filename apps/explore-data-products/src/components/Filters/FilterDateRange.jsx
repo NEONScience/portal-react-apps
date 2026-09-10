@@ -52,6 +52,9 @@ const FilterDateRange = () => {
   const sliderMin = 0;
   const sliderMax = selectableRange.length - 1;
 
+  const [datePickerStartOpen, setDatePickerStartOpen] = useState(false);
+  const [datePickerEndOpen, setDatePickerEndOpen] = useState(false);
+
   // Control the slider but do with local state. Only send slider values through the main reducer
   // when the change is committed (i.e. on mouse up / drag stop)
   const initialState = { activelySlidingDateRange: [...currentRange] };
@@ -196,11 +199,14 @@ const FilterDateRange = () => {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.from-input"
+          open={datePickerStartOpen}
           inputVariant="outlined"
           margin="dense"
           orientation="portrait"
           value={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin])}
           onChange={(value) => handleChangeDatePicker(0, value)}
+          onOpen={() => setDatePickerStartOpen(true)}
+          onClose={() => setDatePickerStartOpen(false)}
           views={['month', 'year']}
           label="From"
           openTo="month"
@@ -213,16 +219,20 @@ const FilterDateRange = () => {
                 marginBottom: theme.spacing(2),
                 width: '100%',
               },
+              onClick: () => setDatePickerStartOpen(true),
             },
           }}
         />
         <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.through-input"
+          open={datePickerEndOpen}
           inputVariant="outlined"
           margin="dense"
           orientation="portrait"
           value={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])}
           onChange={(value) => handleChangeDatePicker(1, value)}
+          onOpen={() => setDatePickerEndOpen(true)}
+          onClose={() => setDatePickerEndOpen(false)}
           views={['month', 'year']}
           label="Through"
           openTo="month"
@@ -235,6 +245,7 @@ const FilterDateRange = () => {
                 marginBottom: theme.spacing(2),
                 width: '100%',
               },
+              onClick: () => setDatePickerEndOpen(true),
             },
           }}
         />

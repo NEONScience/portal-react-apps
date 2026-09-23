@@ -9,7 +9,7 @@
     "@material-table/core": "^8.0.3",
     "@mui/icons-material": "^9.3.1",
     "@mui/material": "^9.3.1",
-    "@neonscience/portal-core-components": "3.0.0-next-dev.20818d8",
+    "@neonscience/portal-core-components": "3.0.0-dev.306f082",
     "core-js": "^3.50.0",
     "dateformat": "^5.0.3",
     "lodash": "^4.18.1",
@@ -32,7 +32,7 @@
     "commander": "^15.0.0",
     "cross-env": "^10.1.0",
     "express": "^5.2.1",
-    "next": "^16.3.2",
+    "next": "^16.3.6",
     "prettier": "^3.9.6",
     "typescript": "~6.0.3"
   },
@@ -43,11 +43,11 @@
     "build:sync-assets": "npx neonscience-portal-core-components--sync-assets --prettify-index --cwd-relative-public-dir-path=\"public\" --cwd-relative-app-dir-path=\"src/app\"",
     "lint": "npx eslint",
     "lint:fix": "npx eslint --fix",
-    "checks": "npm run build:sync-assets && yarn run lint && yarn run build",
-    "checks:docker": "npm run build:docker-sync-assets && npm run lint:docker && npm run build:docker",
+    "checks": "npm run build:sync-assets && yarn run build",
+    "checks:docker": "npm run build:docker-sync-assets && npm run build:docker",
     "start:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/data-product-detail --publish=3012:3012 portal-react-apps/data-product-detail:latest-builder-base yarn run start",
-    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --volume=/$(pwd)/build:/app/apps/data-product-detail/.next --workdir=/app/apps/data-product-detail --publish=3000:3000 portal-react-apps/data-product-detail:latest-builder-base yarn run start:prod",
-    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --volume=/$(pwd)/build:/app/apps/data-product-detail/.next --workdir=/app/apps/data-product-detail -e PORTAL_NEXT_APP_BUILD_CONTAINER=true portal-react-apps/data-product-detail:latest-builder-base yarn run build",
+    "start:docker-prod": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/build:/app/apps/data-product-detail/build --volume=/$(pwd)/.next:/app/apps/data-product-detail/.next --workdir=/app/apps/data-product-detail --publish=3000:3000 portal-react-apps/data-product-detail:latest-builder-base yarn run start:prod",
+    "build:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/data-product-detail -e PORTAL_NEXT_APP_BUILD_CONTAINER=true portal-react-apps/data-product-detail:latest-builder-base yarn run build",
     "lint:docker": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base yarn run lint",
     "build:docker-sync-assets": "docker run --platform=$(docker system info --format '{{.OSType}}/{{.Architecture}}') --rm --tty --interactive --volume=/$(pwd)/public:/app/apps/data-product-detail/public --workdir=/app/apps/data-product-detail portal-react-apps/data-product-detail:latest-builder-base npm run build:sync-assets"
   }

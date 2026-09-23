@@ -38,6 +38,7 @@ import LoginRequiredCard from '@neonscience/portal-core-components/components/Ca
 import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 
 import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
@@ -224,23 +225,63 @@ const formatBytes = (bytes) => {
   return `${(bytes / (1024 ** scale)).toFixed(precision)} ${scales[scale]}`;
 };
 
-export const downloadUuid = (uuid) => {
+export const downloadUuid = (uuid, params) => {
   if (!uuid) { return null; }
   const form = document.createElement('form');
   form.style.display = 'none';
   form.action = NeonEnvironment.getFullDownloadApiPath('prototypeDownloadStream');
   form.method = 'POST';
-
+  // Build form parameters
+  if (exists(params)) {
+    const paramNames = Object.keys(params);
+    paramNames.forEach((paramName) => {
+      const paramInput = document.createElement('input');
+      paramInput.type = 'hidden';
+      paramInput.name = paramName;
+      paramInput.value = params[paramName];
+      form.appendChild(paramInput);
+    });
+  }
   const input = document.createElement('input');
+  input.type = 'hidden';
   input.name = 'manifest';
   input.value = JSON.stringify({ uuid });
   form.appendChild(input);
-
   document.body.appendChild(form);
   const submit = form.submit();
   document.body.removeChild(form);
-
   return submit;
+};
+
+const downloadUuidFile = (uuid, fileName, headers) => {
+  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+  const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
+  const filePath = `${fileRoot}?download=true&downloadUrlOnly=true`;
+  const requestHeaders = {
+    ...headers,
+    'Content-Type': 'application/json',
+  };
+  const requestInit = {
+    method: 'GET',
+    headers: requestHeaders,
+  };
+  fetch(filePath, requestInit)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`File ${fileName} download failed with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (!exists(data) || !isStringNonEmpty(data.data)) {
+        throw new Error(`File ${fileName} download failed, invalid URL response`);
+      }
+      window.location.href = data.data;
+    })
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Error downloading file', error);
+    });
 };
 
 const sortDataObjects = (a, b) => {
@@ -288,7 +329,7 @@ const renderHeaderRow = (rows, classes) => ((
   </TableRow>
 ));
 
-const renderDataFileRow = (file, uuid, classes, canAccessData) => {
+const renderDataFileRow = (file, uuid, classes, canAccessData, downloadSessionHeaders) => {
   const {
     description,
     fileName,
@@ -320,11 +361,7 @@ const renderDataFileRow = (file, uuid, classes, canAccessData) => {
                 <IconButton
                   color="primary"
                   onClick={() => {
-                    const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                    const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
-                    const filePath = `${fileRoot}?download=true`;
-                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                    window.location.href = filePath;
+                    downloadUuidFile(uuid, fileName, downloadSessionHeaders);
                   }}
                   disabled={!canAccessData}
                   size="large"
@@ -551,7 +588,12 @@ const DatasetDetails = (props) => {
       rows={files}
       rowsPerPageOptions={[5, 10, 20]}
       rowHeight={90}
-      renderRow={(row) => renderDataFileRow(row, uuid, classes, canAccessData)}
+      renderRow={(row) => {
+        const headers = {
+          ...neonAuthContextSessionState.sessionHeaders,
+        };
+        return renderDataFileRow(row, uuid, classes, canAccessData, headers);
+      }}
       renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}
     />
   );
@@ -612,7 +654,12 @@ const DatasetDetails = (props) => {
       <Button
         color="primary"
         variant="contained"
-        onClick={() => { downloadUuid(uuid); }}
+        onClick={() => {
+          const headers = {
+            ...neonAuthContextSessionState.sessionHeaders,
+          };
+          downloadUuid(uuid, headers);
+        }}
         endIcon={<DownloadIcon />}
         data-selenium="prototype-dataset-download-button"
         disabled={!allowDownload || !canAccessData}

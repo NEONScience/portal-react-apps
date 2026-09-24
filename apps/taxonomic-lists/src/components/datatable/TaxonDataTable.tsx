@@ -398,8 +398,12 @@ const TaxonDataTable: React.FC<TaxonDataTableProps> = (
       </div>
       <DataTablesReact
         ref={tableRef}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         ajax={ajax}
         columns={columns}
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         options={DATA_TABLE_OPTIONS}
         className="table table-striped table-bordered align-middle w-100"
       >

@@ -288,7 +288,6 @@ const App: React.FC = (): JSX.Element => {
 
   return (
     <NeonPage
-      customizeAuthContainer
       title={title}
       loading={isLoading ? 'Loading Availability...' : undefined}
       breadcrumbHomeHref={RouteService.getWebHomePath()}

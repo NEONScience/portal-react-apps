@@ -31,7 +31,6 @@ const App = () => {
   return (
     <div className={classes.pageContainer}>
       <NeonPage
-        customizeAuthContainer
         title="Taxonomic Lists"
         breadcrumbs={breadcrumbs}
         breadcrumbHomeHref={RouteService.getWebHomePath()}

@@ -22,7 +22,6 @@ const TopPresentation = (props) => {
   ];
   return (
     <NeonPage
-      customizeAuthContainer
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}
       breadcrumbHomeHref={RouteService.getWebHomePath()}

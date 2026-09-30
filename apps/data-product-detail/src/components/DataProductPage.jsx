@@ -170,7 +170,6 @@ const DataProductPage = () => {
 
   return (
     <NeonPage
-      customizeAuthContainer
       title={title}
       breadcrumbHomeHref={RouteService.getWebHomePath()}
       breadcrumbs={breadcrumbs}

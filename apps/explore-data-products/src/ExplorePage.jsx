@@ -117,7 +117,6 @@ const ExplorePage = (props) => {
   */
   return (
     <NeonPage
-      customizeAuthContainer
       loading={loading}
       error={error}
       title="Explore Data Products"

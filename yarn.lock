@@ -1378,9 +1378,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@neonscience/portal-core-components@npm:3.0.0-dev.0d5eab6":
-  version: 3.0.0-dev.0d5eab6
-  resolution: "@neonscience/portal-core-components@npm:3.0.0-dev.0d5eab6"
+"@neonscience/portal-core-components@npm:3.0.0":
+  version: 3.0.0
+  resolution: "@neonscience/portal-core-components@npm:3.0.0"
   dependencies:
     "@bokeh/bokehjs": "npm:3.9.2"
     "@emotion/cache": "npm:^11.14.0"
@@ -1445,7 +1445,7 @@ __metadata:
       optional: true
   bin:
     neonscience-portal-core-components--sync-assets: bin/sync-assets.js
-  checksum: 10c0/e68a44776779bc5b3b18fcc67458ea5fd21e9ba468ea99ecfcc59cbb1f804981942f8e89c1ea9bd15dbc72629d55315cc127ff36e597126f24c97af52d39c8f2
+  checksum: 10c0/dabe1e91eb41f7f0f96fb897ced31c0113bf3d4b0321b21c128ccdcb2f3dc521f390f8e5da3069353a56aa2611acb6fa93f0948c024097bb6f3095ca38af7d6e
   languageName: node
   linkType: hard
 
@@ -3368,7 +3368,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@reduxjs/toolkit": "npm:^2.13.0"
     "@types/lodash": "npm:^4.17.25"
     "@types/node": "npm:^24.19.0"
@@ -4298,7 +4298,7 @@ __metadata:
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
     "@mui/x-date-pickers": "npm:^9.14.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@types/lodash": "npm:^4.17.25"
     "@types/node": "npm:^24.19.0"
     "@types/react": "npm:^19.3.0"
@@ -6759,7 +6759,7 @@ __metadata:
     "@material-table/core": "npm:^8.0.3"
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@types/lodash": "npm:^4.17.25"
     "@types/node": "npm:^24.19.0"
     "@types/react": "npm:^19.3.0"
@@ -6896,7 +6896,7 @@ __metadata:
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
     "@mui/x-date-pickers": "npm:^9.14.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@types/lodash": "npm:^4.17.25"
     "@types/node": "npm:^24.19.0"
     "@types/react": "npm:^19.3.0"
@@ -7517,7 +7517,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@reduxjs/toolkit": "npm:^2.13.0"
     "@types/d3": "npm:^7.4.3"
     "@types/lodash": "npm:^4.17.25"
@@ -8084,7 +8084,7 @@ __metadata:
     "@emotion/styled": "npm:^11.14.1"
     "@mui/icons-material": "npm:^9.4.0"
     "@mui/material": "npm:^9.4.0"
-    "@neonscience/portal-core-components": "npm:3.0.0-dev.0d5eab6"
+    "@neonscience/portal-core-components": "npm:3.0.0"
     "@reduxjs/toolkit": "npm:^2.13.0"
     "@types/lodash": "npm:^4.17.25"
     "@types/node": "npm:^24.19.0"

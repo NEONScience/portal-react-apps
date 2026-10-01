@@ -1,6 +1,7 @@
-/* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
+
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -9,9 +10,16 @@ import FilterItemVisibilityButtons from './FilterItemVisibilityButtons';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
-const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
+const MapSelectionButton = React.lazy(
+  () => import('@neonscience/portal-core-components/components/MapSelectionButton'),
+);
 
-const FilterDomain = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterDomain = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
   const [state, dispatch] = PrototypeContext.usePrototypeContextState();
@@ -65,6 +73,11 @@ const FilterDomain = (props) => {
     </Suspense>
   );
 
+  const getCountTitle = (filterItem) => (
+    '{n} data products have data available from sites in domain '
+      + `${filterItem.name} (${filterItem.subtitle})`
+  );
+
   return (
     <FilterBase
       title="Domains"
@@ -84,7 +97,7 @@ const FilterDomain = (props) => {
               value={filterItem.value}
               subtitle={filterItem.subtitle}
               count={filterItem.count}
-              countTitle={`{n} data products have data available from sites in domain ${filterItem.name} (${filterItem.subtitle})`}
+              countTitle={getCountTitle(filterItem)}
               checked={filterValues[filterKey].includes(filterItem.value)}
               {...checkboxProps}
             />
@@ -106,10 +119,6 @@ const FilterDomain = (props) => {
 
 FilterDomain.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterDomain.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterDomain;

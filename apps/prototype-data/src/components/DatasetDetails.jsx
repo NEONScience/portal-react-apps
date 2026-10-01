@@ -5,48 +5,51 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
-import DownloadIcon from '@material-ui/icons/SaveAlt';
-import FileIcon from '@material-ui/icons/InsertDriveFile';
-import XmlIcon from '@material-ui/icons/DescriptionOutlined';
-import ZipIcon from '@material-ui/icons/Archive';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import CopyIcon from '@material-ui/icons/Assignment';
-import LinkIcon from '@material-ui/icons/Link';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
+import FileIcon from '@mui/icons-material/InsertDriveFile';
+import XmlIcon from '@mui/icons-material/DescriptionOutlined';
+import ZipIcon from '@mui/icons-material/Archive';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import CopyIcon from '@mui/icons-material/Assignment';
+import LinkIcon from '@mui/icons-material/Link';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import LoginRequiredCard from '@neonscience/portal-core-components/components/Card/LoginRequiredCard';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import PrototypeContext from '../PrototypeContext';
 import Citation from './Citation';
 import PagingTable from './PagingTable';
 import { DoiDetail } from '../renderUtil';
 
-const SiteMap = React.lazy(() => import('portal-core-components/lib/components/SiteMap'));
+const SiteMap = React.lazy(() => import('@neonscience/portal-core-components/components/SiteMap'));
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   chip: {
     marginRight: theme.spacing(0.5),
     marginBottom: theme.spacing(1),
@@ -107,7 +110,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },
@@ -117,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },
@@ -160,7 +163,7 @@ const useStyles = makeStyles((theme) => ({
     fontSize: '1.4118rem',
     fontWeight: 'normal',
     color: '#000',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       fontSize: '1.3118rem',
     },
   },
@@ -168,7 +171,7 @@ const useStyles = makeStyles((theme) => ({
     // fontSize: '1.1rem',
     // color: 'rgba(0, 0, 0, 0.70)',
     // lineHeight: '1.6',
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       // fontSize: '1rem',
     },
   },
@@ -222,23 +225,63 @@ const formatBytes = (bytes) => {
   return `${(bytes / (1024 ** scale)).toFixed(precision)} ${scales[scale]}`;
 };
 
-export const downloadUuid = (uuid) => {
+export const downloadUuid = (uuid, params) => {
   if (!uuid) { return null; }
   const form = document.createElement('form');
   form.style.display = 'none';
   form.action = NeonEnvironment.getFullDownloadApiPath('prototypeDownloadStream');
   form.method = 'POST';
-
+  // Build form parameters
+  if (exists(params)) {
+    const paramNames = Object.keys(params);
+    paramNames.forEach((paramName) => {
+      const paramInput = document.createElement('input');
+      paramInput.type = 'hidden';
+      paramInput.name = paramName;
+      paramInput.value = params[paramName];
+      form.appendChild(paramInput);
+    });
+  }
   const input = document.createElement('input');
+  input.type = 'hidden';
   input.name = 'manifest';
   input.value = JSON.stringify({ uuid });
   form.appendChild(input);
-
   document.body.appendChild(form);
   const submit = form.submit();
   document.body.removeChild(form);
-
   return submit;
+};
+
+const downloadUuidFile = (uuid, fileName, headers) => {
+  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
+  const fileRoot = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}`;
+  const filePath = `${fileRoot}?download=true&downloadUrlOnly=true`;
+  const requestHeaders = {
+    ...headers,
+    'Content-Type': 'application/json',
+  };
+  const requestInit = {
+    method: 'GET',
+    headers: requestHeaders,
+  };
+  fetch(filePath, requestInit)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`File ${fileName} download failed with status ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (!exists(data) || !isStringNonEmpty(data.data)) {
+        throw new Error(`File ${fileName} download failed, invalid URL response`);
+      }
+      window.location.href = data.data;
+    })
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Error downloading file', error);
+    });
 };
 
 const sortDataObjects = (a, b) => {
@@ -286,7 +329,7 @@ const renderHeaderRow = (rows, classes) => ((
   </TableRow>
 ));
 
-const renderDataFileRow = (file, uuid, classes) => {
+const renderDataFileRow = (file, uuid, classes, canAccessData, downloadSessionHeaders) => {
   const {
     description,
     fileName,
@@ -312,24 +355,29 @@ const renderDataFileRow = (file, uuid, classes) => {
             <Tooltip
               style={{ flex: 0 }}
               placement="right"
-              title={`Download ${fileName} (${formattedSize})`}
+              title={!canAccessData ? 'Login Required' : `Download ${fileName} (${formattedSize})`}
             >
-              <IconButton
-                color="primary"
-                onClick={() => {
-                  const dataRoot = `${NeonEnvironment.getFullApiPath('prototype')}/data`;
-                  const filePath = `${dataRoot}/${uuid}/${encodeURIComponent(fileName)}?download=true`;
-                  window.location.href = filePath;
-                }}
-              >
-                <DownloadIcon />
-              </IconButton>
+              <span>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    downloadUuidFile(uuid, fileName, downloadSessionHeaders);
+                  }}
+                  disabled={!canAccessData}
+                  size="large"
+                >
+                  <DownloadIcon />
+                </IconButton>
+              </span>
             </Tooltip>
           </ListItemIcon>
           <Divider flexItem orientation="vertical" className={classes.listItemFileDivider} />
           <ListItemText
-            primaryTypographyProps={{
-              variant: 'body2',
+            slotProps={{
+              primary: {
+                variant: 'body2',
+                component: 'div',
+              },
             }}
             primary={(
               <div className={classes.listItemFilePrimaryText}>
@@ -351,13 +399,16 @@ const renderDataFileRow = (file, uuid, classes) => {
 
 const DatasetDetails = (props) => {
   const { uuid } = props;
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const [state] = usePrototypeContextState();
   const {
     datasets: { [uuid]: dataset },
     manifestRollups: { [uuid]: manifestRollup },
   } = state;
+
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
+  const { canAccessData, ready: preconditionsSatisfied } = neonAuthContextSessionState;
 
   if (typeof dataset === 'undefined') { return null; }
 
@@ -418,7 +469,7 @@ const DatasetDetails = (props) => {
 
   // Theme Icons
   const themeIcons = (dataThemes || []).sort().map((dataTheme) => (
-    <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
+    <div key={dataTheme} style={{ marginRight: theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
@@ -461,18 +512,17 @@ const DatasetDetails = (props) => {
         const { datasetUuid, datasetVersion, datasetVersionDescription } = relatedVersion;
         const href = RouteService.getPrototypeDatasetDetailPath(datasetUuid);
         return (
-          <ListItem
+          <ListItemButton
             key={datasetUuid}
             className={`${classes.listItemRelated} ${classes.listItemRelatedVersion}`}
             component="a"
             href={href}
-            button
           >
             <ListItemText
               primary={datasetVersion}
               secondary={datasetVersionDescription || '(no description)'}
             />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
@@ -485,15 +535,14 @@ const DatasetDetails = (props) => {
         const { dataProductCode, dataProductName } = dataProduct;
         const href = RouteService.getProductDetailPath(dataProductCode);
         return (
-          <ListItem
+          <ListItemButton
             key={dataProductCode}
             className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
             component="a"
             href={href}
-            button
           >
             <ListItemText primary={dataProductName} secondary={dataProductCode} />
-          </ListItem>
+          </ListItemButton>
         );
       })}
     </List>
@@ -537,9 +586,14 @@ const DatasetDetails = (props) => {
   const downloadFileList = !files.length ? getNA('none available') : (
     <PagingTable
       rows={files}
-      rowsPerPageOptions={[5]}
+      rowsPerPageOptions={[5, 10, 20]}
       rowHeight={90}
-      renderRow={(row) => renderDataFileRow(row, uuid, classes)}
+      renderRow={(row) => {
+        const headers = {
+          ...neonAuthContextSessionState.sessionHeaders,
+        };
+        return renderDataFileRow(row, uuid, classes, canAccessData, headers);
+      }}
       renderHeaderRow={(rows) => renderHeaderRow(rows, classes)}
     />
   );
@@ -560,20 +614,20 @@ const DatasetDetails = (props) => {
               description,
             } = dataLocation;
             return (
-              <ListItem
+              <ListItemButton
                 key={path}
                 className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
                 component="a"
                 href={path}
                 target="_blank"
                 rel="noopener noreferrer"
-                button
+                disabled={!canAccessData}
               >
                 <ListItemIcon className={classes.listItemIcon}>
                   <LinkIcon />
                 </ListItemIcon>
                 <ListItemText primary={description} secondary={path} />
-              </ListItem>
+              </ListItemButton>
             );
           })}
       </List>
@@ -581,26 +635,43 @@ const DatasetDetails = (props) => {
   );
 
   // Download Button
+  const buttonText = () => {
+    let text = '';
+    // allowDowload involves data being available whereas canAccessData
+    // tells us if a user is logged in and their account allows data access.
+    if (allowDownload && canAccessData) {
+      text = 'Download Package';
+    } else if (!allowDownload) {
+      text = 'Download not available';
+    } else {
+      text = 'Login Required';
+    }
+    return text;
+  };
+
   const downloadButton = (
     <>
       <Button
         color="primary"
         variant="contained"
-        onClick={() => { downloadUuid(uuid); }}
+        onClick={() => {
+          const headers = {
+            ...neonAuthContextSessionState.sessionHeaders,
+          };
+          downloadUuid(uuid, headers);
+        }}
         endIcon={<DownloadIcon />}
         data-selenium="prototype-dataset-download-button"
-        disabled={!allowDownload}
+        disabled={!allowDownload || !canAccessData}
       >
         {(
-          allowDownload
-            ? 'Download Package'
-            : 'Download not available'
+          buttonText()
         )}
       </Button>
       {(!allowDownload
-        ? <div style={{ margin: Theme.spacing(1, 0, 2, 0) }} />
+        ? <div style={{ margin: theme.spacing(1, 0, 2, 0) }} />
         : (
-          <div style={{ margin: Theme.spacing(1, 0, 2, 0) }}>
+          <div style={{ margin: theme.spacing(1, 0, 2, 0) }}>
             <Typography variant="body2" style={{ color: 'rgba(0, 0, 0, .7)' }}>
               {`Estimated Size: ${formatBytes(manifestRollup.totalBytes || 0)}`}
             </Typography>
@@ -609,6 +680,19 @@ const DatasetDetails = (props) => {
       )}
     </>
   );
+
+  const renderDataAccessCard = () => {
+    if (!preconditionsSatisfied) { return null; }
+    if (canAccessData) { return null; }
+    return (
+      <LoginRequiredCard
+        showValidation
+        isAuthenticated={neonAuthContextSessionState.authenticated}
+        accountValidated={neonAuthContextSessionState.accountValidated}
+        accountValidationSteps={neonAuthContextSessionState.accountValidationSteps}
+      />
+    );
+  };
 
   // Manual Location Data
   const manualLocationData = [];
@@ -641,17 +725,17 @@ const DatasetDetails = (props) => {
       return null;
     }
     return (
-      <Tooltip
-        style={{ flex: 0 }}
-        placement="left"
-        title={`Copy DOI URL (${doi.url})`}
-      >
-        <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
+      <CopyToClipboard text={doi.url} className={classes.doiTitleIcon}>
+        <Tooltip
+          style={{ flex: 0 }}
+          placement="left"
+          title={`Copy DOI URL (${doi.url})`}
+        >
           <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
             Copy
           </Button>
-        </CopyToClipboard>
-      </Tooltip>
+        </Tooltip>
+      </CopyToClipboard>
     );
   };
 
@@ -663,13 +747,22 @@ const DatasetDetails = (props) => {
       <Grid container spacing={4}>
 
         {/* Left Column */}
-        <Grid item xs={12} sm={12} md={8} lg={8} xl={9}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 8,
+            lg: 8,
+            xl: 9,
+          }}
+        >
           {/* Prototype Dataset ID */}
           <div className={classes.section}>
             {getSectionTitle('Prototype Dataset ID')}
             <Chip label={uuid} className={classes.datasetIdChip} />
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
           </div>
           <div className={classes.section} id="dataset-about">
@@ -703,7 +796,15 @@ const DatasetDetails = (props) => {
         </Grid>
 
         {/* Right Column */}
-        <Grid item xs={12} sm={12} md={4} lg={4} xl={3}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 4,
+            lg: 4,
+            xl: 3,
+          }}
+        >
           {/* DOI */}
           <div className={classes.sidebarSection}>
             <Typography variant="h6" component="h2" className={classes.sidebarSectionTitleDoi}>
@@ -779,12 +880,23 @@ const DatasetDetails = (props) => {
         </Grid>
 
         {/* Lower Section */}
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid
+          size={{
+            xs: 12,
+            sm: 12,
+            md: 12,
+            lg: 12,
+            xl: 12,
+          }}
+        >
           {/* Download */}
           <div className={classes.section} id="dataset-download">
-            <Typography variant="h4" component="h2" gutterBottom>Data Package and Download</Typography>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Data Package and Download
+            </Typography>
           </div>
           <div className={classes.section}>
+            {renderDataAccessCard()}
             {downloadButton}
             {getSectionSubtitle('Package Contents')}
             {downloadFileList}
@@ -800,7 +912,9 @@ const DatasetDetails = (props) => {
           </div>
           {/* Locations and Study Area */}
           <div className={classes.section} id="dataset-locations-study-area">
-            <Typography variant="h4" component="h2" gutterBottom>Locations and Study Area</Typography>
+            <Typography variant="h4" component="h2" gutterBottom>
+              Locations and Study Area
+            </Typography>
           </div>
           <div className={classes.section} id="dataset-locations-study-area">
             <Typography gutterBottom variant="body2" className={classes.sectionContent}>
@@ -812,7 +926,7 @@ const DatasetDetails = (props) => {
                 No valid associated locations found
               </Typography>
             ) : (
-              <Suspense fallback={<Skeleton variant="rect" width="100%" height={400} />}>
+              <Suspense fallback={<Skeleton variant="rectangular" width="100%" height={400} />}>
                 <SiteMap manualLocationData={manualLocationData} />
               </Suspense>
             )}

@@ -1,46 +1,34 @@
-# Getting Started with Create React App
+# Data Availability
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a [Next.js](https://nextjs.org) project.
 
-## Available Scripts
+The Data Availability standalone application allows viewing all availability related to a product or site.
 
-In the project directory, you can run:
+## Current Production Example
 
-### `yarn start`
+[https://data.neonscience.org/visualizations/data-availability](https://data.neonscience.org/visualizations/data-availability)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Development
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Clone this repository and run `yarn run start` or `npm run start` to spin up a local instance
+running on `http://localhost:3000/visualizations/data-availability`
 
-### `yarn test`
+### Scripts
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Various yarn/npm scripts are available for working with the build/compile side of the app. Invoke
+each one with `yarn run <script>` or `npm run <script>`.
 
-### `yarn build`
+* **`start`**  
+  Open [http://localhost:3000/visualizations/data-availability](http://localhost:3000/visualizations/data-availability) with your browser to see the result.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* **`build`**  
+  Generate a build of the app. Performed automatically as a part of the `start` step.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* **`lint`**  
+  Run an eslint check.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+* **`checks:docker`**  
+    Run all tasks related to this application and library, within a Docker runtime environment.
+    - Executes any required portal core components scripts
+    - Runs linter
+    - Builds application

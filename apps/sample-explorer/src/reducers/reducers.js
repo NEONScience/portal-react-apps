@@ -1,4 +1,7 @@
-import { SAMPLE_ID_LIST_EXCEPTION_MESSAGE } from "../util/constants";
+import fileDownload from 'js-file-download';
+import { Parser } from 'json2csv';
+
+import { SAMPLE_ID_LIST_EXCEPTION_MESSAGE } from '../util/constants';
 import {
   SET_QUERY_SAMPLE_TAG,
   SET_QUERY_SAMPLE_CLASS,
@@ -17,7 +20,7 @@ import {
   DOWNLOAD_FAILED,
   QUERY_SUCCESSFUL,
   QUERY_SAMPLE_FROM_URL,
-} from "../actions/actions";
+} from '../actions/actions';
 
 import {
   createCsv,
@@ -25,17 +28,15 @@ import {
   addBreadcrumb,
   createSampleGraph,
   createEventTable,
-} from "../util/appUtil";
-import { parseParams, applyParams, hasParams } from "../util/paramUtil";
-import { detectIdTypeParam, validateParamQuery } from "../util/queryUtil";
+} from '../util/appUtil';
+import { parseParams, applyParams, hasParams } from '../util/paramUtil';
+import { detectIdTypeParam, validateParamQuery } from '../util/queryUtil';
 
-const fileDownload = require("js-file-download");
-const { Parser } = require("json2csv");
-
+// eslint-disable-next-line default-param-last
 const reducer = (state = {}, action) => {
   let update;
   switch (action.type) {
-    case SET_URL_PARAMS:
+    case SET_URL_PARAMS: {
       if (!hasParams()) {
         return {
           ...state,
@@ -43,15 +44,15 @@ const reducer = (state = {}, action) => {
             ...state.urlParams,
             parsed: true,
             fetch: false,
-          }
+          },
         };
       }
-      let params = [
-        "idType",
-        "sampleTag",
-        "sampleClass",
-        "archiveGuid",
-        "barcode"
+      const params = [
+        'idType',
+        'sampleTag',
+        'sampleClass',
+        'archiveGuid',
+        'barcode',
       ];
       let urlParamsUpdate = {
         ...state.urlParams,
@@ -61,10 +62,10 @@ const reducer = (state = {}, action) => {
       urlParamsUpdate.fetch = validateParamQuery(urlParamsUpdate);
       update = {
         ...state,
-        urlParams: urlParamsUpdate
+        urlParams: urlParamsUpdate,
       };
       return update;
-
+    }
     case QUERY_SAMPLE_FROM_URL:
       return {
         ...state,
@@ -79,7 +80,7 @@ const reducer = (state = {}, action) => {
           sampleClass: state.urlParams.sampleClass,
           archiveGuid: state.urlParams.archiveGuid,
           barcode: state.urlParams.barcode,
-        }
+        },
       };
 
     case SET_QUERY_TYPE:
@@ -88,7 +89,7 @@ const reducer = (state = {}, action) => {
         query: {
           ...state.query,
           queryType: action.queryType,
-        }
+        },
       };
       return update;
 
@@ -98,7 +99,7 @@ const reducer = (state = {}, action) => {
         query: {
           ...state.query,
           sampleTag: action.sampleTag,
-        }
+        },
       };
       return update;
 
@@ -108,7 +109,7 @@ const reducer = (state = {}, action) => {
         query: {
           ...state.query,
           sampleClass: action.sampleClass,
-        }
+        },
       };
       return update;
 
@@ -118,7 +119,7 @@ const reducer = (state = {}, action) => {
         query: {
           ...state.query,
           archiveGuid: action.archiveGuid,
-        }
+        },
       };
       return update;
 
@@ -128,35 +129,34 @@ const reducer = (state = {}, action) => {
         query: {
           ...state.query,
           barcode: action.barcode,
-        }
+        },
       };
       return update;
 
-    case QUERY_FAILED:
-      var errorString = action.error
-      var errorDisplay
+    case QUERY_FAILED: {
+      const errorString = action.error;
+      let errorDisplay;
 
-      if (errorString.includes("400")) {
-        errorDisplay = "Bad Request. Make sure you have entered the required fields..."
-      } else if (errorString.includes("404")) {
-        if (errorString.includes("Sample Class is not supported")) {
-          errorDisplay = "Currently this Sample Class is not supported..."
+      if (errorString.includes('400')) {
+        errorDisplay = 'Bad Request. Make sure you have entered the required fields...';
+      } else if (errorString.includes('404')) {
+        if (errorString.includes('Sample Class is not supported')) {
+          errorDisplay = 'Currently this Sample Class is not supported...';
         } else {
-          errorDisplay = "Sample Not Found. You may have entered an incorrect identifier..."
+          errorDisplay = 'Sample Not Found. You may have entered an incorrect identifier...';
         }
-
-      } else if (errorString.includes("500")) {
-        errorDisplay = "Internal Server Error"
+      } else if (errorString.includes('500')) {
+        errorDisplay = 'Internal Server Error';
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = "Internal Server Error"
+        errorDisplay = 'Internal Server Error';
       }
 
-      let visitedSamples = {
+      const visitedSamples = {
         sampleUuids: [],
         sampleViews: [],
-      }
+      };
 
       update = {
         ...state,
@@ -165,191 +165,197 @@ const reducer = (state = {}, action) => {
           queryIsLoading: false,
           queryErrorStr: errorDisplay,
         },
-        sampleUuid: "",
-        previousSampleUuid: "",
-        visitedSamples: visitedSamples,
-        cacheControl: ""
-      }
+        sampleUuid: '',
+        previousSampleUuid: '',
+        visitedSamples,
+        cacheControl: '',
+      };
       return update;
-
-    case QUERY_RUNNING:
+    }
+    case QUERY_RUNNING: {
       update = {
         ...state,
         query: {
           ...state.query,
           queryIsLoading: true,
-        }
-      }
+        },
+      };
       return update;
-
-    case DOWNLOAD_VISITED_SAMPLES:
-      var visitedSamplesJson = JSON.stringify(action.samples);
-      var file = "neon-samples";
+    }
+    case DOWNLOAD_VISITED_SAMPLES: {
+      const visitedSamplesJson = JSON.stringify(action.samples);
+      let file = 'neon-samples';
       if (action.samples.length === 1) {
-        file = action.samples[0].sampleTag + "-" + action.samples[0].sampleClass
+        file = `${action.samples[0].sampleTag}-${action.samples[0].sampleClass}`;
       }
-      var fileType = action.downloadType;
+      const fileType = action.downloadType;
       switch (fileType) {
-        case "json":
-          fileDownload(visitedSamplesJson, file + ".json");
+        case 'json':
+          fileDownload(visitedSamplesJson, `${file}.json`);
           break;
-        case "csv":
-          var csv = createCsv(action.samples);
-          fileDownload(csv, file + ".csv");
+        case 'csv': {
+          const csv = createCsv(action.samples);
+          fileDownload(csv, `${file}.csv`);
           break;
+        }
         default:
           break;
       }
       return state;
-
-    case QUERY_SUPPORTED_CLASSES_SUCCESSFUL:
+    }
+    case QUERY_SUPPORTED_CLASSES_SUCCESSFUL: {
       let sampleClasses;
-      //if action.payload is null then we didn't have to fetch, the classes are already in state.
+      // if action.payload is null then we didn't have to fetch, the classes are already in state.
       if (action.payload === null) {
         sampleClasses = state.sampleClassDesc;
       } else {
-        var sampleClassArr = action.payload.data.entries
+        const sampleClassArr = action.payload.data.entries;
         sampleClasses = new Map();
-        for (let i = 0; i < sampleClassArr.length; i++) {
-          sampleClasses.set(sampleClassArr[i].key, sampleClassArr[i].value)
+        for (let i = 0; i < sampleClassArr.length; i += 1) {
+          sampleClasses.set(sampleClassArr[i].key, sampleClassArr[i].value);
         }
       }
 
-      let headers = ["Sample Class", "Description"]
-      let csvData = [];
-      for (var [key, value] of sampleClasses) {
+      const headers = ['Sample Class', 'Description'];
+      const csvData = [];
+      sampleClasses.forEach((value, key) => {
         let row = [];
-        row = Object.assign(row, { "Sample Class": key });
-        row = Object.assign(row, { "Description": value });
+        row = Object.assign(row, { 'Sample Class': key });
+        row = Object.assign(row, { Description: value });
         csvData.push(row);
-      }
+      });
 
       if (action.download) {
-        let jsonParser = new Parser({ fields: headers });
-        let csvResult = jsonParser.parse(csvData);
-        fileDownload(csvResult, "Supported_Sample_Classes.csv");
+        const jsonParser = new Parser({ fields: headers });
+        const csvResult = jsonParser.parse(csvData);
+        fileDownload(csvResult, 'Supported_Sample_Classes.csv');
       }
 
       update = {
         ...state,
-        sampleClassDesc: sampleClasses
-      }
+        sampleClassDesc: sampleClasses,
+      };
       return update;
-
-    case QUERY_SAMPLE_CLASS_SUCCESSFUL:
-      var classes = action.payload.data.sampleClasses;
+    }
+    case QUERY_SAMPLE_CLASS_SUCCESSFUL: {
+      const classes = action.payload.data.sampleClasses;
       update = {
         ...state,
         query: {
           ...state.query,
           queryIsLoading: false,
-          sampleClasses: classes
-        }
-      }
+          sampleClasses: classes,
+        },
+      };
       return update;
-
-    case DOWNLOAD_SUCCESSFUL:
-      var downloadJson = JSON.stringify(action.json.data);
-      var fileName = "neon-samples";
+    }
+    case DOWNLOAD_SUCCESSFUL: {
+      const downloadJson = JSON.stringify(action.json.data);
+      const fileName = 'neon-samples';
       switch (action.downloadType) {
-        case "json":
-          fileDownload(downloadJson, fileName + ".json");
+        case 'json':
+          fileDownload(downloadJson, `${fileName}.json`);
           break;
-        case "csv":
-          csv = createCsv(action.json.data.sampleViews);
-          fileDownload(csv, fileName + ".csv");
+        case 'csv': {
+          const csv = createCsv(action.json.data.sampleViews);
+          fileDownload(csv, `${fileName}.csv`);
           break;
+        }
         default:
           break;
       }
       update = {
         ...state,
-        downloadErrorStr: "",
-        cacheControl: ""
-      }
+        downloadErrorStr: '',
+        cacheControl: '',
+      };
       return update;
-
-    case DOWNLOAD_RUNNING:
+    }
+    case DOWNLOAD_RUNNING: {
       update = {
         ...state,
-        downloadIsLoading: action.isLoading
-      }
+        downloadIsLoading: action.isLoading,
+      };
       return update;
-
-    case RESET_DOWNLOAD_STATE:
+    }
+    case RESET_DOWNLOAD_STATE: {
       update = {
         ...state,
-        downloadErrorStr: ""
-      }
+        downloadErrorStr: '',
+      };
       return update;
-
-    case DOWNLOAD_FAILED:
-      errorString = action.error
-      if (errorString.includes("400")) {
-        errorDisplay = "Bad Request. Make sure you have entered the required fields..."
-      } else if (errorString.includes("Degree of Sample Network search required.")) {
-        errorDisplay = "Degree of Sample Network search required.  1 - n"
-      } else if (errorString.includes("404")) {
-        if (errorString.includes("Sample Class is not supported")) {
-          errorDisplay = "Currently this Sample Class is not supported..."
+    }
+    case DOWNLOAD_FAILED: {
+      const errorString = action.error;
+      let errorDisplay;
+      if (errorString.includes('400')) {
+        errorDisplay = 'Bad Request. Make sure you have entered the required fields...';
+      } else if (errorString.includes('Degree of Sample Network search required.')) {
+        errorDisplay = 'Degree of Sample Network search required.  1 - n';
+      } else if (errorString.includes('404')) {
+        if (errorString.includes('Sample Class is not supported')) {
+          errorDisplay = 'Currently this Sample Class is not supported...';
         } else {
-          errorDisplay = "Sample Not Found. You may have entered an incorrect identifier..."
+          errorDisplay = 'Sample Not Found. You may have entered an incorrect identifier...';
         }
-
-      } else if (errorString.includes("500")) {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff..."
+      } else if (errorString.includes('500')) {
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       } else if (errorString === SAMPLE_ID_LIST_EXCEPTION_MESSAGE) {
         errorDisplay = errorString;
       } else {
-        errorDisplay = "Internal Server Error. Contact NEON CI Staff..."
+        errorDisplay = 'Internal Server Error. Contact NEON CI Staff...';
       }
 
       update = {
         ...state,
         downloadErrorStr: errorDisplay,
-        cacheControl: ""
-      }
+        cacheControl: '',
+      };
       return update;
-
-    case QUERY_SUCCESSFUL:
-      let data = action.payload.data;
-      //TODO: more than one match to sample query...
-      if (typeof data.sampleViews === "undefined" || data.sampleViews === null) {
-        console.log("No Sample Views")
+    }
+    case QUERY_SUCCESSFUL: {
+      const { data } = action.payload;
+      // TODO: more than one match to sample query...
+      if (typeof data.sampleViews === 'undefined' || data.sampleViews === null) {
+        // eslint-disable-next-line no-console
+        console.log('No Sample Views.  This should not happen.');
       } else {
-        for (let i = 0; i < data.sampleViews.length; i++) {
-
-          let fieldDatum = checkFields(data.sampleViews[i])
-          let sampleUuid = fieldDatum.uuid;
-          let sampleClass = fieldDatum.class;
-          let sampleTag = fieldDatum.tag;
-          let barcode = fieldDatum.barcode;
-          let archiveGuid = fieldDatum.archiveGuid;
-          let previousSampleUuid = state.previousSampleUuid;
-          let visitedSamples = state.visitedSamples;
+        for (let i = 0; i < data.sampleViews.length; i += 1) {
+          const fieldDatum = checkFields(data.sampleViews[i]);
+          const sampleUuid = fieldDatum.uuid;
+          const sampleClass = fieldDatum.class;
+          const sampleTag = fieldDatum.tag;
+          const { barcode } = fieldDatum;
+          const { archiveGuid } = fieldDatum;
+          let { previousSampleUuid } = state;
+          const visitedSamples = { ...state.visitedSamples };
 
           if (visitedSamples.sampleUuids.indexOf(sampleUuid) === -1) {
-            visitedSamples.sampleUuids.push(sampleUuid);
-            visitedSamples.sampleViews.push(data.sampleViews[i]);
+            const newVisitedSampleUuids = [...visitedSamples.sampleUuids];
+            const newVisitedSampleViews = [...visitedSamples.sampleViews];
+            newVisitedSampleUuids.push(sampleUuid);
+            newVisitedSampleViews.push(data.sampleViews[i]);
+            visitedSamples.sampleUuids = newVisitedSampleUuids;
+            visitedSamples.sampleViews = newVisitedSampleViews;
           }
 
-          //check to make sure this is a new query.  if not new just return the existing information
+          // check to make sure this is a new query.
+          // if not new just return the existing information
           if (sampleUuid === previousSampleUuid) {
             update = {
               ...state,
-              visitedSamples: visitedSamples,
+              visitedSamples,
               query: {
                 ...state.query,
                 queryIsLoading: false,
               },
-            }
+            };
             return update;
-          } else {
-            previousSampleUuid = sampleUuid;
           }
+          previousSampleUuid = sampleUuid;
 
-          let uuidBreadcrumbs = state.uuidBreadcrumbs;
-          //remove sample from bread crumb
+          const uuidBreadcrumbs = [...state.uuidBreadcrumbs];
+          // remove sample from bread crumb
           if (uuidBreadcrumbs.length > 1) {
             if (uuidBreadcrumbs[uuidBreadcrumbs.length - 2] === sampleUuid) {
               uuidBreadcrumbs.pop();
@@ -360,52 +366,53 @@ const reducer = (state = {}, action) => {
             addBreadcrumb(sampleUuid, uuidBreadcrumbs);
           }
 
-          //create Sample Graph nodes and links
-          let graphStuff = createSampleGraph(data.sampleViews[i], uuidBreadcrumbs)
-          let newNodes = graphStuff.nodes;
-          let newLinks = graphStuff.links;
+          // create Sample Graph nodes and links
+          const graphStuff = createSampleGraph(data.sampleViews[i], uuidBreadcrumbs);
+          const newNodes = graphStuff.nodes;
+          const newLinks = graphStuff.links;
 
-          //create DataTable definition
-          let tableStuff = createEventTable(data.sampleViews[i], state.initialColumns);
-          let tableDefinition = tableStuff.definition;
-          let tableData = tableStuff.data;
+          // create DataTable definition
+          const tableStuff = createEventTable(data.sampleViews[i], state.initialColumns);
+          const tableDefinition = tableStuff.definition;
+          const tableData = tableStuff.data;
 
           update = {
             ...state,
             query: {
               ...state.query,
               queryIsLoading: false,
-              queryErrorStr: "success",
-              sampleClass: sampleClass,
+              queryErrorStr: 'success',
+              sampleClass,
             },
             search: {
-              sampleClass: sampleClass,
-              sampleTag: sampleTag,
-              barcode: barcode,
-              archiveGuid: archiveGuid,
+              sampleClass,
+              sampleTag,
+              barcode,
+              archiveGuid,
             },
-            sampleUuid: sampleUuid,
-            previousSampleUuid: previousSampleUuid,
+            sampleUuid,
+            previousSampleUuid,
             dataProducts: data.sampleViews[i].dataProducts,
             parentUuids: data.sampleViews[i].parentUuids,
             childUuids: data.sampleViews[i].childUuids,
             sampleEvents: data.sampleViews[i].sampleEvents,
-            tableDefinition: tableDefinition,
-            tableData: tableData,
-            uuidBreadcrumbs: uuidBreadcrumbs,
-            visitedSamples: visitedSamples,
-            cacheControl: "",
+            tableDefinition,
+            tableData,
+            uuidBreadcrumbs,
+            visitedSamples,
+            cacheControl: '',
             graphData: {
               nodes: newNodes,
               links: newLinks,
-            }
-          }
+            },
+          };
         }
       }
       return update;
+    }
     default:
       return state;
   }
-}
+};
 
 export default reducer;

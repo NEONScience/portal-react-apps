@@ -1,33 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import Theme from 'portal-core-components/lib/components/Theme';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 /**
  * Style the component using the imported theme
  */
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()((theme) => ({
   linkList: {
     listStyleType: 'none',
     paddingLeft: 0,
   },
   link: {
-    marginBottom: Theme.spacing(1),
+    marginBottom: theme.spacing(1),
   },
 }));
+
+const defaultProps = {
+  dataProductCode: '',
+};
 
 /**
  * Define the taxon detail component
  * @param {*} dataProductCode
  * @returns The component
  */
-const TaxonDetail = ({ dataProductCode }) => {
+const TaxonDetail = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
+  const { dataProductCode } = props;
   /* use state for the popover */
   const [taxonTypes, setTaxonTypes] = useState(null);
 
@@ -36,8 +42,6 @@ const TaxonDetail = ({ dataProductCode }) => {
     const baseUrl = NeonEnvironment.getDataProductTaxonTypesPath();
     const fullUrl = `${baseUrl}/${productCode}`;
     const init = {
-      mode: 'cors',
-      credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
       },
@@ -69,7 +73,7 @@ const TaxonDetail = ({ dataProductCode }) => {
     getTaxonTypes(dataProductCode);
   }, [dataProductCode]);
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   /**
   * Capitalize the first letter of a string.
@@ -101,7 +105,9 @@ const TaxonDetail = ({ dataProductCode }) => {
         <ul className={classes.linkList}>
           {taxonTypes.map((taxonType) => (
             <li key={taxonType} className={classes.link}>
-              <Link href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}>
+              <Link
+                href={`${RouteService.getTaxonomicListsPath()}?taxonTypeCode=${taxonType}`}
+              >
                 {parseTaxonType(taxonType)}
               </Link>
             </li>
@@ -113,14 +119,8 @@ const TaxonDetail = ({ dataProductCode }) => {
   return null;
 };
 
-/* Define the component prop types */
 TaxonDetail.propTypes = {
   dataProductCode: PropTypes.string,
-};
-
-/* Define the default prop values */
-TaxonDetail.defaultProps = {
-  dataProductCode: '',
 };
 
 /* export the component */

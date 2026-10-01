@@ -1,14 +1,13 @@
-/* eslint-disable import/no-unresolved */
 import React, { useLayoutEffect } from 'react';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import ReleaseFilter from '@neonscience/portal-core-components/components/ReleaseFilter';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import DataProductContext from './DataProductContext';
 
@@ -183,6 +182,11 @@ const DataProductPage = () => {
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
+        },
+      }}
+      NeonAuthContextProviderProps={{
+        whenFinal: (neonAuthContextState) => {
+          dispatch({ type: 'storeFinalizedNeonAuthContextState', neonAuthContextState });
         },
       }}
     >

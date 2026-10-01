@@ -1,0 +1,382 @@
+import type {
+  GraphNode,
+  StyledGraphNode,
+  PositionedGraphNode,
+  NodeStyleOverrides,
+  SampleView,
+  GraphData,
+  GraphConfig,
+  LayoutRuntimeConfig,
+  LabelRuntimeConfig,
+} from './types';
+import {
+  NODE_TYPES,
+  RELATIONSHIPS,
+  LABEL_DEFAULTS,
+  SVG_DEFAULTS,
+  SPACING_DEFAULTS,
+  LAYOUT_DEFAULTS,
+} from './SampleGraphConstants';
+
+type ClassifyPreviousNodesProps = {
+  previousNodes: StyledGraphNode[];
+  currentSampleView?: SampleView;
+};
+
+type ClassifyPreviousNodesResult = {
+  previousParentNodes: StyledGraphNode[];
+  previousChildNodes: StyledGraphNode[];
+};
+
+type PrepareGraphDataProps = {
+  focusNodes: StyledGraphNode[];
+  previousNodes: StyledGraphNode[];
+  parentNodes: StyledGraphNode[];
+  childNodes: StyledGraphNode[];
+  sampleViews?: SampleView[];
+  labelFont: string;
+};
+
+type PrepareGraphDataResult = {
+  focusNode: StyledGraphNode;
+  longestParentLabelWidth: number;
+  focusRadius: number;
+};
+
+type BuildGraphDataProps = {
+  data: GraphData;
+  nodeStyles?: Partial<NodeStyleOverrides>;
+};
+
+type ComputeLayoutProps = {
+  parentNodes: StyledGraphNode[];
+  childNodes: StyledGraphNode[];
+  focusNode: StyledGraphNode;
+  longestParentLabelWidth: number;
+  containerHeight: number;
+  layoutConfig: LayoutRuntimeConfig;
+};
+
+type ComputeLayoutResult = {
+  positionedNodes: PositionedGraphNode[];
+  positionedNodeById: Map<string, PositionedGraphNode>;
+  positionedParentNodes: PositionedGraphNode[];
+  positionedChildNodes: PositionedGraphNode[];
+  positionedFocusNode: PositionedGraphNode;
+  firstParent: PositionedGraphNode | null;
+  parentSpineX: number;
+  svgHeight: number;
+};
+
+type BuildConfigResult = {
+  labelFont: string;
+  labelConfig: LabelRuntimeConfig;
+  layoutConfig: LayoutRuntimeConfig;
+};
+
+export const buildConfig = (
+  config: GraphConfig,
+): BuildConfigResult => {
+  const layout = config.layout ?? {};
+  const spacing = config.spacing ?? {};
+  const labels = config.labels ?? {};
+  const svg = config.svg ?? {};
+  const layoutScale = layout.scale ?? LAYOUT_DEFAULTS.scale;
+  const labelFontSize = labels.fontSize ?? LABEL_DEFAULTS.fontSize;
+  const labelFontFamily = labels.fontFamily ?? LABEL_DEFAULTS.fontFamily;
+  const labelPadding = labels.labelPadding ?? (LABEL_DEFAULTS.labelPadding * layoutScale);
+  return {
+    labelFont:
+      `${labelFontSize}px ${labelFontFamily}`,
+    labelConfig: {
+      labelPadding,
+      labelVerticalOffset: labels.verticalOffset ?? LABEL_DEFAULTS.verticalOffset,
+      labelFontSize,
+      labelFontFamily,
+    },
+    layoutConfig: {
+      leftMargin: layout.leftMargin ?? LAYOUT_DEFAULTS.leftMargin,
+      topMargin: layout.topMargin ?? LAYOUT_DEFAULTS.topMargin,
+      labelPadding,
+      rowSpacing: (spacing.row ?? SPACING_DEFAULTS.row) * layoutScale,
+      columnSpacing: (spacing.column ?? SPACING_DEFAULTS.column) * layoutScale,
+      parentLabelToLineGap: labels.parentLabelLineGap
+        ?? (LABEL_DEFAULTS.parentLabelLineGap * layoutScale),
+      parentConnectorLength: (layout.parentConnectorLength
+        ?? LAYOUT_DEFAULTS.parentConnectorLength) * layoutScale,
+      svgContainerPadding: svg.containerPadding ?? SVG_DEFAULTS.containerPadding,
+      svgBottomPadding: svg.bottomPadding ?? (SVG_DEFAULTS.bottomPadding * layoutScale),
+    },
+  };
+};
+
+const DEFAULT_NODE_COLORS = {
+  [NODE_TYPES.FOCUS]: '#002c77',
+  [NODE_TYPES.PARENT]: '#558807',
+  [NODE_TYPES.PREVIOUS]: '#f0ab00',
+  [NODE_TYPES.CHILD]: '#5ca6e3',
+} as const;
+const DEFAULT_NODE_STROKE_WIDTH = 1.5;
+const DEFAULT_SYMBOL_SIZE = 200;
+
+// Annotates previous nodes with relationship metadata.
+const classifyPreviousNodes = ({
+  previousNodes,
+  currentSampleView,
+}: ClassifyPreviousNodesProps): ClassifyPreviousNodesResult => {
+  const previousParentNodes: StyledGraphNode[] = [];
+  const previousChildNodes: StyledGraphNode[] = [];
+  if (!currentSampleView) {
+    return {
+      previousParentNodes,
+      previousChildNodes,
+    };
+  }
+  previousNodes.forEach((previousNode) => {
+    const isParent = currentSampleView.parentSampleIdentifiers?.some(
+      (parent) => parent.sampleUuid === previousNode.id,
+    );
+    const isChild = currentSampleView.childSampleIdentifiers?.some(
+      (child) => child.sampleUuid === previousNode.id,
+    );
+    if (isParent) {
+      previousParentNodes.push({
+        ...previousNode,
+        previousRelationship: RELATIONSHIPS.PARENT,
+      });
+    }
+    if (isChild) {
+      previousChildNodes.push({
+        ...previousNode,
+        previousRelationship: RELATIONSHIPS.CHILD,
+      });
+    }
+  });
+  return {
+    previousParentNodes,
+    previousChildNodes,
+  };
+};
+
+export const getNodeStyle = (
+  node: GraphNode,
+  nodeStyles: Partial<NodeStyleOverrides> = {},
+) => {
+  const defaultColor = DEFAULT_NODE_COLORS[node.symbolType];
+  const nodeColor = node.color;
+  return {
+    fill:
+      nodeStyles?.[node.symbolType]?.fill
+      ?? nodeColor
+      ?? defaultColor
+      ?? '#ccc',
+    stroke:
+      nodeStyles?.[node.symbolType]?.stroke
+      ?? nodeColor
+      ?? defaultColor
+      ?? '#999',
+    strokeWidth: nodeStyles?.[node.symbolType]?.strokeWidth ?? DEFAULT_NODE_STROKE_WIDTH,
+    symbolSize: nodeStyles?.[node.symbolType]?.symbolSize ?? DEFAULT_SYMBOL_SIZE,
+  };
+};
+
+const textMeasureCanvas = document.createElement('canvas');
+const measureTextWidth = (
+  text: string,
+  font: string,
+) => {
+  const context = textMeasureCanvas.getContext('2d')!;
+  context.font = font;
+  return context.measureText(text).width;
+};
+
+const getLongestParentLabelWidth = (
+  parentNodes: GraphNode[],
+  labelFont: string,
+) => {
+  if (parentNodes.length === 0) {
+    return 0;
+  }
+  return Math.max(
+    ...parentNodes.map((node) => measureTextWidth(
+      node.sampleName ?? '',
+      labelFont,
+    )),
+  );
+};
+
+const getFocusNodeRadius = (focusNode: StyledGraphNode) => Math.sqrt(
+  focusNode.style.symbolSize / Math.PI,
+);
+
+export const buildGraphData = ({
+  data,
+  nodeStyles,
+}: BuildGraphDataProps) => {
+  const focusNodes: StyledGraphNode[] = [];
+  const previousNodes: StyledGraphNode[] = [];
+  const parentNodes: StyledGraphNode[] = [];
+  const childNodes: StyledGraphNode[] = [];
+  // Clone incoming redux nodes and precompute styles
+  data.nodes.forEach((node) => {
+    const styledNode: StyledGraphNode = {
+      ...node,
+      style: getNodeStyle(
+        node,
+        nodeStyles,
+      ),
+    };
+    switch (styledNode.symbolType) {
+      case NODE_TYPES.FOCUS:
+        focusNodes.push(styledNode);
+        break;
+      case NODE_TYPES.PREVIOUS:
+        previousNodes.push(styledNode);
+        break;
+      case NODE_TYPES.PARENT:
+        parentNodes.push(styledNode);
+        break;
+      case NODE_TYPES.CHILD:
+        childNodes.push(styledNode);
+        break;
+      default:
+        break;
+    }
+  });
+  return {
+    focusNodes,
+    previousNodes,
+    parentNodes,
+    childNodes,
+  };
+};
+
+// Mutates parentNodes and childNodes collections by merging previous-node relationships
+export const prepareGraphData = ({
+  focusNodes,
+  previousNodes,
+  parentNodes,
+  childNodes,
+  sampleViews,
+  labelFont,
+}: PrepareGraphDataProps): PrepareGraphDataResult => {
+  const focusNode = focusNodes[0]!;
+  const currentSampleView = sampleViews?.find(
+    (sample) => sample.sampleUuid === focusNode.id,
+  );
+  const {
+    previousParentNodes,
+    previousChildNodes,
+  } = classifyPreviousNodes({
+    previousNodes,
+    currentSampleView,
+  });
+  parentNodes.unshift(
+    ...previousParentNodes,
+  );
+  childNodes.push(
+    ...previousChildNodes,
+  );
+  const longestParentLabelWidth = getLongestParentLabelWidth(
+    parentNodes,
+    labelFont,
+  );
+  const focusRadius = getFocusNodeRadius(focusNode);
+  return {
+    focusNode,
+    longestParentLabelWidth,
+    focusRadius,
+  };
+};
+
+// Computes layout coordinates.
+export const computeLayout = ({
+  parentNodes,
+  childNodes,
+  focusNode,
+  longestParentLabelWidth,
+  containerHeight,
+  layoutConfig,
+}: ComputeLayoutProps): ComputeLayoutResult => {
+  const {
+    leftMargin,
+    topMargin,
+    rowSpacing,
+    columnSpacing,
+    labelPadding,
+    parentLabelToLineGap,
+    parentConnectorLength,
+    svgContainerPadding,
+    svgBottomPadding,
+  } = layoutConfig;
+
+  const positionedParentNodes: PositionedGraphNode[] = parentNodes.map((n, i) => ({
+    ...n,
+    x: leftMargin,
+    y: topMargin + (i * rowSpacing),
+  }));
+
+  const firstParent = positionedParentNodes.length > 0
+    ? positionedParentNodes[0]
+    : null;
+
+  const positionedFocusNode: PositionedGraphNode = {
+    ...focusNode,
+    x: leftMargin
+      + longestParentLabelWidth
+      + labelPadding
+      + parentLabelToLineGap
+      + parentConnectorLength,
+    y: positionedParentNodes.length === 0
+      ? topMargin : positionedParentNodes[positionedParentNodes.length - 1].y + rowSpacing,
+  };
+
+  const parentSpineX = positionedFocusNode.x;
+
+  const positionedChildNodes: PositionedGraphNode[] = childNodes.map((n, i) => ({
+    ...n,
+    x:
+      positionedFocusNode.x + columnSpacing,
+    y:
+      positionedFocusNode.y + ((i + 1) * rowSpacing),
+  }));
+
+  const positionedNodes: PositionedGraphNode[] = [
+    ...positionedParentNodes,
+    positionedFocusNode,
+    ...positionedChildNodes,
+  ];
+
+  const positionedNodeById: Map<string, PositionedGraphNode> = new Map<
+    string,
+    PositionedGraphNode
+  >();
+
+  positionedNodes.forEach((node) => {
+    positionedNodeById.set(
+      node.id,
+      node,
+    );
+  });
+
+  const maxNodeY = positionedChildNodes.length > 0
+    ? Math.max(
+      ...positionedChildNodes.map((n) => n.y),
+    ) : positionedFocusNode.y;
+
+  const svgHeight = Math.max(
+    containerHeight - svgContainerPadding,
+    maxNodeY + svgBottomPadding,
+  );
+
+  return {
+    positionedNodes,
+    positionedNodeById,
+    positionedParentNodes,
+    positionedChildNodes,
+    positionedFocusNode,
+    firstParent,
+    parentSpineX,
+    svgHeight,
+  };
+};

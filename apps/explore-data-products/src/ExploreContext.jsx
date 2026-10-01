@@ -1,9 +1,9 @@
-/* eslint-disable import/no-unresolved */
 import React, {
   createContext,
   useContext,
   useReducer,
   useEffect,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 
@@ -11,9 +11,11 @@ import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import {
   APP_STATUS,
@@ -55,6 +57,7 @@ const DEFAULT_STATE = {
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
+  neonAuthContextState: cloneDeep(NeonAuthContext.DEFAULT_STATE),
 
   // Unparsed values sniffed from URL params to seed initial filter values
   // This is here primarily for backward-compatibility with legacy portal pages.
@@ -164,7 +167,11 @@ const calculateAppStatus = (state) => {
     updatedState.appStatus = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
+  if (
+    stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING)
+    || !state.neonContextState.isFinal
+    || !state.neonAuthContextState.isFinal
+  ) {
     updatedState.appStatus = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -200,6 +207,12 @@ const reducer = (state, action) => {
       return calculateAppStatus(parseAnyUnparsedProductSets({
         ...newState,
         neonContextState: action.neonContextState,
+      }));
+    // Neon Auth Context
+    case 'storeFinalizedNeonAuthContextState':
+      return calculateAppStatus(parseAnyUnparsedProductSets({
+        ...newState,
+        neonAuthContextState: action.neonAuthContextState,
       }));
 
     // Fetch Handling
@@ -260,7 +273,7 @@ const reducer = (state, action) => {
     // Sort
     case 'applySort':
       return applySort(state, action.sortMethod, action.sortDirection);
-    case 'toggleSortVisiblity':
+    case 'toggleSortVisibility':
       return { ...newState, sortVisible: !state.sortVisible };
 
     // Misc
@@ -303,10 +316,13 @@ const reducer = (state, action) => {
   }
 };
 
+const defaultProps = {};
+
 /**
    PROVIDER
 */
-const Provider = (props) => {
+const Provider = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { children } = props;
 
   /**
@@ -363,17 +379,14 @@ const Provider = (props) => {
   /**
      Render
   */
+  const contextValue = useMemo(() => [state, dispatch], [state, dispatch]);
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <Context.Provider value={[state, dispatch]}>
+    <Context.Provider value={contextValue}>
       {children}
     </Context.Provider>
   );
 };
 
-/**
-   Prop Types
-*/
 Provider.propTypes = {
   children: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.oneOfType([
@@ -384,8 +397,6 @@ Provider.propTypes = {
     PropTypes.string,
   ]).isRequired,
 };
-
-Provider.defaultProps = {};
 
 /**
    EXPORT

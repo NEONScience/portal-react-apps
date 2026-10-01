@@ -2,24 +2,23 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Chip from '@material-ui/core/Chip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import AddIcon from '@material-ui/icons/Add';
+import { alpha } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Chip from '@mui/material/Chip';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 
 import debounce from 'lodash/debounce';
 
-import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
-import Theme from 'portal-core-components/lib/components/Theme';
+import AnalyticsService from '@neonscience/portal-core-components/service/AnalyticsService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -28,7 +27,7 @@ import { FILTER_KEYS, parseSearchTerms } from '../../util/filterUtil';
 
 const DEBOUNCE_MILLISECONDS = 200;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   closeButton: {
     color: theme.palette.grey[500],
   },
@@ -39,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   },
   dialogContent: {
     display: 'flex',
-    marginBottom: Theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   keywordColumn: {
     display: 'flex',
@@ -48,33 +47,36 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
   keywordLetter: {
-    marginBottom: Theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   keywords: {
     display: 'flex',
     flexWrap: 'wrap',
     '& p': {
-      marginRight: Theme.spacing(3),
-      marginBottom: Theme.spacing(2),
+      marginRight: theme.spacing(3),
+      marginBottom: theme.spacing(2),
     },
   },
   keywordChip: {
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
-    borderColor: fade(theme.palette.primary.main, 0.4),
+    color: theme.palette.primary.main,
+    borderColor: alpha(theme.palette.primary.main, 0.4),
     borderStyle: 'dotted',
+    backgroundColor: 'transparent',
   },
   keywordChipIcon: {
     width: '0.75em',
     height: '0.75em',
     marginLeft: '8px !important',
     marginRight: theme.spacing(-1),
+    color: `${theme.palette.primary.main} !important`,
     opacity: 0.4,
   },
   subtitle: {
     fontSize: '0.725rem',
-    color: Theme.palette.grey[400],
-    marginTop: Theme.spacing(1),
+    color: theme.palette.grey[400],
+    marginTop: theme.spacing(1),
   },
   searchInput: {
     '& input': {
@@ -84,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterSearch = (props) => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
   const { searchRef } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -102,13 +104,14 @@ const FilterSearch = (props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const dialogSearchRef = useRef(null);
 
-  const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
-  const belowLg = useMediaQuery(Theme.breakpoints.down('md'));
+  const belowSm = useMediaQuery(theme.breakpoints.only('xs'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const belowLg = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
+  const debouncedSearch = debounce((searchTerm, searchRefCurrent, applyValueToInput = false) => {
     if (applyValueToInput) {
-      searchRef.current.querySelector('input').value = searchTerm;
+      const localSearchRefCurrent = searchRefCurrent;
+      localSearchRefCurrent.querySelector('input').value = searchTerm;
     }
     if (searchTerm.length) {
       localStorage.setItem('search', searchTerm);
@@ -149,7 +152,7 @@ const FilterSearch = (props) => {
         search = search.length ? `${search} ${term}` : term;
       }
       dialogSearchRef.current.querySelector('input').value = search;
-      debouncedSearch(search, true);
+      debouncedSearch(search, searchRef.current, true);
     };
 
     let columns = 4;
@@ -169,6 +172,9 @@ const FilterSearch = (props) => {
       }
     });
 
+    const filterSubtitle = 'With all filters combined: '
+      + `${productOrder.length} product${productOrder.length === 1 ? '' : 's'}`;
+
     return (
       <Dialog
         fullWidth
@@ -177,40 +183,53 @@ const FilterSearch = (props) => {
         onClose={onClose}
         aria-labelledby="keywords-dialog-title"
       >
-        <DialogTitle className={classes.dialogTitle} disableTypography>
-          <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3) }}>
-            <Typography variant="h4" style={{ marginBottom: Theme.spacing(2) }} id="keywords-dialog-title">
+        <DialogTitle className={classes.dialogTitle}>
+          <div style={{ flexBasis: '45%', marginRight: theme.spacing(3) }}>
+            <Typography
+              variant="h4"
+              component="span"
+              style={{ marginBottom: theme.spacing(2) }}
+              id="keywords-dialog-title"
+            >
               Browse Keywords
             </Typography>
             <Typography variant="body2" className={classes.subtitle}>
-              {/* eslint-disable react/jsx-one-expression-per-line */}
               Click keywords below to add them to your search. Separate search
-              terms will match products with <i>either</i> term.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
+              terms will match products with
+              {' '}
+              <i>either</i>
+              {' '}
+              term.
             </Typography>
           </div>
-          <div style={{ flexBasis: '45%', marginRight: Theme.spacing(3), textAlign: 'right' }}>
+          <div style={{ flexBasis: '45%', marginRight: theme.spacing(3), textAlign: 'right' }}>
             <TextField
               fullWidth
-              margin="dense"
               variant="outlined"
               defaultValue={searchRef.current ? searchRef.current.querySelector('input').value : ''}
               placeholder={placeholder}
               style={{ marginBottom: 0 }}
-              onChange={(event) => debouncedSearch(event.target.value, true)}
-              InputProps={{
-                ref: dialogSearchRef,
-                'aria-label': 'search',
-                type: 'search',
-                className: classes.searchInput,
+              onChange={(event) => debouncedSearch(event.target.value, searchRef.current, true)}
+              slotProps={{
+                input: {
+                  ref: dialogSearchRef,
+                  'aria-label': 'search',
+                  type: 'search',
+                  className: classes.searchInput,
+                },
               }}
             />
             <Typography variant="body2" className={classes.subtitle}>
-              {`With all filters combined: ${productOrder.length} product${productOrder.length === 1 ? '' : 's'}`}
+              {filterSubtitle}
             </Typography>
           </div>
-          <div style={{ flexBasis: Theme.spacing(6), textAlign: 'right' }}>
-            <IconButton aria-label="close" className={classes.closeButton} onClick={onClose}>
+          <div style={{ flexBasis: theme.spacing(6), textAlign: 'right' }}>
+            <IconButton
+              aria-label="close"
+              className={classes.closeButton}
+              onClick={onClose}
+              size="large"
+            >
               <CloseIcon />
             </IconButton>
           </div>
@@ -229,7 +248,6 @@ const FilterSearch = (props) => {
                         clickable
                         key={keyword}
                         label={keyword}
-                        color="primary"
                         variant="outlined"
                         className={classes.keywordChip}
                         onClick={() => addKeywordToSearch(keyword)}
@@ -252,24 +270,35 @@ const FilterSearch = (props) => {
         fullWidth
         name={filterKey}
         margin="dense"
-        variant="outlined"
+        size="small"
         defaultValue={defaultValue}
         placeholder={placeholder}
-        onChange={(event) => debouncedSearch(event.target.value)}
-        InputProps={{
-          ref: searchRef,
-          'aria-label': 'search',
-          type: 'search',
-          className: classes.searchInput,
+        onChange={(event) => debouncedSearch(event.target.value, searchRef.current)}
+        slotProps={{
+          input: {
+            ref: searchRef,
+            'aria-label': 'search',
+            type: 'search',
+            className: classes.searchInput,
+          },
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>
-        {/* eslint-disable react/jsx-one-expression-per-line */}
-        Use several terms to match products having <i>any</i> term (<i>term OR term</i>).&nbsp;
-        Quote terms to match phrases (e.g. &quot;wind speed&quot;).&nbsp;
-        <Link href="#" onClick={() => setDialogOpen(true)}>Browse keywords</Link> for ideas.
-        {/* eslint-enable react/jsx-one-expression-per-line */}
+        Use several terms to match products having
+        {' '}
+        <i>any</i>
+        {' '}
+        term (
+        <i>term OR term</i>
+        ).
+        {' '}
+        Quote terms to match phrases (e.g. &quot;wind speed&quot;).
+        {' '}
+        <Link href="#" onClick={() => setDialogOpen(true)}>Browse keywords</Link>
+        {' '}
+        for ideas.
       </Typography>
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderDialog()}
     </FilterBase>
   );

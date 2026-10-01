@@ -1,18 +1,17 @@
 import React, { useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Hidden from '@material-ui/core/Hidden';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Collapse from '@material-ui/core/Collapse';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Collapse from '@mui/material/Collapse';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import ClearIcon from '@material-ui/icons/Clear';
-import FilterIcon from '@material-ui/icons/FilterList';
+import ClearIcon from '@mui/icons-material/Clear';
+import FilterIcon from '@mui/icons-material/FilterList';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterScienceTeam from './FilterScienceTeam';
@@ -27,13 +26,13 @@ import { FILTER_LABELS } from '../filterUtil';
 
 const { APP_STATUS, usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 600,
     [theme.breakpoints.up('md')]: {
       marginBottom: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -42,10 +41,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up('md')]: {
       width: '276px',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
@@ -60,23 +59,23 @@ const useStyles = makeStyles((theme) => ({
   twoColumns: {
     display: 'flex',
     marginBottom: 'unset',
-    '& > :first-child': {
+    '& > div:first-of-type': {
       marginRight: theme.spacing(3),
     },
-    '& > :last-child': {
+    '& > div:last-of-type': {
       marginLeft: theme.spacing(3),
     },
   },
   column: {
     flex: '50%',
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
 }));
 
 const DatasetFilters = () => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
   const [state, dispatch] = usePrototypeContextState();
 
   const {
@@ -85,7 +84,7 @@ const DatasetFilters = () => {
     filtersVisible,
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
   const visible = filtersVisible || !belowMd;
   const skeleton = [
     APP_STATUS.INITIALIZING,
@@ -150,10 +149,10 @@ const DatasetFilters = () => {
       data-selenium="prototype-data--page.filters"
       style={{ position: 'relative' }}
     >
-      <Hidden smDown>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
         {title}
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1 }}>
             {title}
@@ -166,17 +165,20 @@ const DatasetFilters = () => {
             placement="left"
             title={`${filtersVisible ? 'Collapse' : 'Expand'} filters`}
           >
-            <IconButton onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}>
+            <IconButton
+              onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}
+              size="large"
+            >
               {filtersVisible ? <ClearIcon /> : <FilterIcon />}
             </IconButton>
           </Tooltip>
         </div>
-      </Hidden>
+      </Box>
       {belowMd ? (
         <Collapse
           in={visible}
           className={classes.collapse}
-          style={{ marginTop: Theme.spacing(visible ? 3 : 0) }}
+          style={{ marginTop: theme.spacing(visible ? 3 : 0) }}
         >
           {filterContent}
         </Collapse>

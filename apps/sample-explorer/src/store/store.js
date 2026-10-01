@@ -1,15 +1,11 @@
-import {
-  createStore,
-  applyMiddleware
-} from "redux";
-import thunk from "redux-thunk";
+import { configureStore as configureReduxStore } from '@reduxjs/toolkit';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
-import dataApp from "../reducers/reducers";
-import { QUERY_TYPE, getQueryTypeNameOptions } from "../util/queryUtil";
+import dataApp from '../reducers/reducers';
+import { QUERY_TYPE, getQueryTypeNameOptions } from '../util/queryUtil';
 
-let dataStore = {
+const dataStore = {
   urlParams: {
     parsed: false,
     fetch: false,
@@ -42,56 +38,62 @@ let dataStore = {
   parentUuids: [],
   childUuids: [],
   sampleEvents: [],
-  sampleUuid: "",
-  previousSampleUuid: "",
+  sampleUuid: '',
+  previousSampleUuid: '',
   uuidBreadcrumbs: [],
   visitedSamples: {
     sampleUuids: [],
     sampleViews: [],
   },
-  originalUuid: "",
+  originalUuid: '',
   graphData: {
     nodes: [],
     links: [],
   },
   initialColumns: [
-    { headerName: "table", field: "table", sortable: true, resizable: true, filter: true },
     {
-      headerName: "fate date",
-      field: "fate_date",
+      headerName: 'table', field: 'table', sortable: true, resizable: true, filter: true,
+    },
+    {
+      headerName: 'fate date',
+      field: 'fate_date',
       filter: true,
       sortable: true,
       resizable: true,
-      sort: "asc",
-      sortingOrder: ["asc", "desc"]
+      sort: 'asc',
+      sortingOrder: ['asc', 'desc'],
     },
-    { headerName: "fate", field: "fate", sortable: true, resizable: true, filter: true },
-    { headerName: "fate location", field: "fate_location", sortable: true, resizable: true, filter: true },
+    {
+      headerName: 'fate', field: 'fate', sortable: true, resizable: true, filter: true,
+    },
+    {
+      headerName: 'fate location',
+      field: 'fate_location',
+      sortable: true,
+      resizable: true,
+      filter: true,
+    },
   ],
   tableDefinition: [],
   tableData: [],
-  cacheControl: "",
+  cacheControl: '',
   sampleClassDesc: new Map(),
 };
 
-export const configureInitialStore = () => {
-  return configureStore(dataStore);
-}
+export const configureStore = (state) => configureReduxStore({
+  reducer: dataApp,
+  preloadedState: state,
+  middleware: (getDefaultMiddleware) => {
+    const middleware = getDefaultMiddleware({
+      serializableCheck: false,
+    });
+    if (NeonEnvironment.isDevEnv) {
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+      const { logger } = require('redux-logger');
+      return middleware.concat(logger);
+    }
+    return middleware;
+  },
+});
 
-export const configureStore = (state) => {
-  let middlewares = [
-    thunk
-  ];
-  if (NeonEnvironment.isDevEnv) {
-    const { logger } = require("redux-logger");
-    middlewares.push(logger);
-  }
-
-  let store = createStore(
-    dataApp,
-    state,
-    applyMiddleware(...middlewares)
-  );
-
-  return store;
-}
+export const configureInitialStore = () => configureStore(dataStore);

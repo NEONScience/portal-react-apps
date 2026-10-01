@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
 import FilterCheckBox from './FilterCheckBox';
@@ -9,7 +11,12 @@ import { FILTER_KEYS } from '../filterUtil';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const FilterScienceTeam = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterScienceTeam = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
   const [state, dispatch] = usePrototypeContextState();
@@ -37,8 +44,8 @@ const FilterScienceTeam = (props) => {
     >
       <ul>
         {filterItems[filterKey].map((filterItem) => {
-          // eslint-disable-next-line max-len
-          const countTitle = `{n} datasets are provided by the ${filterItem.name} ${filterItem.subtitle} team`;
+          const countTitle = '{n} datasets are provided by the '
+            + `${filterItem.name} ${filterItem.subtitle} team`;
           return (
             <li key={filterItem.value}>
               <FilterCheckBox
@@ -60,10 +67,6 @@ const FilterScienceTeam = (props) => {
 
 FilterScienceTeam.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterScienceTeam.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterScienceTeam;

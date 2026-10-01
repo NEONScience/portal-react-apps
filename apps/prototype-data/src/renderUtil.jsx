@@ -1,18 +1,16 @@
-/* eslint-disable import/prefer-default-export */
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   sidebarContentFont: {
     color: 'rgba(0, 0, 0, 0.70)',
   },
@@ -22,8 +20,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// eslint-disable-next-line max-len
-export const getSkeleton = (height = 10, width = 100, marginBottom = 0, widthIsPercent = true, variant = 'text') => {
+export const getSkeleton = (
+  theme,
+  height = 10,
+  width = 100,
+  marginBottom = 0,
+  widthIsPercent = true,
+  variant = 'text',
+) => {
   let widthValue = width || 100;
   if (Array.isArray(width) && width.length === 2) {
     widthValue = Math.round(width[0] + (Math.random() * (width[1] - width[0])));
@@ -36,7 +40,7 @@ export const getSkeleton = (height = 10, width = 100, marginBottom = 0, widthIsP
       variant={variant}
       height={height}
       width={widthProp}
-      style={!marginBottom ? null : { marginBottom: Theme.spacing(marginBottom) }}
+      style={!marginBottom ? null : { marginBottom: theme.spacing(marginBottom) }}
     />
   );
 };
@@ -50,9 +54,8 @@ export const getDoiDisplay = (doi) => {
 };
 
 export const DoiDetail = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { doi } = props;
-  // eslint-disable-next-line react/destructuring-assignment
   const hasDoi = doi && doi.url;
   if (!hasDoi) {
     return (
@@ -61,7 +64,6 @@ export const DoiDetail = (props) => {
       </Typography>
     );
   }
-  // eslint-disable-next-line react/destructuring-assignment
   const doiId = getDoiDisplay(doi);
   return (
     <List dense style={{ margin: 0, padding: 0 }}>

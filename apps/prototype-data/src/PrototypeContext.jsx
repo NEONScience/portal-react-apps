@@ -1,27 +1,29 @@
-/* eslint-disable import/no-unresolved, no-unused-vars */
 import React, {
   createContext,
   useContext,
   useReducer,
   useEffect,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
+
+import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import {
   /* constants */
   DEFAULT_SORT_METHOD,
   DEFAULT_SORT_DIRECTION,
   FILTER_ITEM_VISIBILITY_STATES,
-  FILTER_KEYS,
   INITIAL_FILTER_ITEM_VISIBILITY,
   INITIAL_FILTER_ITEMS,
   INITIAL_FILTER_VALUES,
@@ -312,10 +314,13 @@ const reducer = (state, action) => {
   }
 };
 
+const defaultProps = {};
+
 /**
    PROVIDER
 */
-const Provider = (props) => {
+const Provider = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
@@ -365,14 +370,14 @@ const Provider = (props) => {
       appStatus !== APP_STATUS.INITIALIZING
         || datasetsFetchStatus !== FETCH_STATUS.AWAITING_CALL
     ) { return; }
-    NeonApi.getPrototypeDatasetsObservable().subscribe(
-      (response) => {
+    NeonApi.getPrototypeDatasetsObservable().pipe(
+      map((response) => {
         dispatch({ type: 'fetchDatasetsSucceeded', data: response.data });
-      },
-      (error) => {
+      }),
+      catchError((error) => {
         dispatch({ type: 'fetchDatasetsFailed', error });
-      },
-    );
+      }),
+    ).subscribe();
     dispatch({ type: 'fetchDatasetsStarted' });
   }, [appStatus, datasetsFetchStatus, neonContextIsFinal]);
 
@@ -380,14 +385,14 @@ const Provider = (props) => {
   useEffect(() => {
     if (!awaitingManifestFetches.length) { return; }
     awaitingManifestFetches.forEach((uuid) => {
-      NeonApi.getPrototypeManifestRollupObservable(uuid).subscribe(
-        (response) => {
+      NeonApi.getPrototypeManifestRollupObservable(uuid).pipe(
+        map((response) => {
           dispatch({ type: 'fetchManifestRollupSucceeded', uuid, data: response.data });
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           dispatch({ type: 'fetchManifestRollupFailed', uuid, error });
-        },
-      );
+        }),
+      ).subscribe();
       dispatch({ type: 'fetchManifestRollupStarted', uuid });
     });
   }, [awaitingManifestFetches]);
@@ -432,9 +437,9 @@ const Provider = (props) => {
   /**
      Render
   */
+  const contextValue = useMemo(() => [state, dispatch], [state, dispatch]);
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <Context.Provider value={[state, dispatch]}>
+    <Context.Provider value={contextValue}>
       {children}
     </Context.Provider>
   );
@@ -450,8 +455,6 @@ Provider.propTypes = {
     PropTypes.string,
   ]).isRequired,
 };
-
-Provider.defaultProps = {};
 
 /**
    EXPORT

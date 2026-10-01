@@ -1,44 +1,42 @@
-import React, { useEffect, useMemo, Suspense } from 'react';
-import { Dispatch, AnyAction } from 'redux';
+import React, {
+  useEffect,
+  useMemo,
+  Suspense,
+  type JSX,
+} from 'react';
+import { Dispatch, UnknownAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { AnyObject, Nullable, UnknownRecord } from 'portal-core-components/lib/types/core';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { AnyObject, Nullable, UnknownRecord } from '@neonscience/portal-core-components/types/core';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
 import { LocationsSectionState } from '../states/AppStates';
 import { useStyles } from '../../styles/overlay';
-import { StylesHook } from '../../types/styles';
 import { Site } from '../../types/store';
 import { AppActionCreator } from '../../actions/app';
 
 const SiteMap: React.ExoticComponent<AnyObject> = React.lazy(
-  () => import('portal-core-components/lib/components/SiteMap/SiteMap'),
+  () => import('@neonscience/portal-core-components/components/SiteMap/SiteMap'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 4, 0),
-    },
-    infoTextContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-  })) as StylesHook;
+const useComponentStyles = makeStyles()((theme: NeonTheme) => ({
+  infoContainer: {
+    margin: theme.spacing(0, 0, 4, 0),
+  },
+  infoTextContainer: {
+    margin: theme.spacing(0, 0, 2, 0),
+  },
+}));
 
 const useLocationsSelector = (): LocationsSectionState => useSelector(
   AppStateSelector.locations,
@@ -46,9 +44,9 @@ const useLocationsSelector = (): LocationsSectionState => useSelector(
 
 const LocationsSection: React.FC = (): JSX.Element => {
   const state: LocationsSectionState = useLocationsSelector();
-  const dispatch: Dispatch<AnyAction> = useDispatch();
-  const classes: Record<string, string> = useStyles(Theme);
-  const componentClasses: Record<string, string> = useComponentStyles(Theme);
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
+  const { classes } = useStyles();
+  const { classes: componentClasses } = useComponentStyles();
   const {
     fetchState,
     siteCodes,
@@ -76,7 +74,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
   );
 
   const skeleton: JSX.Element = (
-    <Skeleton variant="rect" width="100%" height={600} className={classes.skeleton} />
+    <Skeleton variant="rectangular" width="100%" height={600} className={classes.skeleton} />
   );
   const renderLocations = (): JSX.Element => {
     if (((siteCodes.length <= 0) && isLoading) || isLoading) {
@@ -116,18 +114,17 @@ const LocationsSection: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderInfo = (): JSX.Element => {
+  const renderInfo = (): JSX.Element | null => {
     if (viewModeSwitching) {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<React.Fragment />);
+      return null;
     }
     if (!selectedViewMode) {
-      return (<React.Fragment />);
+      return null;
     }
     let text = '';
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     switch (selectedViewMode.value) {
       case 'DataProduct':
         text = `The site map shows the field sites where data are available for the
@@ -145,7 +142,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
         return null;
       }
       return (
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TombstoneNotice />
         </Grid>
       );
@@ -153,7 +150,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 
     return (
       <Grid container className={componentClasses.infoContainer}>
-        <Grid item xs={12} className={componentClasses.infoTextContainer}>
+        <Grid size={{ xs: 12 }} className={componentClasses.infoTextContainer}>
           <Typography variant="subtitle1">
             {text}
           </Typography>
@@ -168,7 +165,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
       <Typography variant="h4" component="h2" gutterBottom>Available Sites</Typography>
       {renderInfo()}
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <div className={isLoading ? classes.overlay : undefined}>
             {renderLocations()}
           </div>
@@ -181,7 +178,7 @@ const LocationsSection: React.FC = (): JSX.Element => {
 const LocationsSectionMemo = (): JSX.Element => (
   useMemo(
     () => (<LocationsSection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useLocationsSelector()],
   )
 );

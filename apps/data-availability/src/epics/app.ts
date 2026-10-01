@@ -1,20 +1,20 @@
-/* eslint-disable import/prefer-default-export */
-
+import { UnknownAction } from 'redux';
 import { Observable, of } from 'rxjs';
 import { AjaxResponse } from 'rxjs/ajax';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment/NeonEnvironment';
-import NeonGraphQL from 'portal-core-components/lib/components/NeonGraphQL/NeonGraphQL';
-import EpicService from 'portal-core-components/lib/flow/EpicService';
-import { AnyObject, UnknownRecord } from 'portal-core-components/lib/types/core';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { AsyncParamAction } from 'portal-core-components/lib/types/asyncFlow';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi/NeonApi';
+import NeonGraphQL from '@neonscience/portal-core-components/components/NeonGraphQL/NeonGraphQL';
+import EpicService from '@neonscience/portal-core-components/flow/EpicService';
+import { AnyObject, UnknownRecord } from '@neonscience/portal-core-components/types/core';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { AsyncParamAction } from '@neonscience/portal-core-components/types/asyncFlow';
 
 import AppActions from '../actions/app';
 import AppFlow from '../actions/flows/app';
-import { AppActionType } from '../actions/actionTypes';
+import { AnyActionType } from '../actions/actionTypes';
 import { handleError } from './helpers';
-import { BaseStoreAppState } from '../types/store';
+import { StoreRootState } from '../types/store';
 import { resolveAny } from '../util/typeUtil';
 
 const productsQuery = `query Products {
@@ -93,21 +93,19 @@ const buildSiteQuery = (siteCode: string, release?: string): string => {
   }`;
 };
 
-const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchProductsEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_PRODUCTS,
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCTS,
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchProducts.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -124,21 +122,19 @@ const fetchProductsEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   }),
 });
 
-const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchSitesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_SITES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_SITES,
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchSites.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -155,20 +151,18 @@ const fetchSitesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreA
   }),
 });
 
-const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchReleasesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_RELEASES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_RELEASES,
   request: {
     method: 'GET',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: NeonEnvironment.getFullApiPath('releases'),
   },
   workingAction: AppFlow.fetchReleases.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -179,22 +173,27 @@ const fetchReleasesEpic = EpicService.createEpicFromProps<AppActionType, BaseSto
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchReleases.asyncErrorAction)
   ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
+    ...request,
+    headers: {
+      ...request.headers,
+      ...NeonApi.getApiTokenHeader(),
+    },
+  }),
 });
 
-const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchBundlesEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_PRODUCT_BUNDLES,
   takeUntilTypeFilter: AppActions.RESET_FETCH_PRODUCT_BUNDLES,
   request: {
     method: 'GET',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     responseType: 'json',
     url: NeonEnvironment.getFullApiPath('productBundles'),
   },
   workingAction: AppFlow.fetchProductBundles.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved)) {
@@ -205,23 +204,28 @@ const fetchBundlesEpic = EpicService.createEpicFromProps<AppActionType, BaseStor
   errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
     handleError(error, AppFlow.fetchProductBundles.asyncErrorAction)
   ),
+  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => ({
+    ...request,
+    headers: {
+      ...request.headers,
+      ...NeonApi.getApiTokenHeader(),
+    },
+  }),
 });
 
-const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchFocalProductEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT,
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchFocalProduct.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -247,21 +251,19 @@ const fetchFocalProductEpic = EpicService.createEpicFromProps<AppActionType, Bas
   },
 });
 
-const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
+const fetchFocalSiteEpic = EpicService.createEpicFromProps<UnknownAction, StoreRootState>({
   ofTypeFilter: AppActions.FETCH_FOCAL_SITE,
   takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_SITE,
   request: {
     method: 'POST',
     url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
     headers: { 'Content-Type': 'application/json' },
     responseType: 'json',
   },
   workingAction: AppFlow.fetchFocalSite.asyncWorkingAction,
   successAction: (
     response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
+    action?: AnyActionType,
   ): Observable<unknown> => {
     const resolved: UnknownRecord = resolveAny(response as never, 'response');
     if (exists(resolved) && exists(resolved.data)) {
@@ -287,84 +289,90 @@ const fetchFocalSiteEpic = EpicService.createEpicFromProps<AppActionType, BaseSt
   },
 });
 
-const fetchFocalProductReleaseDoiEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
-  ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
-  takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
-  request: {
-    method: 'GET',
-    url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
-    responseType: 'json',
-  },
-  workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
-  successAction: (
-    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
-  ): Observable<unknown> => {
-    const resolved: UnknownRecord = resolveAny(response as never, 'response');
-    if (exists(resolved) && exists(resolved.data)) {
-      return of(AppFlow.fetchFocalProductReleaseDoi.asyncCompletedAction(resolved));
-    }
-    return of(AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction(
-      null,
-      'Fetching product release doi error',
-    ));
-  },
-  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
-    handleError(error, AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction)
-  ),
-  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
-    const asyncAction: AsyncParamAction = (action as AsyncParamAction);
-    const params: UnknownRecord = (asyncAction.param as UnknownRecord);
-    const productCode: string = params.productCode as string;
-    const release: string = params.release as string;
-    return {
-      ...request,
-      url: `${NeonEnvironment.getFullApiPath('products')}/${productCode}/dois/${release}`,
-    };
-  },
-});
+const fetchFocalProductReleaseDoiEpic = EpicService
+  .createEpicFromProps<UnknownAction, StoreRootState>({
+    ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+    takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_DOI,
+    request: {
+      method: 'GET',
+      url: '',
+      responseType: 'json',
+    },
+    workingAction: AppFlow.fetchFocalProductReleaseDoi.asyncWorkingAction,
+    successAction: (
+      response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+      action?: AnyActionType,
+    ): Observable<unknown> => {
+      const resolved: UnknownRecord = resolveAny(response as never, 'response');
+      if (exists(resolved) && exists(resolved.data)) {
+        return of(AppFlow.fetchFocalProductReleaseDoi.asyncCompletedAction(resolved));
+      }
+      return of(AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction(
+        null,
+        'Fetching product release doi error',
+      ));
+    },
+    errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
+      handleError(error, AppFlow.fetchFocalProductReleaseDoi.asyncErrorAction)
+    ),
+    requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
+      const asyncAction: AsyncParamAction = (action as AsyncParamAction);
+      const params: UnknownRecord = (asyncAction.param as UnknownRecord);
+      const productCode: string = params.productCode as string;
+      const release: string = params.release as string;
+      return {
+        ...request,
+        url: `${NeonEnvironment.getFullApiPath('products')}/${productCode}/dois/${release}`,
+        headers: {
+          ...request.headers,
+          ...NeonApi.getApiTokenHeader(),
+        },
+      };
+    },
+  });
 
-const fetchFocalProductReleaseTombAvaEpic = EpicService.createEpicFromProps<AppActionType, BaseStoreAppState>({
-  ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
-  takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
-  request: {
-    method: 'GET',
-    url: '',
-    crossDomain: true,
-    withCredentials: NeonEnvironment.requireCors(),
-    responseType: 'json',
-  },
-  workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
-  successAction: (
-    response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
-    action?: AppActionType,
-  ): Observable<unknown> => {
-    const resolved: UnknownRecord = resolveAny(response as never, 'response');
-    if (exists(resolved) && exists(resolved.data)) {
-      return of(AppFlow.fetchFocalProductReleaseTombAva.asyncCompletedAction(resolved));
-    }
-    return of(AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction(
-      null,
-      'Fetching product release tombstone availability error',
-    ));
-  },
-  errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
-    handleError(error, AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction)
-  ),
-  requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
-    const asyncAction: AsyncParamAction = (action as AsyncParamAction);
-    const params: UnknownRecord = (asyncAction.param as UnknownRecord);
-    const productCode: string = params.productCode as string;
-    const release: string = params.release as string;
-    const path = `/${productCode}/${release}/tombstone-data-availability`;
-    return {
-      ...request,
-      url: `${NeonEnvironment.getFullApiPath('products')}${path}`,
-    };
-  },
-});
+const fetchFocalProductReleaseTombAvaEpic = EpicService
+  .createEpicFromProps<UnknownAction, StoreRootState>({
+    ofTypeFilter: AppActions.FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+    takeUntilTypeFilter: AppActions.RESET_FETCH_FOCAL_PRODUCT_RELEASE_TOMB_AVA,
+    request: {
+      method: 'GET',
+      url: '',
+      responseType: 'json',
+    },
+    workingAction: AppFlow.fetchFocalProductReleaseTombAva.asyncWorkingAction,
+    successAction: (
+      response: AjaxResponse<unknown> | AjaxResponse<unknown>[],
+      action?: AnyActionType,
+    ): Observable<unknown> => {
+      const resolved: UnknownRecord = resolveAny(response as never, 'response');
+      if (exists(resolved) && exists(resolved.data)) {
+        return of(AppFlow.fetchFocalProductReleaseTombAva.asyncCompletedAction(resolved));
+      }
+      return of(AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction(
+        null,
+        'Fetching product release tombstone availability error',
+      ));
+    },
+    errorAction: (error: AjaxResponse<unknown>): Observable<unknown> => (
+      handleError(error, AppFlow.fetchFocalProductReleaseTombAva.asyncErrorAction)
+    ),
+    requestInjector: (request: AnyObject, action: AnyObject): AnyObject => {
+      const asyncAction: AsyncParamAction = (action as AsyncParamAction);
+      const params: UnknownRecord = (asyncAction.param as UnknownRecord);
+      const productCode: string = params.productCode as string;
+      const release: string = params.release as string;
+      const path = `/${productCode}/${release}/tombstone-data-availability`;
+      return {
+        ...request,
+        url: `${NeonEnvironment.getFullApiPath('products')}${path}`,
+        headers: {
+          ...request.headers,
+          ...NeonApi.getApiTokenHeader(),
+        },
+      };
+    },
+  });
 
 export {
   fetchProductsEpic,

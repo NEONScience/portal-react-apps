@@ -1,118 +1,116 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { useDispatch, useSelector, batch } from 'react-redux';
+import React, {
+  useEffect,
+  useCallback,
+  useMemo,
+  type JSX,
+} from 'react';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
-} from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+} from '@mui/material/Autocomplete';
+import Skeleton from '@mui/material/Skeleton';
 
-import LocationIcon from '@material-ui/icons/MyLocation';
-import SearchIcon from '@material-ui/icons/Search';
+import LocationIcon from '@mui/icons-material/MyLocation';
+import SearchIcon from '@mui/icons-material/Search';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
 import { Site } from '../../types/store';
-import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { SiteSelectOption, SiteSelectState } from '../states/AppStates';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    section: {
-      marginBottom: muiTheme.spacing(4),
-    },
-    sectionTitle: {
-      fontWeight: 500,
-      marginBottom: muiTheme.spacing(2),
-    },
-    sectionSubtitle: {
-      marginBottom: muiTheme.spacing(2),
-    },
-    infoCallout: {
-      marginTop: muiTheme.spacing(3),
-    },
-    skeleton: {
-      marginBottom: '16px',
-    },
-    cardSelectedSite: {
-      marginBottom: muiTheme.spacing(2),
-      border: '1px solid #d7d9d9',
-    },
-    cardContentSelectedSite: {
-      padding: muiTheme.spacing(2),
-    },
-    autocompleteInput: {
-      padding: `${muiTheme.spacing(2)}px !important`,
-    },
-    autocompletePopupOpen: {
-      transform: 'rotate(0) !important',
-    },
-    autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)}px !important`,
-      paddingTop: '6px !important',
-    },
-    autocompleteLabelShrink: {
-      transform: 'translate(6px, -9px) scale(0.75) !important',
-    },
-    siteName: {
-      fontWeight: 600,
-    },
-    siteCodeChip: {
-      color: muiTheme.palette.grey[400],
-      border: `1px solid ${muiTheme.palette.grey[400]}`,
-      backgroundColor: muiTheme.palette.grey[100],
-      fontWeight: 600,
-    },
-    siteDetailsRow: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'space-between',
-    },
-    siteDetailsColumn: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-      flexWrap: 'wrap',
-    },
-    siteDetail: {
-      marginRight: Theme.spacing(4),
-    },
-    startFlex: {
-      display: 'flex',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-    },
-    searchHighlight: {
-      fontWeight: 700,
-    },
-  })) as StylesHook;
+const useStyles = makeStyles()((theme: NeonTheme) => ({
+  section: {
+    marginBottom: theme.spacing(4),
+  },
+  sectionTitle: {
+    fontWeight: 500,
+    marginBottom: theme.spacing(2),
+  },
+  sectionSubtitle: {
+    marginBottom: theme.spacing(2),
+  },
+  infoCallout: {
+    marginTop: theme.spacing(3),
+  },
+  skeleton: {
+    marginBottom: '16px',
+  },
+  cardSelectedSite: {
+    marginBottom: theme.spacing(2),
+    border: '1px solid #d7d9d9',
+  },
+  cardContentSelectedSite: {
+    padding: theme.spacing(2),
+  },
+  autocompleteInput: {
+    padding: `${theme.spacing(2)} !important`,
+  },
+  autocompletePopupOpen: {
+    transform: 'rotate(0) !important',
+  },
+  autocompleteLabel: {
+    paddingLeft: `${theme.spacing(1)} !important`,
+    paddingTop: `${theme.spacing(1)} !important`,
+  },
+  autocompleteLabelShrink: {
+    transform: 'translate(12px, -14px) scale(0.70) !important',
+  },
+  siteName: {
+    fontWeight: 600,
+  },
+  siteCodeChip: {
+    color: theme.palette.grey[400],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[100],
+    fontWeight: 600,
+  },
+  siteDetailsRow: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'space-between',
+  },
+  siteDetailsColumn: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+  },
+  siteDetail: {
+    marginRight: theme.spacing(4),
+  },
+  startFlex: {
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  searchHighlight: {
+    fontWeight: 700,
+  },
+}));
 
 const useSiteSelectSelector = (): SiteSelectState => useSelector(
   AppStateSelector.siteSelect,
@@ -122,6 +120,20 @@ interface SiteSelectDataOption extends SiteSelectOption {
   domainName: string;
   stateName: string;
 }
+
+const transformOption = (
+  value: SiteSelectOption,
+  states: Record<string, unknown>,
+  domains: Record<string, unknown>,
+): SiteSelectDataOption => ({
+  ...value,
+  stateName: exists(states[value.stateCode])
+    ? (states[value.stateCode] as Record<string, unknown>).name as string
+    : value.stateCode,
+  domainName: exists(domains[value.domainCode])
+    ? (domains[value.domainCode] as Record<string, unknown>).name as string
+    : value.domainCode,
+});
 
 const transformOptions = (
   sites: SiteSelectOption[],
@@ -138,24 +150,10 @@ const transformOptions = (
     ))
 );
 
-const transformOption = (
-  value: SiteSelectOption,
-  states: Record<string, unknown>,
-  domains: Record<string, unknown>,
-): SiteSelectDataOption => ({
-  ...value,
-  stateName: exists(states[value.stateCode])
-    ? (states[value.stateCode] as Record<string, unknown>).name as string
-    : value.stateCode,
-  domainName: exists(domains[value.domainCode])
-    ? (domains[value.domainCode] as Record<string, unknown>).name as string
-    : value.domainCode,
-});
-
 const SiteSelect: React.FC = (): JSX.Element => {
   const state: SiteSelectState = useSiteSelectSelector();
-  const classes: Record<string, string> = useStyles(Theme);
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const { classes, theme } = useStyles();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     sitesFetchState,
     sites,
@@ -164,7 +162,6 @@ const SiteSelect: React.FC = (): JSX.Element => {
   }: SiteSelectState = state;
 
   const [{ data: neonContextData }] = NeonContext.useNeonContextState();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const { states, domains }: Record<string, unknown> = neonContextData;
   const siteOptions: SiteSelectDataOption[] = transformOptions(
     sites,
@@ -188,15 +185,13 @@ const SiteSelect: React.FC = (): JSX.Element => {
   );
 
   const handleChangeCb = useCallback(
-    (siteCb: Site, releaseCb?: string) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedSite(siteCb));
-        dispatch(AppFlow.fetchFocalSite.asyncAction({
-          siteCode: siteCb.siteCode,
-          release: releaseCb,
-        }));
-      })
-    ),
+    (siteCb: Site, releaseCb?: string) => {
+      dispatch(AppActionCreator.setSelectedSite(siteCb));
+      dispatch(AppFlow.fetchFocalSite.asyncAction({
+        siteCode: siteCb.siteCode,
+        release: releaseCb,
+      }));
+    },
     [dispatch],
   );
 
@@ -206,14 +201,23 @@ const SiteSelect: React.FC = (): JSX.Element => {
         handleChangeCb(initialSite, selectedRelease?.release);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch, isComplete],
+    [
+      dispatch,
+      isComplete,
+      hasSite,
+      initialSite,
+      selectedRelease,
+      handleChangeCb,
+    ],
   );
 
   const renderOption = (
+    props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
     value: SiteSelectDataOption,
     renderOptionState: AutocompleteRenderOptionState,
-  ): JSX.Element => {
+  ): React.ReactNode => {
+    // eslint-disable-next-line react/prop-types
+    const { key, ...optionProps } = props;
     const primarySlice: SearchSlice[] = calcSearchSlice(
       `${value.siteDescription}, ${value.stateCode}`,
       renderOptionState.inputValue,
@@ -232,18 +236,21 @@ const SiteSelect: React.FC = (): JSX.Element => {
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        // eslint-disable-next-line react/no-array-index-key
-        <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
+        <span
+          // eslint-disable-next-line react/no-array-index-key
+          key={`key-${idx}`}
+          className={slice.found ? classes.searchHighlight : undefined}
+        >
           {slice.text}
         </span>
       )))
     ));
     return (
-      <div key={value.siteCode}>
+      <li {...optionProps} key={value.siteCode}>
         <ListItemText
           primary={(<div>{renderSlices(primarySlice)}</div>)}
           secondary={(
-            <React.Fragment>
+            <>
               <Typography variant="caption">
                 {renderSlices(codeSlice)}
                 {' - Domain '}
@@ -254,15 +261,17 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 {'Lat/Lon: '}
                 {renderSlices(locSlice)}
               </Typography>
-            </React.Fragment>
+            </>
           )}
         />
-      </div>
+      </li>
     );
   };
   const renderSiteSelect = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading) {
-      return <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />;
+      return (
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
+      );
     }
     return (
       <Autocomplete
@@ -270,15 +279,15 @@ const SiteSelect: React.FC = (): JSX.Element => {
         openOnFocus
         blurOnSelect
         id="select-sites"
-        options={siteOptions}
+        options={siteOptions.sort((a, b) => -b.stateName.localeCompare(a.stateName))}
         value={selectedSiteOption}
         popupIcon={(<SearchIcon />)}
         classes={{
           input: classes.autocompleteInput,
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
-        groupBy={(option: SiteSelectDataOption): string => option.stateName}
-        getOptionSelected={(
+        groupBy={(option: SiteSelectDataOption): string => option.stateName.toUpperCase()}
+        isOptionEqualToValue={(
           option: SiteSelectDataOption,
           value: SiteSelectDataOption,
         ): boolean => (option.siteCode.localeCompare(value.siteCode) === 0)}
@@ -296,20 +305,23 @@ const SiteSelect: React.FC = (): JSX.Element => {
           ),
         })}
         renderOption={(
+          props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
           value: SiteSelectDataOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState)}
+        ): React.ReactNode => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             variant="outlined"
             label="Search Field Sites"
-            InputLabelProps={{
-              ...params.InputLabelProps,
-              className: classes.autocompleteLabel,
-              classes: {
-                shrink: classes.autocompleteLabelShrink,
+            slotProps={{
+              ...params.slotProps,
+              inputLabel: {
+                ...params.slotProps.inputLabel,
+                className: classes.autocompleteLabel,
+                classes: {
+                  shrink: classes.autocompleteLabelShrink,
+                },
               },
             }}
           />
@@ -335,7 +347,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
   const renderSelectedSite = (): JSX.Element => {
     if ((sites.length <= 0) || isLoading || !selectedSiteOption) {
       return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
       );
     }
     return (
@@ -351,7 +363,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
                 {selectedSiteOption.siteDescription}
               </Link>
             </Typography>
-            <div style={{ margin: Theme.spacing(1.5, 0, 1.5, 0) }}>
+            <div style={{ margin: theme.spacing(1.5, 0, 1.5, 0) }}>
               <Chip
                 size="small"
                 label={selectedSiteOption.siteCode}
@@ -399,7 +411,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 
   return (
     <div id="site-select" className={classes.section}>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Site
         </Typography>
@@ -415,7 +427,7 @@ const SiteSelect: React.FC = (): JSX.Element => {
 const SiteSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<SiteSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useSiteSelectSelector()],
   )
 );

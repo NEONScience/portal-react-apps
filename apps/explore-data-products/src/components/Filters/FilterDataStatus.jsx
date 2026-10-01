@@ -1,13 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
 import FilterCheckBox from '../FilterCheckBox';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const FilterDataStatus = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterDataStatus = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -53,10 +60,6 @@ const FilterDataStatus = (props) => {
 
 FilterDataStatus.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterDataStatus.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterDataStatus;

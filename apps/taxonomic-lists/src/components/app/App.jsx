@@ -1,31 +1,46 @@
-import React from "react";
+import React from 'react';
 
-import InfoPresentation from "../presentations/InfoPresentation";
-import ControlPresentation from "../presentations/ControlPresentation";
-import ColumnManagerContainer from "../containers/ColumnManagerContainer";
-import DataTableContainer from "../containers/DataTableContainer";
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import NeonPage from "portal-core-components/lib/components/NeonPage";
+import InfoPresentation from '../presentations/InfoPresentation';
+import ControlPresentation from '../presentations/ControlPresentation';
+import ColumnManagerContainer from '../containers/ColumnManagerContainer';
+import DataTableContainer from '../containers/DataTableContainer';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+const useStyles = makeStyles()((theme) => ({
+  pageContainer: {
+    '& .MuiBreadcrumbs-root': {
+      '& .MuiBreadcrumbs-li': {
+        '& svg': {
+          verticalAlign: 'unset',
+        },
+      },
+    },
+  },
+}));
 
 const App = () => {
+  const { classes } = useStyles();
   const breadcrumbs = [
     { name: 'Data', href: RouteService.getDataSamplesDataPath() },
     { name: 'Samples & Specimens', href: RouteService.getSamplesPath() },
-    { name: "Taxonomic Lists" },
+    { name: 'Taxonomic Lists' },
   ];
   return (
-    <NeonPage
-      title="Taxonomic Lists"
-      breadcrumbs={breadcrumbs}
-      breadcrumbHomeHref={RouteService.getWebHomePath()}
-    >
-      <InfoPresentation />
-      <ControlPresentation />
-      <ColumnManagerContainer />
-      <DataTableContainer />
-    </NeonPage>
+    <div className={classes.pageContainer}>
+      <NeonPage
+        title="Taxonomic Lists"
+        breadcrumbs={breadcrumbs}
+        breadcrumbHomeHref={RouteService.getWebHomePath()}
+      >
+        <InfoPresentation />
+        <ControlPresentation />
+        <ColumnManagerContainer />
+        <DataTableContainer />
+      </NeonPage>
+    </div>
   );
 };
 

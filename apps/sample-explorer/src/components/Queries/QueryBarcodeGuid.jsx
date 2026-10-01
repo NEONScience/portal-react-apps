@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import TextField from "@material-ui/core/TextField";
+import TextField from '@mui/material/TextField';
 
-import { getQueryTypeName, QUERY_TYPE } from "../../util/queryUtil";
+import { getQueryTypeName, QUERY_TYPE } from '../../util/queryUtil';
 
 const QueryBarcodeGuid = (props) => {
-
   const {
     query: {
       queryType,
@@ -53,6 +53,17 @@ const QueryBarcodeGuid = (props) => {
       }}
     />
   );
+};
+
+QueryBarcodeGuid.propTypes = {
+  query: PropTypes.shape({
+    queryType: PropTypes.string.isRequired,
+    barcode: PropTypes.string,
+    archiveGuid: PropTypes.string,
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
+  onSetQueryBarcode: PropTypes.func.isRequired,
+  onSetQueryArchiveGuid: PropTypes.func.isRequired,
 };
 
 export default QueryBarcodeGuid;

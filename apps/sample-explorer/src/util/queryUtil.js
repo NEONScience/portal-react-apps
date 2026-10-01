@@ -1,39 +1,35 @@
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
 export const QUERY_TYPE = {
-  UNSET: "unset",
-  SAMPLE_TAG: "sampleTag",
-  ARCHIVE_GUID: "archiveGuid",
-  BARCODE: "barcode"
+  UNSET: 'unset',
+  SAMPLE_TAG: 'sampleTag',
+  ARCHIVE_GUID: 'archiveGuid',
+  BARCODE: 'barcode',
 };
 
 export const getQueryTypeName = (queryType) => {
   switch (queryType) {
     case QUERY_TYPE.ARCHIVE_GUID:
-      return "Archive Guid";
+      return 'Archive Guid';
     case QUERY_TYPE.BARCODE:
-      return "Barcode";
+      return 'Barcode';
     case QUERY_TYPE.SAMPLE_TAG:
     default:
-      return "Sample Tag";
+      return 'Sample Tag';
   }
-}
+};
 
-export const getQueryTypeNames = () => {
-  return [
-    getQueryTypeName(QUERY_TYPE.SAMPLE_TAG),
-    getQueryTypeName(QUERY_TYPE.ARCHIVE_GUID),
-    getQueryTypeName(QUERY_TYPE.BARCODE)
-  ];
-}
+export const getQueryTypeNames = () => [
+  getQueryTypeName(QUERY_TYPE.SAMPLE_TAG),
+  getQueryTypeName(QUERY_TYPE.ARCHIVE_GUID),
+  getQueryTypeName(QUERY_TYPE.BARCODE),
+];
 
-export const getQueryTypeNameOptions = () => {
-  return [
-    { value: QUERY_TYPE.SAMPLE_TAG, label: getQueryTypeName(QUERY_TYPE.SAMPLE_TAG) },
-    { value: QUERY_TYPE.ARCHIVE_GUID, label: getQueryTypeName(QUERY_TYPE.ARCHIVE_GUID) },
-    { value: QUERY_TYPE.BARCODE, label: getQueryTypeName(QUERY_TYPE.BARCODE) },
-  ];
-}
+export const getQueryTypeNameOptions = () => [
+  { value: QUERY_TYPE.SAMPLE_TAG, label: getQueryTypeName(QUERY_TYPE.SAMPLE_TAG) },
+  { value: QUERY_TYPE.ARCHIVE_GUID, label: getQueryTypeName(QUERY_TYPE.ARCHIVE_GUID) },
+  { value: QUERY_TYPE.BARCODE, label: getQueryTypeName(QUERY_TYPE.BARCODE) },
+];
 
 // Automatically detect and apply idType to a urlParams object.
 // Do not change idType if already set and only set it if only one of the ids is present.
@@ -76,4 +72,4 @@ export const validateParamQuery = (params) => {
     default:
       return false;
   }
-}
+};

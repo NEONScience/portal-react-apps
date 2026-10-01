@@ -1,35 +1,35 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
-import FormControl from '@material-ui/core/FormControl';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Skeleton from '@material-ui/lab/Skeleton';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Collapse from '@mui/material/Collapse';
+import FormControl from '@mui/material/FormControl';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Skeleton from '@mui/material/Skeleton';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import SortIcon from '@material-ui/icons/SwapVert';
-import AscIcon from '@material-ui/icons/ArrowDownward';
-import DescIcon from '@material-ui/icons/ArrowUpward';
-import ClearIcon from '@material-ui/icons/Clear';
+import SortIcon from '@mui/icons-material/SwapVert';
+import AscIcon from '@mui/icons-material/ArrowDownward';
+import DescIcon from '@mui/icons-material/ArrowUpward';
+import ClearIcon from '@mui/icons-material/Clear';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
 import { SORT_METHODS, SORT_DIRECTIONS } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   card: {
     marginBottom: theme.spacing(3),
     backgroundColor: theme.palette.grey[50],
@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(2),
       fontSize: '1.5rem',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -88,10 +88,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const PresentationSort = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  skeleton: false,
+};
 
+const PresentationSort = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
+
+  const { classes, theme } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -104,14 +109,14 @@ const PresentationSort = (props) => {
     currentProducts: { order: productOrder },
   } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
-  const belowSm = useMediaQuery(Theme.breakpoints.only('xs'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const belowSm = useMediaQuery(theme.breakpoints.only('xs'));
   const visible = sortVisible || !belowMd;
 
   const collapsedContentDivStyle = {
     display: 'flex',
     flexDirection: belowSm ? 'column' : 'row',
-    marginTop: Theme.spacing(2),
+    marginTop: theme.spacing(2),
   };
 
   const filtered = filtersApplied.length ? 'filtered' : 'total';
@@ -128,13 +133,14 @@ const PresentationSort = (props) => {
     <Typography variant="h4" component="h2" className={classes.title}>Sort</Typography>
   );
 
-  const summary = `${SORT_METHODS[sortMethod].label} ${sortDirection === 'ASC' ? '(ascending)' : '(descending)'}`;
+  const sortDirectionLabel = sortDirection === 'ASC' ? '(ascending)' : '(descending)';
+  const summary = `${SORT_METHODS[sortMethod].label} ${sortDirectionLabel}`;
 
   const sortBlurb = (
     <Typography
       variant="body2"
       className={classes.subtitle}
-      style={{ margin: Theme.spacing(0, (belowSm ? 0 : 2), (belowSm ? 2 : 0), 0) }}
+      style={{ margin: theme.spacing(0, (belowSm ? 0 : 2), (belowSm ? 2 : 0), 0) }}
     >
       &quot;Available&quot; data products will always show above
       &quot;Coming Soon&quot; data products, except when sorting
@@ -145,7 +151,7 @@ const PresentationSort = (props) => {
   const sortShowing = (
     <div style={{ width: '100%', textAlign: 'right' }}>
       {skeleton ? (
-        <Skeleton width="100%" height={12} style={{ marginTop: Theme.spacing(2) }} />
+        <Skeleton width="100%" height={12} style={{ marginTop: theme.spacing(2) }} />
       ) : (
         <Typography
           variant="subtitle2"
@@ -215,7 +221,7 @@ const PresentationSort = (props) => {
   return (
     <Card className={classes.card}>
       <CardContent data-selenium="browse-data-products-page.sort">
-        <Hidden mdUp>
+        <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               {title}
@@ -227,12 +233,12 @@ const PresentationSort = (props) => {
               placement="left"
               title={`${sortVisible ? 'Collapse' : 'Expand'} sort options`}
             >
-              <IconButton onClick={() => dispatch({ type: 'toggleSortVisibility' })}>
+              <IconButton onClick={() => dispatch({ type: 'toggleSortVisibility' })} size="large">
                 {sortVisible ? <ClearIcon /> : <SortIcon />}
               </IconButton>
             </Tooltip>
           </div>
-        </Hidden>
+        </Box>
         {belowMd ? (
           <Collapse in={visible}>
             <div style={collapsedContentDivStyle}>
@@ -260,10 +266,6 @@ const PresentationSort = (props) => {
 
 PresentationSort.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-PresentationSort.defaultProps = {
-  skeleton: false,
 };
 
 export default PresentationSort;

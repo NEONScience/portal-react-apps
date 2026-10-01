@@ -1,20 +1,21 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Grid from '@material-ui/core/Grid';
-import Typography from "@material-ui/core/Typography";
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
-import { getColumns, getColumnDisplayGroupLabel } from "../../api/dataTableColumns";
+import { getColumns, getColumnDisplayGroupLabel } from '../../api/dataTableColumns';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   paddedSection: {
     '@media (min-width:960px)': {
       marginTop: '35px',
@@ -30,17 +31,17 @@ const ColumnManager = (props) => {
     onColumnVisibilityChanged,
     onToggleColumnManagerVisibility,
   } = props;
-  const classes = useStyles();
+  const { classes } = useStyles();
 
   const renderColumnDisplay = () => {
     if (!columns) { return null; }
 
-    let tableRows = {};
-    let displayGroupLabels = {};
+    const tableRows = {};
+    const displayGroupLabels = {};
     let workingTableRows = null;
     let workingGroupLabel = null;
 
-    columns.forEach((column, index) => {
+    columns.forEach((column) => {
       if (!column.title) { return; }
 
       workingTableRows = tableRows[column.columnDisplayGroup];
@@ -58,25 +59,26 @@ const ColumnManager = (props) => {
           key={`${column.title}-${column.queryName}`}
           style={{ display: 'flex' }}
           data-selenium="column-manager-dialog.column-option"
-          control={
+          control={(
             <Checkbox
               checked={column.visible}
               onChange={onColumnVisibilityChanged}
               name={column.queryName}
               color="primary"
             />
-          }
+          )}
           label={column.title}
-        />
+        />,
       );
 
       tableRows[column.columnDisplayGroup] = workingTableRows;
     });
 
     const columnSections = Object.keys(tableRows).reduce((acc, value, index) => {
-      let labelKey = getColumnDisplayGroupLabel(value);
+      const labelKey = getColumnDisplayGroupLabel(value);
       acc.push(
-        <Grid key={index} item xs={12} sm={6} md={3}>
+        // eslint-disable-next-line react/no-array-index-key
+        <Grid key={index} size={{ xs: 12, sm: 6, md: 3 }}>
           {!displayGroupLabels[labelKey] ? null : (
             <Typography variant="subtitle2" gutterBottom style={{ whiteSpace: 'nowrap' }}>
               {displayGroupLabels[labelKey]}
@@ -85,7 +87,7 @@ const ColumnManager = (props) => {
           <div className={displayGroupLabels[labelKey] ? null : classes.paddedSection}>
             {tableRows[value]}
           </div>
-        </Grid>
+        </Grid>,
       );
       delete displayGroupLabels[labelKey];
       return acc;
@@ -105,8 +107,8 @@ const ColumnManager = (props) => {
       aria-labelledby="column-manager-title"
       data-selenium="column-manager-dialog"
     >
-      <DialogTitle id="column-manager-title" disableTypography>
-        <Typography variant="h4" style={{ marginTop: '8px' }}>
+      <DialogTitle id="column-manager-title">
+        <Typography variant="h4" component="span" style={{ marginTop: '8px' }}>
           Table Columns
         </Typography>
       </DialogTitle>
@@ -115,7 +117,7 @@ const ColumnManager = (props) => {
       </DialogContent>
       <DialogActions>
         <Button
-          color="primary" 
+          color="primary"
           onClick={() => onSetColumns(getColumns())}
           data-selenium="column-manager-dialog.reset-button"
         >
@@ -132,6 +134,25 @@ const ColumnManager = (props) => {
       </DialogActions>
     </Dialog>
   );
+};
+
+ColumnManager.propTypes = {
+  columns: PropTypes.arrayOf(PropTypes.shape({
+    bVisible: PropTypes.bool,
+    columnDisplayGroup: PropTypes.string,
+    data: PropTypes.string,
+    defaultContent: PropTypes.string,
+    mData: PropTypes.string,
+    queryName: PropTypes.string,
+    sDefaultContent: PropTypes.string,
+    sTitle: PropTypes.string,
+    title: PropTypes.string,
+    visible: PropTypes.bool,
+  })).isRequired,
+  onSetColumns: PropTypes.func.isRequired,
+  columnManagerVisible: PropTypes.bool.isRequired,
+  onColumnVisibilityChanged: PropTypes.func.isRequired,
+  onToggleColumnManagerVisibility: PropTypes.func.isRequired,
 };
 
 export default ColumnManager;

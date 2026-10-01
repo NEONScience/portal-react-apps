@@ -1,5 +1,5 @@
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import { Release } from '../types/store';
 
@@ -17,7 +17,7 @@ export const useContextReleases = (currentReleases: Release[]): Release[] => {
         userData: userDataProp,
       },
     },
-  ] = NeonContext.useNeonContextState();
+  ] = NeonAuthContext.useNeonAuthContextState();
   const userData: Record<string, unknown> = (userDataProp as Record<string, unknown>);
   if (!exists(userData)
       || !exists(userData?.data)

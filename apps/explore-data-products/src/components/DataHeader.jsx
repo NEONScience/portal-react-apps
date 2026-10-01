@@ -2,33 +2,33 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import { makeStyles } from '@material-ui/core/styles';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import Skeleton from '@material-ui/lab/Skeleton';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Collapse from '@mui/material/Collapse';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 
-import DateIcon from '@material-ui/icons/DateRange';
-import ListIcon from '@material-ui/icons/List';
-import NoneIcon from '@material-ui/icons/NotInterested';
-import ClearIcon from '@material-ui/icons/Clear';
+import DateIcon from '@mui/icons-material/DateRange';
+import ListIcon from '@mui/icons-material/List';
+import NoneIcon from '@mui/icons-material/NotInterested';
+import ClearIcon from '@mui/icons-material/Clear';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
 import { FILTER_KEYS, getCurrentProductsByRelease } from '../util/filterUtil';
 import { downloadCatalog } from '../util/catalogUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   card: {
     marginBottom: theme.spacing(3),
     backgroundColor: theme.palette.grey[50],
@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: theme.spacing(2),
       fontSize: '1.5rem',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -96,8 +96,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DataHeader = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  skeleton: false,
+};
+
+const DataHeader = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
+  const { classes, theme } = useStyles();
 
   const { skeleton } = props;
 
@@ -115,16 +120,17 @@ const DataHeader = (props) => {
   } = state;
   const products = getCurrentProductsByRelease(state);
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
   const visible = catalogSummaryVisible || !belowMd;
 
   const { states: statesJSON = {} } = neonContextState.data;
 
   const handleDownload = (ext, filtered) => {
     if (!filtered) {
-      downloadCatalog(products, productOrder, ext);
+      downloadCatalog(theme, products, productOrder, ext);
     } else {
       downloadCatalog(
+        theme,
         products,
         productOrder,
         ext,
@@ -184,7 +190,8 @@ const DataHeader = (props) => {
       ? moment(`${stats.dateRange[stat][offset]}-02`).format('MMM YYYY')
       : ''
   );
-  const totalAvailability = `Data available ${formatRange('total', 0)} – ${formatRange('total', 1)}`;
+  const totalAvailability = 'Data available '
+    + `${formatRange('total', 0)} – ${formatRange('total', 1)}`;
   let filteredAvailability = 'No data available';
   if (stats.dateRange.filtered.length === 2) {
     filteredAvailability = stats.dateRange.filtered[0] === stats.dateRange.filtered[1]
@@ -195,15 +202,19 @@ const DataHeader = (props) => {
   const selenium = 'browse-data-products-page.data-header';
 
   const getTooltip = (format, filtered) => {
-    const baseTooltip = `Download a ${format} file containing catalog data (product name, description, url, etc.--no science data)`;
+    const baseTooltip = `Download a ${format} file containing catalog
+      data (product name, description, url, etc.--no science data)`;
     return filtered
-      ? `${baseTooltip} for the ${stats.products.filtered} data product${stats.products.filtered === 1 ? '' : 's'} matching currently applied filters, sorted by the current sort.`
-      : `${baseTooltip} for all ${stats.products.total} data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
+      ? `${baseTooltip} for the ${stats.products.filtered}
+        data product${stats.products.filtered === 1 ? '' : 's'} matching currently
+        applied filters, sorted by the current sort.`
+      : `${baseTooltip} for all ${stats.products.total}
+        data product${stats.products.total === 1 ? '' : 's'}, sorted alphabetically by name.`;
   };
 
   let catalogSummaryContents = (
-    <Grid container spacing={3} style={{ marginBottom: Theme.spacing(belowMd ? -3 : 1) }}>
-      <Grid item xs={12} sm={6}>
+    <Grid container spacing={3} style={{ marginBottom: theme.spacing(belowMd ? -3 : 2.5) }}>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <div className={classes.catalogContainer}>
           <Typography component="h3" variant="h5" className={classes.sectionTitle}>
             All Products
@@ -262,19 +273,21 @@ from ${stats.sites.total} site${stats.sites.total === 1 ? '' : 's'}
                 </Button>
               </Tooltip>
               <Tooltip title={getTooltip('PDF', false)}>
-                <Button
-                  {...gtmProps('pdf', false)}
-                  onClick={() => { handleDownload('pdf', false); }}
-                  aria-label="Download Full Catalog PDF"
-                >
-                  PDF
-                </Button>
+                <div>
+                  <Button
+                    {...gtmProps('pdf', false)}
+                    onClick={() => { handleDownload('pdf', false); }}
+                    aria-label="Download Full Catalog PDF"
+                  >
+                    PDF
+                  </Button>
+                </div>
               </Tooltip>
             </ButtonGroup>
           </div>
         </div>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid size={{ xs: 12, sm: 6 }}>
         <div
           className={classes.catalogContainer}
           style={{ opacity: filtersApplied.length ? 1 : 0.5 }}
@@ -373,25 +386,25 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
 
   if (skeleton) {
     catalogSummaryContents = (
-      <Grid container spacing={3} style={{ marginBottom: Theme.spacing(1) }}>
-        <Grid item xs={12} sm={6}>
+      <Grid container spacing={3} style={{ marginBottom: theme.spacing(1) }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <div className={classes.catalogContainer}>
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               All Products
             </Typography>
-            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="70%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
           </div>
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <div className={classes.catalogContainer}>
             <Typography component="h3" variant="h5" className={classes.sectionTitle}>
               Filtered Products
             </Typography>
-            <Skeleton width="70%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="85%" height={12} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
-            <Skeleton width="80%" height={20} style={{ margin: Theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="70%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="85%" height={12} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
+            <Skeleton width="80%" height={20} style={{ margin: theme.spacing(2, 0, 1.5, 0) }} />
           </div>
         </Grid>
       </Grid>
@@ -403,6 +416,8 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
     if (filtersApplied.length) {
       summary = `${summary}, ${stats.products.filtered} filtered`;
     }
+    const collapseExpand = catalogSummaryVisible ? 'Collapse' : 'Expand';
+    const toggleCatalogTooltip = `${collapseExpand} catalog summary and download options`;
     return (
       <Card className={classes.card}>
         <CardContent data-selenium="browse-data-products-page.catalog-summary">
@@ -415,9 +430,12 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
             </div>
             <Tooltip
               placement="left"
-              title={`${catalogSummaryVisible ? 'Collapse' : 'Expand'} catalog summary and download options`}
+              title={toggleCatalogTooltip}
             >
-              <IconButton onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}>
+              <IconButton
+                onClick={() => dispatch({ type: 'toggleCatalogSummaryVisibility' })}
+                size="large"
+              >
                 {catalogSummaryVisible ? <ClearIcon /> : <ListIcon />}
               </IconButton>
             </Tooltip>
@@ -436,10 +454,6 @@ from ${stats.sites.filtered} site${stats.sites.filtered === 1 ? '' : 's'}
 
 DataHeader.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-DataHeader.defaultProps = {
-  skeleton: false,
 };
 
 export default DataHeader;

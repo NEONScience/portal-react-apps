@@ -1,20 +1,31 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import IconButton from '@material-ui/core/IconButton';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
+import IconButton from '@mui/material/IconButton';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableFooter from '@mui/material/TableFooter';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 
-import FirstPageIcon from '@material-ui/icons/FirstPage';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import LastPageIcon from '@material-ui/icons/LastPage';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+
+const useStyles = makeStyles()((theme) => ({
+  pagingTable: {
+    '& .MuiTablePagination-displayedRows': {
+      display: 'block !important',
+      margin: theme.spacing(0, 2),
+    },
+  },
+}));
 
 const PagingTableActions = (props) => {
   const {
@@ -43,16 +54,23 @@ const PagingTableActions = (props) => {
         onClick={handleFirstPageButtonClick}
         disabled={page === 0}
         aria-label="first page"
+        size="large"
       >
         <FirstPageIcon />
       </IconButton>
-      <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+      <IconButton
+        onClick={handleBackButtonClick}
+        disabled={page === 0}
+        aria-label="previous page"
+        size="large"
+      >
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
+        size="large"
       >
         <KeyboardArrowRight />
       </IconButton>
@@ -60,6 +78,7 @@ const PagingTableActions = (props) => {
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
+        size="large"
       >
         <LastPageIcon />
       </IconButton>
@@ -82,6 +101,7 @@ const PagingTable = (props) => {
     renderRow,
     renderHeaderRow,
   } = props;
+  const { classes } = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -97,7 +117,7 @@ const PagingTable = (props) => {
   };
 
   return (
-    <TableContainer style={{ marginBottom: '25px' }}>
+    <TableContainer className={classes.pagingTable} style={{ marginBottom: '25px' }}>
       <Table size="small">
         <TableHead>
           {renderHeaderRow(rows)}

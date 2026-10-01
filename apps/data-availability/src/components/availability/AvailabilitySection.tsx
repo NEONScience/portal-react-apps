@@ -1,25 +1,26 @@
-import React, { useMemo, Suspense, useEffect } from 'react';
-import { Dispatch, AnyAction } from 'redux';
+import React, {
+  useMemo,
+  Suspense,
+  useEffect,
+  type JSX,
+} from 'react';
+import { Dispatch, UnknownAction } from 'redux';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { AnyObject, Nullable } from 'portal-core-components/lib/types/core';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { AnyObject, Nullable } from '@neonscience/portal-core-components/types/core';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import TombstoneNotice from '../release/TombstoneNotice';
 import AppStateSelector from '../../selectors/app';
@@ -27,7 +28,6 @@ import AppFlow from '../../actions/flows/app';
 import { AvailabilitySectionState } from '../states/AppStates';
 import { DataProduct, DataProductReleaseTombAva } from '../../types/store';
 import { useStyles } from '../../styles/overlay';
-import { StylesHook } from '../../types/styles';
 import {
   AvailableDateRange,
   computeAvailableDateRange,
@@ -35,27 +35,25 @@ import {
 } from '../../util/availabilityUtil';
 
 const DataProductAvailability: React.ExoticComponent<AnyObject> = React.lazy(
-  () => import('portal-core-components/lib/components/DataProductAvailability/DataProductAvailability'),
+  () => import('@neonscience/portal-core-components/components/DataProductAvailability/DataProductAvailability'),
 );
 
-const useComponentStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    sidebarDivider: {
-      margin: muiTheme.spacing(3, 0),
-    },
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-    infoTextContainer: {
-      margin: muiTheme.spacing(0, 0, 2, 0),
-    },
-    summaryStyle: {
-      color: muiTheme.palette.grey[500],
-      lineHeight: '1em',
-      marginBottom: muiTheme.spacing(1),
-    },
-  })) as StylesHook;
+const useComponentStyles = makeStyles()((theme: NeonTheme) => ({
+  sidebarDivider: {
+    margin: theme.spacing(3, 0),
+  },
+  infoContainer: {
+    margin: theme.spacing(0, 0, 2, 0),
+  },
+  infoTextContainer: {
+    margin: theme.spacing(0, 0, 2, 0),
+  },
+  summaryStyle: {
+    color: theme.palette.grey[500],
+    lineHeight: '1em',
+    marginBottom: theme.spacing(1),
+  },
+}));
 
 const useAvailabilitySelector = (): AvailabilitySectionState => useSelector(
   AppStateSelector.availability,
@@ -63,9 +61,9 @@ const useAvailabilitySelector = (): AvailabilitySectionState => useSelector(
 
 const AvailabilitySection: React.FC = (): JSX.Element => {
   const state: AvailabilitySectionState = useAvailabilitySelector();
-  const classes: Record<string, string> = useStyles(Theme);
-  const componentClasses: Record<string, string> = useComponentStyles(Theme);
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const { classes } = useStyles();
+  const { classes: componentClasses } = useComponentStyles();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     focalProductFetchState,
     focalProduct,
@@ -83,7 +81,8 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
   const isLoading = (focalProductFetchState === AsyncStateType.IDLE)
     || (focalProductFetchState === AsyncStateType.WORKING)
     || ((focalProductReleaseDoiFetchState === AsyncStateType.WORKING) || fetchProductReleaseDoi)
-    || ((focalProductReleaseTombAvaFetchState === AsyncStateType.WORKING) || fetchProductReleaseTombAva);
+    || ((focalProductReleaseTombAvaFetchState === AsyncStateType.WORKING)
+      || fetchProductReleaseTombAva);
   const isComplete = ((focalProductFetchState === AsyncStateType.FULLFILLED)
       || (focalProductFetchState === AsyncStateType.FAILED))
     && terminalStates.includes(focalProductReleaseDoiFetchState)
@@ -124,7 +123,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
   ]);
 
   const skeleton: JSX.Element = (
-    <Skeleton variant="rect" width="100%" height={400} className={classes.skeleton} />
+    <Skeleton variant="rectangular" width="100%" height={400} className={classes.skeleton} />
   );
 
   const renderAvailability = (): JSX.Element => {
@@ -160,12 +159,12 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderSummary = (): JSX.Element => {
+  const renderSummary = (): JSX.Element | null => {
     if ((siteCodes.length <= 0) && isLoading) {
       return skeleton;
     }
     if ((siteCodes.length <= 0) && isComplete) {
-      return (<React.Fragment />);
+      return null;
     }
     const availableSites = siteCodes.length;
     const availableDates: AvailableDateRange = isTombstoned
@@ -190,7 +189,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
       return null;
     }
     return (
-      <Grid item xs={12}>
+      <Grid size={{ xs: 12 }}>
         <TombstoneNotice />
       </Grid>
     );
@@ -200,7 +199,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
     <div id="availability" className={classes.section}>
       <Typography variant="h4" component="h2" gutterBottom>Availability</Typography>
       <Grid container className={componentClasses.infoContainer}>
-        <Grid item xs={12} className={componentClasses.infoTextContainer}>
+        <Grid size={{ xs: 12 }} className={componentClasses.infoTextContainer}>
           <Typography variant="subtitle1">
             The chart shows the available sites and months where data are available as
             well as distinguishes beween release data and provisional data. When viewing
@@ -217,12 +216,12 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
           </Typography>
         </Grid>
         {renderTombstoneRow()}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           {renderSummary()}
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <div className={isLoading ? classes.overlay : undefined}>
             {renderAvailability()}
           </div>
@@ -235,7 +234,7 @@ const AvailabilitySection: React.FC = (): JSX.Element => {
 const AvailabilitySectionMemo = (): JSX.Element => (
   useMemo(
     () => (<AvailabilitySection />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAvailabilitySelector()],
   )
 );

@@ -1,19 +1,17 @@
-import React from "react";
+import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   infoIcon: {
     marginLeft: theme.spacing(1.5),
     marginBottom: theme.spacing(-0.5),
@@ -29,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const InfoPresentation = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
     <div data-selenium="info-section">
       <Accordion style={{ marginBottom: '32px' }} defaultExpanded>
@@ -43,9 +41,10 @@ const InfoPresentation = () => {
         </AccordionSummary>
         <AccordionDetails id="taxon-info-content" style={{ padding: '0px 24px 24px 24px' }}>
           <Grid container spacing={3}>
-            <Grid item xs={12} lg={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
-                Taxonomic lists are compiled from a variety of published sources and are used primarily by
+                Taxonomic lists are compiled from a variety of published sources
+                and are used primarily by
                 staff scientists to:
               </Typography>
               <ol className={classes.ol}>
@@ -69,26 +68,33 @@ const InfoPresentation = () => {
                 </li>
               </ol>
               <Typography variant="body1">
-                These lists are <strong>not</strong> species checklists, or lists of taxa that have been
-                observed in the field. The availability and accuracy of source data varies by taxonomic group.
+                These lists are
+                <strong> not </strong>
+                species checklists, or lists of taxa that have been
+                observed in the field. The availability and accuracy of source data
+                varies by taxonomic group.
                 NEON anticipates these lists will be updated and refined over time.
               </Typography>
             </Grid>
-            <Grid item xs={12} lg={6}>
+            <Grid size={{ xs: 12, lg: 6 }}>
               <Typography variant="body1" style={{ marginBottom: '24px' }}>
-                In general, NEON field staff (aka parataxonomists) are limited to selecting only taxa whose
-                geographic range extends over the sampling location. NEON staff may use either the accepted
-                scientific name or any known synonym, but, for consistency, nomenclature provided on the data
-                portal reflects the accepted name and its corresponding higher taxonomy (rather than the
-                synonym selected).
+                In general, NEON field staff (aka parataxonomists) are limited to selecting
+                only taxa whose geographic range extends over the sampling location. NEON
+                staff may use either the accepted
+                scientific name or any known synonym, but, for consistency,
+                nomenclature provided on the data
+                portal reflects the accepted name and its corresponding
+                higher taxonomy (rather than the synonym selected).
               </Typography>
               <Typography variant="body1">
                 Expert taxonomists contracted by NEON are permitted to return data with
-                taxonomic identifications unconstrained by expected geographic range. Expanded data packages
-                contain the exact nomenclature provided by the expert taxonomist, including their assignment
-                of higher taxonomy. Basic packages reflect the accepted name (according to the NEON taxon
-                list) and its corresponding higher taxonomy. See individual data products and their associated
-                documentation for further details.
+                taxonomic identifications unconstrained by expected geographic range.
+                Expanded data packages contain the exact nomenclature provided by
+                the expert taxonomist, including their assignment
+                of higher taxonomy. Basic packages reflect the accepted name
+                (according to the NEON taxon
+                list) and its corresponding higher taxonomy. See individual
+                data products and their associated documentation for further details.
               </Typography>
             </Grid>
           </Grid>

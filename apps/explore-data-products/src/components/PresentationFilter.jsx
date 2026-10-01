@@ -1,10 +1,9 @@
 import React, { useRef } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Collapse from '@material-ui/core/Collapse';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import Collapse from '@mui/material/Collapse';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
@@ -22,15 +21,15 @@ import FilterSite from './Filters/FilterSite';
 import FilterTheme from './Filters/FilterTheme';
 import FilterVisualization from './Filters/FilterVisualization';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   filterContent: {
     [theme.breakpoints.up('md')]: {
       width: '276px',
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(3),
     },
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
@@ -42,29 +41,29 @@ const useStyles = makeStyles((theme) => ({
   twoColumns: {
     display: 'flex',
     marginBottom: 'unset',
-    '& > :first-child': {
+    '& > div:first-of-type': {
       marginRight: theme.spacing(3),
     },
-    '& > :last-child': {
+    '& > div:last-of-type': {
       marginLeft: theme.spacing(3),
     },
   },
   column: {
     flex: '50%',
-    '& > div:not(:last-child)': {
+    '& > div:not(div:last-of-type)': {
       marginBottom: theme.spacing(3.5),
     },
   },
 }));
 
 const PresentationFilter = (props) => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const [state] = ExploreContext.useExploreContextState();
   const { filtersVisible } = state;
 
-  const belowMd = useMediaQuery(Theme.breakpoints.down('sm'));
-  const atSm = useMediaQuery(Theme.breakpoints.only('sm'));
+  const belowMd = useMediaQuery(theme.breakpoints.down('md'));
+  const atSm = useMediaQuery(theme.breakpoints.only('sm'));
   const visible = filtersVisible || !belowMd;
 
   // Refs for filter inputs that we can't directly control due to poor performance
@@ -123,7 +122,7 @@ const PresentationFilter = (props) => {
         <Collapse
           in={visible}
           className={classes.collapse}
-          style={{ marginTop: Theme.spacing(visible ? 3 : 0) }}
+          style={{ marginTop: theme.spacing(visible ? 3 : 0) }}
         >
           {filterContent}
         </Collapse>

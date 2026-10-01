@@ -1,6 +1,6 @@
 import React from 'react';
 
-import DataProducCitation from 'portal-core-components/lib/components/Citation/DataProductCitation';
+import DataProducCitation from '@neonscience/portal-core-components/components/Citation/DataProductCitation';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';

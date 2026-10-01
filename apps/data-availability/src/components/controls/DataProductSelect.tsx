@@ -1,116 +1,113 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { useDispatch, useSelector, batch } from 'react-redux';
+import React, {
+  useEffect,
+  useCallback,
+  useMemo,
+  type JSX,
+} from 'react';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Link from '@material-ui/core/Link';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import Autocomplete, {
   createFilterOptions,
   AutocompleteChangeDetails,
   AutocompleteChangeReason,
   AutocompleteRenderInputParams,
   AutocompleteRenderOptionState,
-} from '@material-ui/lab/Autocomplete';
-import Skeleton from '@material-ui/lab/Skeleton';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+} from '@mui/material/Autocomplete';
+import Skeleton from '@mui/material/Skeleton';
 
-import SearchIcon from '@material-ui/icons/Search';
+import SearchIcon from '@mui/icons-material/Search';
 
-import BundleListItemIcon from 'portal-core-components/lib/components/Bundles/BundleListItemIcon';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import BundleListItemIcon from '@neonscience/portal-core-components/components/Bundles/BundleListItemIcon';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
-import { IDataProductLike } from 'portal-core-components/lib/types/internal';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
+import { IDataProductLike } from '@neonscience/portal-core-components/types/internal';
 
 import AppStateSelector from '../../selectors/app';
 import AppFlow from '../../actions/flows/app';
 import { DataProduct, DataProductBundle, DataProductParent } from '../../types/store';
-import { StylesHook } from '../../types/styles';
 import { AppActionCreator } from '../../actions/app';
 import { DataProductSelectOption, DataProductSelectState } from '../states/AppStates';
 import { determineBundle, findBundle, findForwardParent } from '../../util/bundleUtil';
 import { calcSearchSlice, SearchSlice } from '../../util/searchSlice';
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    section: {
-      marginBottom: muiTheme.spacing(4),
-    },
-    sectionTitle: {
-      fontWeight: 500,
-      marginBottom: muiTheme.spacing(2),
-    },
-    sectionSubtitle: {
-      marginBottom: muiTheme.spacing(2),
-    },
-    infoCallout: {
-      marginTop: muiTheme.spacing(3),
-    },
-    skeleton: {
-      marginBottom: '16px',
-    },
-    callout: {
-      margin: muiTheme.spacing(0.5, 0, 3, 0),
-      backgroundColor: '#ffffff',
-      borderColor: '#d7d9d9',
-    },
-    calloutIcon: {
-      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-      marginRight: muiTheme.spacing(2),
-    },
-    listItemTextProduct: {
-      display: 'inline-block',
-      whiteSpace: 'normal',
-    },
-    cardSelectedProduct: {
-      marginBottom: muiTheme.spacing(2),
-      border: '1px solid #d7d9d9',
-    },
-    cardContentSelectedProduct: {
-      padding: muiTheme.spacing(2),
-    },
-    autocompleteInput: {
-      padding: `${muiTheme.spacing(2)}px !important`,
-    },
-    autocompletePopupOpen: {
-      transform: 'rotate(0) !important',
-    },
-    autocompleteLabel: {
-      paddingLeft: `${muiTheme.spacing(1)}px !important`,
-      paddingTop: '6px !important',
-    },
-    autocompleteLabelShrink: {
-      transform: 'translate(6px, -9px) scale(0.75) !important',
-    },
-    productName: {
-      fontWeight: 600,
-    },
-    productCodeChip: {
-      color: muiTheme.palette.grey[400],
-      border: `1px solid ${muiTheme.palette.grey[400]}`,
-      backgroundColor: muiTheme.palette.grey[100],
-      fontWeight: 600,
-    },
-    searchHighlight: {
-      fontWeight: 700,
-    },
-  })) as StylesHook;
+const useStyles = makeStyles()((theme: NeonTheme) => ({
+  section: {
+    marginBottom: theme.spacing(4),
+  },
+  sectionTitle: {
+    fontWeight: 500,
+    marginBottom: theme.spacing(2),
+  },
+  sectionSubtitle: {
+    marginBottom: theme.spacing(2),
+  },
+  infoCallout: {
+    marginTop: theme.spacing(3),
+  },
+  skeleton: {
+    marginBottom: '16px',
+  },
+  callout: {
+    margin: theme.spacing(0.5, 0, 3, 0),
+    backgroundColor: '#ffffff',
+    borderColor: '#d7d9d9',
+  },
+  calloutIcon: {
+    color: theme.colors.LIGHT_BLUE[300],
+    marginRight: theme.spacing(2),
+  },
+  listItemTextProduct: {
+    display: 'inline-block',
+    whiteSpace: 'normal',
+  },
+  cardSelectedProduct: {
+    marginBottom: theme.spacing(2),
+    border: '1px solid #d7d9d9',
+  },
+  cardContentSelectedProduct: {
+    padding: theme.spacing(2),
+  },
+  autocompleteInput: {
+    padding: `${theme.spacing(2)} !important`,
+  },
+  autocompletePopupOpen: {
+    transform: 'rotate(0) !important',
+  },
+  autocompleteLabel: {
+    paddingLeft: `${theme.spacing(1)} !important`,
+    paddingTop: `${theme.spacing(1)} !important`,
+  },
+  autocompleteLabelShrink: {
+    transform: 'translate(12px, -14px) scale(0.70) !important',
+  },
+  productName: {
+    fontWeight: 600,
+  },
+  productCodeChip: {
+    color: theme.palette.grey[400],
+    border: `1px solid ${theme.palette.grey[400]}`,
+    backgroundColor: theme.palette.grey[100],
+    fontWeight: 600,
+  },
+  searchHighlight: {
+    fontWeight: 700,
+  },
+}));
 
 const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
   AppStateSelector.dataProductSelect,
@@ -118,8 +115,8 @@ const useDataProductSelectSelector = (): DataProductSelectState => useSelector(
 
 const DataProductSelect: React.FC = (): JSX.Element => {
   const state: DataProductSelectState = useDataProductSelectSelector();
-  const classes: Record<string, string> = useStyles(Theme);
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const { classes, theme } = useStyles();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     bundlesFetchState,
     bundles,
@@ -144,25 +141,23 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const releaseBundles: DataProductBundle[] = determineBundle(bundles, selectedRelease?.release);
 
   const handleChangeCb = useCallback(
-    (productCb: DataProduct, parentCb?: DataProductParent, releaseCb?: string) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedProduct(productCb));
-        dispatch(AppFlow.fetchFocalProduct.asyncAction({
-          productCodes: parentCb
-            ? [productCb.productCode, parentCb.parentProductCode]
-            : [productCb.productCode],
-          release: releaseCb,
-        }));
-        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
-        }
-        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
-        }
-      })
-    ),
+    (productCb: DataProduct, parentCb?: DataProductParent, releaseCb?: string) => {
+      dispatch(AppActionCreator.setSelectedProduct(productCb));
+      dispatch(AppFlow.fetchFocalProduct.asyncAction({
+        productCodes: parentCb
+          ? [productCb.productCode, parentCb.parentProductCode]
+          : [productCb.productCode],
+        release: releaseCb,
+      }));
+      if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+      }
+      if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+      }
+    },
     [dispatch],
   );
 
@@ -180,8 +175,15 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         handleChangeCb(initialProduct, parentBundle, selectedRelease?.release);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [dispatch, isComplete],
+    [
+      dispatch,
+      isComplete,
+      hasProduct,
+      initialProduct,
+      releaseBundles,
+      selectedRelease,
+      handleChangeCb,
+    ],
   );
 
   const getOptionsDisabled = (value: DataProductSelectOption): boolean => {
@@ -212,12 +214,10 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         if (parentCodes.length <= 0) {
           bundleMessage = `This data product (${value.productCode}) is bundled.`;
         } else {
-          let parentCodeMessage;
+          let [parentCodeMessage] = parentCodes;
           if (parentCodes.length > 1) {
             hasManyParents = true;
             parentCodeMessage = parentCodes.join(', ');
-          } else {
-            parentCodeMessage = parentCodes[0];
           }
           bundleMessage = `This data product (${value.productCode}) is
             bundled into ${parentCodeMessage}`;
@@ -228,9 +228,12 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     return [!bundle ? value.productCode : bundleMessage, hasManyParents];
   };
   const renderOption = (
+    props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
     value: DataProductSelectOption,
     renderOptionState: AutocompleteRenderOptionState,
-  ): JSX.Element => {
+  ): React.ReactNode => {
+    // eslint-disable-next-line react/prop-types
+    const { key, ...optionProps } = props;
     const bundle: DataProductBundle|undefined = findBundle(releaseBundles, value.productCode);
     const [secondaryMessage, hasManyParents]: [string, boolean] = getProductSecondaryMessage(
       value as DataProduct,
@@ -246,28 +249,38 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
     const renderSlices = (slices: SearchSlice[]): JSX.Element[] => ((
       slices.map((slice: SearchSlice, idx: number): JSX.Element => ((
-        // eslint-disable-next-line react/no-array-index-key
-        <span key={`key-${idx}`} className={slice.found ? classes.searchHighlight : undefined}>
+        <span
+          // eslint-disable-next-line react/no-array-index-key
+          key={`key-${idx}`}
+          className={slice.found ? classes.searchHighlight : undefined}
+        >
           {slice.text}
         </span>
       )))
     ));
     return (
-      <div key={value.productCode} style={{ display: 'flex', alignItems: 'center' }}>
-        {!bundle ? <React.Fragment /> : <BundleListItemIcon isSplit={hasManyParents} />}
+      <li
+        {...optionProps}
+        key={value.productCode}
+        style={{ display: 'flex', alignItems: 'center' }}
+      >
+        {!bundle ? null : (
+          <BundleListItemIcon key={`icon-${value.productCode}`} isSplit={hasManyParents} />
+        )}
         <ListItemText
+          key={value.productCode}
           className={classes.listItemTextProduct}
           primary={(<div>{renderSlices(nameSlice)}</div>)}
           secondary={(<>{renderSlices(secondarySlice)}</>)}
         />
-      </div>
+      </li>
     );
   };
 
   const renderDataProductSelect = (): JSX.Element => {
     if ((products.length <= 0) || isLoading) {
       return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
       );
     }
     return (
@@ -276,15 +289,17 @@ const DataProductSelect: React.FC = (): JSX.Element => {
         openOnFocus
         blurOnSelect
         id="select-data-products"
-        options={products}
+        options={products.sort((a, b) => -b.productScienceTeam.localeCompare(a.productScienceTeam))}
         value={{ ...initialProduct, hasData: true }}
         popupIcon={(<SearchIcon />)}
         classes={{
           input: classes.autocompleteInput,
           popupIndicatorOpen: classes.autocompletePopupOpen,
         }}
-        groupBy={(option: DataProductSelectOption): string => option.productScienceTeam}
-        getOptionSelected={(
+        groupBy={(option: DataProductSelectOption): string => (
+          option.productScienceTeam.toUpperCase()
+        )}
+        isOptionEqualToValue={(
           option: DataProductSelectOption,
           value: DataProductSelectOption,
         ): boolean => (option.productCode.localeCompare(value.productCode) === 0)}
@@ -299,30 +314,31 @@ const DataProductSelect: React.FC = (): JSX.Element => {
               releaseBundles,
               option.productCode,
             );
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            const [secondaryMessage]: string = getProductSecondaryMessage(
+            const [secondaryMessage]: [string, boolean] = getProductSecondaryMessage(
               option as DataProduct,
               bundle,
             );
-            return `${option.productName} ${secondaryMessage as string} ${option.productScienceTeam}`;
+            return `${option.productName} ${secondaryMessage} ${option.productScienceTeam}`;
           },
         })}
         renderOption={(
+          props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
           value: DataProductSelectOption,
           renderOptionState: AutocompleteRenderOptionState,
-        ): JSX.Element => renderOption(value, renderOptionState)}
+        ): React.ReactNode => renderOption(props, value, renderOptionState)}
         renderInput={(params: AutocompleteRenderInputParams): React.ReactNode => (
           <TextField
-            // eslint-disable-next-line react/jsx-props-no-spreading
             {...params}
             variant="outlined"
             label="Search Data Products"
-            InputLabelProps={{
-              ...params.InputLabelProps,
-              className: classes.autocompleteLabel,
-              classes: {
-                shrink: classes.autocompleteLabelShrink,
+            slotProps={{
+              ...params.slotProps,
+              inputLabel: {
+                ...params.slotProps.inputLabel,
+                className: classes.autocompleteLabel,
+                classes: {
+                  shrink: classes.autocompleteLabelShrink,
+                },
               },
             }}
           />
@@ -354,17 +370,17 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
   };
 
-  const renderBundle = (): JSX.Element => {
+  const renderBundle = (): JSX.Element | null => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
-      return (<React.Fragment />);
+      return null;
     }
     const bundle = findBundle(releaseBundles, initialProduct.productCode);
     if (!bundle) {
-      return (<React.Fragment />);
+      return null;
     }
     const parent: DataProductParent|undefined = findForwardParent(bundle);
     if (!parent || !parent.forwardAvailability) {
-      return (<React.Fragment />);
+      return null;
     }
     let focalProductName = '';
     if (exists(focalBundleProduct)
@@ -381,7 +397,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
     );
     const subTitleContent = BundleContentBuilder.buildDefaultSubTitleContent(true, false);
     return (
-      <div style={{ marginTop: Theme.spacing(3) }}>
+      <div style={{ marginTop: theme.spacing(3) }}>
         <DataProductBundleCard
           isSplit={false}
           titleContent={titleContent}
@@ -394,7 +410,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
   const renderSelectedProduct = (): JSX.Element => {
     if ((products.length <= 0) || isLoading || !initialProduct) {
       return (
-        <Skeleton variant="rect" width="100%" height={90} className={classes.skeleton} />
+        <Skeleton variant="rectangular" width="100%" height={90} className={classes.skeleton} />
       );
     }
     return (
@@ -410,14 +426,14 @@ const DataProductSelect: React.FC = (): JSX.Element => {
                 {initialProduct.productName}
               </Link>
             </Typography>
-            <div style={{ margin: Theme.spacing(1.5, 0) }}>
+            <div style={{ margin: theme.spacing(1.5, 0) }}>
               <Chip
                 size="small"
                 label={initialProduct.productCode}
                 className={classes.productCodeChip}
               />
             </div>
-            <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
+            <Typography variant="body2" style={{ marginTop: theme.spacing(1) }}>
               {initialProduct.productDescription}
             </Typography>
           </div>
@@ -429,7 +445,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 
   return (
     <div id="data-product-select" className={classes.section}>
-      <FormControl fullWidth>
+      <FormControl variant="standard" fullWidth>
         <Typography variant="h5" component="h3" className={classes.sectionTitle}>
           Data Product
         </Typography>
@@ -445,7 +461,7 @@ const DataProductSelect: React.FC = (): JSX.Element => {
 const DataProductSelectMemo = (): JSX.Element => (
   useMemo(
     () => (<DataProductSelect />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useDataProductSelectSelector()],
   )
 );

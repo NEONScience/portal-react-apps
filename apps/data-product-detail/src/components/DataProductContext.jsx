@@ -1,26 +1,30 @@
-/* eslint-disable import/no-unresolved */
 import React, {
   createContext,
   useContext,
   useReducer,
   useEffect,
+  useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router';
+
+import { map, catchError } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import NeonApi from 'portal-core-components/lib/components/NeonApi';
-import NeonContext from 'portal-core-components/lib/components/NeonContext';
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import NeonJsonLd from 'portal-core-components/lib/components/NeonJsonLd';
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment/NeonEnvironment';
+import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
-import BundleService from 'portal-core-components/lib/service/BundleService';
-import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
+import BundleService from '@neonscience/portal-core-components/service/BundleService';
+import ReleaseService from '@neonscience/portal-core-components/service/ReleaseService';
 
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { DoiStatusType } from '@neonscience/portal-core-components/types/neonApi';
 
 const FETCH_STATUS = {
   AWAITING_CALL: 'AWAITING_CALL',
@@ -75,6 +79,7 @@ const DEFAULT_STATE = {
   },
 
   neonContextState: cloneDeep(NeonContext.DEFAULT_STATE),
+  neonAuthContextState: cloneDeep(NeonAuthContext.DEFAULT_STATE),
 };
 
 const fetchIsInStatus = (fetchObject, status) => (
@@ -211,7 +216,11 @@ const calculateAppStatus = (state) => {
     updatedState.app.status = APP_STATUS.ERROR;
     return updatedState;
   }
-  if (stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING) || !state.neonContextState.isFinal) {
+  if (
+    stateHasFetchesInStatus(state, FETCH_STATUS.FETCHING)
+    || !state.neonContextState.isFinal
+    || !state.neonAuthContextState.isFinal
+  ) {
     updatedState.app.status = APP_STATUS.FETCHING;
     return updatedState;
   }
@@ -227,8 +236,8 @@ const sortReleases = (unsortedReleases) => {
   return releases;
 };
 
-const withContextReleases = (neonContextState) => (
-  neonContextState?.auth?.userData?.data?.releases || []
+const withContextReleases = (neonAuthContextState) => (
+  neonAuthContextState?.auth?.userData?.data?.releases || []
 );
 
 const applyUserRelease = (current, userReleases) => {
@@ -397,8 +406,7 @@ const getCurrentProductFromState = (state = DEFAULT_STATE, forAvailability = fal
   return productReleases[currentRelease];
 };
 
-// eslint-disable-next-line default-param-last
-const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release) => {
+const getCurrentProductLatestAvailableDate = (state = DEFAULT_STATE, release = null) => {
   const product = getCurrentProductFromState(state, true);
   if (!product || !Array.isArray(product.siteCodes)) { return null; }
   let latestAvailableMonth = null;
@@ -483,8 +491,8 @@ const getProductDoiInfo = (state = DEFAULT_STATE) => {
           }
         });
       } else {
-        // eslint-disable-next-line prefer-destructuring
-        appliedSingleDoiProductCode = bundle.doiProductCode[0];
+        const firstDoiProductCode = bundle.doiProductCode[0];
+        appliedSingleDoiProductCode = firstDoiProductCode;
         if (exists(productReleaseDois[currentRelease])) {
           appliedProductReleaseDoi = productReleaseDois[currentRelease];
         }
@@ -615,11 +623,18 @@ const calculateBundles = (bundlesCtx, release, productCode) => {
  * derivation of bundles, and the resulting fetch and app status.
  * @param newState The DataProductContext state to build on.
  * @param neonContextState The new NeonContext state to integrate.
+ * @param neonAuthContextState The new NeonAuthContext state to integrate.
  * @param release The release to work from.
  * @param productCode The product code to work from.
  * @return The next DataProductContext state.
  */
-const calculateContextState = (newState, neonContextState, release, productCode) => {
+const calculateContextState = (
+  newState,
+  neonContextState,
+  neonAuthContextState,
+  release,
+  productCode,
+) => {
   const isErrorState = (newState.app.status === APP_STATUS.ERROR);
   const routeBundles = calculateBundles(
     neonContextState.data.bundles,
@@ -636,6 +651,7 @@ const calculateContextState = (newState, neonContextState, release, productCode)
   const newAppStatusState = calculateAppStatus({
     ...newFetchState,
     neonContextState,
+    neonAuthContextState,
   });
   // If the existing app state was errored due to initialization,
   // keep the current error state.
@@ -673,10 +689,11 @@ const reducer = (state, action) => {
   switch (action.type) {
     case 'reinitialize':
       // Reset the context state to default state, but keep the
-      // finalized NeonContext state.
+      // finalized NeonContext, NeonAuthContext state.
       return {
         ...cloneDeep(DEFAULT_STATE),
         neonContextState: state.neonContextState,
+        neonAuthContextState: state.neonAuthContextState,
       };
     case 'error':
       newState.app.status = APP_STATUS.ERROR;
@@ -684,10 +701,19 @@ const reducer = (state, action) => {
       return newState;
 
     case 'storeFinalizedNeonContextState':
-      applyUserRelease(newState.data.releases, withContextReleases(action.neonContextState));
       return calculateContextState(
         newState,
         action.neonContextState,
+        newState.neonAuthContextState,
+        newState.route.release,
+        newState.route.productCode,
+      );
+    case 'storeFinalizedNeonAuthContextState':
+      applyUserRelease(newState.data.releases, withContextReleases(action.neonAuthContextState));
+      return calculateContextState(
+        newState,
+        newState.neonContextState,
+        action.neonAuthContextState,
         newState.route.release,
         newState.route.productCode,
       );
@@ -724,7 +750,6 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseFailed':
       newState.fetches.productReleases[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleases[action.release].error = action.error;
-      // eslint-disable-next-line max-len
       newState.app.error = `${errorDetail}: ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseSucceeded':
@@ -738,7 +763,6 @@ const reducer = (state, action) => {
     case 'fetchProductReleaseDoiFailed':
       newState.fetches.productReleaseDois[action.release].status = FETCH_STATUS.ERROR;
       newState.fetches.productReleaseDois[action.release].error = action.error;
-      // eslint-disable-next-line max-len
       newState.app.error = `${errorDetail}: ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseDoiSucceeded':
@@ -777,30 +801,34 @@ const reducer = (state, action) => {
     case 'fetchBundleParentSucceeded':
       newState.fetches.bundleParents[action.bundleParent].status = FETCH_STATUS.SUCCESS;
       newState.data.bundleParents[action.bundleParent] = action.data;
-      // eslint-disable-next-line max-len
-      newState.data.bundleParents[action.bundleParent].releases = sortReleases(action.data.releases);
+      newState.data.bundleParents[action.bundleParent]
+        .releases = sortReleases(action.data.releases);
       return calculateAppStatus(
         calculateFetches(
-          // eslint-disable-next-line max-len
-          applyReleasesGlobally(newState, newState.data.bundleParents[action.bundleParent].releases),
+          applyReleasesGlobally(
+            newState,
+            newState.data.bundleParents[action.bundleParent].releases,
+          ),
         ),
       );
 
     case 'fetchBundleParentReleaseStarted':
-      /* eslint-disable max-len */
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.FETCHING;
-      /* eslint-enable max-len */
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .status = FETCH_STATUS.FETCHING;
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseFailed':
-      /* eslint-disable max-len */
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.ERROR;
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].error = action.error;
-      newState.app.error = `${errorDetail}: bundle parent product code ${action.bundleParent}; release ${action.release}`;
-      /* eslint-enable max-len */
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .status = FETCH_STATUS.ERROR;
+      newState.fetches.bundleParentReleases[action.bundleParent][action.release]
+        .error = action.error;
+      newState.app.error = `${errorDetail}: bundle parent product code `
+        + `${action.bundleParent}; `
+        + `release ${action.release}`;
       return calculateAppStatus(newState);
     case 'fetchBundleParentReleaseSucceeded':
-      // eslint-disable-next-line max-len
-      newState.fetches.bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
+      newState
+        .fetches
+        .bundleParentReleases[action.bundleParent][action.release].status = FETCH_STATUS.SUCCESS;
       if (!newState.data.bundleParentReleases[action.bundleParent]) {
         newState.data.bundleParentReleases[action.bundleParent] = {};
       }
@@ -822,6 +850,9 @@ const reducer = (state, action) => {
       newState.data.tombstoneAvailability = null;
       return calculateAppStatus(newState);
     case 'fetchProductReleaseTombstoneAvailabilitySucceeded':
+      if (!newState.fetches.tombstoneAvailability[action.release]) {
+        newState.fetches.tombstoneAvailability[action.release] = {};
+      }
       newState.fetches.tombstoneAvailability[action.release].status = FETCH_STATUS.SUCCESS;
       if (action.data) {
         if (!newState.data.tombstoneAvailability) {
@@ -849,6 +880,7 @@ const reducer = (state, action) => {
       return calculateContextState(
         newState,
         newState.neonContextState,
+        newState.neonAuthContextState,
         newState.route.release,
         newState.route.productCode,
       );
@@ -859,10 +891,13 @@ const reducer = (state, action) => {
   }
 };
 
+const defaultProps = {};
+
 /**
    PROVIDER
 */
-const Provider = (props) => {
+const Provider = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { children } = props;
 
   const initialState = cloneDeep(DEFAULT_STATE);
@@ -912,8 +947,7 @@ const Provider = (props) => {
   // 2. location.pathname - literally the URL, route.release follows this
   // 3. route.release - only ever set from URL parsing
   const navigate = useNavigate();
-  const location = useLocation();
-  const { pathname } = location;
+  const { pathname } = window.location;
   useEffect(() => {
     if (status === APP_STATUS.INITIALIZING) { return; }
     const [locationProductCode, locationRelease] = getProductCodeAndReleaseFromURL(pathname);
@@ -933,7 +967,7 @@ const Provider = (props) => {
       dispatch({ type: 'applyNextRelease' });
       return;
     }
-    // Next release diffres from current: apply next release to state (used after browser nav)
+    // Next release differs from current: apply next release to state (used after browser nav)
     if (nextRelease !== undefined && nextRelease !== currentRelease) {
       dispatch({ type: 'applyNextRelease' });
       return;
@@ -942,7 +976,15 @@ const Provider = (props) => {
     if (locationRelease !== currentRelease) {
       dispatch({ type: 'setNextRelease', release: locationRelease });
     }
-  }, [status, navigate, pathname, productCode, currentRelease, nextRelease, nextHash]);
+  }, [
+    status,
+    navigate,
+    pathname,
+    productCode,
+    currentRelease,
+    nextRelease,
+    nextHash,
+  ]);
 
   // Trigger any fetches that are awaiting call
   const fetchesStringified = JSON.stringify(fetches);
@@ -953,61 +995,61 @@ const Provider = (props) => {
     // Base product fetch
     if (fetchIsAwaitingCall(fetches.product)) {
       dispatch({ type: 'fetchProductStarted' });
-      NeonApi.getProductObservable(productCode).subscribe(
-        (response) => {
+      NeonApi.getProductObservable(productCode).pipe(
+        map((response) => {
           dispatch({ type: 'fetchProductSucceeded', data: response.data });
-        },
-        (error) => {
+        }),
+        catchError((error) => {
           dispatch({ type: 'fetchProductFailed', error });
-        },
-      );
+        }),
+      ).subscribe();
     }
     // Product release fetches
     Object.keys(fetches.productReleases)
       .filter((release) => fetchIsAwaitingCall(fetches.productReleases[release]))
       .forEach((release) => {
         dispatch({ type: 'fetchProductReleaseStarted', release });
-        NeonApi.getProductObservable(productCode, release).subscribe(
-          (response) => {
+        NeonApi.getProductObservable(productCode, release).pipe(
+          map((response) => {
             dispatch({ type: 'fetchProductReleaseSucceeded', release, data: response.data });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchProductReleaseFailed', release, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Product release DOI fetches
     Object.keys(fetches.productReleaseDois)
       .filter((release) => fetchIsAwaitingCall(fetches.productReleaseDois[release]))
       .forEach((release) => {
         dispatch({ type: 'fetchProductReleaseDoiStarted', release });
-        NeonApi.getProductDoisObservable(productCode, release).subscribe(
-          (response) => {
+        NeonApi.getProductDoisObservable(productCode, release).pipe(
+          map((response) => {
             dispatch({
               type: 'fetchProductReleaseDoiSucceeded',
               productCode,
               release,
               data: response.data,
             });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchProductReleaseDoiFailed', release, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Bundle parent fetches
     Object.keys(fetches.bundleParents)
       .filter((bundleParent) => fetchIsAwaitingCall(fetches.bundleParents[bundleParent]))
       .forEach((bundleParent) => {
         dispatch({ type: 'fetchBundleParentStarted', bundleParent });
-        NeonApi.getProductObservable(bundleParent).subscribe(
-          (response) => {
+        NeonApi.getProductObservable(bundleParent).pipe(
+          map((response) => {
             dispatch({ type: 'fetchBundleParentSucceeded', bundleParent, data: response.data });
-          },
-          (error) => {
+          }),
+          catchError((error) => {
             dispatch({ type: 'fetchBundleParentFailed', bundleParent, error });
-          },
-        );
+          }),
+        ).subscribe();
       });
     // Bundle parent release fetches
     Object.keys(fetches.bundleParentReleases)
@@ -1018,24 +1060,24 @@ const Provider = (props) => {
           ))
           .forEach((release) => {
             dispatch({ type: 'fetchBundleParentReleaseStarted', bundleParent, release });
-            NeonApi.getProductObservable(bundleParent, release).subscribe(
-              (response) => {
+            NeonApi.getProductObservable(bundleParent, release).pipe(
+              map((response) => {
                 dispatch({
                   type: 'fetchBundleParentReleaseSucceeded',
                   bundleParent,
                   release,
                   data: response.data,
                 });
-              },
-              (error) => {
+              }),
+              catchError((error) => {
                 dispatch({
                   type: 'fetchBundleParentReleaseFailed',
                   bundleParent,
                   release,
                   error,
                 });
-              },
-            );
+              }),
+            ).subscribe();
           });
       });
   }, [status, productCode, fetches, neonContextIsFinal, fetchesStringified]);
@@ -1048,30 +1090,30 @@ const Provider = (props) => {
       return;
     }
     dispatch({ type: 'fetchProductReleaseTombstoneAvailabilityStarted', release: currentRelease });
-    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).subscribe(
-      (response) => {
+    NeonApi.getProductTombstoneAvailabilityObservable(productCode, currentRelease).pipe(
+      map((response) => {
         dispatch({
           type: 'fetchProductReleaseTombstoneAvailabilitySucceeded',
           release: currentRelease,
           data: response.data,
         });
-      },
-      (error) => {
+      }),
+      catchError((error) => {
         dispatch({
           type: 'fetchProductReleaseTombstoneAvailabilityFailed',
           release: currentRelease,
           error,
         });
-      },
-    );
+      }),
+    ).subscribe();
   }, [isTombstoned, fetches, productCode, currentRelease, fetchesStringified]);
 
   /**
      Render
   */
+  const contextValue = useMemo(() => [state, dispatch], [state, dispatch]);
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
-    <Context.Provider value={[state, dispatch]}>
+    <Context.Provider value={contextValue}>
       {children}
     </Context.Provider>
   );
@@ -1087,8 +1129,6 @@ Provider.propTypes = {
     PropTypes.string,
   ]).isRequired,
 };
-
-Provider.defaultProps = {};
 
 /**
    EXPORT

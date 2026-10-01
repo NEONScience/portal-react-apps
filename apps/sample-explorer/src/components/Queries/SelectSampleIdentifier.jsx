@@ -1,21 +1,21 @@
-import React, { useRef } from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      minWidth: '240px'
+      minWidth: '240px',
     },
   },
 }));
@@ -25,19 +25,17 @@ const SelectSampleIdentifier = (props) => {
     sampleClassDesc,
     onSetQueryType,
     onDownloadSupportedClassesClick,
-    query: { queryType, queryTypeOptions,  },
+    query: { queryType, queryTypeOptions },
   } = props;
 
-  const classes = useStyles(Theme);
-
-  const labelRef = useRef(null);
+  const { classes } = useStyles();
 
   return (
     <FormControl variant="outlined" className={classes.formControl}>
-      <InputLabel id="select-identifier-type-label" ref={labelRef}>Identifier Type</InputLabel>
+      <InputLabel id="select-identifier-type-label">Identifier Type</InputLabel>
       <Select
         labelId="select-identifier-type-label"
-        labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
+        label="Identifier Type"
         data-gtm="sample-search-form.select-identifier-type"
         data-selenium="sample-search-form.select-identifier-type"
         value={queryType}
@@ -49,12 +47,27 @@ const SelectSampleIdentifier = (props) => {
           }
         }}
       >
-        {queryTypeOptions.map(option => (
+        {queryTypeOptions.map((option) => (
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}
       </Select>
     </FormControl>
   );
+};
+
+SelectSampleIdentifier.propTypes = {
+  sampleClassDesc: PropTypes.instanceOf(Map).isRequired,
+  onSetQueryType: PropTypes.func.isRequired,
+  onDownloadSupportedClassesClick: PropTypes.func.isRequired,
+  query: PropTypes.shape({
+    queryType: PropTypes.string.isRequired,
+    queryTypeOptions: PropTypes.arrayOf(
+      PropTypes.shape({
+        value: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+  }).isRequired,
 };
 
 export default SelectSampleIdentifier;

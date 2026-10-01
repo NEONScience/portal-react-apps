@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   textField: {
-    [theme.breakpoints.down('xs')]: {
-      width: '100%',      
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      minWidth: '440px'
+      minWidth: '440px',
     },
   },
 }));
@@ -22,7 +22,7 @@ const QueryBySampleTag = (props) => {
     query: { sampleTag, queryErrorStr, queryIsLoading },
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   return (
     <TextField
@@ -38,6 +38,15 @@ const QueryBySampleTag = (props) => {
       data-selenium="sample-search-form.sample-tag"
     />
   );
+};
+
+QueryBySampleTag.propTypes = {
+  query: PropTypes.shape({
+    sampleTag: PropTypes.string,
+    queryErrorStr: PropTypes.string,
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
+  onSetQuerySampleTag: PropTypes.func.isRequired,
 };
 
 export default QueryBySampleTag;

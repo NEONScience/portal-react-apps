@@ -4,31 +4,30 @@ import moment from 'moment';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import CopyIcon from '@material-ui/icons/Assignment';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import CopyIcon from '@mui/icons-material/Assignment';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import ReleaseMessageCard from 'portal-core-components/lib/components/Card/ReleaseMessageCard';
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import ReleaseMessageCard from '@neonscience/portal-core-components/components/Card/ReleaseMessageCard';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 
 import DetailTooltip from '../Details/DetailTooltip';
 
-const DOI_TOOLTIP = 'Digital Object Identifier (DOI) - A citable, permanent link to this data product release';
+const DOI_TOOLTIP = `
+Digital Object Identifier (DOI) - A citable, permanent link to this data product release
+`;
 
 const {
   APP_STATUS,
@@ -38,7 +37,7 @@ const {
   determineTombstoned,
 } = DataProductContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   multiCitationContainer: {
     marginTop: theme.spacing(2),
   },
@@ -85,12 +84,12 @@ const useStyles = makeStyles((theme) => ({
   },
   multiBundleBlurbSubtext: {
     fontWeight: 400,
-    marginTop: Theme.spacing(1),
+    marginTop: theme.spacing(1),
   },
 }));
 
 const ReleaseCard = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = useDataProductContextState();
   const {
@@ -156,7 +155,9 @@ const ReleaseCard = () => {
   const renderNotInReleaseNotice = () => {
     if (!showNotInReleaseNotice) return null;
     const dataProductDetailLink = (
-      <Link href={RouteService.getProductDetailPath(baseProduct.productCode)}>
+      <Link
+        href={RouteService.getProductDetailPath(baseProduct.productCode)}
+      >
         here
       </Link>
     );
@@ -166,10 +167,10 @@ const ReleaseCard = () => {
           <div>
             <Divider className={classes.releaseCardDivider} />
             <Typography variant="body2" color="textPrimary">
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
               <b>{currentRelease}</b> of this data product is not available.
               The available data product releases can be found {dataProductDetailLink}.
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-enable react/jsx-one-expression-per-line */}
             </Typography>
           </div>
         )}
@@ -220,20 +221,31 @@ const ReleaseCard = () => {
           disableGutters
           key={`ReleaseCardDoiUrlKey-${currentDoiUrl}`}
           alignItems="flex-start"
-          ContainerComponent="div"
+          slots={{ root: 'div' }}
           className={classes.doiListitem}
           classes={{
             secondaryAction: classes.doiListItemSecondaryAction,
           }}
+          secondaryAction={(
+            <CopyToClipboard text={currentDoiUrl.doiUrl}>
+              <Button
+                color="primary"
+                variant="outlined"
+                size="small"
+                className={classes.copyButton}
+              >
+                <CopyIcon fontSize="small" />
+                Copy DOI
+              </Button>
+            </CopyToClipboard>
+          )}
         >
           <ListItemText
             className={classes.doiListItemText}
             primary={(
               !currentDoiUrl.doiUrlIsFromBundleParent ? null : (
                 <Typography variant="subtitle2" className={classes.multiDoiFromParentBlurb}>
-                  {/* eslint-disable react/jsx-one-expression-per-line */}
                   {currentDoiUrl.bundleParentLink}
-                  {/* eslint-enable react/jsx-one-expression-per-line */}
                 </Typography>
               )
             )}
@@ -247,19 +259,6 @@ const ReleaseCard = () => {
               </Typography>
             )}
           />
-          <ListItemSecondaryAction>
-            <CopyToClipboard text={currentDoiUrl.doiUrl}>
-              <Button
-                color="primary"
-                variant="outlined"
-                size="small"
-                className={classes.copyButton}
-              >
-                <CopyIcon fontSize="small" />
-                Copy DOI
-              </Button>
-            </CopyToClipboard>
-          </ListItemSecondaryAction>
         </ListItem>
       ));
       let subTitleContent = (
@@ -300,7 +299,10 @@ const ReleaseCard = () => {
                   title={releaseInfoTooltip}
                   className={classes.tooltip}
                 >
-                  <Link href={releaseInfoHref} className={classes.releaseInfoLink}>
+                  <Link
+                    href={releaseInfoHref}
+                    className={classes.releaseInfoLink}
+                  >
                     {currentRelease}
                   </Link>
                 </Tooltip>

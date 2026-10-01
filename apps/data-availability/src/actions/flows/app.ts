@@ -1,13 +1,11 @@
-/* eslint-disable max-len */
-
-import AsyncFlow from 'portal-core-components/lib/flow/AsyncFlow';
+import AsyncFlow from '@neonscience/portal-core-components/flow/AsyncFlow';
 import {
   AsyncState,
   AsyncFlowHandler,
   AsyncActionType,
   FlowActionTypes,
-} from 'portal-core-components/lib/types/asyncFlow';
-import { Nullable } from 'portal-core-components/lib/types/core';
+} from '@neonscience/portal-core-components/types/asyncFlow';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
 
 import AppActions from '../app';
 import ProductParser from '../../parsers/ProductParser';
@@ -26,11 +24,27 @@ interface AppAsyncFlowTypes {
   fetchProducts: AsyncFlowHandler<AsyncState<DataProduct[]>, AsyncActionType, DataProduct[]>;
   fetchSites: AsyncFlowHandler<AsyncState<Site[]>, AsyncActionType, Site[]>;
   fetchReleases: AsyncFlowHandler<AsyncState<Release[]>, AsyncActionType, Release[]>;
-  fetchProductBundles: AsyncFlowHandler<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>;
-  fetchFocalProduct: AsyncFlowHandler<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>;
+  fetchProductBundles: AsyncFlowHandler<
+    AsyncState<Record<string, DataProductBundle[]>>,
+    AsyncActionType,
+    Record<string, DataProductBundle[]>
+  >;
+  fetchFocalProduct: AsyncFlowHandler<
+    AsyncState<Nullable<DataProduct[]>>,
+    AsyncActionType,
+    Nullable<DataProduct[]>
+  >;
   fetchFocalSite: AsyncFlowHandler<AsyncState<Nullable<Site>>, AsyncActionType, Nullable<Site>>;
-  fetchFocalProductReleaseDoi: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>, AsyncActionType, Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>;
-  fetchFocalProductReleaseTombAva: AsyncFlowHandler<AsyncState<Nullable<DataProductReleaseTombAva>>, AsyncActionType, Nullable<DataProductReleaseTombAva>>;
+  fetchFocalProductReleaseDoi: AsyncFlowHandler<
+    AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>,
+    AsyncActionType,
+    Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>
+  >;
+  fetchFocalProductReleaseTombAva: AsyncFlowHandler<
+    AsyncState<Nullable<DataProductReleaseTombAva>>,
+    AsyncActionType,
+    Nullable<DataProductReleaseTombAva>
+  >;
 }
 
 const AppFlowActionTypes: FlowActionTypes = {
@@ -105,11 +119,19 @@ const AppFlow: AppAsyncFlowTypes = {
     AppFlowActionTypes.fetchReleases,
     ReleaseParser.parseReleases,
   ),
-  fetchProductBundles: AsyncFlow.create<AsyncState<Record<string, DataProductBundle[]>>, AsyncActionType, Record<string, DataProductBundle[]>>(
+  fetchProductBundles: AsyncFlow.create<
+    AsyncState<Record<string, DataProductBundle[]>>,
+    AsyncActionType,
+    Record<string, DataProductBundle[]>
+  >(
     AppFlowActionTypes.fetchProductBundles,
     ProductParser.parseBundles,
   ),
-  fetchFocalProduct: AsyncFlow.create<AsyncState<Nullable<DataProduct[]>>, AsyncActionType, Nullable<DataProduct[]>>(
+  fetchFocalProduct: AsyncFlow.create<
+    AsyncState<Nullable<DataProduct[]>>,
+    AsyncActionType,
+    Nullable<DataProduct[]>
+  >(
     AppFlowActionTypes.fetchFocalProduct,
     ProductParser.parseProductResponse,
   ),
@@ -117,11 +139,19 @@ const AppFlow: AppAsyncFlowTypes = {
     AppFlowActionTypes.fetchFocalSite,
     SiteParser.parseSiteResponse,
   ),
-  fetchFocalProductReleaseDoi: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>, AsyncActionType, Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>(
+  fetchFocalProductReleaseDoi: AsyncFlow.create<
+    AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>,
+    AsyncActionType,
+    Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>
+  >(
     AppFlowActionTypes.fetchFocalProductReleaseDoi,
     ProductParser.parseProductReleaseDoi,
   ),
-  fetchFocalProductReleaseTombAva: AsyncFlow.create<AsyncState<Nullable<DataProductReleaseTombAva>>, AsyncActionType, Nullable<DataProductReleaseTombAva>>(
+  fetchFocalProductReleaseTombAva: AsyncFlow.create<
+    AsyncState<Nullable<DataProductReleaseTombAva>>,
+    AsyncActionType,
+    Nullable<DataProductReleaseTombAva>
+  >(
     AppFlowActionTypes.fetchFocalProductReleaseTombAva,
     ProductParser.parseProductReleaseTombAva,
   ),

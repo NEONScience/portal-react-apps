@@ -1,28 +1,28 @@
-import React, { useEffect, useCallback, useMemo } from 'react';
-import { Dispatch, AnyAction } from 'redux';
-import { batch, useDispatch, useSelector } from 'react-redux';
+import React, {
+  useEffect,
+  useCallback,
+  useMemo,
+  type JSX,
+} from 'react';
+import { Dispatch, UnknownAction } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import Divider from '@material-ui/core/Divider';
-import {
-  makeStyles,
-  createStyles,
-  Theme as MuiTheme,
-} from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Divider from '@mui/material/Divider';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage/NeonPage';
-import InfoCard from 'portal-core-components/lib/components/Card/InfoCard';
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter/ReleaseFilter';
-import SidebarFilter from 'portal-core-components/lib/components/SidebarFilter/SidebarFilter';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage/NeonPage';
+import InfoCard from '@neonscience/portal-core-components/components/Card/InfoCard';
+import ReleaseFilter from '@neonscience/portal-core-components/components/ReleaseFilter/ReleaseFilter';
+import SidebarFilter from '@neonscience/portal-core-components/components/SidebarFilter/SidebarFilter';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { Nullable } from 'portal-core-components/lib/types/core';
-import { NeonTheme } from 'portal-core-components/lib/components/Theme/types';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import DataProductSelect from './controls/DataProductSelect';
 import AvailabilitySection from './availability/AvailabilitySection';
@@ -41,35 +41,25 @@ import {
   DataProductBundle,
   DataProductParent,
 } from '../types/store';
-import { StylesHook } from '../types/styles';
 import { AppActionCreator } from '../actions/app';
 import { useContextReleases } from '../hooks/useContextReleases';
 import { determineBundle, findBundle, findForwardParent } from '../util/bundleUtil';
 
-const VIEW_BY_FILTER_DESCRIPTION = 'View availability in a data product centric or site centric mode';
+const VIEW_BY_FILTER_DESCRIPTION = `
+View availability in a data product centric or site centric mode
+`;
 
-const useStyles: StylesHook = makeStyles((muiTheme: MuiTheme) =>
-  // eslint-disable-next-line implicit-arrow-linebreak
-  createStyles({
-    sidebarDivider: {
-      margin: muiTheme.spacing(3, 0),
-    },
-    introTextContainer: {
-      margin: muiTheme.spacing(0, 0, 3, 0),
-    },
-    infoContainer: {
-      margin: muiTheme.spacing(0, 0, 4, 0),
-    },
-    callout: {
-      margin: muiTheme.spacing(0.5, 0, 3, 0),
-      backgroundColor: '#ffffff',
-      borderColor: '#d7d9d9',
-    },
-    calloutIcon: {
-      color: (Theme as NeonTheme).colors.LIGHT_BLUE[300],
-      marginRight: muiTheme.spacing(2),
-    },
-  })) as StylesHook;
+const useStyles = makeStyles()((theme: NeonTheme) => ({
+  sidebarDivider: {
+    margin: theme.spacing(3, 0),
+  },
+  introTextContainer: {
+    margin: theme.spacing(0, 0, 3, 0),
+  },
+  infoContainer: {
+    margin: theme.spacing(0, 0, 4, 0),
+  },
+}));
 
 const useAppSelector = (): AppComponentState => useSelector(
   AppStateSelector.app,
@@ -77,8 +67,8 @@ const useAppSelector = (): AppComponentState => useSelector(
 
 const App: React.FC = (): JSX.Element => {
   const state: AppComponentState = useAppSelector();
-  const classes: Record<string, string> = useStyles(Theme);
-  const dispatch: Dispatch<AnyAction> = useDispatch();
+  const { classes } = useStyles();
+  const dispatch: Dispatch<UnknownAction> = useDispatch();
   const {
     productsFetchState,
     sitesFetchState,
@@ -93,7 +83,7 @@ const App: React.FC = (): JSX.Element => {
     viewModes,
   }: AppComponentState = state;
 
-  // Hook into NeonContext to pull authenticated user data
+  // Hook into NeonAuthContext to pull authenticated user data
   const appliedReleases: Release[] = useContextReleases(releases);
 
   const isLoading = (productsFetchState === AsyncStateType.WORKING)
@@ -103,18 +93,16 @@ const App: React.FC = (): JSX.Element => {
 
   useEffect(
     () => {
-      batch(() => {
-        dispatch(AppFlow.fetchProducts.asyncAction());
-        dispatch(AppFlow.fetchSites.asyncAction());
-        dispatch(AppFlow.fetchReleases.asyncAction());
-        dispatch(AppFlow.fetchProductBundles.asyncAction());
-      });
+      dispatch(AppFlow.fetchProducts.asyncAction());
+      dispatch(AppFlow.fetchSites.asyncAction());
+      dispatch(AppFlow.fetchReleases.asyncAction());
+      dispatch(AppFlow.fetchProductBundles.asyncAction());
     },
     [dispatch],
   );
   useEffect(
     () => {
-      // Synchronize NeonContext state with redux store
+      // Synchronize NeonAuthContext state with redux store
       dispatch(AppActionCreator.setReleases(appliedReleases));
     },
     [dispatch, appliedReleases],
@@ -133,41 +121,39 @@ const App: React.FC = (): JSX.Element => {
       siteCb: Nullable<Site>,
       releaseCb: Nullable<Release>,
       bundlesCb: DataProductBundle[],
-    ) => (
-      batch(() => {
-        dispatch(AppActionCreator.setSelectedRelease(releaseCb));
-        if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+    ) => {
+      dispatch(AppActionCreator.setSelectedRelease(releaseCb));
+      if (AppFlow.fetchFocalProductReleaseDoi.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseDoi.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseDoi());
+      }
+      if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
+        dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
+        dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
+      }
+      if (exists(productCb)) {
+        let parentBundle: DataProductParent|undefined;
+        const bundle: DataProductBundle|undefined = findBundle(
+          bundlesCb,
+          (productCb as DataProduct).productCode,
+        );
+        if (bundle) {
+          parentBundle = findForwardParent(bundle);
         }
-        if (AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction) {
-          dispatch(AppFlow.fetchFocalProductReleaseTombAva.asyncResetAction());
-          dispatch(AppActionCreator.resetFocalProductReleaseTombAva());
-        }
-        if (exists(productCb)) {
-          let parentBundle: DataProductParent|undefined;
-          const bundle: DataProductBundle|undefined = findBundle(
-            bundlesCb,
-            (productCb as DataProduct).productCode,
-          );
-          if (bundle) {
-            parentBundle = findForwardParent(bundle);
-          }
-          dispatch(AppFlow.fetchFocalProduct.asyncAction({
-            productCodes: parentBundle
-              ? [(productCb as DataProduct).productCode, parentBundle.parentProductCode]
-              : [(productCb as DataProduct).productCode],
-            release: releaseCb?.release,
-          }));
-        }
-        if (exists(siteCb)) {
-          dispatch(AppFlow.fetchFocalSite.asyncAction({
-            siteCode: (siteCb as Site).siteCode,
-            release: releaseCb?.release,
-          }));
-        }
-      })
-    ),
+        dispatch(AppFlow.fetchFocalProduct.asyncAction({
+          productCodes: parentBundle
+            ? [(productCb as DataProduct).productCode, parentBundle.parentProductCode]
+            : [(productCb as DataProduct).productCode],
+          release: releaseCb?.release,
+        }));
+      }
+      if (exists(siteCb)) {
+        dispatch(AppFlow.fetchFocalSite.asyncAction({
+          siteCode: (siteCb as Site).siteCode,
+          release: releaseCb?.release,
+        }));
+      }
+    },
     [dispatch],
   );
 
@@ -178,7 +164,7 @@ const App: React.FC = (): JSX.Element => {
     { name: title },
   ];
   const sidebarContent: JSX.Element = (
-    <React.Fragment>
+    <>
       <SidebarFilter
         title="View By:"
         skeleton={isLoading}
@@ -212,7 +198,7 @@ const App: React.FC = (): JSX.Element => {
           handleChangeCb(selectedProduct, selectedSite, nextRelease, releaseBundles);
         }}
       />
-    </React.Fragment>
+    </>
   );
   let sidebarLinks = [];
   switch (selectedViewMode.value) {
@@ -252,13 +238,13 @@ const App: React.FC = (): JSX.Element => {
       case 'Site':
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <SiteSelect />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <SiteAvailabilitySection />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <LocationsSection />
             </Grid>
           </Grid>
@@ -267,13 +253,13 @@ const App: React.FC = (): JSX.Element => {
       default:
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <DataProductSelect />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <AvailabilitySection />
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <LocationsSection />
             </Grid>
           </Grid>
@@ -310,7 +296,7 @@ const App: React.FC = (): JSX.Element => {
       sidebarLinksAdditionalContent={sidebarContent}
     >
       <Grid container className={classes.infoContainer}>
-        <Grid item xs={12} className={classes.introTextContainer}>
+        <Grid size={{ xs: 12 }} className={classes.introTextContainer}>
           <Typography variant="subtitle1">
             {/* eslint-disable */}
             The availability chart and site map below show the combination of product, site, and month
@@ -325,12 +311,8 @@ const App: React.FC = (): JSX.Element => {
             {/* eslint-enable */}
           </Typography>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <InfoCard
-            classes={{
-              callout: classes.callout,
-              calloutIcon: classes.calloutIcon,
-            }}
             titleContent={(
               <Typography variant="subtitle2" component="div">
                 Learn more about&nbsp;
@@ -354,7 +336,7 @@ const App: React.FC = (): JSX.Element => {
 const AppMemo = (): JSX.Element => (
   useMemo(
     () => (<App />),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
     [useAppSelector()],
   )
 );

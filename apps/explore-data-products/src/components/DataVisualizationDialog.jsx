@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 
-import DialogBase from 'portal-core-components/lib/components/DialogBase';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import DialogBase from '@neonscience/portal-core-components/components/DialogBase';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import ExploreContext from '../ExploreContext';
 
@@ -10,7 +10,12 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const TimeSeriesViewer = React.lazy(() => import('portal-core-components/lib/components/TimeSeriesViewer'));
+const SaeDataViewer = React.lazy(
+  () => import('@neonscience/portal-core-components/components/SaeDataViewer/SaeDataViewer'),
+);
+const TimeSeriesViewer = React.lazy(
+  () => import('@neonscience/portal-core-components/components/TimeSeriesViewer'),
+);
 
 const DataVisualizationDialog = () => {
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -27,8 +32,7 @@ const DataVisualizationDialog = () => {
   const product = products[productCode];
 
   let title = 'Data Visualization';
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  let contents = <></>;
+  let contents = null;
   let appliedDialogBaseClasses;
   const dialogBaseProps = {};
   const open = (
@@ -46,7 +50,13 @@ const DataVisualizationDialog = () => {
           <TimeSeriesViewer productCode={productCode} release={appliedRelease} />
         );
         break;
-
+      case VISUALIZATIONS.SAE_DATA_VIEWER.key:
+        title = `SAE Data Viewer - ${productCode} - ${product.productName}`;
+        dialogBaseProps.nopaper = true;
+        contents = (
+          <SaeDataViewer productCode={productCode} />
+        );
+        break;
       default:
         break;
     }

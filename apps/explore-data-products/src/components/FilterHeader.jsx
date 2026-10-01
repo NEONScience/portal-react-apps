@@ -1,26 +1,25 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Hidden from '@material-ui/core/Hidden';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import ClearIcon from '@material-ui/icons/Clear';
-import FilterIcon from '@material-ui/icons/FilterList';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import FilterIcon from '@mui/icons-material/FilterList';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../ExploreContext';
 
 import { FILTER_LABELS } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 600,
     [theme.breakpoints.up('md')]: {
       marginBottom: theme.spacing(2),
     },
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: theme.spacing(1.5),
       fontSize: '1.3rem',
     },
@@ -37,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterHeader = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const { filtersVisible, filtersApplied } = state;
@@ -60,10 +59,10 @@ const FilterHeader = () => {
 
   return (
     <>
-      <Hidden smDown>
+      <Box sx={{ display: { xs: 'none', sm: 'none', md: 'block' } }}>
         {title}
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ flex: 1 }}>
             {title}
@@ -76,12 +75,15 @@ const FilterHeader = () => {
             placement="left"
             title={`${filtersVisible ? 'Collapse' : 'Expand'} filters`}
           >
-            <IconButton onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}>
+            <IconButton
+              onClick={() => { dispatch({ type: 'toggleFilterVisiblity' }); }}
+              size="large"
+            >
               {filtersVisible ? <ClearIcon /> : <FilterIcon />}
             </IconButton>
           </Tooltip>
         </div>
-      </Hidden>
+      </Box>
     </>
   );
 };

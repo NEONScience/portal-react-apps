@@ -1,15 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
 
-import Typography from '@material-ui/core/Typography';
-
-import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DetailTooltip from './DetailTooltip';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   div: {
     marginBottom: theme.spacing(3),
   },
@@ -18,9 +17,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Detail = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  title: null,
+  tooltip: null,
+  content: null,
+  seleniumKey: null,
+  children: null,
+};
 
+const Detail = (inProps) => {
+  const { classes, theme } = useStyles();
+  const props = resolveProps(defaultProps, inProps);
   const {
     title,
     tooltip,
@@ -41,7 +48,7 @@ const Detail = (props) => {
     ) : children;
 
   const titleStyle = {
-    marginBottom: Theme.spacing(tooltip ? 0.5 : 1),
+    marginBottom: theme.spacing(tooltip ? 0.5 : 1),
   };
 
   return (
@@ -70,14 +77,6 @@ Detail.propTypes = {
   ]),
   seleniumKey: PropTypes.string,
   children: PropTypes.node,
-};
-
-Detail.defaultProps = {
-  title: null,
-  tooltip: null,
-  content: null,
-  seleniumKey: null,
-  children: null,
 };
 
 export default Detail;

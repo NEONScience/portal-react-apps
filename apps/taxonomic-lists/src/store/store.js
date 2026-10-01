@@ -1,16 +1,13 @@
-import {
-  createStore,
-  applyMiddleware
-} from "redux";
+import { configureStore } from '@reduxjs/toolkit';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
-import dataApp from "../reducers/reducer";
-import { getTaxonApiPath } from "../api/taxon";
-import { DEFAULT_TAXON_TYPE } from "../api/taxonTypes";
-import { getColumns } from "../api/dataTableColumns";
+import dataApp from '../reducers/reducer';
+import { getTaxonApiPath } from '../api/taxon';
+import { DEFAULT_TAXON_TYPE } from '../api/taxonTypes';
+import { getColumns } from '../api/dataTableColumns';
 
-let dataStore = {
+const dataStore = {
   taxonTypes: [],
   locations: [],
   taxonColumns: getColumns(),
@@ -18,20 +15,24 @@ let dataStore = {
   taxonQuery: {
     rootApiUrl: getTaxonApiPath(),
     taxonTypeCode: DEFAULT_TAXON_TYPE,
-    locationName: null
-  }
+    locationName: null,
+  },
 };
 
-let middlewares = [];
-if (NeonEnvironment.isDevEnv) {
-  const { logger } = require("redux-logger");
-  middlewares.push(logger);
-}
+const store = configureStore({
+  reducer: dataApp,
+  preloadedState: dataStore,
+  middleware: (getDefaultMiddleware) => {
+    const middleware = getDefaultMiddleware({
+      thunk: false,
+    });
+    if (NeonEnvironment.isDevEnv) {
+      // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+      const { logger } = require('redux-logger');
+      return middleware.concat(logger);
+    }
+    return middleware;
+  },
+});
 
-let store = createStore(
-  dataApp,
-  dataStore,
-  applyMiddleware(...middlewares)
-);
-
-export { store };
+export default store;

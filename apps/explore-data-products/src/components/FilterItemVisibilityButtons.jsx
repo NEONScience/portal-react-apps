@@ -1,23 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import ExpandIcon from '@material-ui/icons/Add';
-import CollapseIcon from '@material-ui/icons/Remove';
-import ShowSelectedIcon from '@material-ui/icons/CheckBox';
+import Button from '@mui/material/Button';
+import ExpandIcon from '@mui/icons-material/Add';
+import CollapseIcon from '@mui/icons-material/Remove';
+import ShowSelectedIcon from '@mui/icons-material/CheckBox';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   button: {
     margin: theme.spacing(1, 1, 0, 0),
   },
   container: {
-    marginTop: Theme.spacing(0.5),
-    marginBottom: Theme.spacing(5),
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(5),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -25,8 +25,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterItemVisibilityButtons = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  totalItemCount: 0,
+  selectedItemCount: 0,
+};
+
+const FilterItemVisibilityButtons = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
+  const { classes } = useStyles();
   const {
     filterKey,
     currentState,
@@ -104,17 +110,12 @@ const FilterItemVisibilityButtons = (props) => {
 
 FilterItemVisibilityButtons.propTypes = {
   filterKey: PropTypes.oneOf(Object.keys(FILTER_KEYS)).isRequired,
-  currentState: PropTypes.oneOf(Object.keys(FILTER_ITEM_VISIBILITY_STATES)).isRequired,
-  totalItemCount: PropTypes.number,
-  selectedItemCount: PropTypes.number,
+  currentState: PropTypes.oneOf(Object.values(FILTER_ITEM_VISIBILITY_STATES)).isRequired,
+  totalItemCount: PropTypes.number.isRequired,
+  selectedItemCount: PropTypes.number.isRequired,
   onExpandFilterItems: PropTypes.func.isRequired,
   onCollapseFilterItems: PropTypes.func.isRequired,
   onShowSelectedFilterItems: PropTypes.func.isRequired,
-};
-
-FilterItemVisibilityButtons.defaultProps = {
-  totalItemCount: 0,
-  selectedItemCount: 0,
 };
 
 export default FilterItemVisibilityButtons;

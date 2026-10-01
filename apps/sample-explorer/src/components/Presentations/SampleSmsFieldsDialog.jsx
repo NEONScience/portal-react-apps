@@ -1,94 +1,96 @@
 import React, { useReducer } from 'react';
+
+import { fetch as fetchPolyfill } from 'whatwg-fetch';
+
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
+
+import CancelIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
+
+import fileDownload from 'js-file-download';
+import { Parser } from 'json2csv';
+
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+
 import DataGrid from '../DataGrid/DataGrid';
-import { fetch as fetchPolyfill } from "whatwg-fetch";
-
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-
-import CancelIcon from '@material-ui/icons/Close';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
-
-import NeonApi from "portal-core-components/lib/components/NeonApi";
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
-
-const fileDownload = require("js-file-download");
-const { Parser } = require("json2csv");
 
 const COLUMN_DEFS = [
   {
-    headerName: "SMS Field Name",
-    field: "name",
+    headerName: 'SMS Field Name',
+    field: 'name',
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
   {
-    headerName: "SMS Field Description",
-    field: "description",
+    headerName: 'SMS Field Description',
+    field: 'description',
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
   {
-    headerName: "SMS Field Ontology Mapping",
-    field: "ontologyMapping",
+    headerName: 'SMS Field Ontology Mapping',
+    field: 'ontologyMapping',
     sortable: true,
     resizable: true,
-    filter: true
+    filter: true,
   },
 ];
 
 const downloadFields = (fields, dispatch) => {
-  let smsFieldHeaders = [
-    "SMS Field Name",
-    "SMS Field Description",
-    "SMS Field Ontology Mapping",
+  const smsFieldHeaders = [
+    'SMS Field Name',
+    'SMS Field Description',
+    'SMS Field Ontology Mapping',
   ];
   dispatch({ type: 'downloading' });
-  let fieldsCsvData = [];
+  const fieldsCsvData = [];
   fields.forEach((value) => {
     fieldsCsvData.push({
-      "SMS Field Name": value.name,
-      "SMS Field Description": value.description,
-      "SMS Field Ontology Mapping": value.ontologyMapping,
+      'SMS Field Name': value.name,
+      'SMS Field Description': value.description,
+      'SMS Field Ontology Mapping': value.ontologyMapping,
     });
   });
   try {
-    let fieldsParser = new Parser({ fields: smsFieldHeaders });
-    let fieldsCsvResult = fieldsParser.parse(fieldsCsvData);
-    fileDownload(fieldsCsvResult, "Sample-Explorer-SMS-Fields.csv");
+    const fieldsParser = new Parser({ fields: smsFieldHeaders });
+    const fieldsCsvResult = fieldsParser.parse(fieldsCsvData);
+    fileDownload(fieldsCsvResult, 'Sample-Explorer-SMS-Fields.csv');
     dispatch({ type: 'downloaded' });
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
     dispatch({ type: 'downloadError' });
   }
 };
 
 const checkStatus = (response) => {
-  if (typeof response === "undefined") {
-    let error = new Error("Error occurred");
+  if (typeof response === 'undefined') {
+    const error = new Error('Error occurred');
     error.response = null;
     throw error;
   }
   if (response.status >= 200 && response.status < 300) {
     return response;
-  } else {
-    let error = new Error(response.statusText);
-    error.response = response;
-    throw error;
   }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
 };
 
 const getFetch = () => {
   let fetchFunc = fetch;
-  if (typeof fetchFunc === "undefined") {
+  if (typeof fetchFunc === 'undefined') {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
@@ -96,22 +98,20 @@ const getFetch = () => {
 
 const fetchFields = (dispatch) => {
   const fetchInit = {
-    method: "GET",
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
+    method: 'GET',
     headers: {
-      Accept: "application/json",
-      ...NeonApi.getApiTokenHeader()
+      Accept: 'application/json',
+      ...NeonApi.getApiTokenHeader(),
     },
   };
   const url = `${NeonEnvironment.getFullApiPath('samples')}/supported-sms-fields`;
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
   dispatch({ type: 'fetchingFields' });
   fetchFunc(url, fetchInit)
     .then(checkStatus)
     .then((response) => {
       if (!response.ok) {
-        var error = new Error(response.statusText);
+        const error = new Error(response.statusText);
         error.response = response;
         throw error;
       }
@@ -127,12 +127,14 @@ const fetchFields = (dispatch) => {
       dispatch({ type: 'fetchCompleted', fields });
     })
     .catch((error) => {
+      // eslint-disable-next-line no-console
       console.error(error);
       dispatch({ type: 'fetchError' });
     });
 };
 
 const SampleSmsFieldsDialog = () => {
+  const theme = useTheme();
   const initialState = {
     dialogOpen: false,
     fields: [],
@@ -140,7 +142,7 @@ const SampleSmsFieldsDialog = () => {
     isErrorState: false,
     isDownloading: false,
   };
-  const reducer = (prevState, action) =>{
+  const reducer = (prevState, action) => {
     const next = { ...prevState };
     switch (action.type) {
       case 'dialogOpen':
@@ -179,14 +181,14 @@ const SampleSmsFieldsDialog = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const renderErrors = () => {
     if (!state.isErrorState) {
-      return <React.Fragment />;
+      return null;
     }
     return (
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Alert
             severity="error"
-            style={{ margin: Theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 3, 0), whiteSpace: 'nowrap' }}
             data-selenium="download-sms-fields-dialog.error"
           >
             <AlertTitle>Error</AlertTitle>
@@ -197,9 +199,9 @@ const SampleSmsFieldsDialog = () => {
     );
   };
   return (
-    <div style={{ margin: Theme.spacing(0, 3, 3, 3) }}>
+    <div style={{ margin: theme.spacing(0, 3, 3, 3) }}>
       <Button
-        style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+        style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
         variant="outlined"
         color="primary"
         data-selenium="download-sms-fields-list-button"
@@ -209,7 +211,7 @@ const SampleSmsFieldsDialog = () => {
         }}
       >
         Download SMS Fields
-        <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+        <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
       </Button>
       <Dialog
         fullWidth
@@ -235,7 +237,7 @@ const SampleSmsFieldsDialog = () => {
         </DialogContent>
         <DialogActions>
           <Button
-            style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
             color="primary"
             variant="outlined"
             onClick={() => {
@@ -243,10 +245,10 @@ const SampleSmsFieldsDialog = () => {
             }}
           >
             Close
-            <CancelIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <CancelIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
           <Button
-            style={{ margin: Theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
+            style={{ margin: theme.spacing(0, 3, 2, 0), whiteSpace: 'nowrap' }}
             color="primary"
             variant="contained"
             disabled={state.isErrorState || (state.fields.length <= 0)}
@@ -254,7 +256,7 @@ const SampleSmsFieldsDialog = () => {
             data-selenium="download-sms-fields-dialog-button"
           >
             Download
-            <DownloadIcon fontSize="small" style={{ marginLeft: Theme.spacing(1) }} />
+            <DownloadIcon fontSize="small" style={{ marginLeft: theme.spacing(1) }} />
           </Button>
         </DialogActions>
       </Dialog>

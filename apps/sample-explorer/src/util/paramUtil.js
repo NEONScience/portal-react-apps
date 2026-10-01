@@ -1,11 +1,10 @@
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
 
 /**
  * Determines if the current location has search params
  */
-export const hasParams = () => {
-  return exists(window.location.search) && (window.location.search.length > 0);
-}
+export const hasParams = () => exists(window.location.search)
+  && (window.location.search.length > 0);
 
 /**
  * Parse the URL search params into an object lookup
@@ -20,9 +19,11 @@ export const parseParams = (paramNames) => {
     parseAll = true;
   }
   let params = null;
-  if (typeof URLSearchParams === "undefined") {
-    console.log("using URLSearchParams polyfill");
-    require("url-search-params-polyfill");
+  if (typeof URLSearchParams === 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('using URLSearchParams polyfill');
+    // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+    require('url-search-params-polyfill');
     params = new URLSearchParams(window.location.search);
   } else {
     params = new URLSearchParams(window.location.search);
@@ -31,28 +32,25 @@ export const parseParams = (paramNames) => {
     return {};
   }
 
-  let parsed = {};
-  for (let p of params) {
-    if (!parseAll && (paramNames.indexOf(p[0]) < 0)) {
-      continue;
-    }
+  const parsed = {};
 
-    if (!exists(parsed[p[0]])) {
-      parsed[p[0]] = p[1];
-    } else {
-      if (!Array.isArray(parsed[p[0]])) {
-        let current = parsed[p[0]];
-        parsed[p[0]] = [];
-        parsed[p[0]].push(current);
-        parsed[p[0]].push(p[1]);
+  params.forEach((value, key) => {
+    if (parseAll === true || paramNames.indexOf(key) >= 0) {
+      if (!exists(parsed[key])) {
+        parsed[key] = value;
+      } else if (!Array.isArray(parsed[key])) {
+        const current = parsed[key];
+        parsed[key] = [];
+        parsed[key].push(current);
+        parsed[key].push(value);
       } else {
-        parsed[p[0]].push(p[1]);
+        parsed[key].push(value);
       }
     }
-  }
+  });
 
   return parsed;
-}
+};
 
 /**
  * Applies the key values from the params object to the target object
@@ -65,19 +63,21 @@ export const applyParams = (target, params) => {
     return;
   }
 
-  for (let k in target) {
-    if (target.hasOwnProperty(k) && params.hasOwnProperty(k)) {
-      if (Array.isArray(target[k])) {
-        if (Array.isArray(params[k])) {
-          target[k] = params[k];
+  const updatedTarget = target;
+  Object.keys(updatedTarget).forEach((targetKey) => {
+    if (Object.prototype.hasOwnProperty.call(params, targetKey)) {
+      if (Array.isArray(updatedTarget[targetKey])) {
+        if (Array.isArray(params[targetKey])) {
+          updatedTarget[targetKey] = params[targetKey];
         } else {
-          target[k].push(params[k]);
+          updatedTarget[targetKey].push(params[targetKey]);
         }
       } else {
-        target[k] = params[k];
+        updatedTarget[targetKey] = params[targetKey];
       }
     }
-  }
+  });
 
-  return target;
-}
+  // eslint-disable-next-line consistent-return
+  return updatedTarget;
+};

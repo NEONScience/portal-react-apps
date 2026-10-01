@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
-import Button from '@material-ui/core/Button';
-import Slider from '@material-ui/core/Slider';
+import Button from '@mui/material/Button';
+import Slider from '@mui/material/Slider';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
-import MomentUtils from '@date-io/moment';
 import moment from 'moment';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -17,16 +17,27 @@ import { FILTER_KEYS } from '../../util/filterUtil';
 
 const getYearMonthMoment = (yearMonth) => moment(`${yearMonth}-01`);
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   slider: {
-    width: `calc(100% - ${theme.spacing(6)}px)`,
-    marginLeft: Theme.spacing(3),
-    marginBottom: Theme.spacing(5.5),
+    width: `calc(100% - ${theme.spacing(6)})`,
+    marginLeft: theme.spacing(3),
+    marginBottom: theme.spacing(5.5),
   },
 }));
 
+const dateRangeReducer = (state, action) => {
+  const newState = { ...state };
+  switch (action.type) {
+    case 'setActivelySlidingDateRange':
+      newState.activelySlidingDateRange = action.activelySlidingDateRange;
+      return newState;
+    default:
+      return state;
+  }
+};
+
 const FilterDateRange = () => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -41,24 +52,33 @@ const FilterDateRange = () => {
   const sliderMin = 0;
   const sliderMax = selectableRange.length - 1;
 
+  const [datePickerStartOpen, setDatePickerStartOpen] = useState(false);
+  const [datePickerEndOpen, setDatePickerEndOpen] = useState(false);
+
   // Control the slider but do with local state. Only send slider values through the main reducer
   // when the change is committed (i.e. on mouse up / drag stop)
-  const [activelySlidingDateRange, setActivelySlidingDateRange] = useState([...currentRange]);
+  const initialState = { activelySlidingDateRange: [...currentRange] };
+  const [dateRangeState, dateRangeDispatch] = useReducer(dateRangeReducer, initialState);
   const [activelySliding, setActivelySliding] = useState(false);
-  const sliderValue = activelySlidingDateRange.map((x, i) => (
+  const sliderValue = dateRangeState.activelySlidingDateRange.map((x, i) => (
     selectableRange.indexOf(x || currentRange[i])
   ));
+
   useEffect(() => {
     if ((
-      currentRange[0] !== activelySlidingDateRange[0]
-        || currentRange[1] !== activelySlidingDateRange[1]
+      currentRange[0] !== dateRangeState.activelySlidingDateRange[0]
+        || currentRange[1] !== dateRangeState.activelySlidingDateRange[1]
     ) && !activelySliding) {
-      setActivelySlidingDateRange([...currentRange]);
+      const action = {
+        type: 'setActivelySlidingDateRange',
+        activelySlidingDateRange: [...currentRange],
+      };
+      dateRangeDispatch(action);
     }
   }, [
     activelySliding,
-    activelySlidingDateRange,
-    setActivelySlidingDateRange,
+    dateRangeState,
+    dateRangeDispatch,
     currentRange,
   ]);
 
@@ -129,6 +149,12 @@ const FilterDateRange = () => {
   };
 
   // Render active date range filter with slider and date picker inputs
+  const fromMinDate = getYearMonthMoment(selectableRange[sliderMin]);
+  const fromMaxDate = getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])
+    .subtract(1, 'months');
+  const throughMinDate = getYearMonthMoment(currentRange[0] || selectableRange[sliderMin])
+    .add(1, 'months');
+  const throughMaxDate = getYearMonthMoment(selectableRange[sliderMax]);
   return (
     <FilterBase
       {...filterBaseProps}
@@ -145,12 +171,18 @@ const FilterDateRange = () => {
         marks={marks}
         value={sliderValue}
         valueLabelFormat={(x) => selectableRange[x]}
-        onMouseDown={() => { setActivelySliding(true); }}
+        onPointerDown={() => { setActivelySliding(true); }}
         onChange={(event, values) => {
-          setActivelySlidingDateRange([
+          const sliderRange = [
             Math.max(values[0], sliderMin),
             Math.min(values[1], sliderMax),
-          ].map((x) => selectableRange[x]));
+          ];
+          const mappedDisplayRange = sliderRange.map((x) => selectableRange[x]);
+          const action = {
+            type: 'setActivelySlidingDateRange',
+            activelySlidingDateRange: mappedDisplayRange,
+          };
+          dateRangeDispatch(action);
         }}
         onChangeCommitted={(event, values) => {
           setActivelySliding(false);
@@ -164,36 +196,60 @@ const FilterDateRange = () => {
           });
         }}
       />
-      <MuiPickersUtilsProvider utils={MomentUtils}>
+      <LocalizationProvider dateAdapter={AdapterMoment}>
         <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.from-input"
+          open={datePickerStartOpen}
           inputVariant="outlined"
           margin="dense"
           orientation="portrait"
           value={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin])}
           onChange={(value) => handleChangeDatePicker(0, value)}
+          onOpen={() => setDatePickerStartOpen(true)}
+          onClose={() => setDatePickerStartOpen(false)}
           views={['month', 'year']}
           label="From"
           openTo="month"
-          minDate={getYearMonthMoment(selectableRange[sliderMin])}
-          maxDate={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax]).subtract(1, 'months')}
-          style={{ width: '100%', marginBottom: Theme.spacing(2) }}
+          minDate={fromMinDate}
+          maxDate={fromMaxDate}
+          slotProps={{
+            textField: {
+              size: 'small',
+              style: {
+                marginBottom: theme.spacing(2),
+                width: '100%',
+              },
+              onClick: () => setDatePickerStartOpen(true),
+            },
+          }}
         />
         <DatePicker
           data-selenium="browse-data-products-page.filters.date-range.through-input"
+          open={datePickerEndOpen}
           inputVariant="outlined"
           margin="dense"
           orientation="portrait"
           value={getYearMonthMoment(currentRange[1] || selectableRange[sliderMax])}
           onChange={(value) => handleChangeDatePicker(1, value)}
+          onOpen={() => setDatePickerEndOpen(true)}
+          onClose={() => setDatePickerEndOpen(false)}
           views={['month', 'year']}
           label="Through"
           openTo="month"
-          minDate={getYearMonthMoment(currentRange[0] || selectableRange[sliderMin]).add(1, 'months')}
-          maxDate={getYearMonthMoment(selectableRange[sliderMax])}
-          style={{ width: '100%' }}
+          minDate={throughMinDate}
+          maxDate={throughMaxDate}
+          slotProps={{
+            textField: {
+              size: 'small',
+              style: {
+                marginBottom: theme.spacing(2),
+                width: '100%',
+              },
+              onClick: () => setDatePickerEndOpen(true),
+            },
+          }}
         />
-      </MuiPickersUtilsProvider>
+      </LocalizationProvider>
     </FilterBase>
   );
 };

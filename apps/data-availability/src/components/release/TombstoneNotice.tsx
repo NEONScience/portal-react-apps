@@ -1,23 +1,22 @@
-import React from 'react';
+import React, { type JSX } from 'react';
 import { useSelector } from 'react-redux';
 
-import { makeStyles, Theme as MuiTheme } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import Theme from 'portal-core-components/lib/components/Theme';
-import { exists } from 'portal-core-components/lib/util/typeUtil';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { NeonTheme } from '@neonscience/portal-core-components/components/Theme/types';
 
 import AppStateSelector from '../../selectors/app';
-import { StylesHook } from '../../types/styles';
 import { TombstoneNoticeState } from '../states/AppStates';
 import { DataProductReleaseDoi } from '../../types/store';
 
-const useStyles: StylesHook = makeStyles((theme: MuiTheme) => ({
+const useStyles = makeStyles()((theme: NeonTheme) => ({
   doiList: {
     width: '100%',
   },
@@ -30,14 +29,14 @@ const useTombstoneNoticdSelector = (): TombstoneNoticeState => useSelector(
   AppStateSelector.tombstoneNotice,
 );
 
-const TombstoneNotice: React.FC = (): JSX.Element => {
+const TombstoneNotice: React.FC = (): JSX.Element | null => {
   const state: TombstoneNoticeState = useTombstoneNoticdSelector();
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { isTombstoned, focalProductReleaseDoi }: TombstoneNoticeState = state;
   if (!(isTombstoned === true)
       || !exists(focalProductReleaseDoi)
       || (Array.isArray(focalProductReleaseDoi) && (focalProductReleaseDoi.length <= 0))) {
-    return <></>;
+    return null;
   }
   let citationReleases: DataProductReleaseDoi[] = [];
   if (!Array.isArray(focalProductReleaseDoi)) {
@@ -54,10 +53,10 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
       }
       const tombstoneNote = (
         <>
-          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-disable react/jsx-one-expression-per-line */}
           <b>{citationRelease.release}</b> of this data product
           {doiDisplay} is no longer available for download.
-          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-enable react/jsx-one-expression-per-line */}
         </>
       );
       return (
@@ -66,7 +65,7 @@ const TombstoneNotice: React.FC = (): JSX.Element => {
           disableGutters
           key={`TombstonedDoiUrlKey-${citationRelease.url}`}
           alignItems="flex-start"
-          ContainerComponent="div"
+          slots={{ root: 'div' }}
         >
           <ListItemText
             primary={(

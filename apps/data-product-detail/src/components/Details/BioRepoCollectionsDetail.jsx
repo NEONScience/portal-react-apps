@@ -1,22 +1,21 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
+import Tooltip from '@mui/material/Tooltip';
 
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-import { existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   list: {
     padding: theme.spacing(0),
     marginTop: theme.spacing(-1),
@@ -24,12 +23,16 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: '440px',
     overflowY: 'auto',
   },
+  listItem: {
+    padding: theme.spacing(0),
+  },
   listItemLink: {
     borderRadius: theme.spacing(0.5),
     border: '0.5px solid #ffffff00',
     '&:hover': {
       border: `0.5px solid ${theme.palette.primary.main}`,
     },
+    paddingRight: theme.spacing(6),
   },
   listItemLinkSecondary: {
     '& p': {
@@ -37,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: 'underline',
       marginTop: theme.spacing(0.5),
       '&:hover': {
-        color: Theme.colors.LIGHT_BLUE[400],
+        color: theme.colors.LIGHT_BLUE[400],
       },
     },
   },
@@ -62,7 +65,7 @@ const downloadCollection = (url) => {
 };
 
 const BioRepoCollectionsDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);
   const { biorepositoryCollections: collections } = product;
@@ -86,30 +89,33 @@ const BioRepoCollectionsDetail = () => {
           return (
             <ListItem
               key={`${collectionCode}-${collectionName}`}
-              className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
-              component="a"
-              href={collectionContentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              button
-            >
-              <ListItemText primary={collectionName} secondary={collectionCode} />
-              {!showDownload ? null : (
-                <ListItemSecondaryAction>
-                  <Tooltip
-                    style={{ flex: 0 }}
-                    placement="left"
-                    title="Download collection"
+              className={`${classes.listItem}`}
+              secondaryAction={!showDownload ? null : (
+                <Tooltip
+                  style={{ flex: 0 }}
+                  placement="left"
+                  title="Download collection"
+                >
+                  <IconButton
+                    color="primary"
+                    onClick={() => { downloadCollection(collectionDownloadUrl); }}
+                    size="large"
                   >
-                    <IconButton
-                      color="primary"
-                      onClick={() => { downloadCollection(collectionDownloadUrl); }}
-                    >
-                      <DownloadIcon />
-                    </IconButton>
-                  </Tooltip>
-                </ListItemSecondaryAction>
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
               )}
+            >
+              <ListItemButton
+                className={`${classes.listItemLink} ${classes.listItemLinkSecondary}`}
+                component="a"
+                href={collectionContentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                button
+              >
+                <ListItemText primary={collectionName} secondary={collectionCode} />
+              </ListItemButton>
             </ListItem>
           );
         })}

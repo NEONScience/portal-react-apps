@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 
-import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
-import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
+import ComponentErrorBoundary from '@neonscience/portal-core-components/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from '@neonscience/portal-core-components/components/Error/CustomComponentFallback';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import DataProductContext from '../DataProductContext';
 
@@ -23,7 +24,16 @@ import KeywordsDetail from '../Details/KeywordsDetail';
 import TaxonDetail from '../Details/TaxonDetail';
 import BioRepoCollectionsDetail from '../Details/BioRepoCollectionsDetail';
 
-const AboutSectionTextComponent = (props) => {
+const DESIGN_DESCRIPTION_TOOLTIP = `
+More information about the science design can be found in this data product's documentation.
+`;
+
+const AboutSectionTextComponentDefaultProps = {
+  content: null,
+};
+
+const AboutSectionTextComponent = (inProps) => {
+  const props = resolveProps(AboutSectionTextComponentDefaultProps, inProps);
   const { content } = props;
   return (
     <Typography variant="body2" component="p">
@@ -33,9 +43,6 @@ const AboutSectionTextComponent = (props) => {
 };
 AboutSectionTextComponent.propTypes = {
   content: PropTypes.string,
-};
-AboutSectionTextComponent.defaultProps = {
-  content: null,
 };
 
 const MarkdownFallbackComponent = (props) => ((
@@ -53,7 +60,7 @@ const AboutSection = (props) => {
     <Section {...props}>
       <Grid container spacing={3}>
 
-        <Grid item xs={12} md={7} lg={8}>
+        <Grid size={{ xs: 12, md: 7, lg: 8 }}>
           <Detail
             title="Description"
             content={(
@@ -107,7 +114,7 @@ const AboutSection = (props) => {
           <CitationDetail />
         </Grid>
 
-        <Grid item xs={12} md={5} lg={4}>
+        <Grid size={{ xs: 12, md: 5, lg: 4 }}>
           <IdentifierDetail />
           <ThemesDetail />
           <Detail
@@ -120,7 +127,7 @@ const AboutSection = (props) => {
           <TaxonDetail dataProductCode={product.productCode} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Detail
             title="Study Description"
             content={(
@@ -139,12 +146,14 @@ const AboutSection = (props) => {
           />
           <Detail
             title="Design Description"
-            tooltip="More information about the science design can be found in this data product's documentation."
+            tooltip={DESIGN_DESCRIPTION_TOOLTIP}
             content={(
               <ComponentErrorBoundary
                 // eslint-disable-next-line react/no-unstable-nested-components
                 fallbackComponent={() => ((
-                  <MarkdownFallbackComponent content={product.productDesignDescription || '_n/a_'} />
+                  <MarkdownFallbackComponent
+                    content={product.productDesignDescription || '_n/a_'}
+                  />
                 ))}
                 onReset={() => { /* noop for boundary reset */ }}
               >

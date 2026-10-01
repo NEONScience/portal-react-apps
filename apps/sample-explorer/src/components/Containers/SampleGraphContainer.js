@@ -1,26 +1,23 @@
-import { connect } from "react-redux";
-import SampleGraphPresentation from "../Presentations/SampleGraphPresentation";
+import { legacy_connect as connect } from 'react-redux';
+import SampleGraphPresentation from '../Presentations/SampleGraphPresentation';
 
-import { querySample } from "../../util/fetchUtil";
+import { querySample } from '../../util/fetchUtil';
 
-const mapStateToProps = (state) => {
-  return {
-    sampleUuid: state.sampleUuid,
-    graphData: state.graphData,
-  };
-}
+const mapStateToProps = (state) => ({
+  sampleUuid: state.sampleUuid,
+  graphData: state.graphData,
+  visitedSamples: state.visitedSamples,
+});
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onQueryClick: (url, cacheControl, headers) => {
-      dispatch(querySample(url, cacheControl, headers));
-    }
-  };
-}
+const mapDispatchToProps = (dispatch) => ({
+  onQueryClick: (url, cacheControl, headers) => {
+    dispatch(querySample(url, cacheControl, headers));
+  },
+});
 
 const SampleGraphContainer = connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(SampleGraphPresentation);
 
 export default SampleGraphContainer;

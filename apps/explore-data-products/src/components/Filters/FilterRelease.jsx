@@ -1,25 +1,24 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
+import IconButton from '@mui/material/IconButton';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
 
-import ReleaseFilter from 'portal-core-components/lib/components/ReleaseFilter';
-import Theme from 'portal-core-components/lib/components/Theme';
+import ReleaseFilter from '@neonscience/portal-core-components/components/ReleaseFilter';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
 
 import { FILTER_KEYS, FILTER_LABELS } from '../../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   title: {
     fontWeight: 500,
   },
@@ -31,8 +30,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterRelease = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterRelease = (inProps) => {
+  const { classes, theme } = useStyles();
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -47,25 +51,32 @@ const FilterRelease = (props) => {
   const selected = filterValues[filterKey];
 
   const releasesLink = (
-    <Link href={RouteService.getDataRevisionsReleasePath()} target="_blank">
+    <Link
+      href={RouteService.getDataRevisionsReleasePath()}
+      target="_blank"
+    >
       Data Product Revisions and Releases
     </Link>
   );
-  /* eslint-disable react/jsx-one-expression-per-line */
+
   const tooltip = (
     <div>
       A data release is a set of data files that is static (unchanging), always available to end
-      users, and citable. See {releasesLink} for more details.
+      users, and citable. See
+      {' '}
+      {releasesLink}
+      {' '}
+      for more details.
     </div>
   );
-  /* eslint-enable react/jsx-one-expression-per-line */
+
   const title = (
     <div className={classes.titleContainer}>
       <Typography variant="h5" component="h3" className={classes.title}>
         {FILTER_LABELS[filterKey]}
       </Typography>
-      <Tooltip placement="right" title={tooltip} interactive>
-        <IconButton size="small" aria-label={tooltip} style={{ marginLeft: Theme.spacing(0.5) }}>
+      <Tooltip placement="right" title={tooltip}>
+        <IconButton size="small" aria-label={tooltip} style={{ marginLeft: theme.spacing(0.5) }}>
           <InfoIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -98,10 +109,6 @@ const FilterRelease = (props) => {
 
 FilterRelease.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterRelease.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterRelease;

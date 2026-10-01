@@ -1,41 +1,39 @@
-/* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import CopyIcon from '@material-ui/icons/Assignment';
-import DownloadIcon from '@material-ui/icons/SaveAlt';
+import CopyIcon from '@mui/icons-material/Assignment';
+import DownloadIcon from '@mui/icons-material/SaveAlt';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import CitationService from 'portal-core-components/lib/service/CitationService';
+import CitationService from '@neonscience/portal-core-components/service/CitationService';
 import DataCiteService, {
   CitationDownloadType,
-} from 'portal-core-components/lib/service/DataCiteService';
-import RouteService from 'portal-core-components/lib/service/RouteService';
+} from '@neonscience/portal-core-components/service/DataCiteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import PrototypeContext from '../PrototypeContext';
 
 const { usePrototypeContextState } = PrototypeContext;
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
   citationText: {
     fontFamily: 'monospace',
   },
 }));
 
 const Citation = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const { uuid } = props;
   const [state] = usePrototypeContextState();
@@ -72,7 +70,11 @@ const Citation = (props) => {
   return (
     <div>
       <Typography variant="subtitle2" gutterBottom>
-        Please use this citation in your publications. See {dataPolicyLink} for more info.
+        Please use this citation in your publications. See
+        {' '}
+        {dataPolicyLink}
+        {' '}
+        for more info.
       </Typography>
       <Card>
         <CardContent>
@@ -81,16 +83,16 @@ const Citation = (props) => {
           </Typography>
         </CardContent>
         <CardActions>
-          <Tooltip
-            placement="bottom-start"
-            title="Click to copy the above citation to the clipboard"
-          >
-            <CopyToClipboard text={citationText}>
+          <CopyToClipboard text={citationText}>
+            <Tooltip
+              placement="bottom-start"
+              title="Click to copy the above citation to the clipboard"
+            >
               <Button size="small" color="primary" variant="outlined" startIcon={<CopyIcon />}>
                 Copy
               </Button>
-            </CopyToClipboard>
-          </Tooltip>
+            </Tooltip>
+          </CopyToClipboard>
           {DataCiteService.getPrototypeDatasetFormats().map((format) => (
             <Tooltip
               key={format.shortName}

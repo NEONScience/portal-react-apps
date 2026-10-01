@@ -1,17 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Typography from '@material-ui/core/Typography';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
-    width: `calc(100% + ${theme.spacing(2)}px)`,
+    width: `calc(100% + ${theme.spacing(2)})`,
     marginLeft: theme.spacing(-2),
     marginRight: 'unset',
     marginBottom: theme.spacing(1),
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
     color: theme.palette.grey[700],
     fontSize: '0.7rem',
+    backgroundColor: 'transparent',
   },
   title: {
     fontSize: '0.85rem',
@@ -39,8 +40,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const FilterCheckBox = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  count: null,
+  countTitle: null,
+  subtitle: null,
+  checked: false,
+};
+
+const FilterCheckBox = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
+  const { classes, theme } = useStyles();
   const {
     name,
     value,
@@ -82,7 +91,7 @@ const FilterCheckBox = (props) => {
       label={(
         showCount ? (
           <div className={classes.countLabel}>
-            <div style={{ paddingRight: Theme.spacing(1) }}>{label}</div>
+            <div style={{ paddingRight: theme.spacing(1) }}>{label}</div>
             <Chip
               className={classes.chip}
               variant="outlined"
@@ -114,13 +123,6 @@ FilterCheckBox.propTypes = {
   checked: PropTypes.bool,
   onApplyFilter: PropTypes.func.isRequired,
   onResetFilter: PropTypes.func.isRequired,
-};
-
-FilterCheckBox.defaultProps = {
-  count: null,
-  countTitle: null,
-  subtitle: null,
-  checked: false,
 };
 
 export default FilterCheckBox;

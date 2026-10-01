@@ -1,23 +1,23 @@
-import React, { useRef } from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import Theme from 'portal-core-components/lib/components/Theme';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import { QUERY_TYPE } from "../../util/queryUtil";
+import { QUERY_TYPE } from '../../util/queryUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   formControl: {
-    [theme.breakpoints.down('xs')]: {
+    [theme.breakpoints.down('sm')]: {
       width: '100%',
     },
     [theme.breakpoints.up('sm')]: {
-      minWidth: '400px'
+      minWidth: '400px',
     },
   },
 }));
@@ -37,9 +37,7 @@ const QueryBySampleTagAndClass = (props) => {
     },
   } = props;
 
-  const classes = useStyles(Theme);
-
-  const labelRef = useRef(null);
+  const { classes } = useStyles();
 
   if (queryType !== QUERY_TYPE.SAMPLE_TAG) { return null; }
 
@@ -49,15 +47,15 @@ const QueryBySampleTagAndClass = (props) => {
       className={classes.formControl}
       error={/sample class/i.test(queryErrorStr)}
     >
-      <InputLabel id="select-sample-class-label" ref={labelRef}>Sample Class</InputLabel>
+      <InputLabel id="select-sample-class-label">Sample Class</InputLabel>
       <Select
         labelId="select-sample-class-label"
-        labelWidth={labelRef.current ? labelRef.current.offsetWidth + 8 : 0}
+        label="Sample Class"
         data-gtm="sample-search-form.select-sample-class"
         data-selenium="sample-search-form.select-sample-class"
         value={sampleClass || ''}
         disabled={!sampleClasses.length || queryIsLoading}
-        SelectDisplayProps={sampleClasses.length ? null : { style: { cursor: 'not-allowed' }}}
+        SelectDisplayProps={sampleClasses.length ? null : { style: { cursor: 'not-allowed' } }}
         onChange={(event) => {
           const appliedSampleClass = event.target.value;
           onSetQuerySampleClass(appliedSampleClass);
@@ -68,7 +66,7 @@ const QueryBySampleTagAndClass = (props) => {
           onQueryClick(url, cacheControl);
         }}
       >
-        {sampleClasses.length ? sampleClasses.map(option => (
+        {sampleClasses.length ? sampleClasses.map((option) => (
           <MenuItem key={option} value={option}>{option}</MenuItem>
         )) : (
           <MenuItem value="">--</MenuItem>
@@ -76,6 +74,20 @@ const QueryBySampleTagAndClass = (props) => {
       </Select>
     </FormControl>
   );
+};
+
+QueryBySampleTagAndClass.propTypes = {
+  cacheControl: PropTypes.string.isRequired,
+  onQueryClick: PropTypes.func.isRequired,
+  onSetQuerySampleClass: PropTypes.func.isRequired,
+  query: PropTypes.shape({
+    queryType: PropTypes.string.isRequired,
+    queryErrorStr: PropTypes.string,
+    sampleTag: PropTypes.string,
+    sampleClass: PropTypes.string,
+    sampleClasses: PropTypes.arrayOf(PropTypes.string),
+    queryIsLoading: PropTypes.bool,
+  }).isRequired,
 };
 
 export default QueryBySampleTagAndClass;

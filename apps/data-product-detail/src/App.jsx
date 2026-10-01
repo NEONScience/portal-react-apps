@@ -1,16 +1,24 @@
-/* eslint-disable import/no-unresolved */
 import React from 'react';
 
-import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
+import NeonJsonLd from '@neonscience/portal-core-components/components/NeonJsonLd';
+import NeonRouter from '@neonscience/portal-core-components/components/NeonRouter';
+import NeonThemeProvider from '@neonscience/portal-core-components/components/Theme/NeonThemeProvider';
 
 import DataProductContext from './components/DataProductContext';
 import DataProductPage from './components/DataProductPage';
+
+const [productCode, release] = DataProductContext.getProductCodeAndReleaseFromURL();
+if (productCode) {
+  NeonJsonLd.injectProduct(productCode, release);
+}
 
 export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <DataProductContext.Provider>
-        <DataProductPage />
+        <NeonThemeProvider>
+          <DataProductPage />
+        </NeonThemeProvider>
       </DataProductContext.Provider>
     </NeonRouter>
   );

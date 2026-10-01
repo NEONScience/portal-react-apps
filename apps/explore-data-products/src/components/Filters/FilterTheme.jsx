@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import Theme from 'portal-core-components/lib/components/Theme';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { useTheme } from '@mui/material/styles';
 
 import ExploreContext from '../../ExploreContext';
 import FilterBase from '../FilterBase';
@@ -10,8 +11,14 @@ import FilterCheckBox from '../FilterCheckBox';
 
 import { FILTER_KEYS } from '../../util/filterUtil';
 
-const FilterTheme = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterTheme = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
+  const theme = useTheme();
 
   const [state, dispatch] = ExploreContext.useExploreContextState();
   const {
@@ -42,7 +49,7 @@ const FilterTheme = (props) => {
             <FilterCheckBox
               name={(
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ margin: Theme.spacing(0.5, 1, 0, 0) }}>
+                  <div style={{ margin: theme.spacing(0.5, 1, 0, 0) }}>
                     <DataThemeIcon theme={filterItem.value} size={3} />
                   </div>
                   <span>
@@ -65,10 +72,6 @@ const FilterTheme = (props) => {
 
 FilterTheme.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterTheme.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterTheme;

@@ -1,18 +1,22 @@
-import React, { useEffect, useRef, Suspense } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  Suspense,
+  useCallback,
+} from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 
-import Skeleton from '@material-ui/lab/Skeleton';
+import Skeleton from '@mui/material/Skeleton';
 
 import debounce from 'lodash/debounce';
 
-import NeonPage from 'portal-core-components/lib/components/NeonPage';
-import Theme from 'portal-core-components/lib/components/Theme';
+import NeonPage from '@neonscience/portal-core-components/components/NeonPage';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import ExploreContext from './ExploreContext';
 
@@ -25,7 +29,7 @@ import { APP_STATUS } from './util/stateUtil';
 
 const DataHeader = React.lazy(() => import('./components/DataHeader'));
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   lazyLoader: {
     margin: theme.spacing(5, 5, 0, 5),
     textAlign: 'center',
@@ -40,7 +44,7 @@ const DEBOUNCE_MILLISECONDS = 100;
 const SCROLL_PADDING = 400;
 
 const ExplorePage = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   // Deconstruct state
   const [state, dispatch] = ExploreContext.useExploreContextState();
@@ -79,24 +83,26 @@ const ExplorePage = (props) => {
 
   // Scroll-based Lazy Rendering Management
   const lazyLoaderRef = useRef(null);
-  const scrollHandler = debounce(() => {
-    if (productOrder.length <= scrollCutoff) { return; }
-    // Y-offset for the TOP of the area in view
-    const scrollOffset = (
-      window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
-    );
-    // Y-offset for the BOTTOM of the area in view
-    const scrollBottom = window.innerHeight + scrollOffset;
-    // Y-offset for the absolute bottom of the document
-    const documentBottom = document.documentElement.offsetHeight;
-    // Y-offset for the TOP of the lazy loader
-    const lazyLoaderOffset = lazyLoaderRef.current
-      ? lazyLoaderRef.current.offsetTop
-      : documentBottom - SCROLL_PADDING;
-    if (scrollBottom > lazyLoaderOffset) {
-      dispatch({ type: 'incrementScrollCutoff' });
-    }
-  }, DEBOUNCE_MILLISECONDS);
+  const scrollHandler = useCallback(() => {
+    debounce(() => {
+      if (productOrder.length <= scrollCutoff) { return; }
+      // Y-offset for the TOP of the area in view
+      const scrollOffset = (
+        window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0
+      );
+      // Y-offset for the BOTTOM of the area in view
+      const scrollBottom = window.innerHeight + scrollOffset;
+      // Y-offset for the absolute bottom of the document
+      const documentBottom = document.documentElement.offsetHeight;
+      // Y-offset for the TOP of the lazy loader
+      const lazyLoaderOffset = lazyLoaderRef.current
+        ? lazyLoaderRef.current.offsetTop
+        : documentBottom - SCROLL_PADDING;
+      if (scrollBottom > lazyLoaderOffset) {
+        dispatch({ type: 'incrementScrollCutoff' });
+      }
+    }, DEBOUNCE_MILLISECONDS)();
+  }, [productOrder.length, scrollCutoff, dispatch]);
   useEffect(() => {
     window.addEventListener('scroll', scrollHandler);
     window.addEventListener('resize', scrollHandler);
@@ -124,9 +130,14 @@ const ExplorePage = (props) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });
         },
       }}
+      NeonAuthContextProviderProps={{
+        whenFinal: (neonAuthContextState) => {
+          dispatch({ type: 'storeFinalizedNeonAuthContextState', neonAuthContextState });
+        },
+      }}
     >
       <DataVisualizationDialog />
-      <Suspense fallback={<Skeleton variant="rect" width="100%" height={160} />}>
+      <Suspense fallback={<Skeleton variant="rectangular" width="100%" height={160} />}>
         <DataHeader {...drillProps} />
       </Suspense>
       <PresentationSort {...drillProps} />

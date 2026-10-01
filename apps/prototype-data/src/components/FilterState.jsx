@@ -1,6 +1,7 @@
-/* eslint-disable import/no-unresolved */
 import React, { Suspense } from 'react';
 import PropTypes from 'prop-types';
+
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -9,9 +10,16 @@ import FilterItemVisibilityButtons from './FilterItemVisibilityButtons';
 
 import { FILTER_KEYS, FILTER_ITEM_VISIBILITY_STATES } from '../filterUtil';
 
-const MapSelectionButton = React.lazy(() => import('portal-core-components/lib/components/MapSelectionButton'));
+const MapSelectionButton = React.lazy(
+  () => import('@neonscience/portal-core-components/components/MapSelectionButton'),
+);
 
-const FilterState = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const FilterState = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton } = props;
 
   const [state, dispatch] = PrototypeContext.usePrototypeContextState();
@@ -40,7 +48,10 @@ const FilterState = (props) => {
     onResetFilter,
   };
 
-  const subtitle = `(${filtersApplied.includes(filterKey) ? filterValues[filterKey].length : 'none'} selected)`;
+  const selectedDisplay = filtersApplied.includes(filterKey)
+    ? filterValues[filterKey].length
+    : 'none';
+  const subtitle = `(${selectedDisplay} selected)`;
 
   const byVisibility = (item, idx) => {
     switch (filterItemVisibility[filterKey]) {
@@ -104,10 +115,6 @@ const FilterState = (props) => {
 
 FilterState.propTypes = {
   skeleton: PropTypes.bool,
-};
-
-FilterState.defaultProps = {
-  skeleton: false,
 };
 
 export default FilterState;

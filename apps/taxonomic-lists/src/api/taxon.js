@@ -1,20 +1,16 @@
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
 
-import { taxonTypes } from "./taxonTypes";
+import { taxonTypes } from './taxonTypes';
 
 /**
  * Gets the taxon API endpoint path
  */
-export const getTaxonApiPath = () => {
-  return NeonEnvironment.getFullApiPath('taxonomy');
-}
+export const getTaxonApiPath = () => NeonEnvironment.getFullApiPath('taxonomy');
 
 /**
  * Gets the taxon download API endpoint path
  */
-export const getTaxonDownloadApiPath = () => {
-  return NeonEnvironment.getFullApiPath('taxonomyDownload');
-}
+export const getTaxonDownloadApiPath = () => NeonEnvironment.getFullApiPath('taxonomyDownload');
 
 /**
  * Gets the path for querying data products associated to a taxon type
@@ -23,30 +19,29 @@ export const getTaxonDownloadApiPath = () => {
 export const getTaxonTypeDataProductsApiPath = () => {
   const taxonApiPath = getTaxonApiPath();
   return `${taxonApiPath}/products`;
-}
+};
 
 /**
  * Gets the set of taxon types for selection
  */
-export const getTaxonTypes = () => {
-  return taxonTypes;
-}
+export const getTaxonTypes = () => taxonTypes;
 
 /**
  * Gets the display label for the specified taxon type code
  * @param {*} taxonTypeCode
  */
 export const getTaxonTypeLabel = (taxonTypeCode) => {
-  let taxonType = taxonTypes.reduce((acc, taxonType) => {
+  const taxonTypeLabel = taxonTypes.reduce((acc, taxonType) => {
+    let newAcc = acc;
     if (taxonType.value === taxonTypeCode) {
-      acc = taxonType;
+      newAcc = taxonType;
     }
-    return acc;
+    return newAcc;
   }, null);
 
-  if (taxonType && taxonType.label) {
-    return taxonType.label;
+  if (taxonTypeLabel && taxonTypeLabel.label) {
+    return taxonTypeLabel.label;
   }
 
-  return "";
-}
+  return '';
+};

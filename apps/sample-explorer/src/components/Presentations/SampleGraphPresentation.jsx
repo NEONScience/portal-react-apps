@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
+import PropTypes from 'prop-types';
 
-import Typography from "@material-ui/core/Typography";
-import { makeStyles } from "@material-ui/core/styles";
+import Typography from '@mui/material/Typography';
 
-import NeonContext from 'portal-core-components/lib/components/NeonContext/NeonContext';
-import Theme from 'portal-core-components/lib/components/Theme';
+import NeonAuthContext from '@neonscience/portal-core-components/components/NeonContext/NeonAuthContext';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import SampleNetwork from "../SampleNetwork/SampleNetwork";
-import { GRAPH_COLORS } from "../../util/appUtil";
+import SampleGraphContainer from '../SampleGraph/SampleGraphContainer';
+import { GRAPH_COLORS } from '../../util/appUtil';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()((theme) => ({
   keyContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -29,24 +29,25 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SampleGraphPresentation = (props) => {
-  const { onQueryClick, graphData } = props;
-  const classes = useStyles(Theme);
-  const neonContextSessionState = NeonContext.useNeonContextSessionState();
+  const { onQueryClick, graphData, visitedSamples } = props;
+  const { classes, theme } = useStyles();
+  const neonAuthContextSessionState = NeonAuthContext.useNeonAuthContextSessionState();
 
   return (
-    <div style={{ marginBottom: Theme.spacing(4) }} data-selenium="sample-graph-section">
+    <div style={{ marginBottom: theme.spacing(4) }} data-selenium="sample-graph-section">
       <Typography variant="h4" gutterBottom>
         Sample Graph
       </Typography>
       <Typography variant="subtitle1">
-        Network graph displaying sample relationships. Navigate the sample network by clicking the nodes.
+        Network graph displaying sample relationships. Navigate the sample
+        network by clicking the nodes.
       </Typography>
       <div className={classes.keyContainer}>
         <div className={classes.keyElement}>
           <svg height="20" width="20">
-            <circle cx="10" cy="10" r="10" style={{ fill: GRAPH_COLORS.NODES.FOCUS }}/>
+            <circle cx="10" cy="10" r="10" style={{ fill: GRAPH_COLORS.NODES.FOCUS }} />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Focus Sample
           </Typography>
         </div>
@@ -62,30 +63,42 @@ const SampleGraphPresentation = (props) => {
           <svg height="20" width="20">
             <polygon points="10,0 20,20 0,20" style={{ fill: GRAPH_COLORS.NODES.CHILD }} />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Child Sample
           </Typography>
         </div>
         <div className={classes.keyElement}>
           <svg height="20" width="20">
-            <polygon points="10,0 17,10 10,20 3,10 " style={{ fill: GRAPH_COLORS.NODES.PREVIOUS }} />
+            <polygon
+              points="10,0 17,10 10,20 3,10 "
+              style={{ fill: GRAPH_COLORS.NODES.PREVIOUS }}
+            />
           </svg>
-          <Typography variant="body2" >
+          <Typography variant="body2">
             Previous Sample
           </Typography>
         </div>
       </div>
-      <SampleNetwork
+      <SampleGraphContainer
         graphData={graphData}
+        visitedSamples={visitedSamples}
         onNodeClick={(url) => {
           const headers = {
-            ...neonContextSessionState.sessionHeaders
+            ...neonAuthContextSessionState.sessionHeaders,
           };
           onQueryClick(url, null, headers);
         }}
       />
     </div>
   );
+};
+
+SampleGraphPresentation.propTypes = {
+  onQueryClick: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  graphData: PropTypes.arrayOf(PropTypes.any).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  visitedSamples: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default SampleGraphPresentation;

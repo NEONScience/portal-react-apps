@@ -1,15 +1,15 @@
 import {
   createSelector,
   createSelectorCreator,
-  defaultMemoize,
+  lruMemoize,
 } from 'reselect';
 import isEqual from 'lodash/isEqual';
 
-import ReleaseService from 'portal-core-components/lib/service/ReleaseService';
-import { AsyncStateType } from 'portal-core-components/lib/types/asyncFlow';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import { Nullable } from 'portal-core-components/lib/types/core';
-import { DoiStatusType } from 'portal-core-components/lib/types/neonApi';
+import ReleaseService from '@neonscience/portal-core-components/service/ReleaseService';
+import { AsyncStateType } from '@neonscience/portal-core-components/types/asyncFlow';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
+import { DoiStatusType } from '@neonscience/portal-core-components/types/neonApi';
 
 import {
   BaseStoreAppState,
@@ -46,10 +46,7 @@ const appState = (state: StoreRootState): BaseStoreAppState => (
   state.app
 );
 
-const appStateSelector = createSelector(
-  [appState],
-  (state: BaseStoreAppState): BaseStoreAppState => state,
-);
+const appStateSelector = appState;
 
 const determineBundleHelper = (state: BaseStoreAppState): DataProductBundle[] => (
   determineBundle(state.bundles, state.selectedRelease?.release)
@@ -130,7 +127,8 @@ const findAppliedRelease = (state: BaseStoreAppState): Nullable<Release> => {
   }
   if (existsNonEmpty(releases)) {
     const sortedReleases: Release[] = ReleaseService.sortReleases(releases);
-    appliedRelease = sortedReleases[0];
+    const firstRelease: Release = sortedReleases[0];
+    appliedRelease = firstRelease;
   }
   return appliedRelease;
 };
@@ -205,7 +203,7 @@ const transformSiteForBundles = (
   if (!exists(focalSite)) {
     return focalSite;
   }
-  const appliedProducts: Record<string, unknown>[] = (focalSite as Site).dataProducts;
+  const appliedProducts: Record<string, unknown>[] = [...(focalSite as Site).dataProducts];
   const forwardCodeMap: { [key: string]: string } = findForwardChildren(bundles);
   const bundledProducts: Record<string, unknown>[] = [];
   Object.keys(forwardCodeMap).forEach((childCode: string): void => {
@@ -220,7 +218,8 @@ const transformSiteForBundles = (
         ));
       if (childProduct) {
         const appliedTitle = `${childProduct.productName}. `
-          + `Showing availability for bundle data product: ${parentAvail.dataProductCode as string}`;
+          + 'Showing availability for bundle data product: '
+          + `${parentAvail.dataProductCode as string}`;
         bundledProducts.push({
           ...parentAvail,
           dataProductCode: childCode,
@@ -241,10 +240,12 @@ const transformSiteForBundles = (
   };
 };
 
-const createDeepEqualSelector = createSelectorCreator(
-  defaultMemoize,
-  isEqual,
-);
+const createDeepEqualSelector = createSelectorCreator({
+  memoize: lruMemoize,
+  memoizeOptions: {
+    equalityCheck: isEqual,
+  },
+});
 
 const productSorter = (a: DataProduct, b: DataProduct): number => {
   const scienceTeamSort: number = a.productScienceTeam.localeCompare(b.productScienceTeam);
@@ -348,7 +349,7 @@ const AppStateSelector = {
     ): AvailabilitySectionState => ({
       focalProductFetchState: state.focalProductFetchState.asyncState,
       focalProduct: bundledProduct,
-      appliedRelease: appliedRelease,
+      appliedRelease,
       delineateAvaRelease: shouldDelineateAvaRelease(state.selectedRelease),
       fetchProductReleaseDoi: shouldFetchDoi(state),
       focalProductReleaseDoiFetchState: state.focalProductReleaseDoiFetchState.asyncState,
@@ -372,10 +373,9 @@ const AppStateSelector = {
             : [(state.focalSite as Site).siteCode];
           break;
         case 'DataProduct':
-        default:
+        default: {
           fetchState = state.focalProductFetchState.asyncState;
           focalProduct = findFocalProduct(state);
-          // eslint-disable-next-line no-case-declarations
           const productSiteCodes: Record<string, unknown>[] = !exists(focalProduct)
             ? new Array<Record<string, unknown>>()
             : (focalProduct as DataProduct).siteCodes;
@@ -396,6 +396,7 @@ const AppStateSelector = {
             }
           }
           break;
+        }
       }
       const isFocalProductReleaseWorking = (
         ((state.focalProductReleaseDoiFetchState.asyncState === AsyncStateType.WORKING)

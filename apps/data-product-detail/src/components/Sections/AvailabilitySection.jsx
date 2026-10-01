@@ -1,28 +1,34 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import moment from 'moment';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
+import Divider from '@mui/material/Divider';
+import Skeleton from '@mui/material/Skeleton';
+import Typography from '@mui/material/Typography';
 
-import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import DownloadStepForm from 'portal-core-components/lib/components/DownloadStepForm';
-import ExternalHostInfo from 'portal-core-components/lib/components/ExternalHostInfo';
-import Theme from 'portal-core-components/lib/components/Theme';
+import DataProductAvailability from '@neonscience/portal-core-components/components/DataProductAvailability';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import DownloadDataButton from '@neonscience/portal-core-components/components/DownloadDataButton';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import DownloadStepForm from '@neonscience/portal-core-components/components/DownloadStepForm';
+import NeonContext from '@neonscience/portal-core-components/components/NeonContext/NeonContext';
+import ExternalHostInfo from '@neonscience/portal-core-components/components/ExternalHostInfo';
+import ExternalHost from '@neonscience/portal-core-components/components/ExternalHost';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 import DataProductContext from '../DataProductContext';
 import Section from './Section';
 import SkeletonSection from './SkeletonSection';
 import TombstoneNotice from '../Release/TombstoneNotice';
 
-const useStyles = makeStyles((theme) => ({
+const SiteMap = React.lazy(
+  () => import('@neonscience/portal-core-components/components/SiteMap/SiteMap'),
+);
+
+const useStyles = makeStyles()((theme) => ({
   summaryDivStyle: {
     width: '100%',
     display: 'flex',
@@ -35,10 +41,19 @@ const useStyles = makeStyles((theme) => ({
     lineHeight: '1em',
     marginBottom: theme.spacing(1),
   },
+  availableSitesContainer: {
+    marginTop: theme.spacing(6),
+  },
+  externalHostContainer: {
+    marginTop: theme.spacing(6),
+  },
+  divider: {
+    margin: theme.spacing(3, 0, 4, 0),
+  },
 }));
 
 const AvailabilitySection = (props) => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const [state] = DataProductContext.useDataProductContextState();
 
@@ -49,6 +64,9 @@ const AvailabilitySection = (props) => {
     fromExternalHost,
     requiredSteps,
   }] = DownloadDataContext.useDownloadDataState();
+
+  const [{ data: neonContextData }] = NeonContext.useNeonContextState();
+  const { sites } = neonContextData;
 
   const {
     route: {
@@ -136,12 +154,13 @@ const AvailabilitySection = (props) => {
         productName: bundleParents[parentCode].productName,
       }));
       detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        theme,
         dataProductLikes,
         currentRelease,
       );
     }
     return (
-      <div style={{ marginBottom: Theme.spacing(4) }}>
+      <div style={{ marginBottom: theme.spacing(4) }}>
         <DataProductBundleCard
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
@@ -211,21 +230,68 @@ const AvailabilitySection = (props) => {
           </div>
           {downloadDataButton}
         </div>
-        <Divider style={{ margin: Theme.spacing(3, 0) }} />
+        <Divider style={{ margin: theme.spacing(3, 0) }} />
         {dataProductAva}
       </>
     );
   };
 
-  const renderExternalHost = () => {
-    if (!isStringNonEmpty(productData.productCode) || isTombstoned) return null;
+  const renderAvailableSites = () => {
+    if ((availableSiteCodes.length <= 0) || (Object.keys(sites).length <= 0)) {
+      return null;
+    }
+    const availabeSitesSkeleton = (
+      <Skeleton variant="rectangular" width="100%" height={600} className={classes.skeleton} />
+    );
+    const manualLocationData = Object.keys(sites)
+      .filter((siteCode) => availableSiteCodes.includes(siteCode))
+      .map((siteCode) => sites[siteCode])
+      .map((site) => ({
+        manualLocationType: 'PROTOTYPE_SITE',
+        domain: site.domainCode,
+        state: site.stateCode,
+        siteCode: site.siteCode,
+        siteName: site.description,
+        latitude: site.latitude,
+        longitude: site.longitude,
+      }));
     return (
-      <ExternalHostInfo
-        productCode={productData.productCode}
-        siteCodes={availableSiteCodes}
-        style={{ marginTop: Theme.spacing(4) }}
-        data-selenium="data-product-page.section.availability.external-host-info"
-      />
+      <Suspense fallback={availabeSitesSkeleton}>
+        <div className={classes.availableSitesContainer}>
+          <Typography variant="h5" gutterBottom>
+            Available Sites
+          </Typography>
+          <Divider className={classes.divider} />
+          <SiteMap manualLocationData={manualLocationData} />
+        </div>
+      </Suspense>
+    );
+  };
+
+  const renderExternalHost = () => {
+    if ((availableSiteCodes.length <= 0) || (Object.keys(sites).length <= 0)) {
+      return null;
+    }
+    if (!isStringNonEmpty(productData.productCode) || isTombstoned) {
+      return null;
+    }
+    const externalHost = ExternalHost.getByProductCode(productData.productCode);
+    if (!externalHost) {
+      return null;
+    }
+    return (
+      <div className={classes.externalHostContainer}>
+        <Typography variant="h5" gutterBottom>
+          Externally Hosted Data
+        </Typography>
+        <Divider className={classes.divider} />
+        <ExternalHostInfo
+          productCode={productData.productCode}
+          siteCodes={availableSiteCodes}
+          style={{ marginTop: theme.spacing(4) }}
+          data-selenium="data-product-page.section.availability.external-host-info"
+        />
+      </div>
     );
   };
 
@@ -234,7 +300,7 @@ const AvailabilitySection = (props) => {
       let externalAvailability = null;
       if (dataAvailable) {
         externalAvailability = (
-          <div style={{ marginBottom: Theme.spacing(4) }}>
+          <div style={{ marginBottom: theme.spacing(4) }}>
             <DataProductAvailability view="ungrouped" disableSelection delineateRelease />
           </div>
         );
@@ -249,6 +315,7 @@ const AvailabilitySection = (props) => {
     return (
       <>
         {renderAvailability()}
+        {renderAvailableSites()}
         {renderExternalHost()}
       </>
     );

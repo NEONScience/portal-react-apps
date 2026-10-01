@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import ClearIcon from '@material-ui/icons/Clear';
+import Button from '@mui/material/Button';
+import ClearIcon from '@mui/icons-material/Clear';
 
 import ExploreContext from '../ExploreContext';
 

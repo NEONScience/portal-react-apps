@@ -1,12 +1,9 @@
 /* eslint-disable default-param-last */
-/* eslint-disable import/prefer-default-export */
 import JSPDF from 'jspdf';
 import moment from 'moment';
 import camelCase from 'lodash/camelCase';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
 
 import {
   FILTER_KEYS,
@@ -158,6 +155,7 @@ const generateJson = (products, productOrder, filtered = false) => {
 };
 
 const generatePdf = (
+  theme,
   products,
   productOrder,
   filtersApplied = [],
@@ -178,9 +176,11 @@ const generatePdf = (
       case FILTER_KEYS.DOMAINS:
         return `Data available from ${orList(filterValues[key])}`;
       case FILTER_KEYS.STATES:
-        return `Data available from ${orList(filterValues[key].map((abb) => (statesJSON[abb].name || abb)))}`;
+        return 'Data available from '
+          + `${orList(filterValues[key].map((abb) => (statesJSON[abb].name || abb)))}`;
       case FILTER_KEYS.VISUALIZATIONS:
-        return `Can be visualized by ${orList(filterValues[key].map((viz) => (VISUALIZATIONS[viz].name || viz)))}`;
+        return 'Can be visualized by '
+          + `${orList(filterValues[key].map((viz) => (VISUALIZATIONS[viz].name || viz)))}`;
       default:
         return orList(filterValues[key]);
     }
@@ -278,7 +278,7 @@ const generatePdf = (
       pdf.addPage();
       y = margin;
     } else {
-      pdf.setFillColor(Theme.palette.grey[300]);
+      pdf.setFillColor(theme.palette.grey[300]);
       pdf.rect(margin, y, pageWidth - (2 * margin), 0.002, 'F');
       pdf.setFillColor('#000000');
     }
@@ -286,7 +286,7 @@ const generatePdf = (
     // Render product name
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(12.5);
-    pdf.setTextColor(Theme.palette.primary.main);
+    pdf.setTextColor(theme.palette.primary.main);
     pdf.text(product.productName, margin, y + offset);
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(11);
@@ -301,7 +301,7 @@ const generatePdf = (
     pdf.setFont('helvetica', 'bold');
     pdf.text('URL:', margin + 1.5, y + offset);
     pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(Theme.palette.secondary.light);
+    pdf.setTextColor(theme.palette.secondary.light);
     pdf.textWithLink(url, margin + 1.95, y + offset, { url });
     pdf.setTextColor('#000000');
     // Render Level, Status, and Availability
@@ -339,7 +339,9 @@ const generatePdf = (
   return pdf;
 };
 
+// eslint-disable-next-line import/prefer-default-export
 export const downloadCatalog = (
+  theme,
   products,
   productOrder,
   ext = 'csv',
@@ -365,6 +367,7 @@ export const downloadCatalog = (
       break;
     case 'pdf':
       payload = generatePdf(
+        theme,
         products,
         productOrder,
         filtersApplied,

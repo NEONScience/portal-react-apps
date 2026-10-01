@@ -5,19 +5,26 @@ import { ReplaySubject } from 'rxjs';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
 
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import Theme from 'portal-core-components/lib/components/Theme';
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
 
 import DataProduct from './DataProduct';
 import SkeletonDataProduct from './SkeletonDataProduct';
 
 import ExploreContext from '../ExploreContext';
 
-const PresentationData = (props) => {
+const defaultProps = {
+  skeleton: false,
+};
+
+const PresentationData = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
   const { skeleton, highestOrderDownloadSubject } = props;
+  const theme = useTheme();
 
   const [state] = ExploreContext.useExploreContextState();
   const {
@@ -100,8 +107,8 @@ const PresentationData = (props) => {
   ) : (
     <div id="data-presentation">
       {productOrder.length === 0 ? (
-        <div style={{ margin: Theme.spacing(5), textAlign: 'center' }}>
-          <Typography variant="h6" style={{ color: Theme.palette.grey[400] }}>
+        <div style={{ margin: theme.spacing(5), textAlign: 'center' }}>
+          <Typography variant="h6" style={{ color: theme.palette.grey[400] }}>
             No products found to match current filters.
           </Typography>
         </div>
@@ -120,10 +127,6 @@ const PresentationData = (props) => {
 PresentationData.propTypes = {
   skeleton: PropTypes.bool,
   highestOrderDownloadSubject: PropTypes.instanceOf(ReplaySubject).isRequired,
-};
-
-PresentationData.defaultProps = {
-  skeleton: false,
 };
 
 export default PresentationData;

@@ -1,5 +1,5 @@
-import { AsyncState } from 'portal-core-components/lib/types/asyncFlow';
-import { Nullable } from 'portal-core-components/lib/types/core';
+import { AsyncState } from '@neonscience/portal-core-components/types/asyncFlow';
+import { Nullable } from '@neonscience/portal-core-components/types/core';
 
 export interface StoreRootState {
   app: BaseStoreAppState;
@@ -25,7 +25,9 @@ export interface BaseStoreAppState {
   focalSiteFetchState: AsyncState<Nullable<Site>>;
   focalSite: Nullable<Site>;
 
-  focalProductReleaseDoiFetchState: AsyncState<Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>>;
+  focalProductReleaseDoiFetchState: AsyncState<Nullable<
+    DataProductReleaseDoi|DataProductReleaseDoi[]
+  >>;
   focalProductReleaseDoi: Nullable<DataProductReleaseDoi|DataProductReleaseDoi[]>;
   focalProductReleaseTombAvaFetchState: AsyncState<Nullable<DataProductReleaseTombAva>>;
   focalProductReleaseTombAva: Nullable<DataProductReleaseTombAva>;

@@ -1,14 +1,12 @@
-import React from "react";
+import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import FilterContainer from '../containers/FilterContainer';
+import DownloadContainer from '../containers/DownloadContainer';
 
-import FilterContainer from "../containers/FilterContainer";
-import DownloadContainer from "../containers/DownloadContainer";
-
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()((theme) => ({
   outerContainer: {
     marginBottom: '20px',
     '@media (min-width:968px)': {
@@ -29,9 +27,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const ControlPresentation = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   return (
-    <div className={classes.outerContainer} >
+    <div className={classes.outerContainer}>
       <Typography variant="h5" id="taxon-type-title" className={classes.taxonTypeTitle}>
         Taxon Type
       </Typography>

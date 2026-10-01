@@ -1,7 +1,7 @@
 import React from 'react';
 import dateFormat from 'dateformat';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
 import Detail from './Detail';
 import DataProductContext from '../DataProductContext';
@@ -56,9 +56,13 @@ const DataRangeDetail = () => {
     rangeText = `${renderDemarc(range[0])} - ${renderDemarc(range[1])}`;
   }
 
-  let tooltip = 'The available date range from the earliest observation to the latest observation, across the entire observatory. Each site may have a different range.';
+  let tooltip = `The available date range from the earliest
+    observation to the latest observation, across the entire observatory.
+    Each site may have a different range.`;
   if (forwardAvailabilityFromParent) {
-    tooltip = `${tooltip} Also, as this product is part of a bundle, these dates represent availability of the entire bundle. See the Availability and Download section below for more detail.`;
+    tooltip = `${tooltip} Also, as this product is part of a bundle, these
+      dates represent availability of the entire bundle. See the Availability
+      and Download section below for more detail.`;
   }
 
   return (

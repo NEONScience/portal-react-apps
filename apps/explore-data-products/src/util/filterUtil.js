@@ -1,11 +1,11 @@
 import moment from 'moment';
 
 import isEqual from 'lodash/isEqual';
-import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
-import AopViewerIcon from '@material-ui/icons/SatelliteOutlined';
-import SaeViewerIcon from '@material-ui/icons/TimelineOutlined';
+import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
+import AopViewerIcon from '@mui/icons-material/SatelliteOutlined';
+import SaeViewerIcon from '@mui/icons-material/TimelineOutlined';
 
-import { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
 
 /**
  * Generate a continuous list of "YYYY-MM" strings given an input date range
@@ -37,7 +37,6 @@ export const getContinuousDatesArray = (dateRange, roundToYears = false) => {
   return contionuousRange;
 };
 
-// TODO: Move to Core Components?
 export const VISUALIZATIONS = {
   TIME_SERIES_VIEWER: {
     key: 'TIME_SERIES_VIEWER',

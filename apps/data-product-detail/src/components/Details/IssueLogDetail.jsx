@@ -5,30 +5,29 @@ import remarkGfm from 'remark-gfm';
 import dateFormat from 'dateformat';
 import truncate from 'lodash/truncate';
 
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import ClearIcon from '@mui/icons-material/Clear';
+import SearchIcon from '@mui/icons-material/Search';
 
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Hidden from '@material-ui/core/Hidden';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import ClearIcon from '@material-ui/icons/Clear';
-import SearchIcon from '@material-ui/icons/Search';
+import MaterialTable, { MTableToolbar } from '@material-table/core';
 
-import MaterialTable, { MTableToolbar } from 'material-table';
-
-import ComponentErrorBoundary from 'portal-core-components/lib/components/Error/ComponentErrorBoundary';
-import CustomComponentFallback from 'portal-core-components/lib/components/Error/CustomComponentFallback';
-import SiteChip from 'portal-core-components/lib/components/SiteChip/SiteChip';
-import Theme from 'portal-core-components/lib/components/Theme/Theme';
+import ComponentErrorBoundary from '@neonscience/portal-core-components/components/Error/ComponentErrorBoundary';
+import CustomComponentFallback from '@neonscience/portal-core-components/components/Error/CustomComponentFallback';
+import SiteChip from '@neonscience/portal-core-components/components/SiteChip/SiteChip';
+import { COLORS } from '@neonscience/portal-core-components/components/Theme/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
@@ -42,11 +41,11 @@ const {
 } = DataProductContext;
 
 const unresolvedStyle = {
-  color: '#9a3036', // portal-core-components Theme COLORS.RED[600]
+  color: COLORS.RED[600],
   fontWeight: 700,
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   container: {
     backgroundColor: theme.palette.grey[50],
     padding: theme.spacing(2),
@@ -55,6 +54,10 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(2),
   },
   unresolved: { ...unresolvedStyle },
+  xsRowsContainer: {
+    maxHeight: '800px',
+    overflow: 'auto',
+  },
   xsRowDivider: {
     margin: theme.spacing(1, 0),
   },
@@ -62,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     borderLeft: `2px solid ${theme.palette.grey[50]}`,
     borderRight: `2px solid ${theme.palette.grey[50]}`,
-    '&:nth-child(even)': {
+    '&:nth-of-type(even)': {
       backgroundColor: theme.palette.grey[50],
     },
   },
@@ -74,9 +77,6 @@ const useStyles = makeStyles((theme) => ({
   locations: {
     maxHeight: '160px',
     overflowY: 'scroll',
-    '& > div:not(:first-child)': {
-      marginTop: theme.spacing(1.5),
-    },
   },
   locationsBottom: {
     top: '159px',
@@ -99,7 +99,12 @@ const getDateSortWithNulls = (field, alternateField = null) => (
   }
 );
 
-const IssueLogDetailTextComponent = (props) => {
+const IssueLogDetailTextComponentDefaultProps = {
+  content: null,
+};
+
+const IssueLogDetailTextComponent = (inProps) => {
+  const props = resolveProps(IssueLogDetailTextComponentDefaultProps, inProps);
   const { content } = props;
   return (
     <Typography variant="body2" component="div">
@@ -110,9 +115,6 @@ const IssueLogDetailTextComponent = (props) => {
 IssueLogDetailTextComponent.propTypes = {
   content: PropTypes.string,
 };
-IssueLogDetailTextComponent.defaultProps = {
-  content: null,
-};
 
 const MarkdownFallbackComponent = (props) => ((
   <CustomComponentFallback
@@ -122,7 +124,7 @@ const MarkdownFallbackComponent = (props) => ((
 ));
 
 const IssueLogDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const [state] = useDataProductContextState();
   const product = getCurrentProductFromState(state);
@@ -227,9 +229,9 @@ const IssueLogDetail = () => {
     render: (row) => formatSummary(row.issue),
     cellStyle: (fieldData, rowData) => (rowData.parentIssueID
       ? {
-        borderLeft: `1px dotted ${Theme.palette.grey[100]}`,
-        paddingLeft: Theme.spacing(4),
-        boxShadow: `${Theme.spacing(-10)}px ${Theme.spacing(0)}px ${Theme.palette.grey[50]}`,
+        borderLeft: `1px dotted ${theme.palette.grey[100]}`,
+        paddingLeft: theme.spacing(4),
+        boxShadow: `${theme.spacing(-10)} ${theme.spacing(0)} ${theme.palette.grey[50]}`,
       } : {}),
   }, {
     title: 'Resolution',
@@ -343,15 +345,15 @@ const IssueLogDetail = () => {
           issue,
           resolution,
           dateRangeEnd,
-        } = row;
+        } = row.rowData;
         return (
           <>
             <Container className={classes.container}>
               <Grid container spacing={1}>
-                <Grid item xs={12} sm={3} md={2}>
+                <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                   <Typography variant="subtitle2">Issue Details</Typography>
                 </Grid>
-                <Grid item xs={12} sm={9} md={10}>
+                <Grid size={{ xs: 12, sm: 9, md: 10 }}>
                   <ComponentErrorBoundary
                     // eslint-disable-next-line react/no-unstable-nested-components
                     fallbackComponent={() => ((
@@ -366,10 +368,10 @@ const IssueLogDetail = () => {
                     </Typography>
                   </ComponentErrorBoundary>
                 </Grid>
-                <Grid item xs={12} sm={3} md={2}>
+                <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                   <Typography variant="subtitle2">Resolution</Typography>
                 </Grid>
-                <Grid item xs={12} sm={9} md={10}>
+                <Grid size={{ xs: 12, sm: 9, md: 10 }}>
                   {resolution ? (
                     <ComponentErrorBoundary
                       // eslint-disable-next-line react/no-unstable-nested-components
@@ -385,16 +387,18 @@ const IssueLogDetail = () => {
                       </Typography>
                     </ComponentErrorBoundary>
                   ) : (
-                    <Typography variant="body2" className={classes.unresolved}>Unresolved</Typography>
+                    <Typography variant="body2" className={classes.unresolved}>
+                      Unresolved
+                    </Typography>
                   )}
                 </Grid>
                 {dateRangeEnd ? (
                   <>
-                    <Grid item xs={12} sm={3} md={2}>
+                    <Grid size={{ xs: 12, sm: 3, md: 2 }}>
                       <Typography variant="subtitle2">Duration</Typography>
                     </Grid>
-                    <Grid item xs={12} sm={9} md={10}>
-                      <Typography variant="body2">{formatDuration(row)}</Typography>
+                    <Grid size={{ xs: 12, sm: 9, md: 10 }}>
+                      <Typography variant="body2">{formatDuration(row.rowData)}</Typography>
                     </Grid>
                   </>
                 ) : null}
@@ -409,7 +413,7 @@ const IssueLogDetail = () => {
 
   const localization = {
     pagination: {
-      labelRowsSelect: 'top-level issues',
+      labelRows: 'top-level issues',
     },
     toolbar: {
       searchPlaceholder: 'Search issues',
@@ -430,32 +434,32 @@ const IssueLogDetail = () => {
       </Typography>
       <Divider className={classes.xsRowDivider} />
       <Grid container spacing={1}>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Reported</b>
           <br />
           {renderIssueField(issue, 'issueDate')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Resolved</b>
           <br />
           {renderIssueField(issue, 'resolvedDate')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Issue Start</b>
           <br />
           {renderIssueField(issue, 'dateRangeStart')}
         </Grid>
-        <Grid item xs={6}>
+        <Grid size={{ xs: 6 }}>
           <b>Issue End</b>
           <br />
           {renderIssueField(issue, 'dateRangeEnd')}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <b>Locations Affected:</b>
           <br />
           {renderIssueField(issue, 'locationAffected')}
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <b>Resolution</b>
           <br />
           {issue.resolution}
@@ -505,7 +509,7 @@ const IssueLogDetail = () => {
 
   return (
     <>
-      <Hidden smDown>
+      <Box sx={{ fontSize: '0.875rem', display: { xs: 'none', sm: 'none', md: 'block' } }}>
         <Detail seleniumKey="issue-log">
           <MaterialTable
             title=""
@@ -521,19 +525,20 @@ const IssueLogDetail = () => {
               detailPanelColumnAlignment: 'right',
               detailPanelType: 'single',
               rowStyle: (row) => (!rowGetsUnresolvedStyling(row) ? {} : {
-                backgroundColor: Theme.colors.GOLD[50],
+                backgroundColor: theme.colors.GOLD[50],
               }),
             }}
           />
         </Detail>
-      </Hidden>
-      <Hidden mdUp>
+      </Box>
+      <Box sx={{ fontSize: '0.875rem', display: { xs: 'block', sm: 'block', md: 'none' } }}>
         <Detail title="Issue Log" seleniumKey="issue-log">
           <Grid container spacing={1}>
-            <Grid item xs={6} sm={4}>
-              <FormControl fullWidth>
+            <Grid size={{ xs: 6, sm: 4 }}>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-column">Sort By</InputLabel>
                 <Select
+                  variant="standard"
                   value={xsSortColumn}
                   onChange={handleChangeXsSortColumn}
                   inputProps={{ name: 'sort-column', id: 'sort-column' }}
@@ -547,10 +552,11 @@ const IssueLogDetail = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={6} sm={4}>
-              <FormControl fullWidth>
+            <Grid size={{ xs: 6, sm: 4 }}>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="sort-direction">Sort Direction</InputLabel>
                 <Select
+                  variant="standard"
                   value={xsSortDirection}
                   onChange={handleChangeXsSortDirection}
                   inputProps={{ name: 'sort-direction', id: 'sort-direction' }}
@@ -562,44 +568,53 @@ const IssueLogDetail = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <FormControl fullWidth>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <FormControl variant="standard" fullWidth>
                 <InputLabel htmlFor="search" shrink>Search Issues</InputLabel>
                 <TextField
+                  variant="standard"
                   id="search"
                   label=" "
                   onChange={handleChangeXsSearch}
                   value={xsSearch}
                   data-selenium="data-product-page.detail.issue-log.search"
                   fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton aria-label="clear search term" onClick={handleClearXsSearch}>
-                          <ClearIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
+                  slotProps={{
+                    input: {
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="clear search term"
+                            onClick={handleClearXsSearch}
+                            size="large"
+                          >
+                            <ClearIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
                   }}
                 />
               </FormControl>
             </Grid>
           </Grid>
-          <div style={{ margin: Theme.spacing(1.5, 0) }}>
+          <div style={{ margin: theme.spacing(1.5, 0) }}>
             <b>
               {showingIssues}
             </b>
             <br />
             <i>Child issues not shown.</i>
           </div>
-          {renderIssueXsRows()}
+          <div className={classes.xsRowsContainer}>
+            {renderIssueXsRows()}
+          </div>
         </Detail>
-      </Hidden>
+      </Box>
     </>
   );
 };

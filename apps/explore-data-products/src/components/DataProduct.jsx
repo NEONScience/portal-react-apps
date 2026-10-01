@@ -1,38 +1,36 @@
-/* eslint-disable react/jsx-one-expression-per-line, jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { ReplaySubject } from 'rxjs';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Chip from '@material-ui/core/Chip';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-import MoreIcon from '@material-ui/icons/KeyboardArrowRight';
-import TimeSeriesIcon from '@material-ui/icons/ShowChartOutlined';
-import ProductDetailsIcon from '@material-ui/icons/InfoOutlined';
-import AopGeeDataViewer from 'portal-core-components/lib/components/AopGEEDataViewer';
-import SaeDataViewerButton from 'portal-core-components/lib/components/SaeDataViewerButton';
-import SplitButton from 'portal-core-components/lib/components/Button/SplitButton';
+import MoreIcon from '@mui/icons-material/KeyboardArrowRight';
+import TimeSeriesIcon from '@mui/icons-material/ShowChartOutlined';
+import SaeViewerIcon from '@mui/icons-material/TimelineOutlined';
+import ProductDetailsIcon from '@mui/icons-material/InfoOutlined';
 
-import DataProductAvailability from 'portal-core-components/lib/components/DataProductAvailability';
-import DataProductBundleCard from 'portal-core-components/lib/components/Bundles/DataProductBundleCard';
-import DataThemeIcon from 'portal-core-components/lib/components/DataThemeIcon';
-import DownloadDataButton from 'portal-core-components/lib/components/DownloadDataButton';
-import DownloadDataContext from 'portal-core-components/lib/components/DownloadDataContext';
-import ReleaseChip from 'portal-core-components/lib/components/Chip/ReleaseChip';
-import Theme from 'portal-core-components/lib/components/Theme';
-
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
+import AopGeeDataViewer from '@neonscience/portal-core-components/components/AopGEEDataViewer';
+import SplitButton from '@neonscience/portal-core-components/components/Button/SplitButton';
+import DataProductAvailability from '@neonscience/portal-core-components/components/DataProductAvailability';
+import DataProductBundleCard from '@neonscience/portal-core-components/components/Bundles/DataProductBundleCard';
+import DataThemeIcon from '@neonscience/portal-core-components/components/DataThemeIcon';
+import DownloadDataButton from '@neonscience/portal-core-components/components/DownloadDataButton';
+import DownloadDataContext from '@neonscience/portal-core-components/components/DownloadDataContext';
+import ReleaseChip from '@neonscience/portal-core-components/components/Chip/ReleaseChip';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
+import { isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import ExploreContext from '../ExploreContext';
 
@@ -42,7 +40,7 @@ import {
   getCurrentProductsByRelease,
 } from '../util/filterUtil';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   productCard: {
     marginBottom: theme.spacing(3),
   },
@@ -55,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     cursor: 'help',
+    paddingTop: '1px',
   },
   releaseChipIcon: {
     color: theme.colors.GREEN[800],
@@ -67,11 +66,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.colors.LIGHT_BLUE[50],
     fontWeight: 600,
     cursor: 'help',
-  },
-  descriptionButton: {
-    fontSize: theme.spacing(1.5),
-    padding: theme.spacing(0.25, 1),
-    backgroundColor: '#fff',
+    paddingTop: '1px',
   },
   productPaperButton: {
     width: '100%',
@@ -89,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
   },
   moreIcon: {
     marginBottom: '-3px',
-    fontSize: theme.spacing(2),
+    fontSize: '1rem',
   },
   startFlex: {
     display: 'flex',
@@ -102,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DataProduct = React.memo((props) => {
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   const { productCode, highestOrderDownloadSubject } = props;
 
@@ -169,8 +164,6 @@ const DataProduct = React.memo((props) => {
   const hasData = siteCodes && (siteCodes.length > 0);
   const hasTimeSeriesData = hasData && timeSeriesProductCodes.includes(productCode);
 
-  const hasVisualization = hasTimeSeriesData || isAopViewerProduct || isSaeViewerProduct;
-
   let timeRange = null;
   if (hasData) {
     timeRange = productDateRange[0]
@@ -189,7 +182,7 @@ const DataProduct = React.memo((props) => {
   const delineateAvaRelease = ReleaseService.determineDelineateAvaRelease(currentRelease);
 
   const code = (
-    <div className={classes.startFlex} style={{ margin: Theme.spacing(1.5, 0) }}>
+    <div className={classes.startFlex} style={{ margin: theme.spacing(1.5, 0) }}>
       <Tooltip
         title="The unique identifier for this data product independent of release"
       >
@@ -203,7 +196,7 @@ const DataProduct = React.memo((props) => {
         <ReleaseChip
           chipLabel={`Release: ${currentRelease}`}
           chipStyle={{
-            marginLeft: Theme.spacing(1.5),
+            marginLeft: theme.spacing(1.5),
           }}
           classes={{
             chip: classes.releaseChip,
@@ -212,7 +205,10 @@ const DataProduct = React.memo((props) => {
           tooltipTitle={(
             <span>
               Availability and metadata shown is for
-              the <b>{currentRelease}</b> release of this product
+              {' '}
+              <b>{currentRelease}</b>
+              {' '}
+              release of this product
             </span>
           )}
         />
@@ -225,7 +221,7 @@ const DataProduct = React.memo((props) => {
     && truncatedDescription !== productDescription
     && productDescription.length > 325;
   const description = (
-    <Typography variant="body2" style={{ marginTop: Theme.spacing(1) }}>
+    <Typography variant="body2" style={{ marginTop: theme.spacing(1) }}>
       {showTruncatedDescription ? (
         <>
           {`${truncatedDescription}… `}
@@ -266,12 +262,13 @@ const DataProduct = React.memo((props) => {
         productName: bundleParentProduct.productName,
       }));
       detailContent = BundleContentBuilder.buildManyParentsMainContent(
+        theme,
         dataProductLikes,
         currentRelease,
       );
     }
     return (
-      <div style={{ marginBottom: Theme.spacing(2) }}>
+      <div style={{ marginBottom: theme.spacing(2) }}>
         <DataProductBundleCard
           isSplit={bundleShowManyParents}
           titleContent={titleContent}
@@ -305,20 +302,25 @@ const DataProduct = React.memo((props) => {
 
   function getVisList() {
     const visList = [];
+    // Determine release for viz when not a "non" release and not a special case release.
+    const hideVizForRelease = isStringNonEmpty(currentRelease)
+      && !ReleaseService.isNonRelease(currentRelease)
+      && !ReleaseService.isLatestNonProv(currentRelease);
     if (hasTimeSeriesData) {
       visList.push(VISUALIZATIONS.TIME_SERIES_VIEWER);
     }
-    if (isSaeViewerProduct) {
+    if (isSaeViewerProduct && !hideVizForRelease) {
       visList.push(VISUALIZATIONS.SAE_DATA_VIEWER);
     }
-    if (isAopViewerProduct) {
+    if (isAopViewerProduct && !hideVizForRelease) {
       visList.push(VISUALIZATIONS.AOP_DATA_VIEWER);
     }
     return visList;
   }
   const visList = getVisList();
+  const hasVisualization = (visList.length > 0);
 
-  const aopViewerButton = hasData && isAopViewerProduct
+  const aopViewerButton = hasData && visList.includes(VISUALIZATIONS.AOP_DATA_VIEWER)
     ? (
       <AopGeeDataViewer
         name="aop-visuialization-button"
@@ -326,16 +328,27 @@ const DataProduct = React.memo((props) => {
       />
     ) : null;
 
-  const saeViewerButton = hasData && isSaeViewerProduct
+  const saeViewerButton = hasData && visList.includes(VISUALIZATIONS.SAE_DATA_VIEWER)
     ? (
-      <SaeDataViewerButton
-        isFullWidth
-        product={productCode}
-        name="sae-visuialization-button"
-      />
+      <Button
+        data-gtm="explore-data-products.view-sae-data-viewer-button"
+        data-gtm-product-code={productCode}
+        data-selenium={
+          `browse-data-products-page.products.${productCode}.view-sae-data-viewer-button`
+        }
+        className={classes.productPaperButton}
+        variant="outlined"
+        color="primary"
+        endIcon={<SaeViewerIcon />}
+        onClick={() => handleChangeVisualization(VISUALIZATIONS.SAE_DATA_VIEWER.key)}
+      >
+        {VISUALIZATIONS.SAE_DATA_VIEWER.name}
+      </Button>
     ) : null;
 
-  const viewTimeSeriesDataButton = hasTimeSeriesData
+  const includeTimeSeriesViewer = hasTimeSeriesData
+    && visList.includes(VISUALIZATIONS.TIME_SERIES_VIEWER);
+  const viewTimeSeriesDataButton = includeTimeSeriesViewer
     ? (
       <Button
         data-gtm="explore-data-products.view-time-series-button"
@@ -358,11 +371,10 @@ const DataProduct = React.memo((props) => {
 
   function handleSplitButtonClick(option) {
     const viz = getVizByName(option);
-    if (viz.key === 'TIME_SERIES_VIEWER') {
+    if (viz.key === VISUALIZATIONS.TIME_SERIES_VIEWER.key) {
       handleChangeVisualization(viz.key);
-    } else if (viz.key === 'SAE_DATA_VIEWER') {
-      const url = RouteService.getSaeViewerUrlPath(productCode);
-      window.open(url, '_blank', 'noreferrer');
+    } else if (viz.key === VISUALIZATIONS.SAE_DATA_VIEWER.key) {
+      handleChangeVisualization(viz.key);
     }
   }
 
@@ -426,7 +438,7 @@ const DataProduct = React.memo((props) => {
   );
 
   const themeIcons = (themes || []).sort().map((dataTheme) => (
-    <div key={dataTheme} style={{ marginRight: Theme.spacing(0.5) }}>
+    <div key={dataTheme} style={{ marginRight: theme.spacing(0.5) }}>
       <DataThemeIcon theme={dataTheme} size={4} />
     </div>
   ));
@@ -434,13 +446,27 @@ const DataProduct = React.memo((props) => {
   return (
     <Card className={classes.productCard}>
       <CardContent data-selenium={`browse-data-products-page.product-card.${productCode}`}>
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(2) }}>
-          <Grid item xs={12} sm={7} md={8} lg={9}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(2) }}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 7,
+              md: 8,
+              lg: 9,
+            }}
+          >
             {name}
             {code}
             {description}
           </Grid>
-          <Grid item xs={12} sm={5} md={4} lg={3}>
+          <Grid
+            size={{
+              xs: 12,
+              sm: 5,
+              md: 4,
+              lg: 3,
+            }}
+          >
             {downloadDataButton}
             {productDetailsButton}
           </Grid>
@@ -448,9 +474,9 @@ const DataProduct = React.memo((props) => {
 
         {renderBundleInfo()}
 
-        <Grid container spacing={2} style={{ marginBottom: Theme.spacing(1) }}>
+        <Grid container spacing={2} style={{ marginBottom: theme.spacing(1) }}>
           {!timeRange ? null : (
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Available Dates
               </Typography>
@@ -459,8 +485,8 @@ const DataProduct = React.memo((props) => {
               </Typography>
             </Grid>
           )}
-          {!timeRange && !hasVisualization ? null : (
-            <Grid item xs={12} sm={4}>
+          {!timeRange ? null : (
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Data Themes
               </Typography>
@@ -470,7 +496,7 @@ const DataProduct = React.memo((props) => {
             </Grid>
           )}
           {!hasData || !hasVisualization ? null : (
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Typography variant="subtitle2" className={classes.detailSubtitle}>
                 Visualize Data
               </Typography>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { ReplaySubject } from 'rxjs';
 
-import NeonRouter from 'portal-core-components/lib/components/NeonRouter';
+import NeonRouter from '@neonscience/portal-core-components/components/NeonRouter';
+import NeonThemeProvider from '@neonscience/portal-core-components/components/Theme/NeonThemeProvider';
 
 import ExploreContext from './ExploreContext';
 import ExplorePage from './ExplorePage';
@@ -18,7 +19,9 @@ export default function App() {
   return (
     <NeonRouter disableRedirect cleanPath={false}>
       <ExploreContext.Provider>
-        <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
+        <NeonThemeProvider>
+          <ExplorePage highestOrderDownloadSubject={highestOrderDownloadSubject} />
+        </NeonThemeProvider>
       </ExploreContext.Provider>
     </NeonRouter>
   );

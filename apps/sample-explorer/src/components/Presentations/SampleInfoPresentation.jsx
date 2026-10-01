@@ -1,11 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles()((theme) => ({
   grid: {
     display: 'flex',
     flexDirection: 'row',
@@ -14,10 +14,10 @@ const useStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     '& > div': {
       margin: theme.spacing(0, 6, 3, 0),
-    }
+    },
   },
   subtitle: {
-    marginBottom: theme.spacing(1),    
+    marginBottom: theme.spacing(1),
   },
 }));
 
@@ -35,12 +35,12 @@ const SampleInfoPresentation = (props) => {
     sampleClassDesc,
   } = props;
 
-  const classes = useStyles(Theme);
+  const { classes, theme } = useStyles();
 
   if (queryErrorStr !== 'success') { return null; }
 
   const na = (
-    <span style={{ fontStyle: 'italic', color: Theme.palette.grey[300] }}>n/a</span>
+    <span style={{ fontStyle: 'italic', color: theme.palette.grey[300] }}>n/a</span>
   );
 
   const sampleClassDescription = sampleClassDesc.get(sampleClass);
@@ -79,13 +79,27 @@ const SampleInfoPresentation = (props) => {
           {sampleClass || na}
         </Typography>
         {!sampleClassDescription ? null : (
-          <Typography variant="body1" style={{ marginTop: Theme.spacing(1) }}>
+          <Typography variant="body1" style={{ marginTop: theme.spacing(1) }}>
             {sampleClassDescription}
           </Typography>
         )}
       </div>
     </div>
   );
+};
+
+SampleInfoPresentation.propTypes = {
+  search: PropTypes.shape({
+    sampleTag: PropTypes.string,
+    sampleClass: PropTypes.string,
+    barcode: PropTypes.string,
+    archiveGuid: PropTypes.string,
+  }).isRequired,
+  query: PropTypes.shape({
+    queryErrorStr: PropTypes.string,
+  }).isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
+  sampleClassDesc: PropTypes.object.isRequired,
 };
 
 export default SampleInfoPresentation;

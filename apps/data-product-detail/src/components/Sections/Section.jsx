@@ -1,22 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Skeleton from '@material-ui/lab/Skeleton';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
 
-import Theme from 'portal-core-components/lib/components/Theme';
+import { resolveProps } from '@neonscience/portal-core-components/util/defaultProps';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 // Theme and override styles are (re)introduced here because without them
 // the primary color is lost and the expansion panel layout gets messed up.
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   section: {
     marginBottom: theme.spacing(6),
   },
 }));
 
-const Section = (props) => {
-  const classes = useStyles(Theme);
+const defaultProps = {
+  skeleton: false,
+  children: null,
+};
+
+const Section = (inProps) => {
+  const props = resolveProps(defaultProps, inProps);
+  const { classes } = useStyles();
 
   const {
     hash,
@@ -47,11 +53,6 @@ Section.propTypes = {
   name: PropTypes.string.isRequired,
   skeleton: PropTypes.bool,
   children: PropTypes.node,
-};
-
-Section.defaultProps = {
-  skeleton: false,
-  children: null,
 };
 
 export default Section;

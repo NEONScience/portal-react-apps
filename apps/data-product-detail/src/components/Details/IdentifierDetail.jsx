@@ -1,28 +1,27 @@
 /* eslint-disable react/jsx-one-expression-per-line */
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-import RouteService from 'portal-core-components/lib/service/RouteService';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 import Detail from './Detail';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   productCodeChip: {
     color: theme.palette.grey[500],
     border: `1px solid ${theme.palette.grey[500]}`,
     backgroundColor: theme.palette.grey[100],
     fontWeight: 600,
     height: '28px',
+    paddingTop: '1px',
   },
 }));
 
 const IdentifierDetail = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
 
   const [state] = DataProductContext.useDataProductContextState();
   const product = DataProductContext.getCurrentProductFromState(state);

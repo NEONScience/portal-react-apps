@@ -1,15 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-
-import Theme from 'portal-core-components/lib/components/Theme';
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   tooltip: {
     marginLeft: theme.spacing(0.5),
   },
@@ -19,14 +16,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DetailTooltip = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { tooltip } = props;
   return (
     <Tooltip
       placement="right"
       title={tooltip}
       className={classes.tooltip}
-      interactive
     >
       <IconButton size="small" className={classes.iconButton} aria-label={tooltip}>
         <InfoIcon fontSize="small" />

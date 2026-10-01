@@ -1,49 +1,56 @@
+import { configureStore as configureReduxStore } from '@reduxjs/toolkit';
 import {
-  createStore,
-  applyMiddleware,
-  AnyAction,
+  UnknownAction,
   Store,
-  Middleware,
 } from 'redux';
 import { EpicMiddleware } from 'redux-observable';
 
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { EpicDependencies } from '@neonscience/portal-core-components/types/epic';
 
 import AppState from './appState';
 import RootReducer from '../reducers/root';
 import { getEpicMiddleware, getCombinedEpics } from '../epics/root';
 import { StoreRootState } from '../types/store';
 
-let store: Store<StoreRootState, AnyAction>;
+let store: Store<StoreRootState, UnknownAction>;
 
-const getStore = (): Store<StoreRootState, AnyAction> => (store);
+const getStore = (): Store<StoreRootState, UnknownAction> => (store);
 
 const getRootState = (): StoreRootState => ({
   app: AppState.getAppState(),
 });
 
-const configureInitialStore = (): Store<StoreRootState, AnyAction> => (
-  configureStore(getRootState())
-);
-
-const configureStore = (state: StoreRootState): Store<StoreRootState, AnyAction> => {
-  const epicMiddleware: EpicMiddleware<AnyAction> = getEpicMiddleware();
-  const middlewares: Middleware[] = [
-    epicMiddleware,
-  ];
-  if (NeonEnvironment.isDevEnv) {
-    const { logger } = require('redux-logger'); // eslint-disable-line
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    middlewares.push(logger);
-  }
-  store = createStore<StoreRootState, AnyAction, Record<string, unknown>, Record<string, unknown>>(
-    RootReducer.rootReducer,
-    state,
-    applyMiddleware(...middlewares),
-  );
+const configureStore = (state: StoreRootState): Store<StoreRootState, UnknownAction> => {
+  const epicMiddleware: EpicMiddleware<
+    UnknownAction,
+    UnknownAction,
+    StoreRootState,
+    EpicDependencies
+  > = getEpicMiddleware();
+  store = configureReduxStore({
+    reducer: RootReducer.rootReducer,
+    preloadedState: state,
+    middleware: (getDefaultMiddleware) => {
+      const middleware = getDefaultMiddleware({
+        thunk: false,
+        serializableCheck: false,
+      }).concat(epicMiddleware);
+      if (NeonEnvironment.isDevEnv) {
+        // eslint-disable-next-line global-require, @typescript-eslint/no-require-imports
+        const { logger } = require('redux-logger');
+        return middleware.concat(logger);
+      }
+      return middleware;
+    },
+  });
   epicMiddleware.run(getCombinedEpics() as never);
   return store;
 };
+
+const configureInitialStore = (): Store<StoreRootState, UnknownAction> => (
+  configureStore(getRootState())
+);
 
 const RootStore = {
   getStore,

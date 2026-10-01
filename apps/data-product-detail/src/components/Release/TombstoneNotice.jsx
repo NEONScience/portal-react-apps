@@ -1,25 +1,23 @@
 import React from 'react';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 
-import Theme from 'portal-core-components/lib/components/Theme';
-
-import BundleContentBuilder from 'portal-core-components/lib/components/Bundles/BundleContentBuilder';
-import ReleaseNoticeCard from 'portal-core-components/lib/components/Card/ReleaseNoticeCard';
-import RouteService from 'portal-core-components/lib/service/RouteService';
-import { exists, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import BundleContentBuilder from '@neonscience/portal-core-components/components/Bundles/BundleContentBuilder';
+import ReleaseNoticeCard from '@neonscience/portal-core-components/components/Card/ReleaseNoticeCard';
+import RouteService from '@neonscience/portal-core-components/service/RouteService';
+import { exists, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import DataProductContext from '../DataProductContext';
 
 const { useDataProductContextState, getProductDoiInfo } = DataProductContext;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   doiListMultiBundle: {
     marginLeft: theme.spacing(3),
   },
@@ -41,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TombstoneNotice = () => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const [state] = useDataProductContextState();
   const {
     route: { release: currentRelease, bundle },
@@ -104,15 +102,17 @@ const TombstoneNotice = () => {
       if (latestAvailableProductRelease && latestAvailableProductRelease.release) {
         if (latestAvailableProductRelease.release.localeCompare(tombstonedRelease) !== 0) {
           const dataProductDetailLink = (
-            <Link href={RouteService.getProductDetailPath(appliedProduct.productCode)}>
+            <Link
+              href={RouteService.getProductDetailPath(appliedProduct.productCode)}
+            >
               newer release
             </Link>
           );
           latestAvailableReleaseBlurb = (
             <>
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
-              has been replaced by a {dataProductDetailLink} and&nbsp;
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
+              has been replaced by a {dataProductDetailLink}&nbsp;and&nbsp;
+              {/* eslint-enable react/jsx-one-expression-per-line */}
             </>
           );
         }
@@ -127,12 +127,12 @@ const TombstoneNotice = () => {
       if (!hasManyTombstonedDois) {
         return (
           <Typography variant="body2">
-            {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+            {/* eslint-disable react/jsx-one-expression-per-line */}
             <b>{tombstonedRelease}</b> of this data product
             {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
             If this specific release is needed for research purposes, please fill out
             the {contactUsLink} form.
-            {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+            {/* eslint-enable react/jsx-one-expression-per-line */}
           </Typography>
         );
       }
@@ -152,7 +152,11 @@ const TombstoneNotice = () => {
         }
         return (
           <>
-            <Typography variant="subtitle2" color="textPrimary" className={classes.doiFromParentBlurb}>
+            <Typography
+              variant="subtitle2"
+              color="textPrimary"
+              className={classes.doiFromParentBlurb}
+            >
               {/* eslint-disable react/jsx-one-expression-per-line */}
               This data product release is {bundledLink} into {bundleParentLink}.
               {/* eslint-enable react/jsx-one-expression-per-line */}
@@ -160,19 +164,18 @@ const TombstoneNotice = () => {
             <Typography variant="body2" color="textPrimary">
               The above DOI refers to that data product release and there is no DOI directly
               associated with this data product release.
-              {/* eslint-enable react/jsx-one-expression-per-line */}
             </Typography>
           </>
         );
       }
       return (
         <Typography variant="body2" color="textPrimary">
-          {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-disable react/jsx-one-expression-per-line */}
           <b>{tombstonedRelease}</b> of this data product
           {doiDisplay} {latestAvailableReleaseBlurb}is no longer available for download.
           If this specific release is needed for research purposes, please fill out
           the {contactUsLink} form.
-          {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
+          {/* eslint-enable react/jsx-one-expression-per-line */}
         </Typography>
       );
     };
@@ -182,7 +185,7 @@ const TombstoneNotice = () => {
         disableGutters
         key={`TombstonedDoiUrlKey-${tombstonedDoiUrl.doiUrl}`}
         alignItems="flex-start"
-        ContainerComponent="div"
+        slots={{ root: 'div' }}
       >
         <ListItemText
           className={hasManyTombstonedDois ? classes.doiListItemText : undefined}
@@ -204,9 +207,8 @@ const TombstoneNotice = () => {
           <Divider className={classes.noticeCardDivider} />
           {!hasManyTombstonedDois ? null : (
             <Typography variant="subtitle2" className={classes.doiBlurb}>
-              {/* eslint-disable react/jsx-one-expression-per-line, max-len */}
+              {/* eslint-disable react/jsx-one-expression-per-line */}
               This data product release is {bundledLink} into the following data product releases:
-              {/* eslint-enable react/jsx-one-expression-per-line, max-len */}
             </Typography>
           )}
           <List

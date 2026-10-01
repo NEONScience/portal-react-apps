@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
 import debounce from 'lodash/debounce';
 
-import AnalyticsService from 'portal-core-components/lib/service/AnalyticsService';
-import Theme from 'portal-core-components/lib/components/Theme';
+import AnalyticsService from '@neonscience/portal-core-components/service/AnalyticsService';
+import { makeStyles } from '@neonscience/portal-core-components/components/Theme/makeStyles';
 
 import PrototypeContext from '../PrototypeContext';
 import FilterBase from './FilterBase';
@@ -19,7 +18,7 @@ const { usePrototypeContextState } = PrototypeContext;
 
 const DEBOUNCE_MILLISECONDS = 200;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
   subtitle: {
     fontSize: '0.725rem',
     color: theme.palette.grey[400],
@@ -36,17 +35,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const FilterSearch = (props) => {
-  const classes = useStyles(Theme);
+  const { classes } = useStyles();
   const { searchRef } = props;
 
   const [, dispatch] = usePrototypeContextState();
 
   const filterKey = FILTER_KEYS.SEARCH;
 
-  const debouncedSearch = debounce((searchTerm, applyValueToInput = false) => {
-    if (applyValueToInput) {
-      searchRef.current.querySelector('input').value = searchTerm;
-    }
+  const debouncedSearch = debounce((searchTerm) => {
     const terms = parseSearchTerms(searchTerm);
     if (!terms.length) { dispatch({ type: 'resetFilter', filterKey }); }
     // Push an event with latest term to Google Tag Manager
@@ -62,23 +58,30 @@ const FilterSearch = (props) => {
         fullWidth
         name={filterKey}
         margin="dense"
-        variant="outlined"
+        size="small"
         defaultValue=""
         placeholder={placeholder}
         onChange={(event) => debouncedSearch(event.target.value)}
         className={classes.textField}
-        InputProps={{
-          ref: searchRef,
-          'aria-label': 'search',
-          type: 'search',
-          className: classes.searchInput,
+        slotProps={{
+          input: {
+            ref: searchRef,
+            'aria-label': 'search',
+            type: 'search',
+            className: classes.searchInput,
+          },
         }}
       />
       <Typography variant="body2" className={classes.subtitle}>
-        {/* eslint-disable react/jsx-one-expression-per-line */}
-        Use several terms to match datasets having <i>any</i> term (<i>term OR term</i>).&nbsp;
+        Use several terms to match datasets having
+        {' '}
+        <i>any</i>
+        {' '}
+        term (
+        <i>term OR term</i>
+        ).
+        {' '}
         Quote terms to match phrases (e.g. &quot;air pressure&quot;)
-        {/* eslint-enable react/jsx-one-expression-per-line */}
       </Typography>
     </FilterBase>
   );

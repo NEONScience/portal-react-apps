@@ -1,9 +1,9 @@
 import isEqual from 'lodash/isEqual';
 
-import ExternalHost from 'portal-core-components/lib/components/ExternalHost/ExternalHost';
-import BundleService from 'portal-core-components/lib/service/BundleService';
-import ReleaseService, { LATEST_AND_PROVISIONAL } from 'portal-core-components/lib/service/ReleaseService';
-import { exists, existsNonEmpty, isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import ExternalHost from '@neonscience/portal-core-components/components/ExternalHost/ExternalHost';
+import BundleService from '@neonscience/portal-core-components/service/BundleService';
+import ReleaseService, { LATEST_AND_PROVISIONAL } from '@neonscience/portal-core-components/service/ReleaseService';
+import { exists, existsNonEmpty, isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 import {
   /* constants */
@@ -40,8 +40,12 @@ export const APP_STATUS = {
 // Array of common strings that appear in short descriptions for bundle children.
 // We present the same info in a more visible callout, so we actively scrub it
 // from short descriptions.
+const SAE_BUNDLE_BLURB = `
+${' '}This data product is bundled into DP4.00200, Bundled data products - eddy covariance,
+${' '}and is not available as a stand-alone download.
+`;
 const EXCISE_BUNDLE_BLURBS = [
-  ' This data product is bundled into DP4.00200, Bundled data products - eddy covariance, and is not available as a stand-alone download.',
+  SAE_BUNDLE_BLURB,
 ];
 
 /**
@@ -102,88 +106,9 @@ const applyUserRelease = (current, userReleases) => {
   });
 };
 
-const withContextReleases = (neonContextState) => (
-  neonContextState?.auth?.userData?.data?.releases || []
+const withContextReleases = (neonAuthContextState) => (
+  neonAuthContextState?.auth?.userData?.data?.releases || []
 );
-
-export const applyAopProductFilter = (state, applyLocalStorage = false) => {
-  let newState = { ...state };
-  const releaseKeys = Object.keys(newState.productsByRelease);
-  if (!Array.isArray(releaseKeys) || (releaseKeys.length <= 0)) {
-    return newState;
-  }
-  const {
-    aopDataProducts: aopDataProductsJSON,
-  } = state.neonContextState.data;
-  const { productCodes: aopProductCodes } = aopDataProductsJSON;
-  if (!Array.isArray(aopProductCodes) || (aopProductCodes.length <= 0)) {
-    return newState;
-  }
-  const filterItemCounts = { [FILTER_KEYS.VISUALIZATIONS]: {} };
-  const addProductToFilterItemCounts = (product) => {
-    const key = FILTER_KEYS.VISUALIZATIONS;
-    const items = product.filterableValues[FILTER_KEYS.VISUALIZATIONS];
-    for (let j = 0; j < items.length; j += 1) {
-      if (!filterItemCounts[key][items[j]]) { filterItemCounts[key][items[j]] = 0; }
-      filterItemCounts[key][items[j]] += 1;
-    }
-  };
-  releaseKeys.forEach((releaseKey) => {
-    const productRelease = newState.productsByRelease[releaseKey];
-    const productKeys = Object.keys(productRelease);
-    if (productKeys && Array.isArray(productKeys)) {
-      productKeys.forEach((productKey) => {
-        const product = productRelease[productKey];
-        if (aopProductCodes.includes(product.productCode)
-          && Array.isArray(product.siteCodes)
-          && (product.siteCodes.length > 0)
-        ) {
-          const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-            .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-          if (!hasFilterableValue) {
-            product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-              VISUALIZATIONS.AOP_DATA_VIEWER.key,
-            );
-            addProductToFilterItemCounts(product);
-          }
-        }
-      });
-    }
-  });
-  const key = FILTER_KEYS.VISUALIZATIONS;
-  const existingFilterItemsValues = newState.filterItems[key].map((item) => item.value);
-  const nonDuplicateNewFilterItems = Object.keys(filterItemCounts[key])
-    .filter((item) => !existingFilterItemsValues.includes(item))
-    .map((item) => ({
-      name: VISUALIZATIONS[item] ? VISUALIZATIONS[item].name : null,
-      value: item,
-      subtitle: null,
-      count: filterItemCounts[key][item],
-    }));
-  newState.filterItems[key] = [...newState.filterItems[key], ...nonDuplicateNewFilterItems];
-  if (applyLocalStorage) {
-    let appliedFilterValues = newState.localStorageFilterValuesInitialLoad;
-    if (!appliedFilterValues) {
-      const localFilterValuesUnparsed = localStorage.getItem('filterValues');
-      if (localFilterValuesUnparsed) {
-        try {
-          appliedFilterValues = JSON.parse(localFilterValuesUnparsed);
-        } catch {
-          // eslint-disable-next-line no-console
-          console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
-        }
-      }
-    }
-    Object.keys(appliedFilterValues)
-      .filter((filterKey) => filterKey === FILTER_KEYS.VISUALIZATIONS)
-      .filter((filterKey) => (newState.filterValues[filterKey] || []).length <= 0)
-      .forEach((filterKey) => {
-        newState = applyFilter(newState, filterKey, appliedFilterValues[filterKey], false);
-      });
-    newState = applyCurrentProducts(newState);
-  }
-  return newState;
-};
 
 const mergeDataAva = (dataAvas) => {
   // For multi bundle products, merge bundled availabilities,
@@ -281,8 +206,10 @@ export const parseProductsByReleaseData = (state, release) => {
   const { unparsedData } = state.fetches.productsByRelease[release];
   if (!unparsedData) { return state; }
 
-  // NeonContext data must be finalized
-  if (!state.neonContextState.isFinal) { return state; }
+  // NeonContext and NeonAuthContext data must be finalized
+  if (!state.neonContextState.isFinal || !state.neonAuthContextState.isFinal) {
+    return state;
+  }
   const {
     sites: sitesJSON,
     states: statesJSON,
@@ -299,7 +226,7 @@ export const parseProductsByReleaseData = (state, release) => {
   let newState = { ...state };
 
   // Get the applicable user releases to apply
-  const userReleases = withContextReleases(newState.neonContextState);
+  const userReleases = withContextReleases(newState.neonAuthContextState);
 
   // Filter Item Counts
   // A filter item is an option a filter can have (e.g. all possible states, sites, etc.)
@@ -526,26 +453,29 @@ export const parseProductsByReleaseData = (state, release) => {
         VISUALIZATIONS.TIME_SERIES_VIEWER.key,
       );
     }
-    if ((aopProductCodes || []).includes(productCode)) {
-      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-        .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
-      const hasAvailableData = Array.isArray(availabilitySiteCodes)
-        && (availabilitySiteCodes.length > 0);
-      if (!hasFilterableValue && hasAvailableData) {
-        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-          VISUALIZATIONS.AOP_DATA_VIEWER.key,
-        );
+    // Apply non-release aware viz filters when non-release and not special case.
+    if (!isRelease) {
+      if ((aopProductCodes || []).includes(productCode)) {
+        const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+          .includes(VISUALIZATIONS.AOP_DATA_VIEWER.key);
+        const hasAvailableData = Array.isArray(availabilitySiteCodes)
+          && (availabilitySiteCodes.length > 0);
+        if (!hasFilterableValue && hasAvailableData) {
+          product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+            VISUALIZATIONS.AOP_DATA_VIEWER.key,
+          );
+        }
       }
-    }
-    if ((saeProductCodes || []).includes(productCode)) {
-      const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
-        .includes(VISUALIZATIONS.SAE_DATA_VIEWER.key);
-      const hasAvailableData = Array.isArray(availabilitySiteCodes)
-        && (availabilitySiteCodes.length > 0);
-      if (!hasFilterableValue && hasAvailableData) {
-        product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
-          VISUALIZATIONS.SAE_DATA_VIEWER.key,
-        );
+      if ((saeProductCodes || []).includes(productCode)) {
+        const hasFilterableValue = product.filterableValues[FILTER_KEYS.VISUALIZATIONS]
+          .includes(VISUALIZATIONS.SAE_DATA_VIEWER.key);
+        const hasAvailableData = Array.isArray(availabilitySiteCodes)
+          && (availabilitySiteCodes.length > 0);
+        if (!hasFilterableValue && hasAvailableData) {
+          product.filterableValues[FILTER_KEYS.VISUALIZATIONS].push(
+            VISUALIZATIONS.SAE_DATA_VIEWER.key,
+          );
+        }
       }
     }
 
@@ -782,7 +712,10 @@ export const parseProductsByReleaseData = (state, release) => {
         });
       } catch {
         // eslint-disable-next-line no-console
-        console.error('Unable to rebuild filter values from saved local storage. Stored value is not parseable.');
+        console.error(
+          'Unable to rebuild filter values from saved local storage. '
+            + 'Stored value is not parseable.',
+        );
       }
     }
     // Hydrate from local storage: Filter Item Visibility
@@ -799,8 +732,10 @@ export const parseProductsByReleaseData = (state, release) => {
             newState.filterItemVisibility[key] = localFilterItemVisibility[key];
           });
       } catch {
+        const msg = 'Unable to rebuild filter item visibility from saved local storage. '
+          + 'Stored value is not parseable.';
         // eslint-disable-next-line no-console
-        console.error('Unable to rebuild filter item visibility from saved local storage. Stored value is not parseable.');
+        console.error(msg);
       }
     }
     // Hydrate from local storage: Sort Method
@@ -874,11 +809,13 @@ export const parseProductsByReleaseData = (state, release) => {
 /**
    parseAnyUnparsedProductSets
    Call parseProductData on any product data sets that were fetched but not parsed, provided that
-   the copy of NeonContext state in our main state object is now finalized.
+   the copy of NeonContext and NeonAuthContext state in our main state object is now finalized.
 */
 export const parseAnyUnparsedProductSets = (state) => {
   let newState = { ...state };
-  if (!state.neonContextState.isFinal) { return state; }
+  if (!state.neonContextState.isFinal || !state.neonAuthContextState.isFinal) {
+    return state;
+  }
   Object.keys(state.fetches.productsByRelease).forEach((release) => {
     if (!state.fetches.productsByRelease[release].unparsedData) { return; }
     newState = parseProductsByReleaseData(newState, release);

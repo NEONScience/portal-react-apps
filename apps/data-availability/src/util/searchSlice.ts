@@ -1,4 +1,4 @@
-import { isStringNonEmpty } from 'portal-core-components/lib/util/typeUtil';
+import { isStringNonEmpty } from '@neonscience/portal-core-components/util/typeUtil';
 
 export interface SearchSlice {
   found: boolean;

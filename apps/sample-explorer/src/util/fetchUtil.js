@@ -1,9 +1,9 @@
-import { handleError } from "./actionUtil";
-import { fetch as fetchPolyfill } from "whatwg-fetch";
+import { fetch as fetchPolyfill } from 'whatwg-fetch';
 
-import NeonApi from "portal-core-components/lib/components/NeonApi";
-import NeonEnvironment from 'portal-core-components/lib/components/NeonEnvironment';
-import { exists } from "portal-core-components/lib/util/typeUtil";
+import NeonApi from '@neonscience/portal-core-components/components/NeonApi';
+import NeonEnvironment from '@neonscience/portal-core-components/components/NeonEnvironment';
+import { exists } from '@neonscience/portal-core-components/util/typeUtil';
+import { handleError } from './actionUtil';
 
 import {
   queryIsRunning,
@@ -13,72 +13,49 @@ import {
   querySupportedSampleClassHasCompleted,
   downloadIsRunning,
   downloadHasCompleted,
-  downloadHasErrored
-} from "../actions/actions";
-import { buildViewUrl } from "./appUtil";
-import { QUERY_TYPE } from "./queryUtil";
+  downloadHasErrored,
+} from '../actions/actions';
+import { buildViewUrl } from './appUtil';
+import { QUERY_TYPE } from './queryUtil';
 
 const checkStatus = (response) => {
-  if (typeof response === "undefined") {
-    let error = new Error("Error occurred");
+  if (typeof response === 'undefined') {
+    const error = new Error('Error occurred');
     error.response = null;
     throw error;
   }
   if (response.status >= 200 && response.status < 300) {
     return response;
-  } else {
-    let error = new Error(response.statusText);
-    error.response = response;
-    throw error;
   }
-}
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+};
 
 const getFetch = () => {
   let fetchFunc = fetch;
-  if (typeof fetchFunc === "undefined") {
+  if (typeof fetchFunc === 'undefined') {
     fetchFunc = fetchPolyfill;
   }
   return fetchFunc;
-}
-
-export const querySampleFromUrlDispatch = (urlParams, headers) => {
-  let viewUrl = null;
-  switch (urlParams.idType) {
-    case QUERY_TYPE.SAMPLE_TAG:
-      let url = NeonEnvironment.getFullApiPath('samples');
-      let classUrl = url + "/classes?sampleTag=" + encodeURIComponent(urlParams.sampleTag.trim());
-      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
-      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass, headers);
-    case QUERY_TYPE.BARCODE:
-      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
-      return querySample(viewUrl, null, headers);
-    case QUERY_TYPE.ARCHIVE_GUID:
-      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
-      return querySample(viewUrl, null, headers);
-    default:
-      break;
-  }
-  return;
-}
+};
 
 export const querySample = (url, cacheControl, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
     ...headers,
   };
-  if (cacheControl === "no-cache") {
-    fetchHeaders["cache-control"] = cacheControl;
+  if (cacheControl === 'no-cache') {
+    fetchHeaders['cache-control'] = cacheControl;
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
-    mode: 'cors',
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     dispatch(queryIsRunning());
@@ -86,47 +63,47 @@ export const querySample = (url, cacheControl, headers) => {
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
       .then((response) => response.json())
       .then((json) => dispatch(queryHasCompleted(json)))
       .catch((error) => {
-        if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-          dispatch(queryHasErrored("500"));
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
+            || error.response === null) {
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
       });
   };
-}
+};
 
 export const querySampleTagClasses = (classUrl, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
     ...headers,
   };
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
-    mode: "cors",
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
+    cache: 'default',
   };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
   return (dispatch) => {
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
@@ -135,43 +112,41 @@ export const querySampleTagClasses = (classUrl, headers) => {
         dispatch(querySampleClassHasCompleted(json));
       })
       .catch((error) => {
-        if (typeof error === "undefined"
-            || typeof error.response === "undefined"
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
             || error.response === null) {
-          dispatch(queryHasErrored("500"));
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
       });
   };
-}
+};
 
 export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, headers) => {
-  let fetchHeaders = {
-    Accept: "application/json;charset=UTF-8; text/plain",
+  const fetchHeaders = {
+    Accept: 'application/json;charset=UTF-8; text/plain',
     ...NeonApi.getApiTokenHeader(),
   };
-  if (cacheControl === "no-cache") {
-    fetchHeaders["cache-control"] = cacheControl;
+  if (cacheControl === 'no-cache') {
+    fetchHeaders['cache-control'] = cacheControl;
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: fetchHeaders,
-    mode: "cors",
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
-  }
+    cache: 'default',
+  };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     fetchFunc(classUrl, fetchInit)
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         return response;
       })
@@ -185,89 +160,109 @@ export const querySampleClass = (classUrl, viewUrl, cacheControl, sampleClass, h
         if (exists(sampleClass) && (json.data.sampleClasses.indexOf(sampleClass) > 0)) {
           appliedSampleClass = sampleClass;
         } else if (json.data.sampleClasses.length > 0) {
-          appliedSampleClass = json.data.sampleClasses[0];
+          const [firstSampleClass] = json.data.sampleClasses;
+          appliedSampleClass = firstSampleClass;
         }
 
         if (exists(appliedSampleClass)) {
-          viewUrl = viewUrl + "&sampleClass=" + appliedSampleClass;
-          dispatch(querySample(viewUrl, cacheControl, headers));
+          const newViewUrl = `${viewUrl}&sampleClass=${appliedSampleClass}`;
+          dispatch(querySample(newViewUrl, cacheControl, headers));
         }
       })
       .catch((error) => {
-        if (typeof error === "undefined"
-            || typeof error.response === "undefined"
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
             || error.response === null) {
-          dispatch(queryHasErrored("500"));
+          dispatch(queryHasErrored('500'));
         } else {
           handleError(dispatch, queryHasErrored, error);
         }
       });
   };
-}
+};
+
+export const querySampleFromUrlDispatch = (urlParams, headers) => {
+  let viewUrl = null;
+  switch (urlParams.idType) {
+    case QUERY_TYPE.SAMPLE_TAG: {
+      const url = NeonEnvironment.getFullApiPath('samples');
+      const classUrl = `${url}/classes?sampleTag=${encodeURIComponent(urlParams.sampleTag.trim())}`;
+      viewUrl = buildViewUrl(QUERY_TYPE.SAMPLE_TAG, urlParams.sampleTag);
+      return querySampleClass(classUrl, viewUrl, null, urlParams.sampleClass, headers);
+    }
+    case QUERY_TYPE.BARCODE: {
+      viewUrl = buildViewUrl(QUERY_TYPE.BARCODE, urlParams.barcode);
+      return querySample(viewUrl, null, headers);
+    }
+    case QUERY_TYPE.ARCHIVE_GUID: {
+      viewUrl = buildViewUrl(QUERY_TYPE.ARCHIVE_GUID, urlParams.archiveGuid);
+      return querySample(viewUrl, null, headers);
+    }
+    default:
+      break;
+  }
+  return undefined;
+};
 
 export const querySupportedSampleClasses = (url, query, download) => {
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: {
-      Accept: "application/json;charset=UTF-8; text/plain",
-      ...NeonApi.getApiTokenHeader()
+      Accept: 'application/json;charset=UTF-8; text/plain',
+      ...NeonApi.getApiTokenHeader(),
     },
-    mode: "cors",
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
-  }
+    cache: 'default',
+  };
 
   if (query) {
-    let fetchFunc = getFetch();
+    const fetchFunc = getFetch();
     return (dispatch) => {
       fetchFunc(url, fetchInit)
         .then(checkStatus)
         .then((response) => {
           if (!response.ok) {
-            var error = new Error(response.statusText)
-            error.response = response
-            throw error
+            const error = new Error(response.statusText);
+            error.response = response;
+            throw error;
           }
           return response;
         })
         .then((response) => response.json())
         .then((json) => dispatch(querySupportedSampleClassHasCompleted(json, download)))
         .catch((error) => {
-          if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-            dispatch(queryHasErrored("500"));
+          if (typeof error === 'undefined'
+              || typeof error.response === 'undefined'
+              || error.response === null) {
+            dispatch(queryHasErrored('500'));
           } else {
             handleError(dispatch, queryHasErrored, error);
           }
         });
     };
-  } else {
-    return (dispatch) => {
-      dispatch(querySupportedSampleClassHasCompleted(null, download));
-    }
   }
-
-}
+  return (dispatch) => {
+    dispatch(querySupportedSampleClassHasCompleted(null, download));
+  };
+};
 
 export const downloadSamples = (downloadType, url, cacheControl, headers) => {
   const fetchHeaders = new Headers();
-  fetchHeaders.append("Accept", "application/json;charset=UTF-8");
-  fetchHeaders.append("Accept", "text/plain");
-  if (cacheControl === "no-cache") {
-    fetchHeaders.append("cache-control", cacheControl);
+  fetchHeaders.append('Accept', 'application/json;charset=UTF-8');
+  fetchHeaders.append('Accept', 'text/plain');
+  if (cacheControl === 'no-cache') {
+    fetchHeaders.append('cache-control', cacheControl);
   }
   const fetchInit = {
-    method: "GET",
+    method: 'GET',
     headers: {
       ...fetchHeaders,
       ...NeonApi.getApiTokenHeader(),
       ...headers,
     },
-    mode: "cors",
-    credentials: NeonEnvironment.requireCors() ? 'include' : 'same-origin',
-    cache: "default",
-  }
+    cache: 'default',
+  };
 
-  let fetchFunc = getFetch();
+  const fetchFunc = getFetch();
 
   return (dispatch) => {
     dispatch(downloadIsRunning(true));
@@ -275,9 +270,9 @@ export const downloadSamples = (downloadType, url, cacheControl, headers) => {
       .then(checkStatus)
       .then((response) => {
         if (!response.ok) {
-          var error = new Error(response.statusText)
-          error.response = response
-          throw error
+          const error = new Error(response.statusText);
+          error.response = response;
+          throw error;
         }
         dispatch(downloadIsRunning(false));
         return response;
@@ -285,11 +280,13 @@ export const downloadSamples = (downloadType, url, cacheControl, headers) => {
       .then((response) => response.json())
       .then((json) => dispatch(downloadHasCompleted(downloadType, json)))
       .catch((error) => {
-        if (typeof error === "undefined" || typeof error.response === "undefined" || error.response === null) {
-          dispatch(downloadHasErrored("500"));
+        if (typeof error === 'undefined'
+            || typeof error.response === 'undefined'
+            || error.response === null) {
+          dispatch(downloadHasErrored('500'));
         } else {
           handleError(dispatch, downloadHasErrored, error);
         }
-      })
+      });
   };
-}
+};

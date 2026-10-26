@@ -1,6 +1,6 @@
 {
   "name": "explore-data-products",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "private": true,
   "homepage": "https://localhost/data-products/explore",
   "dependencies": {
@@ -9,7 +9,7 @@
     "@mui/icons-material": "^9.4.0",
     "@mui/material": "^9.4.0",
     "@mui/x-date-pickers": "^9.14.0",
-    "@neonscience/portal-core-components": "3.0.0",
+    "@neonscience/portal-core-components": "3.0.1",
     "core-js": "^3.50.0",
     "jspdf": "^4.2.1",
     "lodash": "^4.18.1",

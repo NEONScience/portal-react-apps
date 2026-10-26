@@ -179,6 +179,8 @@ const DataProductPage = () => {
       data-currentRelease={currentRelease}
       loading={loading}
       error={error}
+      showHeaderSkeleton
+      showFooterSkeleton
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });

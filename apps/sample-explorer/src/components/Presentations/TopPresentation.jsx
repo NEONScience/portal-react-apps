@@ -25,6 +25,8 @@ const TopPresentation = (props) => {
       title="Sample Explorer"
       breadcrumbs={breadcrumbs}
       breadcrumbHomeHref={RouteService.getWebHomePath()}
+      showHeaderSkeleton
+      showFooterSkeleton
     >
       <InfoPresentation {...props} />
       <SampleQueryPresentation {...props} />

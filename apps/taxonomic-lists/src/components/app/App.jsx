@@ -34,6 +34,8 @@ const App = () => {
         title="Taxonomic Lists"
         breadcrumbs={breadcrumbs}
         breadcrumbHomeHref={RouteService.getWebHomePath()}
+        showHeaderSkeleton
+        showFooterSkeleton
       >
         <InfoPresentation />
         <ControlPresentation />

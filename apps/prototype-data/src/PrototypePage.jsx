@@ -113,6 +113,8 @@ const PrototypePage = () => {
       sidebarLinks={showSidebarLinks ? sidebarLinks : undefined}
       sidebarContent={showSidebarFilters ? <DatasetFilters /> : undefined}
       sidebarUnsticky={showSidebarFilters}
+      showHeaderSkeleton
+      showFooterSkeleton
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });

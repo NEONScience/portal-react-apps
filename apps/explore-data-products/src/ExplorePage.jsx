@@ -125,8 +125,6 @@ const ExplorePage = (props) => {
       sidebarWidth={340}
       sidebarContent={<PresentationFilter {...drillProps} />}
       sidebarUnsticky
-      showHeaderSkeleton
-      showFooterSkeleton
       NeonContextProviderProps={{
         whenFinal: (neonContextState) => {
           dispatch({ type: 'storeFinalizedNeonContextState', neonContextState });

@@ -294,8 +294,6 @@ const App: React.FC = (): JSX.Element => {
       breadcrumbs={breadcrumbs}
       sidebarLinks={sidebarLinks}
       sidebarLinksAdditionalContent={sidebarContent}
-      showHeaderSkeleton
-      showFooterSkeleton
     >
       <Grid container className={classes.infoContainer}>
         <Grid size={{ xs: 12 }} className={classes.introTextContainer}>

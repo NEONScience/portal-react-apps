@@ -2,14 +2,14 @@ name: Docker Publish
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, data-ava ]
     tags: [ 'v*' ]
 env:
   GCP_ARTIFACT_HOST: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev
   GCP_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/${{ vars.SHARED_WIF_REPO }}
   GCP_BEI_REGISTRY: ${{ vars.SHARED_WIF_LOCATON }}-docker.pkg.dev/${{ vars.SHARED_WIF_PROJECT }}/bei
-  NODE_VERSION: 24
-  YARN_VERSION: 4.18.0
+  NODE_VERSION: 26
+  YARN_VERSION: 4.18.1
 
 jobs:
   docker-publish:
@@ -35,7 +35,7 @@ jobs:
           corepack enable
           corepack prepare yarn@${{ env.YARN_VERSION }} --activate
       - name: Install packages
-        run: yarn install --immutable
+        run: YARN_ENABLE_SCRIPTS=false yarn install --immutable
       - name: Run linter
         run: yarn run lint
       - name: Build applications

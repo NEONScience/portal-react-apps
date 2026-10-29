@@ -1,5 +1,5 @@
 variable "NODE_VERSION" {
-  default = "24.18"
+  default = "26.13"
 }
 variable "YARN_VERSION" {
   default = ""

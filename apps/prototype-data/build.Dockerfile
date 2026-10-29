@@ -6,7 +6,9 @@ EXPOSE 3011
 
 ARG YARN_VERSION
 
-RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
+RUN npm install --global corepack \
+  && corepack enable \
+  && corepack prepare yarn@${YARN_VERSION} --activate
 
 WORKDIR /app
 

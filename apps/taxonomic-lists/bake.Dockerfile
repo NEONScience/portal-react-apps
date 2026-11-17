@@ -25,7 +25,6 @@ USER portal-react
 ENTRYPOINT exec ./server \
   -port=$PORTAL_PORT \
   -app-client-route=$PORTAL_CLIENT_ROUTE \
-  -app-cookie-jwt=$PORTAL_COOKIE_JWT \
   -app-api-host=$REACT_APP_NEON_API_HOST \
   -app-web-host=$REACT_APP_NEON_WEB_HOST \
   -app-api-token=$REACT_APP_NEON_SERVICE_API_TOKEN \
